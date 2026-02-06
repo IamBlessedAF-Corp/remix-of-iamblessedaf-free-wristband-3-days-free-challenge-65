@@ -15,7 +15,9 @@ const Confirm = () => {
     setIsAnimating(true);
     
     // Placeholder for GoHighLevel webhook trigger
-    console.log("Blessing confirmed - triggering webhook");
+    if (import.meta.env.DEV) {
+      console.log("Blessing confirmed - triggering webhook");
+    }
     
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 800));
