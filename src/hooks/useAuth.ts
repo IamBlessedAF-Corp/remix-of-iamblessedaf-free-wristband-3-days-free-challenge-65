@@ -50,6 +50,18 @@ export function useAuth() {
     }
   };
 
+  const signInWithApple = async () => {
+    try {
+      const { lovable } = await import("@/integrations/lovable/index");
+      const result = await lovable.auth.signInWithOAuth("apple", {
+        redirect_uri: window.location.origin,
+      });
+      return { error: result.error };
+    } catch (error) {
+      return { error };
+    }
+  };
+
   const signUpWithEmail = async (email: string, password: string) => {
     try {
       const { supabase } = await import("@/integrations/supabase/client");
@@ -94,6 +106,7 @@ export function useAuth() {
     session,
     loading,
     signInWithGoogle,
+    signInWithApple,
     signUpWithEmail,
     signInWithEmail,
     signOut,

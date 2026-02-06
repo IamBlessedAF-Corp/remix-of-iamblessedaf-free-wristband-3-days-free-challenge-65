@@ -39,6 +39,12 @@ const GoogleIcon = () => (
   </svg>
 );
 
+const AppleIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+  </svg>
+);
+
 export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignupModalProps) {
   const [mode, setMode] = useState<"signup" | "signin">("signup");
   const [email, setEmail] = useState("");
@@ -46,7 +52,7 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   
-  const { signInWithGoogle, signUpWithEmail, signInWithEmail } = useAuth();
+  const { signInWithGoogle, signInWithApple, signUpWithEmail, signInWithEmail } = useAuth();
   const { toast } = useToast();
 
   const handleGoogleSignIn = async () => {
@@ -56,6 +62,19 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
       toast({
         variant: "destructive",
         title: "Google sign-in failed",
+        description: error.message,
+      });
+    }
+    setIsLoading(false);
+  };
+
+  const handleAppleSignIn = async () => {
+    setIsLoading(true);
+    const { error } = await signInWithApple();
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Apple sign-in failed",
         description: error.message,
       });
     }
@@ -138,16 +157,28 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
               : "Sign in to access your creator dashboard"}
           </p>
 
-          {/* Google Button */}
-          <Button
-            variant="outline"
-            className="w-full mb-4 h-12"
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-          >
-            <GoogleIcon />
-            <span className="ml-2">Continue with Google</span>
-          </Button>
+          {/* OAuth Buttons */}
+          <div className="space-y-3 mb-4">
+            <Button
+              variant="outline"
+              className="w-full h-12"
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
+            >
+              <GoogleIcon />
+              <span className="ml-2">Continue with Google</span>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="w-full h-12 bg-foreground text-background hover:bg-foreground/90"
+              onClick={handleAppleSignIn}
+              disabled={isLoading}
+            >
+              <AppleIcon />
+              <span className="ml-2">Continue with Apple</span>
+            </Button>
+          </div>
 
           <div className="flex items-center gap-4 mb-4">
             <div className="flex-1 h-px bg-border" />
