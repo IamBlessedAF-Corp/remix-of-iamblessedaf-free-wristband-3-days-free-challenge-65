@@ -50,49 +50,53 @@ const ChallengeThanks = () => {
     });
   };
 
-  const shareText = "I just joined the 3-Day Gratitude Challenge! Send real gratitude, get real confirmation, win $1,111. Join me:";
+  // Short, punchy share texts optimized for each platform
+  const tiktokText = `🔥 FREE 3-Day Gratitude Challenge\n💰 Win $1,111\n✅ Real people confirm your blessings\n\nJoin me 👇\n${shareUrl}`;
+  const instagramText = `🙏 Just joined the 3-Day Gratitude Challenge!\n\n3 days. 1 message/day. Win $1,111.\n\nNo apps. Real confirmation.\n\n🔗 Link in bio or tap: ${shareUrl}\n\n#grateful #blessed #gratitudechallenge #iamblessedaf`;
+  const youtubeText = `🎯 3-Day Gratitude Challenge - Win $1,111!\n\nI'm doing this FREE challenge where you send 1 real gratitude message per day for 3 days.\n\n✅ Real people confirm your blessings\n💰 Win $1,111 this week\n\nJoin the challenge: ${shareUrl}`;
+  const twitterText = `🔥 3-Day Gratitude Challenge\n\n✅ 1 real message/day\n✅ Real confirmation\n💰 Win $1,111\n\nFREE to join 👇`;
+  const facebookText = `Just joined this amazing FREE 3-Day Gratitude Challenge! Send 1 real gratitude message per day, get real confirmation, and win $1,111. Who's in? 🙏`;
 
   const shareToTikTok = () => {
-    // TikTok doesn't have a direct share URL, so we copy and open TikTok
-    navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+    navigator.clipboard.writeText(tiktokText);
     toast({
-      title: "Caption copied!",
-      description: "Paste it in your TikTok post.",
+      title: "Caption ready! 📋",
+      description: "Opening TikTok - just paste & post!",
     });
-    window.open("https://www.tiktok.com/upload", "_blank");
+    // Open TikTok create page
+    window.open("https://www.tiktok.com/creator-center/upload", "_blank");
   };
 
   const shareToInstagram = () => {
-    // Instagram doesn't have a direct share URL, so we copy and open Instagram
-    navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+    navigator.clipboard.writeText(instagramText);
     toast({
-      title: "Caption copied!",
-      description: "Paste it in your Instagram story or post.",
+      title: "Caption ready! 📋",
+      description: "Opening Instagram - paste in your story or post!",
     });
-    window.open("https://www.instagram.com", "_blank");
+    // Open Instagram - will prompt to open app on mobile
+    window.open("https://www.instagram.com/create/story", "_blank");
   };
 
   const shareToYouTube = () => {
-    navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+    navigator.clipboard.writeText(youtubeText);
     toast({
-      title: "Description copied!",
-      description: "Paste it in your YouTube video description.",
+      title: "Description ready! 📋",
+      description: "Opening YouTube - paste in your Short or video!",
     });
-    window.open("https://www.youtube.com/upload", "_blank");
+    // Open YouTube Shorts create
+    window.open("https://www.youtube.com/shorts", "_blank");
   };
 
   const shareToTwitter = () => {
-    window.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
-      "_blank"
-    );
+    // Twitter/X has native share intent - auto-populates the tweet
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}&url=${encodeURIComponent(shareUrl)}`;
+    window.open(tweetUrl, "_blank", "width=550,height=420");
   };
 
   const shareToFacebook = () => {
-    window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
-      "_blank"
-    );
+    // Facebook share dialog with quote
+    const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(facebookText)}`;
+    window.open(fbUrl, "_blank", "width=550,height=420");
   };
 
   return (
