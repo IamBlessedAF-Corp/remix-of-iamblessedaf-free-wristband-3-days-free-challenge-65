@@ -3,8 +3,17 @@ import { motion } from "framer-motion";
 import { CheckCircle, Copy, ExternalLink, Instagram, Video, Share2, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+
+// Dynamic supabase import to handle env variable timing
+let supabaseInstance: any = null;
+const getSupabase = async () => {
+  if (!supabaseInstance) {
+    const { supabase } = await import("@/integrations/supabase/client");
+    supabaseInstance = supabase;
+  }
+  return supabaseInstance;
+};
 
 interface CreatorProfile {
   referral_code: string;
@@ -28,54 +37,61 @@ export function CreatorNextSteps() {
   const fetchOrCreateProfile = async () => {
     if (!user) return;
 
-    // Try to fetch existing profile
-    const { data: existingProfile, error: fetchError } = await supabase
-      .from("creator_profiles")
-      .select("referral_code, blessings_confirmed, display_name, instagram_handle")
-      .eq("user_id", user.id)
-      .maybeSingle();
+    try {
+      const supabase = await getSupabase();
+      
+      // Try to fetch existing profile
+      const { data: existingProfile, error: fetchError } = await supabase
+        .from("creator_profiles")
+        .select("referral_code, blessings_confirmed, display_name, instagram_handle")
+        .eq("user_id", user.id)
+        .maybeSingle();
 
-    if (existingProfile) {
-      setProfile(existingProfile);
-      setIsLoading(false);
-      return;
-    }
-
-    // Create new profile with unique referral code
-    const referralCode = generateReferralCode();
-    const { data: newProfile, error: insertError } = await supabase
-      .from("creator_profiles")
-      .insert({
-        user_id: user.id,
-        email: user.email || "",
-        referral_code: referralCode,
-      })
-      .select("referral_code, blessings_confirmed, display_name, instagram_handle")
-      .single();
-
-    if (insertError) {
-      // If referral code collision, retry with new code
-      if (insertError.code === "23505") {
-        const retryCode = generateReferralCode();
-        const { data: retryProfile } = await supabase
-          .from("creator_profiles")
-          .insert({
-            user_id: user.id,
-            email: user.email || "",
-            referral_code: retryCode,
-          })
-          .select("referral_code, blessings_confirmed, display_name, instagram_handle")
-          .single();
-        
-        if (retryProfile) {
-          setProfile(retryProfile);
-        }
+      if (existingProfile) {
+        setProfile(existingProfile);
+        setIsLoading(false);
+        return;
       }
-    } else if (newProfile) {
-      setProfile(newProfile);
-    }
 
-    setIsLoading(false);
+      // Create new profile with unique referral code
+      const referralCode = generateReferralCode();
+      const { data: newProfile, error: insertError } = await supabase
+        .from("creator_profiles")
+        .insert({
+          user_id: user.id,
+          email: user.email || "",
+          referral_code: referralCode,
+        })
+        .select("referral_code, blessings_confirmed, display_name, instagram_handle")
+        .single();
+
+      if (insertError) {
+        // If referral code collision, retry with new code
+        if (insertError.code === "23505") {
+          const retryCode = generateReferralCode();
+          const { data: retryProfile } = await supabase
+            .from("creator_profiles")
+            .insert({
+              user_id: user.id,
+              email: user.email || "",
+              referral_code: retryCode,
+            })
+            .select("referral_code, blessings_confirmed, display_name, instagram_handle")
+            .single();
+          
+          if (retryProfile) {
+            setProfile(retryProfile);
+          }
+        }
+      } else if (newProfile) {
+        setProfile(newProfile);
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error setting up profile:", error);
+      setIsLoading(false);
+    }
   };
 
   const generateReferralCode = () => {
