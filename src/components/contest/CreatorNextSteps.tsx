@@ -89,7 +89,9 @@ export function CreatorNextSteps() {
 
       setIsLoading(false);
     } catch (error) {
-      console.error("Error setting up profile:", error);
+      if (import.meta.env.DEV) {
+        console.error("Error setting up profile:", error);
+      }
       setIsLoading(false);
     }
   };
