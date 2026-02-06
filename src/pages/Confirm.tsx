@@ -31,7 +31,7 @@ const Confirm = () => {
         <motion.img
           src={logo}
           alt="I am Blessed AF"
-          className="w-24 h-24 object-contain mx-auto mb-8"
+          className="w-full h-auto object-contain mx-auto mb-8"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
