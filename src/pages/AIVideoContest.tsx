@@ -3,9 +3,14 @@ import { CheckCircle, Trophy, Zap, Users, Clock, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
+import { CreatorNextSteps } from "@/components/contest/CreatorNextSteps";
 
 const AIVideoContest = () => {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const { user, loading } = useAuth();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -419,51 +424,61 @@ const AIVideoContest = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section - Changes based on auth state */}
       <section className="px-4 py-16 max-w-4xl mx-auto">
-        <motion.div
-          className="text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Create & Win?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            DM @JoeDaVincy on Instagram for your creator dashboard link and
-            unique referral code.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
-              onClick={() =>
-                window.open(
-                  "https://www.instagram.com/davincy_gang",
-                  "_blank"
-                )
-              }
-            >
-              DM @JoeDaVincy on IG
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => window.open("https://www.instagram.com/iamblessedaf", "_blank")}
-            >
-              Follow @IamBlessedAF
-            </Button>
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
           </div>
+        ) : user ? (
+          <CreatorNextSteps />
+        ) : (
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Ready to Create & Win?
+            </h2>
+            <p className="text-lg text-muted-foreground mb-8">
+              Sign up to get your unique referral link and start tracking BCs.
+            </p>
 
-          <p className="text-sm text-muted-foreground mt-8">
-            Questions? Reply to any DM or email us. Let's engineer some viral
-            gratitude! 🚀
-          </p>
-        </motion.div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground h-14 px-8 text-lg"
+                onClick={() => setShowSignupModal(true)}
+              >
+                Join the Contest
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="h-14"
+                onClick={() => window.open("https://www.instagram.com/iamblessedaf", "_blank")}
+              >
+                Follow @IamBlessedAF
+              </Button>
+            </div>
+
+            <p className="text-sm text-muted-foreground mt-8">
+              Questions? DM @JoeDaVincy or reply to any email. Let's engineer some viral
+              gratitude! 🚀
+            </p>
+          </motion.div>
+        )}
       </section>
+
+      {/* Signup Modal */}
+      <CreatorSignupModal
+        isOpen={showSignupModal}
+        onClose={() => setShowSignupModal(false)}
+        onSuccess={() => setShowSignupModal(false)}
+      />
     </div>
   );
 };
