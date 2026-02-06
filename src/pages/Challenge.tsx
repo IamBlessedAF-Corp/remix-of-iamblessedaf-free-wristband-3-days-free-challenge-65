@@ -307,7 +307,7 @@ const Challenge = () => {
 
       {/* Footer */}
       <footer className="py-8 text-center text-sm text-muted-foreground">
-        <p>© 2024 I am Blessed AF. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} I am Blessed AF. All rights reserved.</p>
       </footer>
     </div>
   );
