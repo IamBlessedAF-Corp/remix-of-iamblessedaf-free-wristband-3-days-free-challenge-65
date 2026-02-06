@@ -63,7 +63,7 @@ const ChallengeThanks = () => {
           .eq("user_id", user.id)
           .maybeSingle();
 
-        if (error) {
+        if (error && import.meta.env.DEV) {
           console.error("Error fetching profile:", error);
         }
 
@@ -71,7 +71,9 @@ const ChallengeThanks = () => {
           setReferralCode(data.referral_code);
         }
       } catch (err) {
-        console.error("Failed to fetch profile:", err);
+        if (import.meta.env.DEV) {
+          console.error("Failed to fetch profile:", err);
+        }
       } finally {
         setLoadingProfile(false);
       }

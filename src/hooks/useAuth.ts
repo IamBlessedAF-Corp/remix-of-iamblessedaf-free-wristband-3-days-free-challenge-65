@@ -30,7 +30,9 @@ export function useAuth() {
 
         return () => subscription.unsubscribe();
       } catch (error) {
-        console.error("Failed to initialize auth:", error);
+        if (import.meta.env.DEV) {
+          console.error("Failed to initialize auth:", error);
+        }
         setLoading(false);
       }
     })();
