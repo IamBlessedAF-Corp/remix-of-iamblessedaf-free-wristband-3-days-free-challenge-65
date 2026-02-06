@@ -1,7 +1,11 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CheckCircle, Mail, MessageSquare, Share2, Copy } from "lucide-react";
+import { CheckCircle, Mail, MessageSquare, Share2, Copy, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 
 // Social media icons
@@ -37,12 +41,51 @@ const FacebookIcon = () => (
 
 const ChallengeThanks = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
 
-  // Placeholder referral code - will be dynamically generated
-  const referralCode = "BLESSED" + Math.random().toString(36).substring(2, 6).toUpperCase();
-  const shareUrl = `${window.location.origin}/challenge?ref=${referralCode}`;
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (loading) return;
+
+      if (!user) {
+        // Redirect unauthenticated users back to challenge
+        navigate("/challenge");
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("creator_profiles")
+          .select("referral_code")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error("Error fetching profile:", error);
+        }
+
+        if (data?.referral_code) {
+          setReferralCode(data.referral_code);
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+
+    fetchProfile();
+  }, [user, loading, navigate]);
+
+  const shareUrl = referralCode
+    ? `${window.location.origin}/challenge?ref=${referralCode}`
+    : "";
 
   const copyToClipboard = () => {
+    if (!shareUrl) return;
     navigator.clipboard.writeText(shareUrl);
     toast({
       title: "Link copied!",
@@ -63,7 +106,6 @@ const ChallengeThanks = () => {
       title: "Caption ready! 📋",
       description: "Opening TikTok - just paste & post!",
     });
-    // Open TikTok create page
     window.open("https://www.tiktok.com/creator-center/upload", "_blank");
   };
 
@@ -73,7 +115,6 @@ const ChallengeThanks = () => {
       title: "Caption ready! 📋",
       description: "Opening Instagram - paste in your story or post!",
     });
-    // Open Instagram - will prompt to open app on mobile
     window.open("https://www.instagram.com/create/story", "_blank");
   };
 
@@ -83,21 +124,42 @@ const ChallengeThanks = () => {
       title: "Description ready! 📋",
       description: "Opening YouTube - paste in your Short or video!",
     });
-    // Open YouTube Shorts create
     window.open("https://www.youtube.com/shorts", "_blank");
   };
 
   const shareToTwitter = () => {
-    // Twitter/X has native share intent - auto-populates the tweet
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(tweetUrl, "_blank", "width=550,height=420");
   };
 
   const shareToFacebook = () => {
-    // Facebook share dialog with quote
     const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(facebookText)}`;
     window.open(fbUrl, "_blank", "width=550,height=420");
   };
+
+  if (loading || loadingProfile) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!referralCode) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <h1 className="text-2xl font-bold mb-4">Almost there!</h1>
+          <p className="text-muted-foreground mb-6">
+            Complete your registration to get your unique referral link.
+          </p>
+          <Button onClick={() => navigate("/challenge")}>
+            Complete Registration
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
@@ -159,7 +221,7 @@ const ChallengeThanks = () => {
           transition={{ delay: 0.6 }}
         >
           <h2 className="font-bold text-lg mb-4">What Happens Next?</h2>
-          
+
           <div className="space-y-4 text-left">
             <div className="flex items-start gap-3">
               <div className="bg-primary/10 rounded-lg p-2 mt-0.5">
@@ -198,7 +260,7 @@ const ChallengeThanks = () => {
             <Share2 className="w-5 h-5 text-primary" />
             <h3 className="font-bold">Invite Friends, Multiply Blessings</h3>
           </div>
-          
+
           <p className="text-sm text-muted-foreground mb-4">
             The more people you bring, the bigger the blessing circle.
           </p>
@@ -221,7 +283,7 @@ const ChallengeThanks = () => {
             </Button>
           </div>
 
-          {/* Social Share Buttons - Priority: TikTok, Instagram, then others */}
+          {/* Social Share Buttons */}
           <div className="grid grid-cols-2 gap-2 mb-3">
             <Button
               variant="default"
@@ -252,19 +314,11 @@ const ChallengeThanks = () => {
               <YouTubeIcon />
               <span className="ml-1.5 text-xs">YouTube</span>
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={shareToTwitter}
-            >
+            <Button variant="outline" size="sm" onClick={shareToTwitter}>
               <TwitterIcon />
               <span className="ml-1.5 text-xs">X</span>
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={shareToFacebook}
-            >
+            <Button variant="outline" size="sm" onClick={shareToFacebook}>
               <FacebookIcon />
               <span className="ml-1.5 text-xs">Facebook</span>
             </Button>

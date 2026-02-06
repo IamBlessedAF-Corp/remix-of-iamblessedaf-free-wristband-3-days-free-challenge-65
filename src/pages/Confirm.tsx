@@ -1,29 +1,69 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, CheckCircle, Sparkles } from "lucide-react";
+import { Heart, CheckCircle, Sparkles, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 
 const Confirm = () => {
-  const [isConfirmed, setIsConfirmed] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const { token } = useParams<{ token: string }>();
+  const [status, setStatus] = useState<"loading" | "ready" | "confirming" | "confirmed" | "error">("loading");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [globalCount, setGlobalCount] = useState<number>(0);
 
-  // Placeholder blessing count - will be dynamic
-  const blessingCount = 12847;
+  useEffect(() => {
+    const init = async () => {
+      // Fetch global blessing count
+      const { data: countData } = await supabase.rpc("get_global_blessing_count");
+      if (countData !== null) {
+        setGlobalCount(countData);
+      }
+
+      // Check if we have a valid token
+      if (!token) {
+        setStatus("error");
+        setErrorMessage("Invalid confirmation link");
+        return;
+      }
+
+      setStatus("ready");
+    };
+
+    init();
+  }, [token]);
 
   const handleConfirm = async () => {
-    setIsAnimating(true);
-    
-    // Placeholder for GoHighLevel webhook trigger
-    if (import.meta.env.DEV) {
-      console.log("Blessing confirmed - triggering webhook");
+    if (!token) return;
+
+    setStatus("confirming");
+
+    try {
+      // Call the secure database function to confirm the blessing
+      const { data, error } = await supabase.rpc("confirm_blessing", {
+        token: token,
+      });
+
+      if (error) {
+        setStatus("error");
+        setErrorMessage("Something went wrong. Please try again.");
+        return;
+      }
+
+      const result = data as { success: boolean; error?: string; message?: string };
+
+      if (!result.success) {
+        setStatus("error");
+        setErrorMessage(result.error || "Unable to confirm blessing");
+        return;
+      }
+
+      setStatus("confirmed");
+      setGlobalCount((prev) => prev + 1);
+    } catch (err) {
+      setStatus("error");
+      setErrorMessage("Connection error. Please try again.");
     }
-    
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    
-    setIsConfirmed(true);
-    setIsAnimating(false);
   };
 
   return (
@@ -40,7 +80,44 @@ const Confirm = () => {
         />
 
         <AnimatePresence mode="wait">
-          {!isConfirmed ? (
+          {status === "loading" && (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col items-center"
+            >
+              <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mb-4" />
+              <p className="text-muted-foreground">Loading...</p>
+            </motion.div>
+          )}
+
+          {status === "error" && (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="text-center"
+            >
+              <div className="bg-destructive/10 rounded-full p-6 inline-block mb-6">
+                <AlertCircle className="w-12 h-12 text-destructive" />
+              </div>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+                Oops! 😅
+              </h1>
+              <p className="text-muted-foreground mb-8">{errorMessage}</p>
+              <Button
+                variant="outline"
+                onClick={() => (window.location.href = "/challenge")}
+              >
+                Join the Challenge
+              </Button>
+            </motion.div>
+          )}
+
+          {status === "ready" && (
             <motion.div
               key="confirm"
               initial={{ opacity: 0, y: 20 }}
@@ -57,26 +134,15 @@ const Confirm = () => {
               </p>
 
               {/* Confirm Button */}
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button
                   onClick={handleConfirm}
-                  disabled={isAnimating}
                   className="w-full h-20 text-xl font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl btn-glow transition-all duration-300"
                 >
-                  {isAnimating ? (
-                    <span className="flex items-center gap-3">
-                      <Sparkles className="w-6 h-6 animate-pulse" />
-                      Confirming...
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-3">
-                      <CheckCircle className="w-6 h-6" />
-                      Confirm Blessing ✅
-                    </span>
-                  )}
+                  <span className="flex items-center gap-3">
+                    <CheckCircle className="w-6 h-6" />
+                    Confirm Blessing ✅
+                  </span>
                 </Button>
               </motion.div>
 
@@ -89,11 +155,42 @@ const Confirm = () => {
               >
                 <Heart className="w-5 h-5 text-primary animate-pulse" />
                 <span className="text-sm">
-                  <strong className="text-foreground">{blessingCount.toLocaleString()}</strong> blessings confirmed worldwide
+                  <strong className="text-foreground">
+                    {globalCount.toLocaleString()}
+                  </strong>{" "}
+                  blessings confirmed worldwide
                 </span>
               </motion.div>
             </motion.div>
-          ) : (
+          )}
+
+          {status === "confirming" && (
+            <motion.div
+              key="confirming"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="text-center"
+            >
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+                Someone blessed you! 💫
+              </h1>
+              <p className="text-muted-foreground mb-8">
+                Tap below to confirm you received their gratitude message.
+              </p>
+              <Button
+                disabled
+                className="w-full h-20 text-xl font-bold bg-primary text-primary-foreground rounded-2xl"
+              >
+                <span className="flex items-center gap-3">
+                  <Sparkles className="w-6 h-6 animate-pulse" />
+                  Confirming...
+                </span>
+              </Button>
+            </motion.div>
+          )}
+
+          {status === "confirmed" && (
             <motion.div
               key="confirmed"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -109,7 +206,10 @@ const Confirm = () => {
                   style={{
                     left: "50%",
                     top: "50%",
-                    backgroundColor: i % 2 === 0 ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
+                    backgroundColor:
+                      i % 2 === 0
+                        ? "hsl(var(--primary))"
+                        : "hsl(var(--muted-foreground))",
                   }}
                   initial={{ x: 0, y: 0, opacity: 1 }}
                   animate={{
@@ -135,7 +235,7 @@ const Confirm = () => {
               <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
                 Blessing Confirmed! 🙏
               </h1>
-              
+
               <p className="text-lg text-muted-foreground mb-6">
                 You just made someone's day.
               </p>
@@ -148,7 +248,7 @@ const Confirm = () => {
                 <div className="flex items-center justify-center gap-2">
                   <Heart className="w-6 h-6 text-primary" />
                   <span className="text-2xl font-bold text-foreground">
-                    {(blessingCount + 1).toLocaleString()}
+                    {globalCount.toLocaleString()}
                   </span>
                   <span className="text-muted-foreground">blessings confirmed</span>
                 </div>
@@ -167,7 +267,7 @@ const Confirm = () => {
                 <Button
                   variant="outline"
                   className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                  onClick={() => window.location.href = "/challenge"}
+                  onClick={() => (window.location.href = "/challenge")}
                 >
                   Join the 3-Day Challenge
                 </Button>

@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      blessings: {
+        Row: {
+          confirmation_token: string
+          confirmed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          recipient_name: string | null
+          sender_id: string
+        }
+        Insert: {
+          confirmation_token?: string
+          confirmed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          recipient_name?: string | null
+          sender_id: string
+        }
+        Update: {
+          confirmation_token?: string
+          confirmed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          recipient_name?: string | null
+          sender_id?: string
+        }
+        Relationships: []
+      }
       creator_profiles: {
         Row: {
           blessings_confirmed: number
@@ -61,7 +91,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      confirm_blessing: { Args: { token: string }; Returns: Json }
       generate_referral_code: { Args: never; Returns: string }
+      get_global_blessing_count: { Args: never; Returns: number }
     }
     Enums: {
       [_ in never]: never
