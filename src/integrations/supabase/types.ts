@@ -14,13 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      creator_profiles: {
+        Row: {
+          blessings_confirmed: number
+          created_at: string
+          display_name: string | null
+          email: string
+          id: string
+          instagram_handle: string | null
+          referral_code: string
+          tiktok_handle: string | null
+          twitter_handle: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          blessings_confirmed?: number
+          created_at?: string
+          display_name?: string | null
+          email: string
+          id?: string
+          instagram_handle?: string | null
+          referral_code: string
+          tiktok_handle?: string | null
+          twitter_handle?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          blessings_confirmed?: number
+          created_at?: string
+          display_name?: string | null
+          email?: string
+          id?: string
+          instagram_handle?: string | null
+          referral_code?: string
+          tiktok_handle?: string | null
+          twitter_handle?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_referral_code: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
