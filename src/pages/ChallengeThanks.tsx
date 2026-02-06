@@ -121,7 +121,7 @@ const ChallengeThanks = () => {
         <motion.img
           src={logo}
           alt="I am Blessed AF"
-          className="w-20 h-20 object-contain mx-auto mb-6"
+          className="w-full max-w-md h-auto object-contain mx-auto mb-6 px-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}

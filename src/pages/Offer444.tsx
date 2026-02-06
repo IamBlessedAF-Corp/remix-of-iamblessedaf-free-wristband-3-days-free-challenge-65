@@ -50,7 +50,7 @@ const Offer444 = () => {
             <img
               src={logo}
               alt="I am Blessed AF"
-              className="w-24 h-24 object-contain mx-auto mb-6"
+              className="w-full max-w-sm h-auto object-contain mx-auto mb-6"
             />
             <span className="text-primary font-semibold text-sm uppercase tracking-wider">
               Habit Lock Pack

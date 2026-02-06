@@ -78,7 +78,7 @@ const Challenge = () => {
             <motion.img
               src={logo}
               alt="I am Blessed AF"
-              className="w-32 h-32 md:w-40 md:h-40 object-contain mb-6"
+              className="w-full max-w-md h-auto object-contain mb-6 px-4"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
