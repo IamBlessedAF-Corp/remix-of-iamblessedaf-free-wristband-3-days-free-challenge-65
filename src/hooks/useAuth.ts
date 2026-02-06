@@ -38,14 +38,11 @@ export function useAuth() {
 
   const signInWithGoogle = async () => {
     try {
-      const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/make-2500-with-1-ai-clip`,
-        },
+      const { lovable } = await import("@/integrations/lovable/index");
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
       });
-      return { error };
+      return { error: result.error };
     } catch (error) {
       return { error };
     }
