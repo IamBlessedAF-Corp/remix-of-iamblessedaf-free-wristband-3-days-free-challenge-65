@@ -41,7 +41,9 @@ const Challenge = () => {
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
     // Webhook placeholder for GoHighLevel integration
-    console.log("Form submitted:", data);
+    if (import.meta.env.DEV) {
+      console.log("Form submitted:", data);
+    }
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSubmitting(false);
@@ -50,7 +52,9 @@ const Challenge = () => {
 
   const handleGoogleSignup = () => {
     // Placeholder for Google OAuth - will integrate with Supabase
-    console.log("Google signup clicked");
+    if (import.meta.env.DEV) {
+      console.log("Google signup clicked");
+    }
     navigate("/challenge/thanks");
   };
 

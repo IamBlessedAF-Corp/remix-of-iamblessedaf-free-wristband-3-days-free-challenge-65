@@ -6,7 +6,9 @@ import logo from "@/assets/logo.png";
 const OfferMonthly = () => {
   const handleCheckout = () => {
     // Placeholder for Stripe subscription checkout
-    console.log("Redirecting to Stripe subscription for $11/mo");
+    if (import.meta.env.DEV) {
+      console.log("Redirecting to Stripe subscription for $11/mo");
+    }
   };
 
   const benefits = [

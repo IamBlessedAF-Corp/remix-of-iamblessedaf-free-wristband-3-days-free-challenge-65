@@ -6,7 +6,9 @@ import logo from "@/assets/logo.png";
 const Offer444 = () => {
   const handleCheckout = () => {
     // Placeholder for Stripe checkout
-    console.log("Redirecting to Stripe checkout for $444 pack");
+    if (import.meta.env.DEV) {
+      console.log("Redirecting to Stripe checkout for $444 pack");
+    }
   };
 
   const benefits = [

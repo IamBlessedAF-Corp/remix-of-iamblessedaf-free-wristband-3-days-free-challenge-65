@@ -6,7 +6,9 @@ import logo from "@/assets/logo.png";
 const Offer22 = () => {
   const handleCheckout = () => {
     // Placeholder for Stripe checkout
-    console.log("Redirecting to Stripe checkout for $22 pack");
+    if (import.meta.env.DEV) {
+      console.log("Redirecting to Stripe checkout for $22 pack");
+    }
     // window.location.href = stripeCheckoutUrl;
   };
 
