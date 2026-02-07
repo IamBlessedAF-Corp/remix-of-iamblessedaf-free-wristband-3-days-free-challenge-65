@@ -46,6 +46,13 @@ const Offer111 = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
+            <p className="text-center text-2xl md:text-3xl font-black text-primary mb-1">
+              This is why IamBlessedAF starts with the most powerful words
+            </p>
+            <p className="text-center text-4xl md:text-5xl font-black text-primary mb-2">
+              "I AM"
+            </p>
+
             <div className="overflow-hidden -my-6">
               <img
                 src={logo}
