@@ -257,6 +257,27 @@ const Offer111 = () => {
             </p>
           </motion.div>
 
+          {/* Trust Disclaimer */}
+          <motion.div
+            className="mb-8 mt-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.65 }}
+          >
+            <div className="border border-border/50 rounded-xl p-5 space-y-3 bg-card">
+              <div className="flex items-center justify-center gap-2 text-sm font-semibold text-foreground">
+                <span>✅</span>
+                <span>30-Day Money-Back Guarantee — No questions asked</span>
+              </div>
+              <div className="h-px bg-border/40" />
+              <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground text-center">
+                <p>🔒 256-bit SSL Encrypted · Secure Payment · Your data is never shared</p>
+                <p>📦 100% Satisfaction Guaranteed · Free Intl Shipping · 7–14 day delivery</p>
+                <p>💳 One-time payment. No subscriptions. No hidden fees.</p>
+              </div>
+            </div>
+          </motion.div>
+
           {/* Skip Link */}
           <motion.div
             className="text-center"
