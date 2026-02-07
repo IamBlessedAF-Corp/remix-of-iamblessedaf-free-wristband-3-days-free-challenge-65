@@ -46,8 +46,8 @@ const Offer111 = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <p className="text-center text-2xl md:text-3xl font-black text-primary mb-1">
-              This is why IamBlessedAF starts with the most powerful words
+            <p className="text-center text-2xl md:text-3xl font-bold text-foreground mb-1 leading-tight">
+              This is why <span className="text-primary">IamBlessedAF</span> starts with the most powerful words
             </p>
             <p className="text-center text-4xl md:text-5xl font-black text-primary mb-2">
               "I AM"
