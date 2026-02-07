@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import { Crown, ArrowRight, Lock, ChevronDown } from "lucide-react";
+import { Crown, ArrowRight, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import ResearchList from "@/components/offer/ResearchList";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import GratitudeIntro from "@/components/offer/GratitudeIntro";
 import DiscountBanner from "@/components/offer/DiscountBanner";
@@ -201,88 +201,7 @@ const Offer111 = () => {
           </motion.div>
 
           {/* Research List */}
-          <motion.div
-            className="text-left max-w-lg mx-auto mt-12 mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5 }}
-          >
-            <Collapsible>
-              <CollapsibleTrigger className="w-full group">
-                <h3 className="text-lg md:text-xl font-bold text-foreground text-center mb-2 flex items-center justify-center gap-2">
-                  📚 Science of Gratitude — Research List (Huberman Lab)
-                  <ChevronDown className="w-5 h-5 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                </h3>
-                <p className="text-xs text-muted-foreground mb-4">Tap to expand</p>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <div className="space-y-5 mt-4">
-                  {[
-                    {
-                      title: "Conscious Processing of Narrative Stimulates Synchronization of Heart Rate Between Individuals",
-                      year: "2017",
-                      authors: "Pérez et al.",
-                      keyphrase: "Narrative synchronizes heart rate and physiology across individuals.",
-                    },
-                    {
-                      title: "Prefrontal Activation While Listening to a Letter of Gratitude Read Aloud by a Coworker: A NIRS Study",
-                      year: "2014",
-                      authors: "Fox et al.",
-                      keyphrase: "Receiving gratitude activates the prefrontal cortex more than expressing it.",
-                    },
-                    {
-                      title: "Neural Responses to Intention and Benefit Appraisal Are Critical in Distinguishing Gratitude and Joy",
-                      year: "2018",
-                      authors: "Yu et al.",
-                      keyphrase: "The brain detects genuine gratitude; intention matters more than the reward.",
-                    },
-                    {
-                      title: "Effects of Gratitude Meditation on Neural Network Functional Connectivity and Brain–Heart Coupling",
-                      year: "2020",
-                      authors: "Kral et al.",
-                      keyphrase: "Repeated gratitude reshapes emotion, fear, and motivation circuits.",
-                    },
-                    {
-                      title: "Exploring Neural Mechanisms of the Health Benefits of Gratitude in Women: A Randomized Controlled Trial",
-                      year: "2021",
-                      authors: "Hazlitt et al.",
-                      keyphrase: "Gratitude reduces amygdala activity and inflammatory markers (TNF-α, IL-6).",
-                    },
-                    {
-                      title: "Neural Correlates of Gratitude",
-                      year: "2015",
-                      authors: "Antonio Damasio et al.",
-                      keyphrase: "Gratitude activates medial prefrontal and anterior cingulate cortex.",
-                    },
-                    {
-                      title: "Counting Blessings Versus Burdens: An Experimental Investigation of Gratitude and Subjective Well-Being",
-                      year: "2003",
-                      authors: "Emmons & McCullough",
-                      keyphrase: "Weekly gratitude practice produces lasting wellbeing improvements.",
-                    },
-                    {
-                      title: "The Happiness Advantage (Applied Research, Positive Psychology)",
-                      year: "2010",
-                      authors: "Shawn Achor",
-                      keyphrase: "Gratitude is one of the fastest interventions to increase happiness and performance.",
-                    },
-                  ].map((study, i) => (
-                    <div key={i} className="bg-card border border-border/50 rounded-xl p-4 shadow-soft">
-                      <p className="text-sm font-semibold text-foreground leading-snug mb-1">
-                        {study.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground mb-1">
-                        {study.year} — {study.authors}
-                      </p>
-                      <p className="text-xs italic text-muted-foreground">
-                        Keyphrase: {study.keyphrase}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          </motion.div>
+          <ResearchList delay={1.5} />
 
           {/* CTA after research */}
           <motion.div
