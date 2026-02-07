@@ -44,11 +44,8 @@ const GratitudeIntro = () => {
         This is Why we want to send your Best Friend this Shirt with a Custom Message from You!
       </p>
 
-      {/* Custom Message Box */}
-      <CustomMessageBox />
-
-      {/* Friend Shirt showcase after Tony Robbins quote */}
-      <FriendShirtSection delay={0.15} />
+      {/* Friend Shirt showcase with Custom Message Box embedded */}
+      <FriendShirtSection delay={0.15} afterHeroSlot={<CustomMessageBox />} />
 
       <p className="text-2xl md:text-3xl font-black text-primary text-center mb-4">
         Claim your FREE Shirt + with Custom Message for Your Best Friend

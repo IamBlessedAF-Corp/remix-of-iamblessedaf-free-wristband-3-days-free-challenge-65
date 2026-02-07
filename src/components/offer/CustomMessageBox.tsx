@@ -31,7 +31,7 @@ const CustomMessageBox = () => {
 
   return (
     <motion.div
-      className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-4 shadow-soft"
+      className="max-w-lg mx-auto"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.12 }}
