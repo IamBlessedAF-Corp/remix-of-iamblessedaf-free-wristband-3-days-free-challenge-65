@@ -45,11 +45,10 @@ const Offer111 = () => {
             <img
               src={logo}
               alt="I am Blessed AF"
-              className="w-full max-w-sm h-auto object-contain mx-auto mb-1"
+              className="w-full max-w-sm h-auto object-contain mx-auto mb-2"
             />
-            <p className="text-lg font-bold text-foreground mb-2">Gratitude Pack</p>
             <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-4 leading-relaxed">
-              Co-created alongside a PhD neuroscientist, IamBlessedAF is the result of 7+ years of research and experimentation focused on designing conversation triggers that naturally evoke gratitude.
+              IamBlessedAF is the result of 7+ years of research and experimentation, Co-created alongside a PhD neuroscientist and focused on designing conversation triggers that naturally evoke gratitude.
             </p>
 
             {/* Discount inline */}
