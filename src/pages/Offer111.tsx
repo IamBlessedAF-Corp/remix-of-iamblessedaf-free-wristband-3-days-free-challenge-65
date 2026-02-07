@@ -8,6 +8,7 @@ import DiscountBanner from "@/components/offer/DiscountBanner";
 import ProductSections from "@/components/offer/ProductSections";
 import logo from "@/assets/logo.png";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
+import OfferTimer from "@/components/offer/OfferTimer";
 
 const Offer111 = () => {
   const handleCheckout = () => {
@@ -63,9 +64,11 @@ const Offer111 = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
+            <p className="text-center text-3xl md:text-4xl font-black text-primary mb-2">
               77% OFF TODAY
             </p>
+            <OfferTimer />
+            <div className="h-3" />
             <Button
               onClick={handleCheckout}
               className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
@@ -105,6 +108,8 @@ const Offer111 = () => {
                 <div className="text-center mb-6">
                   <DiscountBanner />
                 </div>
+                <OfferTimer />
+                <div className="h-3" />
                 <Button
                   onClick={handleCheckout}
                   className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
@@ -185,6 +190,8 @@ const Offer111 = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.45 }}
           >
+            <OfferTimer />
+            <div className="h-3" />
             <Button
               onClick={handleCheckout}
               className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
@@ -216,6 +223,8 @@ const Offer111 = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.6 }}
           >
+            <OfferTimer />
+            <div className="h-3" />
             <Button
               onClick={handleCheckout}
               className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
