@@ -120,7 +120,7 @@ const Offer444 = () => {
                   <span className="text-muted-foreground text-lg">one-time</span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
-                  + Priority express shipping worldwide
+                  + Free US Shipping · International $14.95 Flat
                 </p>
               </div>
 
