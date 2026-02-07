@@ -24,9 +24,9 @@ const VALUES = [
   },
   {
     emoji: "❤️",
-    title: "44 Meals Donated Instantly",
+    title: "1,111 Meals Donated Instantly",
     description:
-      "Turn your worst day into 44 people's best meal. That's not a purchase — it's a legacy move.",
+      "Turn your worst day into 1,111 people's best meal. That's not a purchase — it's a legacy move.",
     sub: "Backed by Feeding America",
   },
   {

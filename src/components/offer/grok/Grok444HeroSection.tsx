@@ -33,7 +33,7 @@ const Grok444HeroSection = () => {
             every interaction
           </span>
           , and{" "}
-          <span className="font-bold text-primary">44 meals donated</span>{" "}
+          <span className="font-bold text-primary">1,111 meals donated</span>{" "}
           instantly.
         </p>
       </div>
