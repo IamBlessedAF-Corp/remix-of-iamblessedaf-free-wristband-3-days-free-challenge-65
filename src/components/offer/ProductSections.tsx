@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import ImageZoomModal from "./ImageZoomModal";
 import productTshirtFront from "@/assets/product-tshirt-front.webp";
 import productTshirtBack from "@/assets/product-tshirt-back.webp";
+import productTshirtVideo1 from "@/assets/product-tshirt-video1.mp4";
+import productTshirtVideo2 from "@/assets/product-tshirt-video2.mp4";
 import productFriendShirt from "@/assets/product-friend-shirt.png";
 import productWristbands from "@/assets/product-wristbands.avif";
 
@@ -36,21 +38,34 @@ const Thumbnail = ({
   alt,
   active,
   onClick,
+  isVideo,
 }: {
   src: string;
   alt: string;
   active: boolean;
   onClick: () => void;
+  isVideo?: boolean;
 }) => (
   <button
     onClick={onClick}
-    className={`w-16 h-16 md:w-20 md:h-20 rounded-none border-2 overflow-hidden transition-all flex-shrink-0 ${
+    className={`w-16 h-16 md:w-20 md:h-20 rounded-none border-2 overflow-hidden transition-all flex-shrink-0 relative ${
       active
         ? "border-foreground"
         : "border-border/50 hover:border-foreground/40"
     }`}
   >
-    <img src={src} alt={alt} className="w-full h-full object-cover" />
+    {isVideo ? (
+      <>
+        <video src={src} className="w-full h-full object-cover" muted preload="metadata" />
+        <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+          <div className="w-5 h-5 rounded-full bg-white/90 flex items-center justify-center">
+            <div className="w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-l-[6px] border-l-foreground ml-0.5" />
+          </div>
+        </div>
+      </>
+    ) : (
+      <img src={src} alt={alt} className="w-full h-full object-cover" />
+    )}
   </button>
 );
 
@@ -60,14 +75,16 @@ const Thumbnail = ({
 const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
   const [zoomed, setZoomed] = useState(false);
   const [zoomedImage, setZoomedImage] = useState("");
-  const [view, setView] = useState<"front" | "back">("front");
+  const [activeIndex, setActiveIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState("M");
 
-  const images = [
-    { key: "front" as const, src: productTshirtFront, label: "Front" },
-    { key: "back" as const, src: productTshirtBack, label: "Back" },
+  const media = [
+    { type: "image" as const, src: productTshirtFront, label: "Front" },
+    { type: "image" as const, src: productTshirtBack, label: "Back" },
+    { type: "video" as const, src: productTshirtVideo1, label: "Video 1" },
+    { type: "video" as const, src: productTshirtVideo2, label: "Video 2" },
   ];
-  const currentImage = view === "front" ? productTshirtFront : productTshirtBack;
+  const current = media[activeIndex];
 
   const handleZoom = (img: string) => {
     setZoomedImage(img);
@@ -90,37 +107,54 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
         transition={{ duration: 0.5, delay }}
       >
         <div className="bg-card rounded-none border border-border/60 overflow-hidden">
-          {/* Image gallery */}
+          {/* Media gallery */}
           <div className="relative bg-secondary/30">
             <div
-              className="cursor-zoom-in aspect-square flex items-center justify-center p-4"
-              onClick={() => handleZoom(currentImage)}
+              className={`${current.type === "image" ? "cursor-zoom-in" : ""} aspect-square flex items-center justify-center p-4`}
+              onClick={() => current.type === "image" && handleZoom(current.src)}
             >
               <AnimatePresence mode="wait">
-                <motion.img
-                  key={view}
-                  src={currentImage}
-                  alt={`T-Shirt ${view}`}
-                  className="max-w-full max-h-full object-contain"
-                  loading="lazy"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                />
+                {current.type === "image" ? (
+                  <motion.img
+                    key={activeIndex}
+                    src={current.src}
+                    alt={`T-Shirt ${current.label}`}
+                    className="max-w-full max-h-full object-contain"
+                    loading="lazy"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  />
+                ) : (
+                  <motion.video
+                    key={activeIndex}
+                    src={current.src}
+                    className="max-w-full max-h-full object-contain rounded-lg"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  />
+                )}
               </AnimatePresence>
             </div>
           </div>
 
           {/* Thumbnails */}
           <div className="flex gap-2 px-4 py-3 border-t border-border/30">
-            {images.map((img) => (
+            {media.map((item, idx) => (
               <Thumbnail
-                key={img.key}
-                src={img.src}
-                alt={img.label}
-                active={view === img.key}
-                onClick={() => setView(img.key)}
+                key={idx}
+                src={item.src}
+                alt={item.label}
+                active={activeIndex === idx}
+                onClick={() => setActiveIndex(idx)}
+                isVideo={item.type === "video"}
               />
             ))}
           </div>
