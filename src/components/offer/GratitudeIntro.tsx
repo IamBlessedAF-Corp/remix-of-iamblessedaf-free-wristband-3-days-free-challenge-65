@@ -9,13 +9,6 @@ const GratitudeIntro = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
     >
-      {/* Headline */}
-      <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 leading-tight">
-        <span className="text-3xl md:text-4xl">🎉</span> Congrats! You Gave the 1st Step to Rewire Your{" "}
-        <span className="text-primary">BRAIN</span> to Feel Happier!{" "}
-        <span className="text-3xl md:text-4xl">🧠</span>
-      </h2>
-
       {/* Quotes */}
       <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-4 shadow-soft">
         <p className="text-sm md:text-base italic text-foreground leading-relaxed">
@@ -25,6 +18,13 @@ const GratitudeIntro = () => {
           — Tony Robbins
         </footer>
       </blockquote>
+
+      {/* Headline */}
+      <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 leading-tight">
+        <span className="text-3xl md:text-4xl">🎉</span> Congrats! You Gave the 1st Step to Rewire Your{" "}
+        <span className="text-primary">BRAIN</span> to Feel Happier!{" "}
+        <span className="text-3xl md:text-4xl">🧠</span>
+      </h2>
 
       <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-4 shadow-soft">
         <p className="text-sm md:text-base italic text-foreground leading-relaxed">
