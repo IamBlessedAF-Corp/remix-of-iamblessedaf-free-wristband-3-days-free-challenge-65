@@ -97,7 +97,7 @@ const Offer111 = () => {
               Gratitude makes you feel the emotion of <span className="font-bold text-foreground">Joy</span>.
             </p>
             <p className="text-xl md:text-2xl font-bold text-primary mb-6 max-w-lg mx-auto">
-              THAT'S 27x HAPPIER
+              Hack your Brain to feel up 27x HAPPIER
             </p>
 
             {/* Hawkins Emotional Guidance Scale */}
