@@ -56,15 +56,12 @@ const Offer111 = () => {
             <DiscountBanner />
           </motion.div>
 
-          {/* Product Sections */}
-          <ProductSections />
-
-          {/* CTA */}
+          {/* CTA before products */}
           <motion.div
-            className="mt-10 mb-6"
+            className="mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
+            transition={{ delay: 0.3 }}
           >
             <Button
               onClick={handleCheckout}
@@ -79,6 +76,9 @@ const Offer111 = () => {
               🔒 Secure checkout • FREE Shipping
             </p>
           </motion.div>
+
+          {/* Product Sections */}
+          <ProductSections />
 
           {/* Science Section — moved below CTA */}
           <motion.div
