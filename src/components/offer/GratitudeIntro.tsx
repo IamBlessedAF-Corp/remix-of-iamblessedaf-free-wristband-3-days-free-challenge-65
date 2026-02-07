@@ -1,4 +1,6 @@
 import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { FriendShirtSection } from "@/components/offer/ProductSections";
 
 const GratitudeIntro = () => {
@@ -47,6 +49,13 @@ const GratitudeIntro = () => {
       <p className="text-2xl md:text-3xl font-black text-primary text-center mb-4">
         Claim your FREE Shirt + with Custom Message for Your Best Friend
       </p>
+
+      <Button
+        className="w-full max-w-lg mx-auto h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl mb-4"
+      >
+        Claim My FREE Custom Shirt Here
+        <ArrowRight className="w-5 h-5 ml-2" />
+      </Button>
 
       {/* Huberman Video Clip — between quotes */}
       <p className="text-sm md:text-base italic text-muted-foreground max-w-lg mx-auto mb-3 leading-relaxed">
