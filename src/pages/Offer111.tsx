@@ -200,6 +200,23 @@ const Offer111 = () => {
             <RiskReversalGuarantee />
           </motion.div>
 
+          {/* 77% OFF badge above Research */}
+          <motion.div
+            className="max-w-lg mx-auto mb-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.48 }}
+          >
+            <div className="bg-card border border-border/50 rounded-2xl p-5 shadow-soft">
+              <div className="flex items-center justify-center gap-2.5">
+                <Crown className="w-5 h-5 text-primary" />
+                <h3 className="text-base md:text-lg font-bold text-foreground">
+                  77% OFF TODAY
+                </h3>
+              </div>
+            </div>
+          </motion.div>
+
           {/* Research List */}
           <ResearchList delay={1.5} />
 
