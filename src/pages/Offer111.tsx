@@ -72,7 +72,7 @@ const Offer111 = () => {
             </Button>
 
             <p className="text-center text-xs text-muted-foreground mt-4">
-              🔒 Secure checkout • Ships within 48 hours
+              🔒 Secure checkout • FREE Shipping
             </p>
           </motion.div>
 
