@@ -217,6 +217,11 @@ const Offer111 = () => {
             </div>
           </motion.div>
 
+          {/* Backed by Science title */}
+          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4 mt-8">
+            Backed by Science
+          </p>
+
           {/* Research List */}
           <ResearchList delay={1.5} />
 
