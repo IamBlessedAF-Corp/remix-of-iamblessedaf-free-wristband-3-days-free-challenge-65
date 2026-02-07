@@ -5,6 +5,7 @@ import { FriendShirtSection } from "@/components/offer/ProductSections";
 import CustomMessageBox from "@/components/offer/CustomMessageBox";
 import OfferTimer from "@/components/offer/OfferTimer";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
+import AuthorAvatar from "@/components/offer/AuthorAvatar";
 
 const GratitudeIntro = () => {
 
@@ -28,7 +29,8 @@ const GratitudeIntro = () => {
           <br /><br />
           ...Receiving gratitude is actually much more potent, in terms of the positive shifts that that can create, than giving gratitude."
         </p>
-        <footer className="mt-2 text-xs md:text-sm text-muted-foreground font-semibold">
+        <footer className="mt-3 flex items-center justify-center gap-2 text-xs md:text-sm text-muted-foreground font-semibold">
+          <AuthorAvatar author="huberman" />
           — Andrew Huberman - Stanford Neuroscientist
         </footer>
       </blockquote>
@@ -68,7 +70,8 @@ const GratitudeIntro = () => {
         <p className="text-sm md:text-base italic text-foreground leading-relaxed">
           "Gratitude is the fastest & repeatable way to shift emotional state by changing physiology and perception. Make it a daily ritual."
         </p>
-        <footer className="mt-2 text-xs md:text-sm text-muted-foreground font-semibold">
+        <footer className="mt-3 flex items-center justify-center gap-2 text-xs md:text-sm text-muted-foreground font-semibold">
+          <AuthorAvatar author="tony-robbins" />
           — Tony Robbins
         </footer>
       </blockquote>
@@ -104,7 +107,8 @@ const GratitudeIntro = () => {
         <p className="text-sm md:text-base italic text-foreground leading-relaxed">
           "Most people live in survival emotions like fear, anger, guilt, shame"
         </p>
-        <footer className="mt-2 text-xs md:text-sm text-muted-foreground font-semibold">
+        <footer className="mt-3 flex items-center justify-center gap-2 text-xs md:text-sm text-muted-foreground font-semibold">
+          <AuthorAvatar author="joe-dispenza" />
           — Dr Joe Dispenza
         </footer>
       </blockquote>
