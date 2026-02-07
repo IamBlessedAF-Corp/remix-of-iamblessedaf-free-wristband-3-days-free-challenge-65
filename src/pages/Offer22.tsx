@@ -3,7 +3,6 @@ import { Crown, ArrowRight, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ResearchList from "@/components/offer/ResearchList";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
-import GratitudeIntro from "@/components/offer/GratitudeIntro";
 import WristbandDiscountBanner from "@/components/offer/WristbandDiscountBanner";
 import WristbandProductCard from "@/components/offer/WristbandProductCard";
 import logo from "@/assets/logo.png";
@@ -33,51 +32,27 @@ const Offer22 = () => {
             </div>
           </motion.div>
 
-          {/* Gratitude Intro Section */}
-          <GratitudeIntro />
-
-          {/* Logo + intro */}
+          {/* Gratitude Intro — condensed for $22 offer */}
           <motion.div
             className="text-center mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <div className="overflow-hidden -my-6">
-              <img
-                src={logo}
-                alt="I am Blessed AF"
-                className="w-full max-w-sm h-auto object-contain mx-auto"
-              />
-            </div>
-            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-4 leading-relaxed">
-              IamBlessedAF is the result of 7+ years of research and experimentation, Co-created alongside a PhD neuroscientist and focused on designing conversation triggers that naturally evoke gratitude.
-            </p>
-          </motion.div>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 leading-tight">
+              <span className="text-3xl md:text-4xl">🎉</span> Congrats! You Gave the 1st Step to Rewire Your{" "}
+              <span className="text-primary">BRAIN</span> to Feel Happier!{" "}
+              <span className="text-3xl md:text-4xl">🧠</span>
+            </h2>
 
-          {/* CTA before product */}
-          <motion.div
-            className="mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
-              33% OFF TODAY
-            </p>
-            <Button
-              onClick={handleCheckout}
-              className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
-            >
-              <Crown className="w-5 h-5 mr-2" />
-              Claim Your Wristbands
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-
-            <p className="text-center text-xs text-muted-foreground mt-4">
-              🔒 Secure checkout • FREE Shipping
-            </p>
-            <RiskReversalGuarantee />
+            <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-4 shadow-soft">
+              <p className="text-sm md:text-base italic text-foreground leading-relaxed">
+                "Gratitude is the fastest & repeatable way to shift emotional state by changing physiology and perception. Make it a daily ritual."
+              </p>
+              <footer className="mt-2 text-xs md:text-sm text-muted-foreground font-semibold">
+                — Tony Robbins
+              </footer>
+            </blockquote>
           </motion.div>
 
           {/* Product heading */}
