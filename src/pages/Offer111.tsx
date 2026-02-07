@@ -61,6 +61,9 @@ const Offer111 = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
+            <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
+              77% OFF TODAY
+            </p>
             <Button
               onClick={handleCheckout}
               className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"

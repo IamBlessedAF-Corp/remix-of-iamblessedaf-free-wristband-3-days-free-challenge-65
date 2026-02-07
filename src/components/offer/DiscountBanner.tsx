@@ -2,11 +2,7 @@ import { motion } from "framer-motion";
 
 const DiscountBanner = () => {
   return (
-    <div className="space-y-4">
-      {/* 77% OFF */}
-      <p className="text-5xl md:text-6xl font-black text-primary leading-none">
-        77% OFF
-      </p>
+    <div>
 
       {/* Value proposition + price */}
       <div className="flex items-center justify-center gap-4">
