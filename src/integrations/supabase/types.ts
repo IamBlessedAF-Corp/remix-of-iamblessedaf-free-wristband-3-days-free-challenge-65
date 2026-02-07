@@ -88,7 +88,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      creator_profiles_public: {
+        Row: {
+          blessings_confirmed: number | null
+          created_at: string | null
+          display_name: string | null
+          id: string | null
+          referral_code: string | null
+          user_id: string | null
+        }
+        Insert: {
+          blessings_confirmed?: number | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string | null
+          referral_code?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          blessings_confirmed?: number | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string | null
+          referral_code?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       confirm_blessing: { Args: { token: string }; Returns: Json }

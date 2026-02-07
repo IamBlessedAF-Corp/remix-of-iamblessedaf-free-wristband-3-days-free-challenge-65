@@ -39,18 +39,18 @@ const Confirm = () => {
     setStatus("confirming");
 
     try {
-      // Call the secure database function to confirm the blessing
-      const { data, error } = await supabase.rpc("confirm_blessing", {
-        token: token,
+      // Call the rate-limited edge function to confirm the blessing
+      const response = await supabase.functions.invoke("confirm-blessing", {
+        body: { token },
       });
 
-      if (error) {
+      if (response.error) {
         setStatus("error");
         setErrorMessage("Something went wrong. Please try again.");
         return;
       }
 
-      const result = data as { success: boolean; error?: string; message?: string };
+      const result = response.data as { success: boolean; error?: string; message?: string };
 
       if (!result.success) {
         setStatus("error");
