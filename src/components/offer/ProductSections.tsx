@@ -225,11 +225,11 @@ const FriendShirtSection = ({ delay = 0 }: { delay?: number }) => {
   const [selectedSize, setSelectedSize] = useState("M");
 
   const media = [
-    { type: "video" as const, src: friendShirtVideo, label: "Video" },
     { type: "image" as const, src: friendShirtFront, label: "Front" },
     { type: "image" as const, src: friendShirtBack, label: "Back" },
     { type: "image" as const, src: friendShirtModel2, label: "Model 2" },
     { type: "image" as const, src: friendShirtModel3, label: "Model 3" },
+    { type: "video" as const, src: friendShirtVideo, label: "Video" },
   ];
   const safeIndex = activeIndex >= media.length ? 0 : activeIndex;
   const current = media[safeIndex];
