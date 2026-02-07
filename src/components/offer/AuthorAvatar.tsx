@@ -39,8 +39,8 @@ const AuthorAvatar = ({ author }: { author: AuthorKey }) => {
   const { src, fallback, alt, name, title, handle, followers } = AUTHORS[author];
 
   return (
-    <div className="flex items-center gap-3 py-1">
-      <Avatar className="h-14 w-14 border-2 border-border/50 shrink-0">
+    <div className="flex items-center justify-center gap-3 py-1">
+      <Avatar className="h-[4.2rem] w-[4.2rem] border-2 border-border/50 shrink-0">
         <AvatarImage src={src} alt={alt} className="object-cover" />
         <AvatarFallback className="text-sm font-bold">{fallback}</AvatarFallback>
       </Avatar>
