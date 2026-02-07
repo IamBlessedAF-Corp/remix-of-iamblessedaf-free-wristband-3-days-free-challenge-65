@@ -26,10 +26,10 @@ const GratitudeIntro = () => {
       {/* Quotes */}
       <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-4 shadow-soft">
         <p className="text-sm md:text-base italic text-foreground leading-relaxed">
-          "Most people live in survival emotions like fear, anger, guilt, shame"
+          "Gratitude is the fastest & repeatable way to shift emotional state by changing physiology and perception. Make it a daily ritual."
         </p>
         <footer className="mt-2 text-xs md:text-sm text-muted-foreground font-semibold">
-          — Dr Joe Dispenza
+          — Tony Robbins
         </footer>
       </blockquote>
 
@@ -62,10 +62,10 @@ const GratitudeIntro = () => {
 
       <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-6 shadow-soft">
         <p className="text-sm md:text-base italic text-foreground leading-relaxed">
-          "Gratitude is the fastest & repeatable way to shift emotional state by changing physiology and perception. Make it a daily ritual."
+          "Most people live in survival emotions like fear, anger, guilt, shame"
         </p>
         <footer className="mt-2 text-xs md:text-sm text-muted-foreground font-semibold">
-          — Tony Robbins
+          — Dr Joe Dispenza
         </footer>
       </blockquote>
 
