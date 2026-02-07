@@ -26,6 +26,17 @@ const GratitudeIntro = () => {
         </footer>
       </blockquote>
 
+      <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-4 shadow-soft">
+        <p className="text-sm md:text-base italic text-foreground leading-relaxed">
+          "It turns out that the most potent form of gratitude practice is not a gratitude practice where you give gratitude or express gratitude, but rather where you receive gratitude, where you receive thanks.
+          <br /><br />
+          ...Receiving gratitude is actually much more potent, in terms of the positive shifts that that can create, than giving gratitude."
+        </p>
+        <footer className="mt-2 text-xs md:text-sm text-muted-foreground font-semibold">
+          — Andrew Huberman - Stanford Neuroscientist
+        </footer>
+      </blockquote>
+
       <p className="text-2xl md:text-3xl font-black text-primary text-center mb-4">
         Claim your FREE Shirt + with Custom Message for Your Best Friend
       </p>
