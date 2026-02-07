@@ -74,6 +74,11 @@ const GratitudeIntro = () => {
       </blockquote>
 
       {/* Huberman Video Clip */}
+      <p className="text-sm md:text-base italic text-muted-foreground max-w-lg mx-auto mb-3 leading-relaxed">
+        "The Biggest Surprise in researching since i started the podcast is how GRATITUDE skyrocket{" "}
+        <span className="font-bold text-foreground">DOPAMINE</span> &{" "}
+        <span className="font-bold text-foreground">SEROTONIN</span>..."
+      </p>
       <motion.div
         className="max-w-lg mx-auto mb-6 rounded-2xl overflow-hidden border border-border/50 shadow-soft"
         initial={{ opacity: 0, scale: 0.95 }}
