@@ -81,6 +81,9 @@ const Offer111 = () => {
           </motion.div>
 
           {/* Product Sections */}
+          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
+            GRATITUDE PACK
+          </p>
           <ProductSections />
 
           {/* Science Section — moved below CTA */}
