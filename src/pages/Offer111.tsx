@@ -9,6 +9,7 @@ import ProductSections from "@/components/offer/ProductSections";
 import logo from "@/assets/logo.png";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
 import OfferTimer from "@/components/offer/OfferTimer";
+import AuthorAvatar from "@/components/offer/AuthorAvatar";
 
 const Offer111 = () => {
   const handleCheckout = () => {
@@ -93,7 +94,8 @@ const Offer111 = () => {
             <p className="text-sm md:text-base italic text-foreground leading-relaxed">
               "Whatever you consistently attach to 'I am' with strong emotion and repetition—such as 'I am bold'—you will eventually become. Unlike saying 'I'm going to be bold.'"
             </p>
-            <footer className="mt-3 text-xs md:text-sm text-muted-foreground font-semibold">
+            <footer className="mt-3 flex items-center justify-center gap-2 text-xs md:text-sm text-muted-foreground font-semibold">
+              <AuthorAvatar author="tony-robbins" />
               — Tony Robbins
             </footer>
           </blockquote>
@@ -138,7 +140,8 @@ const Offer111 = () => {
               <p className="text-sm md:text-base italic text-foreground leading-relaxed">
                 "Gratitude isn't created by affirmations, it's activated by receiving genuine appreciation."
               </p>
-              <footer className="mt-3 text-xs md:text-sm text-muted-foreground font-semibold">
+              <footer className="mt-3 flex items-center justify-center gap-2 text-xs md:text-sm text-muted-foreground font-semibold">
+                <AuthorAvatar author="huberman" />
                 — Andrew Huberman, Neuroscientist
               </footer>
             </blockquote>
