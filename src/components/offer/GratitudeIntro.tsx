@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { FriendShirtSection } from "@/components/offer/ProductSections";
 
 const GratitudeIntro = () => {
   return (
@@ -24,6 +25,9 @@ const GratitudeIntro = () => {
           — Tony Robbins
         </footer>
       </blockquote>
+
+      {/* Friend Shirt showcase after Tony Robbins quote */}
+      <FriendShirtSection delay={0.15} />
 
       {/* Huberman Video Clip — between quotes */}
       <p className="text-sm md:text-base italic text-muted-foreground max-w-lg mx-auto mb-3 leading-relaxed">
