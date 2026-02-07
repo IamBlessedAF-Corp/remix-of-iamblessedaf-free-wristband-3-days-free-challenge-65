@@ -1,8 +1,57 @@
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { Timer } from "lucide-react";
+
+const useCountdown = (minutes: number) => {
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const saved = sessionStorage.getItem("offer-timer-end");
+    if (saved) {
+      const remaining = Math.max(0, Math.floor((parseInt(saved) - Date.now()) / 1000));
+      return remaining > 0 ? remaining : minutes * 60;
+    }
+    const end = Date.now() + minutes * 60 * 1000;
+    sessionStorage.setItem("offer-timer-end", end.toString());
+    return minutes * 60;
+  });
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const id = setInterval(() => setTimeLeft((t) => Math.max(0, t - 1)), 1000);
+    return () => clearInterval(id);
+  }, [timeLeft]);
+
+  const mins = Math.floor(timeLeft / 60);
+  const secs = timeLeft % 60;
+  return { mins, secs, expired: timeLeft <= 0 };
+};
 
 const DiscountBanner = () => {
+  const { mins, secs, expired } = useCountdown(15);
+
   return (
-    <div>
+    <div className="space-y-3">
+      {/* GRATITUDE PACK heading */}
+      <p className="text-3xl md:text-4xl font-black text-primary">
+        GRATITUDE PACK
+      </p>
+
+      {/* Timer + value breakdown */}
+      <div className="bg-card border border-border/50 rounded-xl p-3 shadow-soft">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Timer className="w-4 h-4 text-primary animate-pulse" />
+          <p className="text-sm font-bold text-primary">
+            {expired ? "Offer expired!" : `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")} left at this price`}
+          </p>
+        </div>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          You're getting a <span className="font-bold text-foreground">$333 shirt</span> in a{" "}
+          <span className="font-bold text-foreground">$499 pack</span> — today only
+        </p>
+      </div>
+
+      {/* 77% OFF badge */}
+      <p className="text-2xl md:text-3xl font-black text-primary">
+        77% OFF TODAY
+      </p>
 
       {/* Value proposition + price */}
       <div className="flex items-center justify-center gap-4">
