@@ -36,11 +36,8 @@ const GratitudeIntro = () => {
       </blockquote>
 
       {/* CTA transition */}
-      <p className="text-lg md:text-xl font-bold text-foreground mb-1">
-        Wanna achieve it Faster?
-      </p>
-      <p className="text-sm text-muted-foreground">
-        Hack your environment for Gratitude with the
+      <p className="text-lg md:text-xl font-bold text-foreground">
+        Get NOW the Gratitude Brain Hack Pack
       </p>
     </motion.div>
   );
