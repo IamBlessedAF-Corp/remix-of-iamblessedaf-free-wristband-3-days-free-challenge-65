@@ -1,10 +1,13 @@
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FriendShirtSection } from "@/components/offer/ProductSections";
 import CustomMessageBox from "@/components/offer/CustomMessageBox";
+import useCountdown from "@/hooks/useCountdown";
 
 const GratitudeIntro = () => {
+  const { mins, secs, expired } = useCountdown(15);
+
   return (
     <motion.div
       className="text-center mb-8"
@@ -37,9 +40,19 @@ const GratitudeIntro = () => {
       {/* Friend Shirt showcase with Custom Message Box embedded */}
       <FriendShirtSection delay={0.15} afterHeroSlot={<CustomMessageBox />} />
 
-      <p className="text-2xl md:text-3xl font-black text-primary text-center mb-4">
+      <p className="text-2xl md:text-3xl font-black text-primary text-center mb-2">
         Claim your FREE Shirt + with Custom Message for Your Best Friend
       </p>
+
+      {/* Countdown timer */}
+      <div className="flex items-center justify-center gap-2 mb-4">
+        <Timer className="w-4 h-4 text-primary animate-pulse" />
+        <p className="text-sm font-bold text-primary">
+          {expired
+            ? "Offer expired!"
+            : `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")} left to claim`}
+        </p>
+      </div>
 
       <Button
         className="w-full max-w-lg mx-auto h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl mb-4"
