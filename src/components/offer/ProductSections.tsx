@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ImageZoomModal from "./ImageZoomModal";
-import productTshirtFront from "@/assets/product-tshirt-front.png";
-import productTshirtBack from "@/assets/product-tshirt-back.png";
+import productTshirtFront from "@/assets/product-tshirt-front.webp";
+import productTshirtBack from "@/assets/product-tshirt-back.webp";
 import productTshirtVideo from "@/assets/product-tshirt-video2.mp4";
 import productTshirtModel1 from "@/assets/product-tshirt-model1.png";
 import productTshirtModel2 from "@/assets/product-tshirt-model2.png";
