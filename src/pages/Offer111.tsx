@@ -52,9 +52,6 @@ const Offer111 = () => {
             <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-4 leading-relaxed">
               IamBlessedAF is the result of 7+ years of research and experimentation, Co-created alongside a PhD neuroscientist and focused on designing conversation triggers that naturally evoke gratitude.
             </p>
-
-            {/* Discount inline */}
-            <DiscountBanner />
           </motion.div>
 
           {/* CTA before products */}
@@ -127,12 +124,23 @@ const Offer111 = () => {
 
           </motion.div>
 
-          {/* Second CTA */}
+          {/* Discount + Second CTA */}
           <motion.div
             className="mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.4 }}
+          >
+            <div className="text-center mb-6">
+              <DiscountBanner />
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.45 }}
           >
             <Button
               onClick={handleCheckout}
