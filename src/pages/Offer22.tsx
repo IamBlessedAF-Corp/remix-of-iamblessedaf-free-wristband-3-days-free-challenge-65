@@ -1,123 +1,327 @@
 import { motion } from "framer-motion";
-import { Package, QrCode, Zap, ArrowRight, Check } from "lucide-react";
+import { Crown, ArrowRight, Lock, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import hawkinsScale from "@/assets/hawkins-scale.jpg";
+import GratitudeIntro from "@/components/offer/GratitudeIntro";
+import WristbandDiscountBanner from "@/components/offer/WristbandDiscountBanner";
+import WristbandProductCard from "@/components/offer/WristbandProductCard";
 import logo from "@/assets/logo.png";
+import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
 
 const Offer22 = () => {
   const handleCheckout = () => {
-    // Placeholder for Stripe checkout
     if (import.meta.env.DEV) {
       console.log("Redirecting to Stripe checkout for $22 pack");
     }
-    // window.location.href = stripeCheckoutUrl;
   };
-
-  const benefits = [
-    "2x I am Blessed AF Wristbands",
-    "QR Confirmation Cards (pack of 10)",
-    "Exclusive Blessed Member Badge",
-    "Priority Daily Prompts",
-  ];
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-2xl mx-auto">
-          {/* Header */}
+          {/* Unlock Badge */}
           <motion.div
-            className="text-center mb-10"
+            className="text-center mb-6"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
+              <Lock className="w-4 h-4" />
+              Unlocked! You completed the 3-Day Challenge
+            </div>
+          </motion.div>
+
+          {/* Gratitude Intro Section */}
+          <GratitudeIntro />
+
+          {/* Logo + intro */}
+          <motion.div
+            className="text-center mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <img
-              src={logo}
-              alt="I am Blessed AF"
-              className="w-full max-w-sm h-auto object-contain mx-auto mb-6"
-            />
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider">
-              Starter Gift Pack
-            </span>
-            <h1 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-              Multiply Your Impact
-            </h1>
-            <p className="text-muted-foreground">
-              Physical tools to spread blessings in the real world.
+            <div className="overflow-hidden -my-6">
+              <img
+                src={logo}
+                alt="I am Blessed AF"
+                className="w-full max-w-sm h-auto object-contain mx-auto"
+              />
+            </div>
+            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-4 leading-relaxed">
+              IamBlessedAF is the result of 7+ years of research and experimentation, Co-created alongside a PhD neuroscientist and focused on designing conversation triggers that naturally evoke gratitude.
             </p>
           </motion.div>
 
-          {/* Product Card */}
+          {/* CTA before product */}
           <motion.div
-            className="bg-card rounded-3xl shadow-premium overflow-hidden border border-border/50 mb-8"
-            initial={{ opacity: 0, y: 30 }}
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ delay: 0.3 }}
           >
-            {/* Product Image/Icons */}
-            <div className="bg-gradient-to-br from-primary/10 to-accent p-8 md:p-12">
-              <div className="flex justify-center gap-6">
-                <motion.div
-                  className="bg-background rounded-2xl p-6 shadow-soft"
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Package className="w-12 h-12 text-primary" />
-                </motion.div>
-                <motion.div
-                  className="bg-background rounded-2xl p-6 shadow-soft"
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                >
-                  <QrCode className="w-12 h-12 text-primary" />
-                </motion.div>
-              </div>
+            <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
+              33% OFF TODAY
+            </p>
+            <Button
+              onClick={handleCheckout}
+              className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
+            >
+              <Crown className="w-5 h-5 mr-2" />
+              Claim Your Wristbands
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+
+            <p className="text-center text-xs text-muted-foreground mt-4">
+              🔒 Secure checkout • FREE Shipping
+            </p>
+            <RiskReversalGuarantee />
+          </motion.div>
+
+          {/* Product heading */}
+          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
+            TRIGGER REMINDERS
+          </p>
+
+          <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-6 shadow-soft">
+            <p className="text-sm md:text-base italic text-foreground leading-relaxed">
+              "Whatever you consistently attach to 'I am' with strong emotion and repetition—such as 'I am bold'—you will eventually become. Unlike saying 'I'm going to be bold.'"
+            </p>
+            <footer className="mt-3 text-xs md:text-sm text-muted-foreground font-semibold">
+              — Tony Robbins
+            </footer>
+          </blockquote>
+
+          {/* Wristband Product */}
+          <WristbandProductCard delay={0.4} />
+
+          {/* CTA after product */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+          >
+            <div className="text-center mb-6">
+              <WristbandDiscountBanner />
             </div>
+            <Button
+              onClick={handleCheckout}
+              className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
+            >
+              <Crown className="w-5 h-5 mr-2" />
+              Claim Your Wristbands — $22
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+            <p className="text-center text-xs text-muted-foreground mt-4">
+              🔒 Secure checkout • FREE Shipping
+            </p>
+            <RiskReversalGuarantee />
+          </motion.div>
 
-            {/* Content */}
-            <div className="p-6 md:p-8">
-              {/* Price */}
-              <div className="text-center mb-6">
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-4xl md:text-5xl font-bold text-foreground">$22</span>
-                  <span className="text-muted-foreground">one-time</span>
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  + Free shipping
-                </p>
-              </div>
-
-              {/* Benefits */}
-              <div className="space-y-3 mb-8">
-                {benefits.map((benefit, index) => (
-                  <motion.div
-                    key={index}
-                    className="flex items-center gap-3"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + index * 0.1 }}
-                  >
-                    <div className="bg-primary/10 rounded-full p-1">
-                      <Check className="w-4 h-4 text-primary" />
-                    </div>
-                    <span className="text-foreground">{benefit}</span>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* CTA */}
-              <Button
-                onClick={handleCheckout}
-                className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow transition-all duration-300 rounded-xl"
-              >
-                <Zap className="w-5 h-5 mr-2" />
-                Get Your Starter Pack
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-
-              {/* Trust */}
-              <p className="text-center text-xs text-muted-foreground mt-4">
-                🔒 Secure checkout powered by Stripe
+          {/* Science Section */}
+          <motion.div
+            className="text-center mt-12 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.1 }}
+          >
+            {/* Huberman Quote */}
+            <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-6 shadow-soft">
+              <p className="text-sm md:text-base italic text-foreground leading-relaxed">
+                "Gratitude isn't created by affirmations, it's activated by receiving genuine appreciation."
               </p>
+              <footer className="mt-3 text-xs md:text-sm text-muted-foreground font-semibold">
+                — Andrew Huberman, Neuroscientist
+              </footer>
+            </blockquote>
+
+            <p className="text-base md:text-lg text-muted-foreground mb-2 max-w-lg mx-auto">
+              Dr. Hawkins — PhD Psychiatrist Research illustrated by this emotional scale, the frequency of{" "}
+              <span className="font-bold text-foreground">shame is 20 Hz</span> and{" "}
+              <span className="font-bold text-foreground">Joy is 540 Hz</span>.
+            </p>
+            <p className="text-base md:text-lg text-muted-foreground mb-2 max-w-lg mx-auto">
+              Gratitude makes you feel the emotion of <span className="font-bold text-foreground">Joy</span>.
+            </p>
+            <p className="text-xl md:text-2xl font-bold text-primary mb-6 max-w-lg mx-auto">
+              Hack your Brain to feel up 27x HAPPIER
+            </p>
+
+            {/* Hawkins Emotional Guidance Scale */}
+            <motion.div
+              className="max-w-lg mx-auto mb-6 rounded-2xl overflow-hidden border border-border/50 shadow-soft"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 1.2 }}
+            >
+              <img
+                src={hawkinsScale}
+                alt="Dr. Hawkins Emotional Guidance Scale"
+                className="w-full h-auto object-contain"
+                loading="lazy"
+              />
+            </motion.div>
+          </motion.div>
+
+          {/* Discount + CTA */}
+          <motion.div
+            className="mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.4 }}
+          >
+            <div className="text-center mb-6">
+              <WristbandDiscountBanner />
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.45 }}
+          >
+            <Button
+              onClick={handleCheckout}
+              className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
+            >
+              <Crown className="w-5 h-5 mr-2" />
+              Claim Your Wristbands — $22
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+
+            <p className="text-center text-xs text-muted-foreground mt-4">
+              🔒 Secure checkout • FREE Shipping
+            </p>
+            <RiskReversalGuarantee />
+          </motion.div>
+
+          {/* Research List — Collapsible */}
+          <motion.div
+            className="text-left max-w-lg mx-auto mt-12 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.5 }}
+          >
+            <Collapsible>
+              <CollapsibleTrigger className="w-full group">
+                <h3 className="text-lg md:text-xl font-bold text-foreground text-center mb-2 flex items-center justify-center gap-2">
+                  📚 Science of Gratitude — Research List (Huberman Lab)
+                  <ChevronDown className="w-5 h-5 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                </h3>
+                <p className="text-xs text-muted-foreground mb-4">Tap to expand</p>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="space-y-5 mt-4">
+                  {[
+                    {
+                      title: "Conscious Processing of Narrative Stimulates Synchronization of Heart Rate Between Individuals",
+                      year: "2017",
+                      authors: "Pérez et al.",
+                      keyphrase: "Narrative synchronizes heart rate and physiology across individuals.",
+                    },
+                    {
+                      title: "Prefrontal Activation While Listening to a Letter of Gratitude Read Aloud by a Coworker: A NIRS Study",
+                      year: "2014",
+                      authors: "Fox et al.",
+                      keyphrase: "Receiving gratitude activates the prefrontal cortex more than expressing it.",
+                    },
+                    {
+                      title: "Neural Responses to Intention and Benefit Appraisal Are Critical in Distinguishing Gratitude and Joy",
+                      year: "2018",
+                      authors: "Yu et al.",
+                      keyphrase: "The brain detects genuine gratitude; intention matters more than the reward.",
+                    },
+                    {
+                      title: "Effects of Gratitude Meditation on Neural Network Functional Connectivity and Brain–Heart Coupling",
+                      year: "2020",
+                      authors: "Kral et al.",
+                      keyphrase: "Repeated gratitude reshapes emotion, fear, and motivation circuits.",
+                    },
+                    {
+                      title: "Exploring Neural Mechanisms of the Health Benefits of Gratitude in Women: A Randomized Controlled Trial",
+                      year: "2021",
+                      authors: "Hazlitt et al.",
+                      keyphrase: "Gratitude reduces amygdala activity and inflammatory markers (TNF-α, IL-6).",
+                    },
+                    {
+                      title: "Neural Correlates of Gratitude",
+                      year: "2015",
+                      authors: "Antonio Damasio et al.",
+                      keyphrase: "Gratitude activates medial prefrontal and anterior cingulate cortex.",
+                    },
+                    {
+                      title: "Counting Blessings Versus Burdens: An Experimental Investigation of Gratitude and Subjective Well-Being",
+                      year: "2003",
+                      authors: "Emmons & McCullough",
+                      keyphrase: "Weekly gratitude practice produces lasting wellbeing improvements.",
+                    },
+                    {
+                      title: "The Happiness Advantage (Applied Research, Positive Psychology)",
+                      year: "2010",
+                      authors: "Shawn Achor",
+                      keyphrase: "Gratitude is one of the fastest interventions to increase happiness and performance.",
+                    },
+                  ].map((study, i) => (
+                    <div key={i} className="bg-card border border-border/50 rounded-xl p-4 shadow-soft">
+                      <p className="text-sm font-semibold text-foreground leading-snug mb-1">
+                        {study.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        {study.year} — {study.authors}
+                      </p>
+                      <p className="text-xs italic text-muted-foreground">
+                        Keyphrase: {study.keyphrase}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </motion.div>
+
+          {/* CTA after research */}
+          <motion.div
+            className="mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.6 }}
+          >
+            <Button
+              onClick={handleCheckout}
+              className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
+            >
+              <Crown className="w-5 h-5 mr-2" />
+              Claim Your Wristbands — $22
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+
+            <p className="text-center text-xs text-muted-foreground mt-4">
+              🔒 Secure checkout • FREE Shipping
+            </p>
+            <RiskReversalGuarantee />
+          </motion.div>
+
+          {/* Trust Disclaimer */}
+          <motion.div
+            className="mb-8 mt-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.65 }}
+          >
+            <div className="border border-border/50 rounded-xl p-5 space-y-3 bg-card">
+              <div className="flex items-center justify-center gap-2 text-sm font-semibold text-foreground">
+                <span>✅</span>
+                <span>30-Day Money-Back Guarantee — No questions asked</span>
+              </div>
+              <div className="h-px bg-border/40" />
+              <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground text-center">
+                <p>🔒 256-bit SSL Encrypted · Secure Payment · Your data is never shared</p>
+                <p>📦 100% Satisfaction Guaranteed · Free Intl Shipping · 7–14 day delivery</p>
+                <p>💳 One-time payment. No subscriptions. No hidden fees.</p>
+              </div>
             </div>
           </motion.div>
 
@@ -126,13 +330,13 @@ const Offer22 = () => {
             className="text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
+            transition={{ delay: 1.7 }}
           >
             <a
               href="/challenge/thanks"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              No thanks, continue without physical pack →
+              Maybe later →
             </a>
           </motion.div>
         </div>
