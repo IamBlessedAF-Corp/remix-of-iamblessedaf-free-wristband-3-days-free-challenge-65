@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import productTshirt from "@/assets/product-tshirt.png";
 import productFriendShirt from "@/assets/product-friend-shirt.png";
-import productWristbands from "@/assets/product-wristbands.png";
+import productWristbands from "@/assets/product-wristbands.avif";
 
 const ImageZoomModal = ({
   image,
