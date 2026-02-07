@@ -6,6 +6,7 @@ import GratitudeIntro from "@/components/offer/GratitudeIntro";
 import DiscountBanner from "@/components/offer/DiscountBanner";
 import ProductSections from "@/components/offer/ProductSections";
 import logo from "@/assets/logo.png";
+import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
 
 const Offer111 = () => {
   const handleCheckout = () => {
@@ -76,6 +77,7 @@ const Offer111 = () => {
             <p className="text-center text-xs text-muted-foreground mt-4">
               🔒 Secure checkout • FREE Shipping
             </p>
+            <RiskReversalGuarantee />
           </motion.div>
 
           {/* Product Sections */}
@@ -157,6 +159,7 @@ const Offer111 = () => {
             <p className="text-center text-xs text-muted-foreground mt-4">
               🔒 Secure checkout • FREE Shipping
             </p>
+            <RiskReversalGuarantee />
           </motion.div>
 
           {/* Research List */}
@@ -255,6 +258,7 @@ const Offer111 = () => {
             <p className="text-center text-xs text-muted-foreground mt-4">
               🔒 Secure checkout • FREE Shipping
             </p>
+            <RiskReversalGuarantee />
           </motion.div>
 
           {/* Trust Disclaimer */}
