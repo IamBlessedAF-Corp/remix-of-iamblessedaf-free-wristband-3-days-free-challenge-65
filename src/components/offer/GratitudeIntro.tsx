@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FriendShirtSection } from "@/components/offer/ProductSections";
+import CustomMessageBox from "@/components/offer/CustomMessageBox";
 
 const GratitudeIntro = () => {
   return (
@@ -42,6 +43,9 @@ const GratitudeIntro = () => {
       <p className="text-2xl md:text-3xl font-black text-primary text-center mb-4">
         This is Why we want to send your Best Friend this Shirt with a Custom Message from You!
       </p>
+
+      {/* Custom Message Box */}
+      <CustomMessageBox />
 
       {/* Friend Shirt showcase after Tony Robbins quote */}
       <FriendShirtSection delay={0.15} />
