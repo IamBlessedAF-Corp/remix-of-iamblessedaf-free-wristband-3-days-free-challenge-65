@@ -129,7 +129,7 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
           <div className="px-4 pb-5 pt-3 space-y-4">
             <div>
               <h3 className="text-lg md:text-xl font-semibold text-foreground tracking-tight leading-snug">
-                Streetwear Loose Drop Shoulder T-Shirt
+                "IamBlessedAF" Streetwear Loose Drop Shoulder T-Shirt
               </h3>
               <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">
                 Double-sided print · Premium cotton
