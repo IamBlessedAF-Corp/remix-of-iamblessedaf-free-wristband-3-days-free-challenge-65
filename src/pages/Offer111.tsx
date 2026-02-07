@@ -92,10 +92,10 @@ const Offer111 = () => {
 
           <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-6 shadow-soft">
             <p className="text-sm md:text-base italic text-foreground leading-relaxed">
-              "Whatever you consistently attach to 'I am' with strong emotion and repetition—such as 'I am bold'—you will eventually become. Unlike saying 'I'm going to be bold.'"
+              "Most people live in survival emotions like fear, anger, guilt, shame"
             </p>
             <footer className="mt-3">
-              <AuthorAvatar author="tony-robbins" />
+              <AuthorAvatar author="joe-dispenza" />
             </footer>
           </blockquote>
 
