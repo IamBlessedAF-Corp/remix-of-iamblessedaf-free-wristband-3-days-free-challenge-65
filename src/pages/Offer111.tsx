@@ -5,7 +5,7 @@ import ResearchList from "@/components/offer/ResearchList";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import GratitudeIntro from "@/components/offer/GratitudeIntro";
 import DiscountBanner from "@/components/offer/DiscountBanner";
-import ProductSections, { FriendShirtSection } from "@/components/offer/ProductSections";
+import ProductSections from "@/components/offer/ProductSections";
 import logo from "@/assets/logo.png";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
 
@@ -34,11 +34,8 @@ const Offer111 = () => {
             </div>
           </motion.div>
 
-          {/* Gratitude Intro Section */}
+          {/* Gratitude Intro Section (includes Friend Shirt after Tony Robbins quote) */}
           <GratitudeIntro />
-
-          {/* Friend Shirt showcase after congrats title */}
-          <FriendShirtSection delay={0.15} />
 
           {/* Logo + Gratitude Pack + Discount — unified block */}
           <motion.div
