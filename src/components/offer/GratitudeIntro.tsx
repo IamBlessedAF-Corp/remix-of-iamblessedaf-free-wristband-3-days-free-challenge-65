@@ -97,6 +97,11 @@ const GratitudeIntro = () => {
         </div>
       </motion.div>
 
+      {/* Video context note */}
+      <p className="text-xs md:text-sm text-muted-foreground max-w-lg mx-auto mb-6 leading-relaxed">
+        In the full 1-hour and 25-minute version of a Joe Rogan podcast episode, Stanford neuroscientist Andrew Huberman breaks down the science of gratitude, referencing over eight peer-reviewed studies and revealing the most effective way to experience the real benefits of a gratitude practice.
+      </p>
+
       {/* CTA transition */}
       <p className="text-lg md:text-xl font-bold text-foreground mb-1">
         Wanna achieve it Faster?
