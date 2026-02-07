@@ -93,10 +93,10 @@ const GratitudeIntro = () => {
       </motion.div>
 
       {/* CTA transition */}
-      <p className="text-lg md:text-xl font-bold text-foreground">
+      <p className="text-lg md:text-xl font-bold text-foreground mb-1">
         Wanna achieve it Faster?
       </p>
-      <p className="text-sm text-muted-foreground mt-1">
+      <p className="text-sm text-muted-foreground">
         Hack your environment for Gratitude with the
       </p>
     </motion.div>
