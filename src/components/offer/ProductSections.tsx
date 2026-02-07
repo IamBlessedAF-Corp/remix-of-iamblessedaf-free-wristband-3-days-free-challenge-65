@@ -231,7 +231,8 @@ const FriendShirtSection = ({ delay = 0 }: { delay?: number }) => {
     { type: "image" as const, src: friendShirtModel2, label: "Model 2" },
     { type: "image" as const, src: friendShirtModel3, label: "Model 3" },
   ];
-  const current = media[activeIndex];
+  const safeIndex = activeIndex >= media.length ? 0 : activeIndex;
+  const current = media[safeIndex];
 
   const handleZoom = (img: string) => {
     setZoomedImage(img);
