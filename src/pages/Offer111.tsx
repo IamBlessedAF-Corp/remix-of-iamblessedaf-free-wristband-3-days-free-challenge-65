@@ -34,9 +34,9 @@ const Offer111 = () => {
           {/* Gratitude Intro Section */}
           <GratitudeIntro />
 
-          {/* Logo + Gratitude Pack */}
+          {/* Logo + Gratitude Pack + Discount — unified block */}
           <motion.div
-            className="text-center mb-10"
+            className="text-center mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -44,13 +44,13 @@ const Offer111 = () => {
             <img
               src={logo}
               alt="I am Blessed AF"
-              className="w-full max-w-sm h-auto object-contain mx-auto mb-2"
+              className="w-full max-w-sm h-auto object-contain mx-auto mb-1"
             />
-            <p className="text-lg font-bold text-foreground">Gratitude Pack</p>
-          </motion.div>
+            <p className="text-lg font-bold text-foreground mb-4">Gratitude Pack</p>
 
-          {/* 77% OFF Discount Banner */}
-          <DiscountBanner />
+            {/* Discount inline */}
+            <DiscountBanner />
+          </motion.div>
 
           {/* Product Sections */}
           <ProductSections />
