@@ -136,12 +136,6 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
               </p>
             </div>
 
-            {/* Price */}
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-foreground">$111</span>
-              <span className="text-base text-muted-foreground line-through">$333</span>
-              <span className="text-xs font-semibold text-primary ml-1 uppercase">Save 67%</span>
-            </div>
 
             {/* Size selector */}
             <div>
