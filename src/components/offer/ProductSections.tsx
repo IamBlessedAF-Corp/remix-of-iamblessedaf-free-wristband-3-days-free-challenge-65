@@ -245,6 +245,83 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
   );
 };
 
+const FriendShirtSection = ({ delay = 0 }: { delay?: number }) => {
+  const [zoomed, setZoomed] = useState(false);
+  const [selectedSize, setSelectedSize] = useState("M");
+
+  return (
+    <>
+      {zoomed && (
+        <ImageZoomModal
+          image={productFriendShirt}
+          alt="Friend Shirt"
+          onClose={() => setZoomed(false)}
+        />
+      )}
+      <motion.div
+        className="mb-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay }}
+      >
+        <h3 className="text-xl md:text-2xl font-bold text-foreground mb-1 italic">
+          FREE Custom Shirt for your Best Friend
+        </h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          IamBlessedAF to have U as a Best Friend — One-side print included
+        </p>
+        <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-soft">
+          <div
+            className="cursor-zoom-in relative group"
+            onClick={() => setZoomed(true)}
+          >
+            <img
+              src={productFriendShirt}
+              alt="Friend Shirt"
+              className="w-full h-auto object-contain"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center">
+              <span className="text-xs bg-foreground/70 text-background px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                Tap to zoom
+              </span>
+            </div>
+          </div>
+          <div className="p-4 border-t border-border/30 space-y-3">
+            <div>
+              <p className="text-xs font-medium text-muted-foreground mb-2">Select Size</p>
+              <div className="flex flex-wrap gap-2">
+                {TSHIRT_SIZES.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`min-w-[3rem] px-3 py-1.5 text-sm font-medium rounded-lg border transition-all ${
+                      selectedSize === size
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-muted-foreground">Intl Delivery</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg text-muted-foreground line-through">$111</span>
+                  <span className="text-xl font-bold text-primary">FREE</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </>
+  );
+};
+
 const ProductSections = () => {
   return (
     <div>
@@ -257,15 +334,7 @@ const ProductSections = () => {
         transition={{ duration: 0.6, delay: 0.5 }}
       />
 
-      <ProductSection
-        title="FREE Custom Shirt for your Best Friend"
-        subtitle="IamBlessedAF to have U as a Best Friend — One-side print included"
-        image={productFriendShirt}
-        originalPrice="$111"
-        price="FREE"
-        isFree
-        delay={0.6}
-      />
+      <FriendShirtSection delay={0.6} />
 
       <motion.div
         className="h-px bg-border/50 my-8"
