@@ -88,12 +88,12 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
   const [selectedSize, setSelectedSize] = useState("M");
 
   const media = [
-    { type: "video" as const, src: productTshirtVideo, label: "Video" },
     { type: "image" as const, src: productTshirtFront, label: "Front" },
     { type: "image" as const, src: productTshirtBack, label: "Back" },
     { type: "image" as const, src: productTshirtModel2, label: "Model 2" },
     { type: "image" as const, src: productTshirtModel3, label: "Model 3" },
     { type: "image" as const, src: productTshirtModel1, label: "Model 1" },
+    { type: "video" as const, src: productTshirtVideo, label: "Video" },
   ];
   const current = media[activeIndex];
 
