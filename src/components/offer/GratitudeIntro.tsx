@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import hawkinsScale from "@/assets/hawkins-scale.jpg";
 
 const GratitudeIntro = () => {
   return (
@@ -21,6 +22,21 @@ const GratitudeIntro = () => {
         <span className="font-bold text-foreground">GRATITUDE</span> Practice can make you{" "}
         <span className="font-bold text-foreground">FEEL up to 27x Happier</span>
       </p>
+
+      {/* Hawkins Emotional Guidance Scale */}
+      <motion.div
+        className="max-w-lg mx-auto mb-6 rounded-2xl overflow-hidden border border-border/50 shadow-soft"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <img
+          src={hawkinsScale}
+          alt="Dr. Hawkins Emotional Guidance Scale"
+          className="w-full h-auto object-contain"
+          loading="lazy"
+        />
+      </motion.div>
 
       {/* Huberman Quote */}
       <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-6 shadow-soft">
