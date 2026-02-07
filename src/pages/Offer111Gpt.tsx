@@ -314,6 +314,9 @@ const Offer111Gpt = () => {
             </p>
           </motion.div>
 
+          {/* ═══ Product Sections: Black Shirt + Wristbands ═══ */}
+          <ProductSections />
+
           {/* ═══ Hawkins Scale (compact) ═══ */}
           <motion.div
             className="text-center mb-6"
