@@ -218,7 +218,7 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
 /* ══════════════════════════════════════════════════
    Friend Shirt — Shopify-style product card
    ══════════════════════════════════════════════════ */
-const FriendShirtSection = ({ delay = 0 }: { delay?: number }) => {
+const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afterHeroSlot?: React.ReactNode }) => {
   const [zoomed, setZoomed] = useState(false);
   const [zoomedImage, setZoomedImage] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -296,6 +296,13 @@ const FriendShirtSection = ({ delay = 0 }: { delay?: number }) => {
               Free
             </div>
           </div>
+
+          {/* Slot for custom message box between hero and thumbnails */}
+          {afterHeroSlot && (
+            <div className="px-4 py-3 border-t border-border/30">
+              {afterHeroSlot}
+            </div>
+          )}
 
           {/* Thumbnails */}
           <div className="flex gap-2 px-4 py-3 border-t border-border/30 overflow-x-auto">
