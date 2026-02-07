@@ -34,8 +34,8 @@ const GratitudeIntro = () => {
         </footer>
       </blockquote>
 
-      <p className="text-2xl md:text-3xl font-black text-primary text-center mb-2">
-        This is Why we want to send your Best Friend this Shirt with a Custom Message from You!
+      <p className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2 leading-tight">
+        This is Why we want to send your Best Friend this Shirt with a Custom Message from <span className="text-primary">You!</span>
       </p>
 
       {/* Countdown timer */}
@@ -45,8 +45,8 @@ const GratitudeIntro = () => {
       {/* Friend Shirt showcase with Custom Message Box embedded */}
       <FriendShirtSection delay={0.15} afterHeroSlot={<CustomMessageBox />} />
 
-      <p className="text-2xl md:text-3xl font-black text-primary text-center mb-2">
-        Claim your FREE Shirt + with Custom Message for Your Best Friend
+      <p className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2 leading-tight">
+        Claim your <span className="text-primary">FREE</span> Shirt + with Custom Message for Your Best Friend
       </p>
 
       <OfferTimer />
