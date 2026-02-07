@@ -31,13 +31,23 @@ const CustomMessageBox = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.12 }}
     >
-      {/* Pre-filled shirt text */}
-      <p className="text-base md:text-lg font-bold text-foreground text-center leading-snug mb-1">
-        IamBlessedAF to Have a Best Friend
+      {/* Header */}
+      <p className="text-sm font-semibold text-foreground text-center mb-3">
+        ✍️ Complete this Message here
       </p>
-      <p className="text-base md:text-lg font-bold text-foreground text-center leading-snug mb-3">
-        TY! I'll Never Forget when You
-      </p>
+
+      {/* Pre-filled non-editable message */}
+      <div className="bg-muted/40 rounded-xl p-4 mb-0">
+        <p className="text-sm md:text-base italic text-foreground/80 text-center leading-relaxed">
+          "I am Blessed AF to Have a Best Friend
+        </p>
+        <p className="text-sm md:text-base italic text-foreground/80 text-center leading-relaxed">
+          TY! I'll Never Forget when You..."
+        </p>
+      </div>
+
+      {/* Divider */}
+      <div className="border-t border-dashed border-border mx-4" />
 
       {/* Custom message textarea */}
       <Textarea
@@ -49,7 +59,7 @@ const CustomMessageBox = () => {
             setSaved(false);
           }
         }}
-        className="min-h-[80px] resize-none bg-background border-border text-foreground placeholder:text-muted-foreground/70 text-sm rounded-xl focus:ring-primary"
+        className="min-h-[80px] resize-none bg-muted/40 border-0 text-foreground placeholder:text-muted-foreground/60 text-sm rounded-xl rounded-t-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
         maxLength={MAX_CHARS}
       />
 
