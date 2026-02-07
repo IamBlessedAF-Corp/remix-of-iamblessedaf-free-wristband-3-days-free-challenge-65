@@ -43,6 +43,20 @@ const Offer111Grok = () => {
           {/* ─── 2. Hero: Benefit Headline + Epiphany Bridge ─── */}
           <GrokHeroSection />
 
+          {/* ─── Friend Shirt with Custom Message ─── */}
+          <motion.div
+            className="text-center mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.12 }}
+          >
+            <p className="text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight">
+              This is Why we want to send your Best Friend this Shirt with a Custom Message from <span className="text-primary">You!</span>
+            </p>
+          </motion.div>
+
+          <FriendShirtSection delay={0.14} afterHeroSlot={<CustomMessageBox />} />
+
           {/* ─── 3. Value Stack: Benefits-First Bullets ─── */}
           <GrokValueStack />
 
@@ -83,20 +97,6 @@ const Offer111Grok = () => {
 
           {/* ─── 7. Quotes: Short & Punchy ─── */}
           <GrokQuotesSection delay={0.45} />
-
-          {/* ─── Friend Shirt with Custom Message ─── */}
-          <motion.div
-            className="text-center mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.42 }}
-          >
-            <p className="text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight">
-              This is Why we want to send your Best Friend this Shirt with a Custom Message from <span className="text-primary">You!</span>
-            </p>
-          </motion.div>
-
-          <FriendShirtSection delay={0.44} afterHeroSlot={<CustomMessageBox />} />
 
           {/* ─── 8. Product Sections ─── */}
           <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
