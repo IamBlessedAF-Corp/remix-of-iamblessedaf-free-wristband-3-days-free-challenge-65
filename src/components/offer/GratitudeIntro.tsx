@@ -33,15 +33,8 @@ const GratitudeIntro = () => {
         </footer>
       </blockquote>
 
-      <p className="text-2xl md:text-3xl font-black text-primary text-center mb-4">
-        This is Why we want to send your Best Friend this Shirt with a Custom Message from You!
-      </p>
-
-      {/* Friend Shirt showcase with Custom Message Box embedded */}
-      <FriendShirtSection delay={0.15} afterHeroSlot={<CustomMessageBox />} />
-
       <p className="text-2xl md:text-3xl font-black text-primary text-center mb-2">
-        Claim your FREE Shirt + with Custom Message for Your Best Friend
+        This is Why we want to send your Best Friend this Shirt with a Custom Message from You!
       </p>
 
       {/* Countdown timer */}
@@ -53,6 +46,13 @@ const GratitudeIntro = () => {
             : `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")} left to claim`}
         </p>
       </div>
+
+      {/* Friend Shirt showcase with Custom Message Box embedded */}
+      <FriendShirtSection delay={0.15} afterHeroSlot={<CustomMessageBox />} />
+
+      <p className="text-2xl md:text-3xl font-black text-primary text-center mb-4">
+        Claim your FREE Shirt + with Custom Message for Your Best Friend
+      </p>
 
       <Button
         className="w-full max-w-lg mx-auto h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl mb-4"
