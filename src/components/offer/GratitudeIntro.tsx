@@ -24,20 +24,8 @@ const GratitudeIntro = () => {
           — Tony Robbins
         </footer>
       </blockquote>
-    </motion.div>
-  );
-};
 
-/** Huberman clip + Dispenza quote — extracted for flexible placement */
-const HubermanDispenzaSection = () => {
-  return (
-    <motion.div
-      className="text-center mb-8"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-    >
-      {/* Huberman Video Clip */}
+      {/* Huberman Video Clip — between quotes */}
       <p className="text-sm md:text-base italic text-muted-foreground max-w-lg mx-auto mb-3 leading-relaxed">
         "The Biggest Surprise in researching since i started the podcast is how GRATITUDE skyrocket{" "}
         <span className="font-bold text-foreground">DOPAMINE</span> &{" "}
@@ -47,7 +35,7 @@ const HubermanDispenzaSection = () => {
         className="max-w-lg mx-auto mb-4 rounded-2xl overflow-hidden border border-border/50 shadow-soft"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
       >
         <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
           <iframe
@@ -76,5 +64,4 @@ const HubermanDispenzaSection = () => {
   );
 };
 
-export { HubermanDispenzaSection };
 export default GratitudeIntro;

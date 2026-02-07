@@ -3,7 +3,7 @@ import { Crown, ArrowRight, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ResearchList from "@/components/offer/ResearchList";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
-import GratitudeIntro, { HubermanDispenzaSection } from "@/components/offer/GratitudeIntro";
+import GratitudeIntro from "@/components/offer/GratitudeIntro";
 import DiscountBanner from "@/components/offer/DiscountBanner";
 import ProductSections, { FriendShirtSection } from "@/components/offer/ProductSections";
 import logo from "@/assets/logo.png";
@@ -37,6 +37,9 @@ const Offer111 = () => {
           {/* Gratitude Intro Section */}
           <GratitudeIntro />
 
+          {/* Friend Shirt showcase after congrats title */}
+          <FriendShirtSection delay={0.15} />
+
           {/* Logo + Gratitude Pack + Discount — unified block */}
           <motion.div
             className="text-center mb-8"
@@ -55,12 +58,6 @@ const Offer111 = () => {
               IamBlessedAF is the result of 7+ years of research and experimentation, Co-created alongside a PhD neuroscientist and focused on designing conversation triggers that naturally evoke gratitude.
             </p>
           </motion.div>
-
-          {/* Huberman clip + Dispenza quote */}
-          <HubermanDispenzaSection />
-
-          {/* Friend Shirt showcase */}
-          <FriendShirtSection delay={0.15} />
 
           {/* CTA before products */}
           <motion.div
