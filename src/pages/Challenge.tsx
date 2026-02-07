@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { z } from "zod";
@@ -16,6 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle2, Users, Heart, Sparkles } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { useAuth } from "@/hooks/useAuth";
 
 const formSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters").max(100),
@@ -28,6 +29,15 @@ type FormValues = z.infer<typeof formSchema>;
 const Challenge = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const { signInWithGoogle, user } = useAuth();
+
+  // Redirect to thanks page when user is authenticated via Google
+  useEffect(() => {
+    if (user) {
+      navigate("/challenge/thanks");
+    }
+  }, [user, navigate]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -50,12 +60,14 @@ const Challenge = () => {
     navigate("/challenge/thanks");
   };
 
-  const handleGoogleSignup = () => {
-    // Placeholder for Google OAuth - will integrate with Supabase
-    if (import.meta.env.DEV) {
-      console.log("Google signup clicked");
+  const handleGoogleSignup = async () => {
+    setGoogleLoading(true);
+    const { error } = await signInWithGoogle();
+    if (error) {
+      console.error("Google sign-in error:", error);
+      setGoogleLoading(false);
     }
-    navigate("/challenge/thanks");
+    // On success, the OAuth redirect handles the rest
   };
 
   const features = [
@@ -139,6 +151,7 @@ const Challenge = () => {
               {/* Google Button */}
               <Button
                 onClick={handleGoogleSignup}
+                disabled={googleLoading}
                 variant="outline"
                 className="w-full h-14 text-base font-semibold mb-6 hover:bg-secondary transition-all duration-300 border-2"
               >
@@ -160,7 +173,7 @@ const Challenge = () => {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Continue with Google
+                {googleLoading ? "Connecting..." : "Continue with Google"}
               </Button>
 
               {/* Divider */}
