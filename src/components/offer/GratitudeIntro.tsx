@@ -19,7 +19,7 @@ const GratitudeIntro = () => {
       <p className="text-base md:text-lg text-muted-foreground mb-6 max-w-lg mx-auto">
         Neuroscience Research confirms that a daily{" "}
         <span className="font-bold text-foreground">GRATITUDE</span> Practice can make you{" "}
-        <span className="font-bold text-foreground">FEEL up to 25% Happier</span>
+        <span className="font-bold text-foreground">FEEL up to 27x Happier</span>
       </p>
 
       {/* Huberman Quote */}
