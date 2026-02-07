@@ -114,7 +114,7 @@ const Offer111 = () => {
             {/* Huberman Quote */}
             <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-6 shadow-soft">
               <p className="text-sm md:text-base italic text-foreground leading-relaxed">
-                "The most effective way to feel Grateful is not with empty Affirmations, it's by receiving genuine Gratitude"
+                "Gratitude isn't created by affirmations, it's activated by receiving genuine appreciation."
               </p>
               <footer className="mt-3 text-xs md:text-sm text-muted-foreground font-semibold">
                 — Andrew Huberman, Neuroscientist
