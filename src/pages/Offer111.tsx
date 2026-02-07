@@ -42,15 +42,15 @@ const Offer111 = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-4 leading-relaxed">
-              Co-created alongside a PhD neuroscientist, IamBlessedAF is the result of 7+ years of research and experimentation focused on designing conversation triggers that naturally evoke gratitude.
-            </p>
             <img
               src={logo}
               alt="I am Blessed AF"
               className="w-full max-w-sm h-auto object-contain mx-auto mb-1"
             />
-            <p className="text-lg font-bold text-foreground mb-4">Gratitude Pack</p>
+            <p className="text-lg font-bold text-foreground mb-2">Gratitude Pack</p>
+            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-4 leading-relaxed">
+              Co-created alongside a PhD neuroscientist, IamBlessedAF is the result of 7+ years of research and experimentation focused on designing conversation triggers that naturally evoke gratitude.
+            </p>
 
             {/* Discount inline */}
             <DiscountBanner />
