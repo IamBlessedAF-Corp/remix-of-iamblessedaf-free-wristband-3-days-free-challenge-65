@@ -9,10 +9,8 @@ const DiscountBanner = () => {
       transition={{ duration: 0.5, delay: 0.3 }}
     >
       <div className="flex items-center justify-center gap-4 flex-wrap">
-        <span className="text-5xl md:text-6xl font-black text-primary leading-none">
-          77%
-          <br />
-          <span className="text-3xl md:text-4xl">OFF</span>
+        <span className="text-5xl md:text-6xl font-black text-primary leading-none whitespace-nowrap">
+          77% OFF
         </span>
         <div className="text-left">
           <p className="text-xl md:text-2xl font-bold text-foreground leading-tight">
