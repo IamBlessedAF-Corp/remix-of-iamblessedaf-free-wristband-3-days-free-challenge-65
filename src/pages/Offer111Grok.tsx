@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
 import GrokHeroSection from "@/components/offer/grok/GrokHeroSection";
 import GrokValueStack from "@/components/offer/grok/GrokValueStack";
-import { TshirtProductSection } from "@/components/offer/ProductSections";
 import GrokSocialProof from "@/components/offer/grok/GrokSocialProof";
 import GrokQuotesSection from "@/components/offer/grok/GrokQuotesSection";
 import GrokCtaBlock from "@/components/offer/grok/GrokCtaBlock";
@@ -42,13 +41,7 @@ const Offer111Grok = () => {
           {/* ─── 2. Hero: Benefit Headline + Epiphany Bridge ─── */}
           <GrokHeroSection />
 
-          {/* ─── 3. Product: Main T-Shirt ─── */}
-          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
-            GRATITUDE PACK
-          </p>
-          <TshirtProductSection delay={0.2} />
-
-          {/* ─── 4. Value Stack: Benefits-First Bullets ─── */}
+          {/* ─── 3. Value Stack: Benefits-First Bullets ─── */}
           <GrokValueStack />
 
           {/* ─── 4. CTA #1 (with scarcity) ─── */}

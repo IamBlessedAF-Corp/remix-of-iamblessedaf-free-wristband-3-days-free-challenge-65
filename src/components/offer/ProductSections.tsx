@@ -447,5 +447,5 @@ const ProductSections = ({ afterWristband }: { afterWristband?: React.ReactNode 
   );
 };
 
-export { FriendShirtSection, TshirtProductSection };
+export { FriendShirtSection };
 export default ProductSections;
