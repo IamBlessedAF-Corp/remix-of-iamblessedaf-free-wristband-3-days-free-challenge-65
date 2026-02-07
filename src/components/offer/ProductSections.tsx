@@ -206,7 +206,7 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
 
             {/* Shipping note */}
             <p className="text-xs text-muted-foreground pt-1">
-              🌍 Free International Shipping
+              🇺🇸 Free US Shipping · International $14.95 Flat
             </p>
           </div>
         </div>
@@ -359,7 +359,7 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
 
             {/* Shipping note */}
             <p className="text-xs text-muted-foreground pt-1">
-              🌍 Free International Shipping
+              🇺🇸 Free US Shipping · International $14.95 Flat
             </p>
           </div>
         </div>
@@ -424,7 +424,7 @@ const WristbandSection = ({ delay = 0 }: { delay?: number }) => {
             </div>
 
             <p className="text-xs text-muted-foreground pt-1">
-              🌍 Free International Shipping
+              🇺🇸 Free US Shipping · International $14.95 Flat
             </p>
           </div>
         </div>

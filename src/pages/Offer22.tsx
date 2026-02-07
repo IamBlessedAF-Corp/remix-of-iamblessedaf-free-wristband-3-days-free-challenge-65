@@ -90,7 +90,7 @@ const Offer22 = () => {
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             <p className="text-center text-xs text-muted-foreground mt-4">
-              🔒 Secure checkout • FREE Shipping
+              🔒 Secure checkout • Free US Shipping
             </p>
             <RiskReversalGuarantee />
           </motion.div>
@@ -168,7 +168,7 @@ const Offer22 = () => {
             </Button>
 
             <p className="text-center text-xs text-muted-foreground mt-4">
-              🔒 Secure checkout • FREE Shipping
+              🔒 Secure checkout • Free US Shipping
             </p>
             <RiskReversalGuarantee />
           </motion.div>
@@ -193,7 +193,7 @@ const Offer22 = () => {
             </Button>
 
             <p className="text-center text-xs text-muted-foreground mt-4">
-              🔒 Secure checkout • FREE Shipping
+              🔒 Secure checkout • Free US Shipping
             </p>
             <RiskReversalGuarantee />
           </motion.div>
@@ -213,7 +213,7 @@ const Offer22 = () => {
               <div className="h-px bg-border/40" />
               <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground text-center">
                 <p>🔒 256-bit SSL Encrypted · Secure Payment · Your data is never shared</p>
-                <p>📦 100% Satisfaction Guaranteed · Free Intl Shipping · 7–14 day delivery</p>
+                <p>📦 100% Satisfaction Guaranteed · Free US Shipping · Intl $14.95 Flat · 7–14 day delivery</p>
                 <p>💳 One-time payment. No subscriptions. No hidden fees.</p>
               </div>
             </div>

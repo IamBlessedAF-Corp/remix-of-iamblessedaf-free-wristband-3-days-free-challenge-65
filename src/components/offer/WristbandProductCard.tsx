@@ -53,7 +53,7 @@ const WristbandProductCard = ({ delay = 0 }: { delay?: number }) => {
             </div>
 
             <p className="text-xs text-muted-foreground pt-1">
-              🌍 Free International Shipping
+              🇺🇸 Free US Shipping · International $14.95 Flat
             </p>
           </div>
         </div>

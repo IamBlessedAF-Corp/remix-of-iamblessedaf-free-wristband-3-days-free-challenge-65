@@ -60,7 +60,7 @@ const GratitudeIntro = () => {
       </Button>
 
       <p className="text-center text-xs text-muted-foreground mt-2">
-        🔒 Secure checkout • FREE Shipping
+        🔒 Secure checkout • Free US Shipping
       </p>
       <RiskReversalGuarantee />
 

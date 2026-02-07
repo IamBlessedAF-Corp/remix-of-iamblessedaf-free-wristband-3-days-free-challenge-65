@@ -31,8 +31,8 @@ const GrokRiskReversal = ({ delay = 0 }: { delay?: number }) => {
           <div className="flex items-start gap-2.5 text-sm text-foreground">
             <span className="text-base flex-shrink-0">✅</span>
             <span>
-              <span className="font-bold">Free Global Shipping</span>{" "}
-              <span className="text-muted-foreground">— 7–14 days.</span>
+              <span className="font-bold">Free US Shipping</span>{" "}
+              <span className="text-muted-foreground">· International $14.95 Flat · 7–14 days.</span>
             </span>
           </div>
         </div>
