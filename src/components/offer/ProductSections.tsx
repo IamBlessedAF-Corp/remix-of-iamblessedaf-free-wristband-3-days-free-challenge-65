@@ -3,8 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ImageZoomModal from "./ImageZoomModal";
 import productTshirtFront from "@/assets/product-tshirt-front.webp";
 import productTshirtBack from "@/assets/product-tshirt-back.webp";
-import productTshirtVideo1 from "@/assets/product-tshirt-video1.mp4";
-import productTshirtVideo2 from "@/assets/product-tshirt-video2.mp4";
+import productTshirtVideo from "@/assets/product-tshirt-video2.mp4";
 import productFriendShirt from "@/assets/product-friend-shirt.png";
 import productWristbands from "@/assets/product-wristbands.avif";
 
@@ -81,8 +80,7 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
   const media = [
     { type: "image" as const, src: productTshirtFront, label: "Front" },
     { type: "image" as const, src: productTshirtBack, label: "Back" },
-    { type: "video" as const, src: productTshirtVideo1, label: "Video 1" },
-    { type: "video" as const, src: productTshirtVideo2, label: "Video 2" },
+    { type: "video" as const, src: productTshirtVideo, label: "Video" },
   ];
   const current = media[activeIndex];
 
