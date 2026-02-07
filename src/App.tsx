@@ -10,6 +10,7 @@ import Confirm from "./pages/Confirm";
 import Offer22 from "./pages/Offer22";
 import Offer111 from "./pages/Offer111";
 import Offer111Grok from "./pages/Offer111Grok";
+import Offer111Gpt from "./pages/Offer111Gpt";
 import Offer444 from "./pages/Offer444";
 import OfferMonthly from "./pages/OfferMonthly";
 import AIVideoContest from "./pages/AIVideoContest";
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/offer/22" element={<Offer22 />} />
           <Route path="/offer/111" element={<Offer111 />} />
           <Route path="/offer/111/grok" element={<Offer111Grok />} />
+          <Route path="/offer/111/gpt" element={<Offer111Gpt />} />
           <Route path="/offer/444" element={<Offer444 />} />
           <Route path="/offer/11mo" element={<OfferMonthly />} />
           <Route path="/make-2500-with-1-ai-clip" element={<AIVideoContest />} />
