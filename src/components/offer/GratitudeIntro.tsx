@@ -37,12 +37,12 @@ const GratitudeIntro = () => {
         </footer>
       </blockquote>
 
+      {/* Friend Shirt showcase after Tony Robbins quote */}
+      <FriendShirtSection delay={0.15} />
+
       <p className="text-2xl md:text-3xl font-black text-primary text-center mb-4">
         Claim your FREE Shirt + with Custom Message for Your Best Friend
       </p>
-
-      {/* Friend Shirt showcase after Tony Robbins quote */}
-      <FriendShirtSection delay={0.15} />
 
       {/* Huberman Video Clip — between quotes */}
       <p className="text-sm md:text-base italic text-muted-foreground max-w-lg mx-auto mb-3 leading-relaxed">
