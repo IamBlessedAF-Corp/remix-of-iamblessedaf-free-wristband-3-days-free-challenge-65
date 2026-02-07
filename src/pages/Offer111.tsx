@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Crown, Shield, Star, Sparkles, ArrowRight, Check, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import GratitudeIntro from "@/components/offer/GratitudeIntro";
 import logo from "@/assets/logo.png";
 
 const Offer111 = () => {
@@ -36,6 +37,9 @@ const Offer111 = () => {
               Unlocked! You completed the 3-Day Challenge
             </div>
           </motion.div>
+
+          {/* Gratitude Intro Section */}
+          <GratitudeIntro />
 
           {/* Header */}
           <motion.div
