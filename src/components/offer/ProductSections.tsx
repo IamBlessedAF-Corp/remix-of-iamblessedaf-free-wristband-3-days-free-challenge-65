@@ -8,6 +8,13 @@ import productTshirtModel1 from "@/assets/product-tshirt-model1.png";
 import productTshirtModel2 from "@/assets/product-tshirt-model2.png";
 import productTshirtModel3 from "@/assets/product-tshirt-model3.png";
 import productFriendShirt from "@/assets/product-friend-shirt.png";
+import friendShirtVideo from "@/assets/friend-shirt-video.mp4";
+import friendShirtModel1 from "@/assets/friend-shirt-model1.png";
+import friendShirtModel2 from "@/assets/friend-shirt-model2.png";
+import friendShirtModel3 from "@/assets/friend-shirt-model3.png";
+import friendShirtBack from "@/assets/friend-shirt-back.png";
+import friendShirtFront from "@/assets/friend-shirt-front.png";
+import friendShirtFront2 from "@/assets/friend-shirt-front2.png";
 import productWristbands from "@/assets/product-wristbands.avif";
 
 const TSHIRT_SIZES = ["S", "M", "L", "XL", "2XL", "3XL"];
@@ -213,13 +220,31 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
    ══════════════════════════════════════════════════ */
 const FriendShirtSection = ({ delay = 0 }: { delay?: number }) => {
   const [zoomed, setZoomed] = useState(false);
+  const [zoomedImage, setZoomedImage] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState("M");
+
+  const media = [
+    { type: "video" as const, src: friendShirtVideo, label: "Video" },
+    { type: "image" as const, src: friendShirtFront, label: "Front" },
+    { type: "image" as const, src: friendShirtFront2, label: "Front 2" },
+    { type: "image" as const, src: friendShirtBack, label: "Back" },
+    { type: "image" as const, src: friendShirtModel1, label: "Model 1" },
+    { type: "image" as const, src: friendShirtModel2, label: "Model 2" },
+    { type: "image" as const, src: friendShirtModel3, label: "Model 3" },
+  ];
+  const current = media[activeIndex];
+
+  const handleZoom = (img: string) => {
+    setZoomedImage(img);
+    setZoomed(true);
+  };
 
   return (
     <>
       {zoomed && (
         <ImageZoomModal
-          image={productFriendShirt}
+          image={zoomedImage}
           alt="Friend Shirt"
           onClose={() => setZoomed(false)}
         />
@@ -231,23 +256,60 @@ const FriendShirtSection = ({ delay = 0 }: { delay?: number }) => {
         transition={{ duration: 0.5, delay }}
       >
         <div className="bg-card rounded-none border border-border/60 overflow-hidden">
-          {/* Image */}
+          {/* Media gallery */}
           <div className="relative bg-secondary/30">
             <div
-              className="cursor-zoom-in aspect-square flex items-center justify-center p-4"
-              onClick={() => setZoomed(true)}
+              className={`${current.type === "image" ? "cursor-zoom-in" : ""} aspect-square flex items-center justify-center p-4`}
+              onClick={() => current.type === "image" && handleZoom(current.src)}
             >
-              <img
-                src={productFriendShirt}
-                alt="Friend Shirt"
-                className="max-w-full max-h-full object-contain"
-                loading="lazy"
-              />
+              <AnimatePresence mode="wait">
+                {current.type === "image" ? (
+                  <motion.img
+                    key={activeIndex}
+                    src={current.src}
+                    alt={`Friend Shirt ${current.label}`}
+                    className="max-w-full max-h-full object-contain"
+                    loading="lazy"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  />
+                ) : (
+                  <motion.video
+                    key={activeIndex}
+                    src={current.src}
+                    className="max-w-full max-h-full object-contain rounded-lg"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  />
+                )}
+              </AnimatePresence>
             </div>
             {/* FREE badge */}
             <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 uppercase tracking-wider">
               Free
             </div>
+          </div>
+
+          {/* Thumbnails */}
+          <div className="flex gap-2 px-4 py-3 border-t border-border/30 overflow-x-auto">
+            {media.map((item, idx) => (
+              <Thumbnail
+                key={idx}
+                src={item.src}
+                alt={item.label}
+                active={activeIndex === idx}
+                onClick={() => setActiveIndex(idx)}
+                isVideo={item.type === "video"}
+              />
+            ))}
           </div>
 
           {/* Product info */}
