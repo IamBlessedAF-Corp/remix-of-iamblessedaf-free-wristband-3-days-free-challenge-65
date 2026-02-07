@@ -441,4 +441,5 @@ const ProductSections = ({ afterWristband }: { afterWristband?: React.ReactNode 
   );
 };
 
+export { FriendShirtSection };
 export default ProductSections;
