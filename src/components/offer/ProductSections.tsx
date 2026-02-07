@@ -326,7 +326,6 @@ const FriendShirtSection = ({ delay = 0 }: { delay?: number }) => {
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold text-primary">FREE</span>
               <span className="text-base text-muted-foreground line-through">$111</span>
-              <span className="text-xs font-semibold text-primary ml-1 uppercase">Included</span>
             </div>
 
             {/* Size selector */}
