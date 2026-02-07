@@ -124,34 +124,6 @@ const Offer111 = () => {
               </footer>
             </blockquote>
 
-            {/* Huberman Video Clip */}
-            <p className="text-sm md:text-base italic text-muted-foreground max-w-lg mx-auto mb-3 leading-relaxed">
-              "The Biggest Surprise in researching since i started the podcast is how GRATITUDE skyrocket{" "}
-              <span className="font-bold text-foreground">DOPAMINE</span> &{" "}
-              <span className="font-bold text-foreground">SEROTONIN</span>..."
-            </p>
-            <motion.div
-              className="max-w-lg mx-auto mb-4 rounded-2xl overflow-hidden border border-border/50 shadow-soft"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 1.3 }}
-            >
-              <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                <iframe
-                  className="absolute inset-0 w-full h-full"
-                  src="https://www.youtube.com/embed/ph1BuMRFJ88"
-                  title="Huberman on Gratitude"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  loading="lazy"
-                />
-              </div>
-            </motion.div>
-
-            {/* Video context note */}
-            <p className="text-xs md:text-sm text-muted-foreground max-w-lg mx-auto mb-6 leading-relaxed">
-              In the full 1-hour and 25-minute version of a Joe Rogan podcast episode, Stanford neuroscientist Andrew Huberman breaks down the science of gratitude, referencing over eight peer-reviewed studies and revealing the most effective way to experience the real benefits of a gratitude practice.
-            </p>
           </motion.div>
 
           {/* Second CTA */}
