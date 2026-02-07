@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { useState, useRef } from "react";
+import { ArrowRight, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -12,16 +12,21 @@ const CustomMessageBox = () => {
   const [message, setMessage] = useState("");
   const [gender, setGender] = useState<string>("");
   const [saved, setSaved] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const charsLeft = MAX_CHARS - message.length;
 
   const handleSave = () => {
     if (message.trim() && gender) {
       setSaved(true);
-      // Could persist to localStorage or state management
       localStorage.setItem("friendShirtMessage", message);
       localStorage.setItem("friendShirtGender", gender);
     }
+  };
+
+  const handleTapToWrite = () => {
+    textareaRef.current?.focus();
   };
 
   return (
@@ -36,32 +41,68 @@ const CustomMessageBox = () => {
         ✍️ Complete this Message here
       </p>
 
-      {/* Pre-filled non-editable message */}
-      <div className="bg-muted/40 rounded-xl p-4 mb-0">
-        <p className="text-sm md:text-base italic text-foreground/80 text-center leading-relaxed">
-          "I am Blessed AF to Have a Best Friend
-        </p>
-        <p className="text-sm md:text-base italic text-foreground/80 text-center leading-relaxed">
-          TY! I'll Never Forget when You..."
-        </p>
+      {/* Unified message card — pre-filled + editable */}
+      <div
+        className={`rounded-xl border transition-all duration-300 overflow-hidden ${
+          isFocused
+            ? "border-primary shadow-[0_0_0_2px_hsl(var(--primary)/0.15)]"
+            : "border-border/60"
+        }`}
+      >
+        {/* Pre-filled non-editable part */}
+        <div className="bg-muted/30 px-4 pt-4 pb-2">
+          <p className="text-sm md:text-base font-medium text-foreground leading-relaxed">
+            I am Blessed AF to Have a Best Friend
+          </p>
+          <p className="text-sm md:text-base font-medium text-foreground leading-relaxed">
+            TY! I'll Never Forget when You...
+          </p>
+        </div>
+
+        {/* Editable area */}
+        <div
+          className="relative bg-muted/10 cursor-text"
+          onClick={handleTapToWrite}
+        >
+          {/* Blinking caret hint when empty and not focused */}
+          {!message && !isFocused && (
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center gap-2 pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.div
+                animate={{ opacity: [1, 0.3, 1] }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <PenLine className="w-4 h-4 text-primary" />
+              </motion.div>
+              <span className="text-sm text-muted-foreground">Tap here to write your message...</span>
+            </motion.div>
+          )}
+
+          <Textarea
+            ref={textareaRef}
+            placeholder="Mention the specific moment you FELT the most grateful for your Best Friend. What's the most meaningful thing they did for you?"
+            value={message}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            onChange={(e) => {
+              if (e.target.value.length <= MAX_CHARS) {
+                setMessage(e.target.value);
+                setSaved(false);
+              }
+            }}
+            className={`min-h-[90px] resize-none bg-transparent border-0 text-foreground text-sm rounded-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 ${
+              !message && !isFocused
+                ? "placeholder:text-transparent"
+                : "placeholder:text-muted-foreground/50"
+            }`}
+            maxLength={MAX_CHARS}
+          />
+        </div>
       </div>
-
-      {/* Divider */}
-      <div className="border-t border-dashed border-border mx-4" />
-
-      {/* Custom message textarea */}
-      <Textarea
-        placeholder="Mention the specific moment you FELT the most grateful for your Best Friend. What's the most meaningful thing they did for you?"
-        value={message}
-        onChange={(e) => {
-          if (e.target.value.length <= MAX_CHARS) {
-            setMessage(e.target.value);
-            setSaved(false);
-          }
-        }}
-        className="min-h-[80px] resize-none bg-muted/40 border-0 text-foreground placeholder:text-muted-foreground/60 text-sm rounded-xl rounded-t-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-        maxLength={MAX_CHARS}
-      />
 
       {/* Character count */}
       <div className="flex justify-end mt-1.5 mb-4">
