@@ -73,6 +73,25 @@ const GratitudeIntro = () => {
         </footer>
       </blockquote>
 
+      {/* Huberman Video Clip */}
+      <motion.div
+        className="max-w-lg mx-auto mb-6 rounded-2xl overflow-hidden border border-border/50 shadow-soft"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+          <iframe
+            className="absolute inset-0 w-full h-full"
+            src="https://www.youtube.com/embed/ph1BuMRFJ88"
+            title="Huberman on Gratitude"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            loading="lazy"
+          />
+        </div>
+      </motion.div>
+
       {/* CTA transition */}
       <p className="text-lg md:text-xl font-bold text-foreground">
         Wanna achieve it Faster?
