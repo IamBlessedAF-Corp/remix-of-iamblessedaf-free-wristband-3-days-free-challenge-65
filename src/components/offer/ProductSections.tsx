@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ImageZoomModal from "./ImageZoomModal";
 import productTshirtFront from "@/assets/product-tshirt-front.webp";
@@ -331,12 +331,13 @@ const WristbandSection = ({ delay = 0 }: { delay?: number }) => {
 /* ══════════════════════════════════════════════════
    Combined export
    ══════════════════════════════════════════════════ */
-const ProductSections = () => {
+const ProductSections = ({ afterWristband }: { afterWristband?: React.ReactNode }) => {
   return (
     <div className="space-y-6">
       <TshirtProductSection delay={0.4} />
       <FriendShirtSection delay={0.6} />
       <WristbandSection delay={0.8} />
+      {afterWristband}
     </div>
   );
 };
