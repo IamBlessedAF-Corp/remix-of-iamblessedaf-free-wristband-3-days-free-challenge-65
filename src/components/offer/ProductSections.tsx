@@ -4,6 +4,9 @@ import ImageZoomModal from "./ImageZoomModal";
 import productTshirtFront from "@/assets/product-tshirt-front.webp";
 import productTshirtBack from "@/assets/product-tshirt-back.webp";
 import productTshirtVideo from "@/assets/product-tshirt-video2.mp4";
+import productTshirtModel1 from "@/assets/product-tshirt-model1.png";
+import productTshirtModel2 from "@/assets/product-tshirt-model2.png";
+import productTshirtModel3 from "@/assets/product-tshirt-model3.png";
 import productFriendShirt from "@/assets/product-friend-shirt.png";
 import productWristbands from "@/assets/product-wristbands.avif";
 
@@ -80,6 +83,9 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
   const media = [
     { type: "image" as const, src: productTshirtFront, label: "Front" },
     { type: "image" as const, src: productTshirtBack, label: "Back" },
+    { type: "image" as const, src: productTshirtModel1, label: "Model 1" },
+    { type: "image" as const, src: productTshirtModel2, label: "Model 2" },
+    { type: "image" as const, src: productTshirtModel3, label: "Model 3" },
     { type: "video" as const, src: productTshirtVideo, label: "Video" },
   ];
   const current = media[activeIndex];
