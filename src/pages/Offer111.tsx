@@ -127,6 +127,16 @@ const Offer111 = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 1.1 }}
           >
+            {/* Huberman Quote */}
+            <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-6 shadow-soft">
+              <p className="text-sm md:text-base italic text-foreground leading-relaxed">
+                "Gratitude isn't created by affirmations, it's activated by receiving genuine appreciation."
+              </p>
+              <footer className="mt-3 text-xs md:text-sm text-muted-foreground font-semibold">
+                — Andrew Huberman, Neuroscientist
+              </footer>
+            </blockquote>
+
             <p className="text-base md:text-lg text-muted-foreground mb-2 max-w-lg mx-auto">
               Dr. Hawkins — PhD Psychiatrist Research illustrated by this emotional scale, the frequency of{" "}
               <span className="font-bold text-foreground">shame is 20 Hz</span> and{" "}
@@ -153,16 +163,6 @@ const Offer111 = () => {
                 loading="lazy"
               />
             </motion.div>
-
-            {/* Huberman Quote */}
-            <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-6 shadow-soft">
-              <p className="text-sm md:text-base italic text-foreground leading-relaxed">
-                "Gratitude isn't created by affirmations, it's activated by receiving genuine appreciation."
-              </p>
-              <footer className="mt-3 text-xs md:text-sm text-muted-foreground font-semibold">
-                — Andrew Huberman, Neuroscientist
-              </footer>
-            </blockquote>
 
           </motion.div>
 
