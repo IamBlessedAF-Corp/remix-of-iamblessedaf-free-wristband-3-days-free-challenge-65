@@ -84,6 +84,16 @@ const Offer111 = () => {
           <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
             GRATITUDE PACK
           </p>
+
+          <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-6 shadow-soft">
+            <p className="text-sm md:text-base italic text-foreground leading-relaxed">
+              "Whatever you consistently attach to 'I am' with strong emotion and repetition—such as 'I am bold'—you will eventually become. Unlike saying 'I'm going to be bold.'"
+            </p>
+            <footer className="mt-3 text-xs md:text-sm text-muted-foreground font-semibold">
+              — Tony Robbins
+            </footer>
+          </blockquote>
+
           <ProductSections />
 
           {/* Science Section — moved below CTA */}
