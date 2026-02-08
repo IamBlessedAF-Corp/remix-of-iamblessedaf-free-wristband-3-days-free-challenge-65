@@ -10,7 +10,7 @@ import AuthorAvatar from "@/components/offer/AuthorAvatar";
 
 const GratitudeIntro = () => {
   const [message, setMessage] = useState("");
-  
+  const [friendName, setFriendName] = useState("");
 
   return (
     <motion.div
@@ -56,6 +56,8 @@ const GratitudeIntro = () => {
         delay={0.15}
         message={message}
         onMessageChange={setMessage}
+        friendName={friendName}
+        onFriendNameChange={setFriendName}
       />
 
       <p className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2 leading-tight">
