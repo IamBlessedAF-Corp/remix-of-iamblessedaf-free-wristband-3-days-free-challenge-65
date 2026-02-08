@@ -2,6 +2,7 @@ import { Draggable } from "@hello-pangea/dnd";
 import type { BoardCard } from "@/hooks/useBoard";
 import { Badge } from "@/components/ui/badge";
 import { Clock, AlertTriangle, Zap, Star, Image, FileText, ExternalLink, ClipboardList } from "lucide-react";
+import { getStageInfo } from "./StageSelector";
 
 interface KanbanCardProps {
   card: BoardCard;
@@ -17,6 +18,12 @@ const priorityConfig: Record<string, { color: string; icon: React.ReactNode }> =
   low: { color: "bg-muted", icon: <Clock className="w-3 h-3" /> },
 };
 
+function getDelegationBadge(score: number) {
+  if (score >= 70) return { text: `D:${score.toFixed(0)}`, className: "bg-green-500/20 text-green-400 border-green-500/40" };
+  if (score >= 40) return { text: `D:${score.toFixed(0)}`, className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/40" };
+  return { text: `D:${score.toFixed(0)}`, className: "bg-red-500/20 text-red-400 border-red-500/40" };
+}
+
 const KanbanCard = ({ card, index, onClick, canEdit }: KanbanCardProps) => {
   const priority = priorityConfig[card.priority] || priorityConfig.medium;
   const hasScreenshots = card.screenshots && card.screenshots.length > 0;
@@ -24,6 +31,8 @@ const KanbanCard = ({ card, index, onClick, canEdit }: KanbanCardProps) => {
   const hasSummary = !!card.summary;
   const hasPreviewLink = !!card.preview_link;
   const hasReviewEvidence = hasScreenshots || hasLogs || hasSummary || hasPreviewLink;
+  const stageInfo = getStageInfo(card.stage);
+  const delegation = getDelegationBadge(card.delegation_score || 0);
 
   return (
     <Draggable draggableId={card.id} index={index} isDragDisabled={!canEdit}>
@@ -37,6 +46,16 @@ const KanbanCard = ({ card, index, onClick, canEdit }: KanbanCardProps) => {
             snapshot.isDragging ? "shadow-lg ring-2 ring-primary/30 rotate-2" : ""
           }`}
         >
+          {/* Top row: stage + delegation score */}
+          <div className="flex items-center justify-between mb-1.5">
+            <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${stageInfo.color} text-white border-0`}>
+              {stageInfo.label.split(" — ")[0]}
+            </Badge>
+            <Badge variant="outline" className={`text-[9px] px-1.5 py-0 font-mono ${delegation.className}`}>
+              {delegation.text}
+            </Badge>
+          </div>
+
           {/* Priority bar */}
           <div className={`h-1 w-8 rounded-full ${priority.color} mb-2`} />
 

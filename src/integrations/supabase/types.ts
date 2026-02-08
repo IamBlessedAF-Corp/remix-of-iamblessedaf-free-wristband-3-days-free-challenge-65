@@ -46,9 +46,13 @@ export type Database = {
       }
       board_cards: {
         Row: {
+          ad_score: number | null
+          cc_score: number | null
           column_id: string
           created_at: string
+          delegation_score: number | null
           description: string | null
+          hu_score: number | null
           id: string
           labels: string[] | null
           logs: string | null
@@ -56,16 +60,23 @@ export type Database = {
           position: number
           preview_link: string | null
           priority: string | null
+          r_score: number | null
           screenshots: string[] | null
+          stage: string | null
           staging_status: string | null
           summary: string | null
           title: string
           updated_at: string
+          vs_score: number | null
         }
         Insert: {
+          ad_score?: number | null
+          cc_score?: number | null
           column_id: string
           created_at?: string
+          delegation_score?: number | null
           description?: string | null
+          hu_score?: number | null
           id?: string
           labels?: string[] | null
           logs?: string | null
@@ -73,16 +84,23 @@ export type Database = {
           position?: number
           preview_link?: string | null
           priority?: string | null
+          r_score?: number | null
           screenshots?: string[] | null
+          stage?: string | null
           staging_status?: string | null
           summary?: string | null
           title: string
           updated_at?: string
+          vs_score?: number | null
         }
         Update: {
+          ad_score?: number | null
+          cc_score?: number | null
           column_id?: string
           created_at?: string
+          delegation_score?: number | null
           description?: string | null
+          hu_score?: number | null
           id?: string
           labels?: string[] | null
           logs?: string | null
@@ -90,11 +108,14 @@ export type Database = {
           position?: number
           preview_link?: string | null
           priority?: string | null
+          r_score?: number | null
           screenshots?: string[] | null
+          stage?: string | null
           staging_status?: string | null
           summary?: string | null
           title?: string
           updated_at?: string
+          vs_score?: number | null
         }
         Relationships: [
           {

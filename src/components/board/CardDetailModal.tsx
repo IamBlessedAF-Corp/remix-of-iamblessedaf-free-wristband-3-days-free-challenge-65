@@ -22,6 +22,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ExternalLink, Save, Trash2, Clock, Upload, X, Image } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { BoardCard, BoardColumn } from "@/hooks/useBoard";
+import StageSelector from "./StageSelector";
+import DecisionMatrixInput from "./DecisionMatrixInput";
 
 interface CardDetailModalProps {
   card: BoardCard | null;
@@ -32,6 +34,16 @@ interface CardDetailModalProps {
   onDelete: (cardId: string) => void;
   isAdmin: boolean;
   canEdit: boolean;
+}
+
+function computeDelegationScore(scores: Record<string, number>): number {
+  const vs = scores.vs_score || 0;
+  const cc = scores.cc_score || 0;
+  const hu = scores.hu_score || 0;
+  const r = scores.r_score || 0;
+  const ad = scores.ad_score || 0;
+  const maxDenom = 5 * (0.3 + 0.25 + 0.3 + 0.15 + 0.3);
+  return ((vs * 0.3 + cc * 0.25 + (5 - hu) * 0.3 + r * 0.15 + ad * 0.3) * 100) / maxDenom;
 }
 
 const CardDetailModal = ({
@@ -57,6 +69,8 @@ const CardDetailModal = ({
   const [labels, setLabels] = useState<string[]>([]);
   const [screenshots, setScreenshots] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [stage, setStage] = useState("stage-1");
+  const [scores, setScores] = useState({ vs_score: 0, cc_score: 0, hu_score: 0, r_score: 0, ad_score: 0 });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -72,10 +86,24 @@ const CardDetailModal = ({
       setPreviewLink(card.preview_link || "");
       setLabels(card.labels || []);
       setScreenshots(card.screenshots || []);
+      setStage(card.stage || "stage-1");
+      setScores({
+        vs_score: card.vs_score || 0,
+        cc_score: card.cc_score || 0,
+        hu_score: card.hu_score || 0,
+        r_score: card.r_score || 0,
+        ad_score: card.ad_score || 0,
+      });
     }
   }, [card]);
 
   if (!card) return null;
+
+  const delegationScore = computeDelegationScore(scores);
+
+  const handleScoreChange = (key: string, value: number) => {
+    setScores((prev) => ({ ...prev, [key]: value }));
+  };
 
   const handleSave = () => {
     onSave(card.id, {
@@ -90,6 +118,13 @@ const CardDetailModal = ({
       preview_link: previewLink || null,
       labels,
       screenshots,
+      stage,
+      vs_score: scores.vs_score,
+      cc_score: scores.cc_score,
+      hu_score: scores.hu_score,
+      r_score: scores.r_score,
+      ad_score: scores.ad_score,
+      delegation_score: delegationScore,
     });
     onClose();
   };
@@ -97,33 +132,25 @@ const CardDetailModal = ({
   const handleUploadScreenshot = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setUploading(true);
     const fileName = `${card.id}/${Date.now()}-${file.name}`;
-
     const { data, error } = await supabase.storage
       .from("board-screenshots")
       .upload(fileName, file, { upsert: false });
-
     if (error) {
       console.error("Upload failed:", error);
       setUploading(false);
       return;
     }
-
     const { data: urlData } = supabase.storage
       .from("board-screenshots")
       .getPublicUrl(data.path);
-
     setScreenshots([...screenshots, urlData.publicUrl]);
     setUploading(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const removeScreenshot = (url: string) => {
-    setScreenshots(screenshots.filter((s) => s !== url));
-  };
-
+  const removeScreenshot = (url: string) => setScreenshots(screenshots.filter((s) => s !== url));
   const addLabel = () => {
     const trimmed = labelInput.trim();
     if (trimmed && !labels.includes(trimmed)) {
@@ -131,9 +158,7 @@ const CardDetailModal = ({
       setLabelInput("");
     }
   };
-
   const removeLabel = (l: string) => setLabels(labels.filter((x) => x !== l));
-
   const currentColumn = columns.find((c) => c.id === columnId);
 
   return (
@@ -165,58 +190,30 @@ const CardDetailModal = ({
             <div className="space-y-4 mt-4">
               {/* Title */}
               <div>
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Title
-                </Label>
-                <Input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  disabled={!canEdit}
-                  className="mt-1"
-                />
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Title</Label>
+                <Input value={title} onChange={(e) => setTitle(e.target.value)} disabled={!canEdit} className="mt-1" />
               </div>
 
               {/* Description */}
               <div>
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Description
-                </Label>
-                <Textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  disabled={!canEdit}
-                  rows={3}
-                  className="mt-1"
-                />
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Description</Label>
+                <Textarea value={description} onChange={(e) => setDescription(e.target.value)} disabled={!canEdit} rows={3} className="mt-1" />
               </div>
 
               {/* Master Prompt */}
               <div>
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  🎯 Master Prompt (Task Instructions)
-                </Label>
-                <Textarea
-                  value={masterPrompt}
-                  onChange={(e) => setMasterPrompt(e.target.value)}
-                  disabled={!canEdit}
-                  rows={8}
-                  className="mt-1 font-mono text-xs"
-                  placeholder="Detailed task instructions for execution..."
-                />
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">🎯 Master Prompt (Task Instructions)</Label>
+                <Textarea value={masterPrompt} onChange={(e) => setMasterPrompt(e.target.value)} disabled={!canEdit} rows={8} className="mt-1 font-mono text-xs" placeholder="Detailed task instructions for execution..." />
               </div>
 
               <Separator />
 
-              {/* Row: Priority + Column + Staging */}
-              <div className="grid grid-cols-3 gap-3">
+              {/* Row: Priority + Column + Staging + Stage */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div>
-                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Priority
-                  </Label>
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Priority</Label>
                   <Select value={priority} onValueChange={setPriority} disabled={!canEdit}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
+                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="critical">🔴 Critical</SelectItem>
                       <SelectItem value="high">🟠 High</SelectItem>
@@ -225,106 +222,74 @@ const CardDetailModal = ({
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div>
-                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Column
-                  </Label>
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Column</Label>
                   <Select value={columnId} onValueChange={setColumnId} disabled={!canEdit}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
+                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      {columns.map((col) => (
-                        <SelectItem key={col.id} value={col.id}>
-                          {col.name}
-                        </SelectItem>
-                      ))}
+                      {columns.map((col) => (<SelectItem key={col.id} value={col.id}>{col.name}</SelectItem>))}
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div>
-                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Status
-                  </Label>
-                  <Select
-                    value={stagingStatus}
-                    onValueChange={setStagingStatus}
-                    disabled={!canEdit}
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</Label>
+                  <Select value={stagingStatus} onValueChange={setStagingStatus} disabled={!canEdit}>
+                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="staging">🔵 Staging</SelectItem>
                       <SelectItem value="production">🟢 Production</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+                <StageSelector value={stage} onChange={setStage} disabled={!canEdit} />
               </div>
+
+              <Separator />
+
+              {/* Decision Matrix */}
+              <DecisionMatrixInput
+                scores={scores}
+                delegationScore={delegationScore}
+                onChange={handleScoreChange}
+                disabled={!canEdit}
+              />
+
+              <Separator />
 
               {/* Labels */}
               <div>
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Labels
-                </Label>
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Labels</Label>
                 <div className="flex flex-wrap gap-1 mt-1 mb-2">
                   {labels.map((l) => (
-                    <Badge
-                      key={l}
-                      variant="secondary"
-                      className="cursor-pointer"
-                      onClick={() => canEdit && removeLabel(l)}
-                    >
+                    <Badge key={l} variant="secondary" className="cursor-pointer" onClick={() => canEdit && removeLabel(l)}>
                       {l} {canEdit && "×"}
                     </Badge>
                   ))}
                 </div>
                 {canEdit && (
                   <div className="flex gap-2">
-                    <Input
-                      value={labelInput}
-                      onChange={(e) => setLabelInput(e.target.value)}
-                      placeholder="Add label..."
-                      className="flex-1"
-                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addLabel())}
-                    />
-                    <Button variant="outline" size="sm" onClick={addLabel}>
-                      Add
-                    </Button>
+                    <Input value={labelInput} onChange={(e) => setLabelInput(e.target.value)} placeholder="Add label..." className="flex-1" onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addLabel())} />
+                    <Button variant="outline" size="sm" onClick={addLabel}>Add</Button>
                   </div>
                 )}
               </div>
 
               <Separator />
 
-              {/* ===== REVIEW EVIDENCE SECTION ===== */}
+              {/* Review Evidence */}
               <div className="bg-muted/30 rounded-xl p-4 border border-border space-y-4">
-                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                  📸 Review Evidence
-                </h3>
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">📸 Review Evidence</h3>
 
                 {/* Screenshots */}
                 <div>
-                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Screenshots
-                  </Label>
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Screenshots</Label>
                   {screenshots.length > 0 && (
                     <div className="grid grid-cols-2 gap-2 mt-2">
                       {screenshots.map((url, i) => (
                         <div key={i} className="relative group rounded-lg overflow-hidden border border-border">
-                          <img
-                            src={url}
-                            alt={`Screenshot ${i + 1}`}
-                            className="w-full h-32 object-cover object-top cursor-pointer"
-                            onClick={() => window.open(url, "_blank")}
-                          />
+                          <img src={url} alt={`Screenshot ${i + 1}`} className="w-full h-32 object-cover object-top cursor-pointer" onClick={() => window.open(url, "_blank")} />
                           {canEdit && (
-                            <button
-                              onClick={() => removeScreenshot(url)}
-                              className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
+                            <button onClick={() => removeScreenshot(url)} className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                               <X className="w-3 h-3" />
                             </button>
                           )}
@@ -334,27 +299,14 @@ const CardDetailModal = ({
                   )}
                   {screenshots.length === 0 && (
                     <div className="mt-2 border border-dashed border-border rounded-lg p-4 flex items-center justify-center text-muted-foreground">
-                      <Image className="w-4 h-4 mr-2" />
-                      <span className="text-xs">No screenshots yet</span>
+                      <Image className="w-4 h-4 mr-2" /><span className="text-xs">No screenshots yet</span>
                     </div>
                   )}
                   {canEdit && (
                     <div className="mt-2">
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleUploadScreenshot}
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={uploading}
-                      >
-                        <Upload className="w-3 h-3 mr-1" />
-                        {uploading ? "Uploading..." : "Upload Screenshot"}
+                      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUploadScreenshot} />
+                      <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+                        <Upload className="w-3 h-3 mr-1" />{uploading ? "Uploading..." : "Upload Screenshot"}
                       </Button>
                     </div>
                   )}
@@ -362,52 +314,24 @@ const CardDetailModal = ({
 
                 {/* Dev Logs */}
                 <div>
-                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    📋 Development Logs
-                  </Label>
-                  <Textarea
-                    value={logs}
-                    onChange={(e) => setLogs(e.target.value)}
-                    disabled={!canEdit}
-                    rows={4}
-                    className="mt-1 font-mono text-xs"
-                    placeholder="Log entries from development..."
-                  />
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">📋 Development Logs</Label>
+                  <Textarea value={logs} onChange={(e) => setLogs(e.target.value)} disabled={!canEdit} rows={4} className="mt-1 font-mono text-xs" placeholder="Log entries from development..." />
                 </div>
 
                 {/* Summary */}
                 <div>
-                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    📝 Summary of Changes
-                  </Label>
-                  <Textarea
-                    value={summary}
-                    onChange={(e) => setSummary(e.target.value)}
-                    disabled={!canEdit}
-                    rows={3}
-                    className="mt-1"
-                    placeholder="Summary of what was done..."
-                  />
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">📝 Summary of Changes</Label>
+                  <Textarea value={summary} onChange={(e) => setSummary(e.target.value)} disabled={!canEdit} rows={3} className="mt-1" placeholder="Summary of what was done..." />
                 </div>
 
                 {/* Preview Link */}
                 <div>
-                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    🔗 Preview / Test Link
-                  </Label>
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">🔗 Preview / Test Link</Label>
                   <div className="flex gap-2 mt-1">
-                    <Input
-                      value={previewLink}
-                      onChange={(e) => setPreviewLink(e.target.value)}
-                      disabled={!canEdit}
-                      placeholder="https://preview-url..."
-                      className="flex-1"
-                    />
+                    <Input value={previewLink} onChange={(e) => setPreviewLink(e.target.value)} disabled={!canEdit} placeholder="https://preview-url..." className="flex-1" />
                     {previewLink && (
                       <Button variant="outline" size="icon" asChild>
-                        <a href={previewLink} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
+                        <a href={previewLink} target="_blank" rel="noopener noreferrer"><ExternalLink className="w-4 h-4" /></a>
                       </Button>
                     )}
                   </div>
@@ -416,14 +340,8 @@ const CardDetailModal = ({
 
               {/* Timestamps */}
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  Created: {new Date(card.created_at).toLocaleDateString()}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  Updated: {new Date(card.updated_at).toLocaleDateString()}
-                </div>
+                <div className="flex items-center gap-1"><Clock className="w-3 h-3" />Created: {new Date(card.created_at).toLocaleDateString()}</div>
+                <div className="flex items-center gap-1"><Clock className="w-3 h-3" />Updated: {new Date(card.updated_at).toLocaleDateString()}</div>
               </div>
 
               <Separator />
@@ -431,20 +349,11 @@ const CardDetailModal = ({
               {/* Actions */}
               {canEdit && (
                 <div className="flex items-center justify-between">
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => {
-                      onDelete(card.id);
-                      onClose();
-                    }}
-                  >
-                    <Trash2 className="w-4 h-4 mr-1" />
-                    Delete Card
+                  <Button variant="destructive" size="sm" onClick={() => { onDelete(card.id); onClose(); }}>
+                    <Trash2 className="w-4 h-4 mr-1" />Delete Card
                   </Button>
                   <Button onClick={handleSave}>
-                    <Save className="w-4 h-4 mr-1" />
-                    Save Changes
+                    <Save className="w-4 h-4 mr-1" />Save Changes
                   </Button>
                 </div>
               )}
