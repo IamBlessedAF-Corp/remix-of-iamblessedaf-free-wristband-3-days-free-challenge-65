@@ -61,7 +61,7 @@ const ShirtTextOverlay = ({
         fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
       }}
     >
-      I am Blessed AF
+      To have a Best Friend
     </p>
     <p
       className="text-foreground leading-tight font-semibold text-center pointer-events-none"
@@ -70,7 +70,7 @@ const ShirtTextOverlay = ({
         fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
       }}
     >
-      to Have a Best Friend
+      Gave me this Shirt & Said;
     </p>
     {/* Editable friend name — own line */}
     {isEditable && onFriendNameChange ? (
