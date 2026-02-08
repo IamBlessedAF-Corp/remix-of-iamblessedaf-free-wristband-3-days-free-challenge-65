@@ -1,7 +1,8 @@
 import { Draggable } from "@hello-pangea/dnd";
 import type { BoardCard } from "@/hooks/useBoard";
 import { Badge } from "@/components/ui/badge";
-import { Clock, AlertTriangle, Zap, Star, Image, FileText, ExternalLink, ClipboardList } from "lucide-react";
+import { Clock, AlertTriangle, Zap, Star, Image, FileText, ExternalLink, ClipboardList, CheckCircle2 } from "lucide-react";
+import { format } from "date-fns";
 import { getStageInfo } from "./StageSelector";
 
 interface KanbanCardProps {
@@ -130,6 +131,16 @@ const KanbanCard = ({ card, index, onClick, canEdit }: KanbanCardProps) => {
                   {label}
                 </Badge>
               ))}
+            </div>
+          )}
+
+          {/* Completed date */}
+          {card.completed_at && (
+            <div className="flex items-center gap-1 text-green-500 mb-1.5">
+              <CheckCircle2 className="w-3 h-3" />
+              <span className="text-[10px] font-medium">
+                Completed {format(new Date(card.completed_at), "MMM d, yyyy")}
+              </span>
             </div>
           )}
 
