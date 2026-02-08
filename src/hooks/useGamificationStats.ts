@@ -160,8 +160,19 @@ export function useGamificationStats() {
     []
   );
 
+  /** Reward for sharing (SMS, WhatsApp, link copy) */
+  const rewardShare = useCallback((method: "sms" | "whatsapp" | "link") => {
+    const shareRewards: Record<string, number> = { sms: 15, whatsapp: 15, link: 5 };
+    const amount = shareRewards[method] || 5;
+    setStats((s) => {
+      const updated = { ...s, blessedCoins: s.blessedCoins + amount };
+      saveLocal(updated);
+      return updated;
+    });
+  }, []);
+
   /** Fire-and-forget: reward the user for completing a checkout at a given tier */
-  const rewardCheckout = useCallback((tier: OfferTier) => {
+  const rewardCheckout = useCallback(async (tier: OfferTier) => {
     const r = TIER_REWARDS[tier];
     setStats((s) => {
       const updated = {
@@ -176,7 +187,39 @@ export function useGamificationStats() {
       saveLocal(updated);
       return updated;
     });
+
+    // Also sync to DB wallet if user is authenticated
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const from = (table: string) => supabase.from(table as any);
+        const { data: wallet } = await from("bc_wallets")
+          .select("id, balance, lifetime_earned")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        if (wallet) {
+          const w = wallet as any;
+          const newBalance = w.balance + r.coins;
+          await Promise.all([
+            (from("bc_wallets") as any)
+              .update({ balance: newBalance, lifetime_earned: w.lifetime_earned + r.coins })
+              .eq("id", w.id),
+            from("bc_transactions").insert({
+              user_id: user.id,
+              wallet_id: w.id,
+              type: "earn",
+              amount: r.coins,
+              reason: "checkout",
+              metadata: { tier, hearts: r.hearts, meals: r.meals },
+              balance_after: newBalance,
+            } as any),
+          ]);
+        }
+      }
+    } catch (err) {
+      console.error("BC wallet sync error (non-blocking):", err);
+    }
   }, []);
 
-  return { stats, addCoins, addHearts, incrementStreak, addImpact, rewardCheckout };
+  return { stats, addCoins, addHearts, incrementStreak, addImpact, rewardShare, rewardCheckout };
 }

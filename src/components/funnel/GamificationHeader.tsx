@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Flame, Heart, Globe, Users } from "lucide-react";
 import { useGamificationStats } from "@/hooks/useGamificationStats";
+import BcCoinButton from "@/components/gamification/BcCoinButton";
 
 /** Animated rolling number */
 function RollingNumber({ value, className = "" }: { value: number; className?: string }) {
@@ -51,12 +52,8 @@ const GamificationHeader = () => {
       <div className="bg-foreground/95 backdrop-blur-md text-background">
         <div className="container mx-auto px-3">
           <div className="flex items-center justify-between h-10 gap-2 text-xs font-medium">
-            {/* Blessed Coins */}
-            <div className="flex items-center gap-1 shrink-0">
-              <span className="text-sm">🪙</span>
-              <RollingNumber value={stats.blessedCoins} className="font-bold tabular-nums" />
-              <span className="hidden sm:inline opacity-70">BC</span>
-            </div>
+            {/* Blessed Coins — clickable to open wallet */}
+            <BcCoinButton balance={stats.blessedCoins} />
 
             {/* Hearts (Impact Score) */}
             <div className="flex items-center gap-1 shrink-0">

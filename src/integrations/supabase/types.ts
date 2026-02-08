@@ -14,6 +14,169 @@ export type Database = {
   }
   public: {
     Tables: {
+      bc_redemptions: {
+        Row: {
+          cost_bc: number
+          created_at: string
+          id: string
+          redemption_code: string | null
+          status: string
+          store_item_id: string
+          user_id: string
+        }
+        Insert: {
+          cost_bc: number
+          created_at?: string
+          id?: string
+          redemption_code?: string | null
+          status?: string
+          store_item_id: string
+          user_id: string
+        }
+        Update: {
+          cost_bc?: number
+          created_at?: string
+          id?: string
+          redemption_code?: string | null
+          status?: string
+          store_item_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bc_redemptions_store_item_id_fkey"
+            columns: ["store_item_id"]
+            isOneToOne: false
+            referencedRelation: "bc_store_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bc_store_items: {
+        Row: {
+          category: string
+          cost_bc: number
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          reward_type: string
+          reward_value: Json
+          sort_order: number
+          stock: number | null
+        }
+        Insert: {
+          category?: string
+          cost_bc: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name: string
+          reward_type?: string
+          reward_value?: Json
+          sort_order?: number
+          stock?: number | null
+        }
+        Update: {
+          category?: string
+          cost_bc?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          reward_type?: string
+          reward_value?: Json
+          sort_order?: number
+          stock?: number | null
+        }
+        Relationships: []
+      }
+      bc_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string
+          id: string
+          metadata: Json | null
+          reason: string
+          type: string
+          user_id: string
+          wallet_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          reason: string
+          type: string
+          user_id: string
+          wallet_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          reason?: string
+          type?: string
+          user_id?: string
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bc_transactions_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "bc_wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bc_wallets: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          last_login_bonus_at: string | null
+          lifetime_earned: number
+          lifetime_spent: number
+          streak_days: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          last_login_bonus_at?: string | null
+          lifetime_earned?: number
+          lifetime_spent?: number
+          streak_days?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          last_login_bonus_at?: string | null
+          lifetime_earned?: number
+          lifetime_spent?: number
+          streak_days?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       blessings: {
         Row: {
           confirmation_token: string

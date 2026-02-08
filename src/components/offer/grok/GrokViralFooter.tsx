@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Share2, MessageCircle, Loader2, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useGamificationStats } from "@/hooks/useGamificationStats";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,7 @@ const DEFAULT_MESSAGE =
   "🎁 Someone thinks you're blessed! You've been gifted a FREE 'I Am Blessed AF' Wristband — just cover $9.95 shipping. Claim yours: https://iamblessedaf.com/offer/111-grok";
 
 const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
+  const { rewardShare } = useGamificationStats();
   const [smsOpen, setSmsOpen] = useState(false);
   const [phone, setPhone] = useState("");
   const [friendName, setFriendName] = useState("");
@@ -54,7 +56,8 @@ const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
       if (data?.error) throw new Error(data.error);
 
       setSent(true);
-      toast.success("🎉 Gift SMS sent!");
+      toast.success("🎉 Gift SMS sent! +15 BC 🪙");
+      rewardShare("sms");
       setTimeout(() => {
         setSmsOpen(false);
         setSent(false);
@@ -81,7 +84,8 @@ const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
       }
     } else {
       await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-      toast.success("Link copied to clipboard! 📋");
+      toast.success("Link copied! +5 BC 🪙");
+      rewardShare("link");
     }
   };
 
