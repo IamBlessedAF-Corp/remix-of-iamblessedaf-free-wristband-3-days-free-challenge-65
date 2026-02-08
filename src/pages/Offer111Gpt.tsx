@@ -12,7 +12,6 @@ import GptRiskReversal from "@/components/offer/gpt/GptRiskReversal";
 import GptMessageModule from "@/components/offer/gpt/GptMessageModule";
 import GptStickyBar from "@/components/offer/gpt/GptStickyBar";
 import GptViralShare from "@/components/offer/gpt/GptViralShare";
-import CustomMessageBox from "@/components/offer/CustomMessageBox";
 import DiscountBanner from "@/components/offer/DiscountBanner";
 import ResearchList from "@/components/offer/ResearchList";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
@@ -108,7 +107,7 @@ const Offer111Gpt = () => {
             </p>
           </motion.div>
 
-          <FriendShirtSection delay={0.14} afterHeroSlot={<CustomMessageBox />} />
+          <FriendShirtSection delay={0.14} />
 
           {/* ─── 3. Value Stack: Emotion-First ─── */}
           <GptValueStack />

@@ -8,7 +8,6 @@ import GrokQuotesSection from "@/components/offer/grok/GrokQuotesSection";
 import GrokRiskReversal from "@/components/offer/grok/GrokRiskReversal";
 import GrokViralFooter from "@/components/offer/grok/GrokViralFooter";
 import { FriendShirtSection } from "@/components/offer/ProductSections";
-import CustomMessageBox from "@/components/offer/CustomMessageBox";
 import ProductSections from "@/components/offer/ProductSections";
 import ResearchList from "@/components/offer/ResearchList";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
@@ -63,7 +62,7 @@ const Offer1111 = () => {
             </p>
           </motion.div>
 
-          <FriendShirtSection delay={0.14} afterHeroSlot={<CustomMessageBox />} />
+          <FriendShirtSection delay={0.14} />
 
           {/* ─── 4. Value Stack ─── */}
           <Grok1111ValueStack />

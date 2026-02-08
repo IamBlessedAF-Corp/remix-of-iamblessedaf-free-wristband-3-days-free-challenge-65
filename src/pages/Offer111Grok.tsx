@@ -8,7 +8,6 @@ import GrokCtaBlock from "@/components/offer/grok/GrokCtaBlock";
 import GrokRiskReversal from "@/components/offer/grok/GrokRiskReversal";
 import GrokViralFooter from "@/components/offer/grok/GrokViralFooter";
 import { FriendShirtSection } from "@/components/offer/ProductSections";
-import CustomMessageBox from "@/components/offer/CustomMessageBox";
 import ProductSections from "@/components/offer/ProductSections";
 import DiscountBanner from "@/components/offer/DiscountBanner";
 import ResearchList from "@/components/offer/ResearchList";
@@ -65,7 +64,7 @@ const Offer111Grok = () => {
             </p>
           </motion.div>
 
-          <FriendShirtSection delay={0.14} afterHeroSlot={<CustomMessageBox />} />
+          <FriendShirtSection delay={0.14} />
 
           {/* ─── 3. Value Stack: Benefits-First Bullets ─── */}
           <GrokValueStack />

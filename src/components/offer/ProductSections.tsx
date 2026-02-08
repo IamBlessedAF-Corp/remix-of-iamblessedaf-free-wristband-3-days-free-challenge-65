@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ImageZoomModal from "./ImageZoomModal";
 import ShirtMessagePreview from "./ShirtMessagePreview";
+import ShirtCustomizer from "./ShirtCustomizer";
 import productTshirtFront from "@/assets/product-tshirt-front.webp";
 import productTshirtBack from "@/assets/product-tshirt-back.webp";
 import productTshirtVideo from "@/assets/product-tshirt-video2.mp4";
@@ -217,11 +218,15 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
 /* ══════════════════════════════════════════════════
    Friend Shirt — Shopify-style product card
    ══════════════════════════════════════════════════ */
-const FriendShirtSection = ({ delay = 0, afterHeroSlot, message = "", onMessageChange, friendName = "", onFriendNameChange }: { delay?: number; afterHeroSlot?: React.ReactNode; message?: string; onMessageChange?: (msg: string) => void; friendName?: string; onFriendNameChange?: (name: string) => void }) => {
+const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afterHeroSlot?: React.ReactNode }) => {
   const [zoomed, setZoomed] = useState(false);
   const [zoomedImage, setZoomedImage] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
-  const [selectedSize, setSelectedSize] = useState("M");
+
+  // Unified state — owned here, passed down to preview + customizer
+  const [friendName, setFriendName] = useState(() => localStorage.getItem("friendShirtName") || "");
+  const [message, setMessage] = useState(() => localStorage.getItem("friendShirtMessage") || "");
+  const [selectedSize, setSelectedSize] = useState(() => localStorage.getItem("friendShirtSize") || "M");
 
   // First item is the live preview component, rest are standard images/video
   const media = [
@@ -272,7 +277,12 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot, message = "", onMessageC
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.15 }}
                   >
-                    <ShirtMessagePreview message={message} onChange={onMessageChange} friendName={friendName} onFriendNameChange={onFriendNameChange} />
+                    <ShirtMessagePreview
+                      message={message}
+                      onChange={setMessage}
+                      friendName={friendName}
+                      onFriendNameChange={setFriendName}
+                    />
                   </motion.div>
                 ) : current.type === "image" ? (
                   <motion.img
@@ -309,7 +319,19 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot, message = "", onMessageC
             </div>
           </div>
 
-          {/* Slot for custom message box between hero and thumbnails */}
+          {/* Built-in customizer — replaces old afterHeroSlot for CustomMessageBox */}
+          <div className="px-4 py-4 border-t border-border/30">
+            <ShirtCustomizer
+              friendName={friendName}
+              onFriendNameChange={setFriendName}
+              message={message}
+              onMessageChange={setMessage}
+              selectedSize={selectedSize}
+              onSizeChange={setSelectedSize}
+            />
+          </div>
+
+          {/* Extra slot (for any additional content) */}
           {afterHeroSlot && (
             <div className="px-4 py-3 border-t border-border/30">
               {afterHeroSlot}
@@ -334,7 +356,7 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot, message = "", onMessageC
           <div className="px-4 pb-5 pt-4 space-y-4 border-t border-border/30">
             <div>
               <h3 className="text-lg md:text-xl font-semibold text-foreground tracking-tight leading-snug">
-                Custom Shirt for your Best Friend
+                Custom Shirt for{friendName ? ` ${friendName}` : " your Best Friend"}
               </h3>
               <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">
                 IamBlessedAF to have U as a Best Friend · One-side print
@@ -345,28 +367,6 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot, message = "", onMessageC
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold text-primary">FREE</span>
               <span className="text-base text-muted-foreground line-through">$111</span>
-            </div>
-
-            {/* Size selector */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-medium text-foreground uppercase tracking-wider">
-                  Size
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Selected: <span className="font-medium text-foreground">{selectedSize}</span>
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {TSHIRT_SIZES.map((size) => (
-                  <SizeButton
-                    key={size}
-                    size={size}
-                    selected={selectedSize === size}
-                    onClick={() => setSelectedSize(size)}
-                  />
-                ))}
-              </div>
             </div>
 
             {/* Shipping note */}
