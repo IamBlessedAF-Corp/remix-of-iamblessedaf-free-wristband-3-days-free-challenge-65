@@ -4,12 +4,26 @@ import { toast } from "sonner";
 
 export type PipelineMode = "clarify" | "execute" | "validate" | "sixsigma" | "full";
 
+const PHASE_ICONS: Record<string, string> = {
+  clarify: "💡",
+  execute: "⚡",
+  validate: "🔍",
+  sixsigma: "🔬",
+};
+
+const PHASE_LABELS: Record<string, string> = {
+  clarify: "Clarify",
+  execute: "Execute",
+  validate: "Validate",
+  sixsigma: "Six Sigma",
+};
+
 interface ExecutionState {
   isRunning: boolean;
   currentCardId: string | null;
   currentCardTitle: string | null;
   currentMode: PipelineMode | null;
-  currentPhase: string | null; // e.g. "clarify (2/5)"
+  currentPhase: string | null;
   processedCount: number;
   error: string | null;
 }
@@ -31,11 +45,38 @@ export function useAutoExecute(onRefetch: () => void) {
     setState((s) => ({ ...s, isRunning: false }));
   }, []);
 
-  /** Run a single mode on a single column until empty */
+  /** Invoke a single phase on a single card by ID */
+  const runSinglePhase = useCallback(
+    async (cardId: string, mode: string): Promise<{ ok: boolean; data: any }> => {
+      try {
+        const { data, error } = await supabase.functions.invoke("process-board-task", {
+          body: { card_id: cardId, mode },
+        });
+
+        if (error) {
+          toast.error(error.message || "Edge function error");
+          return { ok: false, data: null };
+        }
+
+        if (data?.error) {
+          toast.error(data.error);
+          return { ok: false, data };
+        }
+
+        return { ok: true, data };
+      } catch (e: any) {
+        toast.error(e?.message || "Unknown error");
+        return { ok: false, data: null };
+      }
+    },
+    []
+  );
+
+  /** Run a single mode on a column until empty (batch mode for individual phases) */
   const runPhase = useCallback(
     async (
       columnId: string,
-      mode: "clarify" | "execute" | "validate",
+      mode: "clarify" | "execute" | "validate" | "sixsigma",
       phaseLabel: string
     ): Promise<number> => {
       let processed = 0;
@@ -49,9 +90,8 @@ export function useAutoExecute(onRefetch: () => void) {
           });
 
           if (error) {
-            const msg = error.message || "Edge function error";
-            toast.error(msg);
-            throw new Error(msg);
+            toast.error(error.message || "Edge function error");
+            throw new Error(error.message);
           }
 
           if (data?.error) {
@@ -72,7 +112,7 @@ export function useAutoExecute(onRefetch: () => void) {
             processedCount: s.processedCount + 1,
           }));
 
-          const icon = mode === "clarify" ? "💡" : mode === "validate" ? "🔍" : "⚡";
+          const icon = PHASE_ICONS[mode] || "⚡";
 
           if (data.skipped) {
             toast.info(`${icon} Skipped: ${data.card_title || "card"}`);
@@ -96,6 +136,121 @@ export function useAutoExecute(onRefetch: () => void) {
     [onRefetch]
   );
 
+  /** Full pipeline: process ONE card end-to-end through all 4 phases before moving to the next */
+  const runFullPipelineE2E = useCallback(
+    async (sourceColumnId: string) => {
+      const phases: Array<"clarify" | "execute" | "validate" | "sixsigma"> = [
+        "clarify",
+        "execute",
+        "validate",
+        "sixsigma",
+      ];
+      let cardIndex = 0;
+
+      while (!abortRef.current) {
+        // 1. Pick the next card from the source column
+        const { data: pickData, error: pickError } = await supabase.functions.invoke(
+          "process-board-task",
+          { body: { source_column_id: sourceColumnId, mode: "clarify" } }
+        );
+
+        if (pickError) {
+          toast.error(pickError.message || "Edge function error");
+          break;
+        }
+
+        if (pickData?.error) {
+          toast.error(pickData.error);
+          break;
+        }
+
+        if (pickData?.done) {
+          onRefetch();
+          break; // No more cards in source column
+        }
+
+        const cardId = pickData.processed_card_id;
+        const cardTitle = pickData.card_title || "card";
+        cardIndex++;
+
+        setState((s) => ({
+          ...s,
+          currentCardId: cardId,
+          currentCardTitle: cardTitle,
+          currentPhase: `Card ${cardIndex}: Clarify`,
+          processedCount: s.processedCount + 1,
+        }));
+
+        // Show clarify result
+        if (pickData.relevant === false) {
+          toast.warning(`💡 Not relevant: ${cardTitle}`);
+          onRefetch();
+          await new Promise((r) => setTimeout(r, 1500));
+          continue; // Skip remaining phases for irrelevant cards
+        }
+
+        if (pickData.skipped) {
+          toast.info(`💡 Skipped: ${cardTitle}`);
+        } else {
+          toast.success(`💡 Clarify [${cardIndex}]: ${cardTitle}`);
+        }
+
+        onRefetch();
+        await new Promise((r) => setTimeout(r, 2000));
+
+        // 2. Run remaining phases (execute, validate, sixsigma) on this specific card
+        let cardFailed = false;
+        for (let i = 1; i < phases.length; i++) {
+          if (abortRef.current) break;
+
+          const phase = phases[i];
+          const label = PHASE_LABELS[phase];
+          const icon = PHASE_ICONS[phase];
+
+          setState((s) => ({
+            ...s,
+            currentPhase: `Card ${cardIndex}: ${label}`,
+          }));
+
+          const { ok, data } = await runSinglePhase(cardId, phase);
+
+          if (!ok) {
+            cardFailed = true;
+            toast.error(`${icon} ${label} failed for: ${cardTitle}`);
+            break;
+          }
+
+          if (data?.wip_blocked) {
+            toast.warning(`⏸ WIP limit reached — waiting for current card to finish`);
+            cardFailed = true;
+            break;
+          }
+
+          if (data?.skipped) {
+            toast.info(`${icon} Skipped ${label}: ${cardTitle}`);
+          } else if (phase === "validate" && data?.validation_status === "fail") {
+            toast.error(`${icon} Failed validation: ${cardTitle} → routed to Errors`);
+            cardFailed = true;
+            break; // Don't run Six Sigma on failed validation
+          } else if (phase === "sixsigma" && data?.passed === false) {
+            toast.warning(`${icon} Six Sigma blocked (${data.score}%): ${cardTitle}`);
+          } else {
+            toast.success(`${icon} ${label} [${cardIndex}]: ${cardTitle}`);
+          }
+
+          onRefetch();
+          await new Promise((r) => setTimeout(r, 2000));
+        }
+
+        if (cardFailed) {
+          onRefetch();
+          await new Promise((r) => setTimeout(r, 1500));
+        }
+      }
+    },
+    [onRefetch, runSinglePhase]
+  );
+
   /** Execute a single mode or the full pipeline */
   const execute = useCallback(
     async (sourceColumnId: string, mode: PipelineMode = "execute", columnMap?: Record<string, string>) => {
@@ -111,41 +266,17 @@ export function useAutoExecute(onRefetch: () => void) {
       });
 
       try {
-        if (mode === "full" && columnMap) {
-          // Full pipeline: Clarify → Execute → Validate → Six Sigma
-          const clarifyCol = columnMap.clarify;
-          const executeCol = columnMap.execute;
-          const validateCol = columnMap.validate;
-          const sixsigmaCol = columnMap.sixsigma;
-
-          if (clarifyCol && !abortRef.current) {
-            setState((s) => ({ ...s, currentPhase: "Phase 1: Clarify" }));
-            await runPhase(clarifyCol, "clarify", "Clarify");
-          }
-
-          if (executeCol && !abortRef.current) {
-            setState((s) => ({ ...s, currentPhase: "Phase 2: Execute" }));
-            await runPhase(executeCol, "execute", "Execute");
-          }
-
-          if (validateCol && !abortRef.current) {
-            setState((s) => ({ ...s, currentPhase: "Phase 3: Validate" }));
-            await runPhase(validateCol, "validate", "Validate");
-          }
-
-          // Six Sigma DMAIC verification on validated cards
-          const sigmaSource = sixsigmaCol || validateCol;
-          if (sigmaSource && !abortRef.current) {
-            setState((s) => ({ ...s, currentPhase: "Phase 4: Six Sigma 🔬" }));
-            await runPhase(sigmaSource, "sixsigma" as any, "Six Sigma");
-          }
+        if (mode === "full") {
+          // End-to-end: process each card through ALL phases before the next
+          const srcCol = columnMap?.clarify || sourceColumnId;
+          await runFullPipelineE2E(srcCol);
 
           if (!abortRef.current) {
-            toast.success("🎯 Full pipeline complete (incl. Six Sigma)!");
+            toast.success("🎯 Full pipeline complete — all cards processed end-to-end!");
           }
         } else {
-          // Single mode
-          await runPhase(sourceColumnId, mode as "clarify" | "execute" | "validate", mode);
+          // Single mode on a column
+          await runPhase(sourceColumnId, mode as "clarify" | "execute" | "validate" | "sixsigma", PHASE_LABELS[mode] || mode);
           if (!abortRef.current) {
             toast.success(`✅ ${mode} phase complete`);
           }
@@ -162,7 +293,7 @@ export function useAutoExecute(onRefetch: () => void) {
         currentPhase: null,
       }));
     },
-    [runPhase]
+    [runPhase, runFullPipelineE2E]
   );
 
   return { ...state, execute, stop };
