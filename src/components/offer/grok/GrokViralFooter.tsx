@@ -1,6 +1,11 @@
 import { motion } from "framer-motion";
 
-const GrokViralFooter = ({ delay = 0 }: { delay?: number }) => {
+interface GrokViralFooterProps {
+  delay?: number;
+  onSkip?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+}
+
+const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
   return (
     <motion.div
       className="text-center mb-8"
@@ -20,6 +25,7 @@ const GrokViralFooter = ({ delay = 0 }: { delay?: number }) => {
 
       <a
         href="/challenge/thanks"
+        onClick={onSkip}
         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         Maybe later? → (We'll send a reminder email)

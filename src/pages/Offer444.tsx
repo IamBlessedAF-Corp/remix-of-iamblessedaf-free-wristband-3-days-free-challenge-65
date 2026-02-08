@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
 import Grok444HeroSection from "@/components/offer/grok/Grok444HeroSection";
@@ -14,12 +16,34 @@ import DiscountBanner from "@/components/offer/DiscountBanner";
 import ResearchList from "@/components/offer/ResearchList";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
+import DownsellModal from "@/components/offer/DownsellModal";
 
 const Offer444 = () => {
+  const [showDownsell, setShowDownsell] = useState(false);
+  const navigate = useNavigate();
+
   const handleCheckout = () => {
     if (import.meta.env.DEV) {
       console.log("Redirecting to Stripe checkout for $444 Habit Lock Pack");
     }
+  };
+
+  const handleDownsellAccept = () => {
+    setShowDownsell(false);
+    if (import.meta.env.DEV) {
+      console.log("Redirecting to Stripe subscription for $11/mo downsell");
+    }
+    navigate("/offer/11mo");
+  };
+
+  const handleSkip = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setShowDownsell(true);
+  };
+
+  const handleFinalDecline = () => {
+    setShowDownsell(false);
+    navigate("/challenge/thanks");
   };
 
   return (
@@ -202,8 +226,16 @@ const Offer444 = () => {
           {/* ─── 14. CTA #4 (final) ─── */}
           <Grok444CtaBlock onCheckout={handleCheckout} delay={0.85} />
 
-          {/* ─── 15. Viral Footer + Skip ─── */}
-          <GrokViralFooter delay={0.9} />
+          {/* ─── 15. Viral Footer + Skip (triggers downsell) ─── */}
+          <GrokViralFooter delay={0.9} onSkip={handleSkip} />
+
+          {/* ─── Downsell Modal: $11/mo trial ─── */}
+          <DownsellModal
+            open={showDownsell}
+            onClose={() => setShowDownsell(false)}
+            onAccept={handleDownsellAccept}
+            onDecline={handleFinalDecline}
+          />
 
         </div>
       </div>
