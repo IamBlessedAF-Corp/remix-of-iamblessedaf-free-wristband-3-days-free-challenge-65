@@ -15,7 +15,7 @@ interface KanbanColumnProps {
 
 const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit }: KanbanColumnProps) => {
   return (
-    <div className="flex-shrink-0 w-72 bg-muted/30 rounded-xl flex flex-col max-h-[calc(100vh-120px)]">
+    <div className="flex-shrink-0 w-[280px] sm:w-72 bg-muted/30 rounded-xl flex flex-col max-h-[calc(100vh-140px)] sm:max-h-[calc(100vh-120px)] snap-center">
       {/* Column header */}
       <div
         className="px-3 py-2.5 rounded-t-xl border-b border-border flex items-center justify-between"
