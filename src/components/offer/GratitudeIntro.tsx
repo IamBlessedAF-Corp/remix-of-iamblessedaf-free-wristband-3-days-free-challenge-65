@@ -16,11 +16,11 @@ const GratitudeIntro = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
     >
-      {/* Headline */}
+      {/* Headline — ROI-first */}
       <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 leading-tight">
-        <span className="text-3xl md:text-4xl">🎉</span> Congrats! You Gave the 1st Step to Rewire Your{" "}
-        <span className="text-primary">BRAIN</span> to Feel Happier!{" "}
-        <span className="text-3xl md:text-4xl">🧠</span>
+        You Just Started Feeling{" "}
+        <span className="text-primary">27× Happier</span> — Now Make It{" "}
+        <span className="text-primary">Permanent</span> 🧠
       </h2>
 
       <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-4 shadow-soft">
@@ -46,7 +46,7 @@ const GratitudeIntro = () => {
       <FriendShirtSection delay={0.15} afterHeroSlot={<CustomMessageBox />} />
 
       <p className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2 leading-tight">
-        Claim your <span className="text-primary">FREE</span> Shirt + with Custom Message for Your Best Friend
+        Claim Your <span className="text-primary">FREE</span> Custom Shirt → Trigger 27× More Joy
       </p>
 
       <OfferTimer />
@@ -55,7 +55,7 @@ const GratitudeIntro = () => {
       <Button
         className="w-full max-w-lg mx-auto h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl mb-1"
       >
-        Claim My FREE Custom Shirt Here
+        YES! Claim My FREE Shirt & Start the Brain Rewire
         <ArrowRight className="w-5 h-5 ml-2" />
       </Button>
 

@@ -3,38 +3,38 @@ import { motion } from "framer-motion";
 const VALUES = [
   {
     emoji: "🖤",
-    title: "5× Black 'Brain Hack' Shirts",
+    title: "5× Black 'Brain Hack' Shirts — Value: $225",
     description:
-      "One for every weekday. Wear your IamBlessedAF identity daily — sparking gratitude convos every time someone reads it.",
+      "One for every weekday. $444 ÷ 365 = $1.22/day to feel 27× happier. That's the ROI of a daily identity shift.",
     sub: "Premium cotton · Double-sided print · Sizes S–3XL",
   },
   {
     emoji: "🎁",
-    title: "3× White Custom Friend Shirts",
+    title: "3× Custom Friend Shirts — Value: $135",
     description:
-      'Your personal message on 3 shirts for 3 friends. They scan the QR, join the challenge, and the ripple effect multiplies.',
+      "Your message on 3 shirts for 3 people. They read it → text you back → that text triggers your 27× dopamine hit. Multiply the loop.",
     sub: "One-side print · Sizes S–3XL · Custom message on each",
   },
   {
     emoji: "📿",
-    title: "14× Trigger Wristbands",
+    title: "14× Trigger Wristbands — Value: $154",
     description:
-      "Wear them. Give them away. Each band is a micro-reminder that hacks gratitude into every handshake, meeting, and moment.",
+      "14 bands = 14 daily micro-reminders. Give them away, start convos, hack gratitude into every interaction. Cost per hack: $0.01.",
     sub: "Silicone · One-size-fits-all · IamBlessedAF debossed",
   },
   {
     emoji: "❤️",
-    title: "1,111 Meals Donated Instantly",
+    title: "1,111 Meals Donated — Value: Priceless",
     description:
-      "Turn your worst day into 1,111 people's best meal. That's not a purchase — it's a legacy move.",
+      "Worst day ever? You already fed 1,111 people. That's not a purchase — that's a legacy move no bad day can erase.",
     sub: "Backed by Feeding America",
   },
   {
     emoji: "🧠",
-    title: "Full Brain Hack Protocol",
+    title: "Full Brain Hack Protocol — Value: $333",
     description:
-      "Aligned with Huberman's gratitude protocol. 5 shirts + 14 bands = daily mPFC activation, serotonin surge, and stress obliteration.",
-    sub: "mPFC activation · Dopamine + Serotonin boost",
+      "Huberman's research: 5 shirts + 14 bands = daily mPFC activation. Total value: $888+. You pay $444 — 50% off.",
+    sub: "Based on 8+ peer-reviewed studies",
   },
 ];
 
@@ -46,8 +46,11 @@ const Grok444ValueStack = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.15 }}
     >
-      <p className="text-center text-xl md:text-2xl font-bold text-foreground mb-4">
-        What You Get <span className="text-primary">Today</span>
+      <p className="text-center text-xl md:text-2xl font-bold text-foreground mb-1">
+        Your $444 Pack — <span className="text-primary">$888+ Value</span>
+      </p>
+      <p className="text-center text-sm text-muted-foreground mb-4">
+        $1.22/day to rewire your brain & feed 1,111 people. That's the math.
       </p>
 
       {VALUES.map((item, i) => (

@@ -54,10 +54,11 @@ const OfferMonthly = () => {
               Monthly Membership
             </span>
             <h1 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-              Keep the Engine Running
+              $11/mo = $0.36/day to Stay{" "}
+              <span className="text-primary">27× Happier</span>
             </h1>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Gratitude works best when it's a habit. Let us help you maintain the momentum.
+              Less than a coffee. Daily premium prompts + private community + first access to drops. Cancel anytime — keep the brain rewire.
             </p>
           </motion.div>
 
@@ -89,7 +90,7 @@ const OfferMonthly = () => {
                   <span className="text-xl text-muted-foreground">/month</span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Less than a coffee a week for life-changing habits
+                  That's $0.36/day — less than a coffee. ROI: 27× happier, every single day.
                 </p>
               </div>
 
@@ -120,7 +121,7 @@ const OfferMonthly = () => {
                 className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow transition-all duration-300 rounded-xl"
               >
                 <Repeat className="w-5 h-5 mr-2" />
-                Start Your Membership
+                YES! Lock In My Daily Brain Rewire — $11/mo
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
 
