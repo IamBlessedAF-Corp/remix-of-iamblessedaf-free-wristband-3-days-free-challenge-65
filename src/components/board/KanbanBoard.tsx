@@ -5,6 +5,7 @@ import CardDetailModal from "./CardDetailModal";
 import CreateCardModal from "./CreateCardModal";
 import { type BoardCard, type BoardColumn } from "@/hooks/useBoard";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface KanbanBoardProps {
   isAdmin: boolean;
@@ -17,8 +18,12 @@ interface KanbanBoardProps {
   deleteCard: (cardId: string) => Promise<void>;
 }
 
-/** Columns at position >= 9 are review/done — locked for non-admins */
-const REVIEW_POSITION_THRESHOLD = 9;
+/** Columns at position >= 10 are review/done — locked for non-admins */
+const REVIEW_POSITION_THRESHOLD = 10;
+
+/** WIP column only allows 1 active card at a time */
+const WIP_COLUMN_NAME = "🔨 Work in Progress";
+const WIP_LIMIT = 1;
 
 const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, createCard, deleteCard }: KanbanBoardProps) => {
   const [selectedCard, setSelectedCard] = useState<BoardCard | null>(null);
@@ -50,6 +55,11 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
     return map;
   }, [columns, cards]);
 
+  const wipColumnId = useMemo(
+    () => columns.find((c) => c.name === WIP_COLUMN_NAME)?.id,
+    [columns]
+  );
+
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
@@ -58,6 +68,19 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
     // Non-admins can't drag FROM or TO review columns
     if (!isAdmin && (isReviewColumn(source.droppableId) || isReviewColumn(destination.droppableId))) {
       return;
+    }
+
+    // WIP limit: only 1 card allowed at a time (except when moving within WIP)
+    if (
+      wipColumnId &&
+      destination.droppableId === wipColumnId &&
+      source.droppableId !== wipColumnId
+    ) {
+      const wipCards = cardsByColumn[wipColumnId] || [];
+      if (wipCards.length >= WIP_LIMIT) {
+        toast.error(`WIP limit reached (${WIP_LIMIT}). Finish the current card first.`);
+        return;
+      }
     }
 
     moveCard(draggableId, destination.droppableId, destination.index);
@@ -88,6 +111,7 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
               onCardClick={setSelectedCard}
               onAddCard={(colId) => setCreateColumnId(colId)}
               canEdit={canEditInColumn(column.id)}
+              wipLimit={column.id === wipColumnId ? WIP_LIMIT : undefined}
             />
           ))}
         </div>

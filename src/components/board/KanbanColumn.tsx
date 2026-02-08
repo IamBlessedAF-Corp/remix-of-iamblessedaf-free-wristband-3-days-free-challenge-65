@@ -11,9 +11,12 @@ interface KanbanColumnProps {
   onCardClick: (card: BoardCard) => void;
   onAddCard?: (columnId: string) => void;
   canEdit: boolean;
+  wipLimit?: number;
 }
 
-const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit }: KanbanColumnProps) => {
+const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit, wipLimit }: KanbanColumnProps) => {
+  const isAtLimit = wipLimit !== undefined && cards.length >= wipLimit;
+
   return (
     <div className="flex-shrink-0 w-[280px] sm:w-72 bg-muted/30 rounded-xl flex flex-col max-h-[calc(100vh-140px)] sm:max-h-[calc(100vh-120px)] snap-center">
       {/* Column header */}
@@ -25,8 +28,10 @@ const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit }: Kanban
           <h3 className="text-sm font-bold text-foreground truncate max-w-[180px]">
             {column.name}
           </h3>
-          <span className="text-xs text-muted-foreground bg-muted rounded-full px-2 py-0.5">
-            {cards.length}
+          <span className={`text-xs rounded-full px-2 py-0.5 ${
+            isAtLimit ? "bg-destructive/20 text-destructive font-bold" : "text-muted-foreground bg-muted"
+          }`}>
+            {cards.length}{wipLimit !== undefined ? `/${wipLimit}` : ""}
           </span>
         </div>
         {canEdit && onAddCard && (

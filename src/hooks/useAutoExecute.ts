@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-export type PipelineMode = "clarify" | "execute" | "validate" | "full";
+export type PipelineMode = "clarify" | "execute" | "validate" | "sixsigma" | "full";
 
 interface ExecutionState {
   isRunning: boolean;
@@ -112,10 +112,11 @@ export function useAutoExecute(onRefetch: () => void) {
 
       try {
         if (mode === "full" && columnMap) {
-          // Full pipeline: Clarify → Execute → Validate
+          // Full pipeline: Clarify → Execute → Validate → Six Sigma
           const clarifyCol = columnMap.clarify;
           const executeCol = columnMap.execute;
           const validateCol = columnMap.validate;
+          const sixsigmaCol = columnMap.sixsigma;
 
           if (clarifyCol && !abortRef.current) {
             setState((s) => ({ ...s, currentPhase: "Phase 1: Clarify" }));
@@ -132,8 +133,15 @@ export function useAutoExecute(onRefetch: () => void) {
             await runPhase(validateCol, "validate", "Validate");
           }
 
+          // Six Sigma DMAIC verification on validated cards
+          const sigmaSource = sixsigmaCol || validateCol;
+          if (sigmaSource && !abortRef.current) {
+            setState((s) => ({ ...s, currentPhase: "Phase 4: Six Sigma 🔬" }));
+            await runPhase(sigmaSource, "sixsigma" as any, "Six Sigma");
+          }
+
           if (!abortRef.current) {
-            toast.success("🎯 Full pipeline complete!");
+            toast.success("🎯 Full pipeline complete (incl. Six Sigma)!");
           }
         } else {
           // Single mode
