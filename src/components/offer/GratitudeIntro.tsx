@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FriendShirtSection } from "@/components/offer/ProductSections";
-import CustomMessageBox from "@/components/offer/CustomMessageBox";
 
 import OfferTimer from "@/components/offer/OfferTimer";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
@@ -52,11 +51,11 @@ const GratitudeIntro = () => {
       <div className="h-4" />
 
 
-      {/* Friend Shirt showcase with Custom Message Box embedded */}
+      {/* Friend Shirt showcase — message input is inline on the shirt */}
       <FriendShirtSection
         delay={0.15}
         message={message}
-        afterHeroSlot={<CustomMessageBox value={message} onChange={setMessage} />}
+        onMessageChange={setMessage}
       />
 
       <p className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2 leading-tight">

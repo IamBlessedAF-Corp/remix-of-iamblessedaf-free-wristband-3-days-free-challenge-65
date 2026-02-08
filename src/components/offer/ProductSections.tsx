@@ -217,7 +217,7 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
 /* ══════════════════════════════════════════════════
    Friend Shirt — Shopify-style product card
    ══════════════════════════════════════════════════ */
-const FriendShirtSection = ({ delay = 0, afterHeroSlot, message = "" }: { delay?: number; afterHeroSlot?: React.ReactNode; message?: string }) => {
+const FriendShirtSection = ({ delay = 0, afterHeroSlot, message = "", onMessageChange }: { delay?: number; afterHeroSlot?: React.ReactNode; message?: string; onMessageChange?: (msg: string) => void }) => {
   const [zoomed, setZoomed] = useState(false);
   const [zoomedImage, setZoomedImage] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -272,7 +272,7 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot, message = "" }: { delay?
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.15 }}
                   >
-                    <ShirtMessagePreview message={message} />
+                    <ShirtMessagePreview message={message} onChange={onMessageChange} />
                   </motion.div>
                 ) : current.type === "image" ? (
                   <motion.img
