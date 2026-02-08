@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import GamificationHeader from "@/components/funnel/GamificationHeader";
 import logo from "@/assets/logo.png";
 
 // Social media icons
@@ -176,7 +177,9 @@ const ChallengeThanks = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex flex-col">
+      <GamificationHeader />
+      <div className="flex-1 flex flex-col items-center justify-center p-4">
       <div className="max-w-md w-full text-center">
         {/* Success Animation */}
         <motion.div
@@ -374,6 +377,7 @@ const ChallengeThanks = () => {
         >
           Questions? Reply to any of our emails.
         </motion.p>
+      </div>
       </div>
     </div>
   );

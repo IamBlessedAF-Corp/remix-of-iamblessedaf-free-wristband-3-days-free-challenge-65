@@ -16,6 +16,7 @@ import DiscountBanner from "@/components/offer/DiscountBanner";
 import ResearchList from "@/components/offer/ResearchList";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
+import GamificationHeader from "@/components/funnel/GamificationHeader";
 import DownsellModal from "@/components/offer/DownsellModal";
 
 const Offer444 = () => {
@@ -48,6 +49,7 @@ const Offer444 = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <GamificationHeader />
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-2xl mx-auto">
 

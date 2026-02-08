@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Repeat, MessageCircle, Gift, Users, ArrowRight, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import GamificationHeader from "@/components/funnel/GamificationHeader";
 import logo from "@/assets/logo.png";
 
 const OfferMonthly = () => {
@@ -36,6 +37,7 @@ const OfferMonthly = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <GamificationHeader />
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-2xl mx-auto">
           {/* Header */}
