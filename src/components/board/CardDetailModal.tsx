@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +19,8 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ExternalLink, Save, Trash2, Clock } from "lucide-react";
+import { ExternalLink, Save, Trash2, Clock, Upload, X, Image } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import type { BoardCard, BoardColumn } from "@/hooks/useBoard";
 
 interface CardDetailModalProps {
@@ -52,6 +53,9 @@ const CardDetailModal = ({
   const [previewLink, setPreviewLink] = useState("");
   const [labelInput, setLabelInput] = useState("");
   const [labels, setLabels] = useState<string[]>([]);
+  const [screenshots, setScreenshots] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (card) {
@@ -65,6 +69,7 @@ const CardDetailModal = ({
       setSummary(card.summary || "");
       setPreviewLink(card.preview_link || "");
       setLabels(card.labels || []);
+      setScreenshots(card.screenshots || []);
     }
   }, [card]);
 
@@ -82,8 +87,39 @@ const CardDetailModal = ({
       summary: summary || null,
       preview_link: previewLink || null,
       labels,
+      screenshots,
     });
     onClose();
+  };
+
+  const handleUploadScreenshot = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const fileName = `${card.id}/${Date.now()}-${file.name}`;
+
+    const { data, error } = await supabase.storage
+      .from("board-screenshots")
+      .upload(fileName, file, { upsert: false });
+
+    if (error) {
+      console.error("Upload failed:", error);
+      setUploading(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("board-screenshots")
+      .getPublicUrl(data.path);
+
+    setScreenshots([...screenshots, urlData.publicUrl]);
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeScreenshot = (url: string) => {
+    setScreenshots(screenshots.filter((s) => s !== url));
   };
 
   const addLabel = () => {
@@ -261,56 +297,118 @@ const CardDetailModal = ({
 
               <Separator />
 
-              {/* Dev Logs */}
-              <div>
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  📋 Development Logs
-                </Label>
-                <Textarea
-                  value={logs}
-                  onChange={(e) => setLogs(e.target.value)}
-                  disabled={!isAdmin}
-                  rows={4}
-                  className="mt-1 font-mono text-xs"
-                  placeholder="Log entries from development..."
-                />
-              </div>
+              {/* ===== REVIEW EVIDENCE SECTION ===== */}
+              <div className="bg-muted/30 rounded-xl p-4 border border-border space-y-4">
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                  📸 Review Evidence
+                </h3>
 
-              {/* Summary */}
-              <div>
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  📝 Summary
-                </Label>
-                <Textarea
-                  value={summary}
-                  onChange={(e) => setSummary(e.target.value)}
-                  disabled={!isAdmin}
-                  rows={3}
-                  className="mt-1"
-                  placeholder="Summary of what was done..."
-                />
-              </div>
-
-              {/* Preview Link */}
-              <div>
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  🔗 Preview / Test Link
-                </Label>
-                <div className="flex gap-2 mt-1">
-                  <Input
-                    value={previewLink}
-                    onChange={(e) => setPreviewLink(e.target.value)}
-                    disabled={!isAdmin}
-                    placeholder="https://preview-url..."
-                    className="flex-1"
-                  />
-                  {previewLink && (
-                    <Button variant="outline" size="icon" asChild>
-                      <a href={previewLink} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </Button>
+                {/* Screenshots */}
+                <div>
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Screenshots
+                  </Label>
+                  {screenshots.length > 0 && (
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {screenshots.map((url, i) => (
+                        <div key={i} className="relative group rounded-lg overflow-hidden border border-border">
+                          <img
+                            src={url}
+                            alt={`Screenshot ${i + 1}`}
+                            className="w-full h-32 object-cover object-top cursor-pointer"
+                            onClick={() => window.open(url, "_blank")}
+                          />
+                          {isAdmin && (
+                            <button
+                              onClick={() => removeScreenshot(url)}
+                              className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   )}
+                  {screenshots.length === 0 && (
+                    <div className="mt-2 border border-dashed border-border rounded-lg p-4 flex items-center justify-center text-muted-foreground">
+                      <Image className="w-4 h-4 mr-2" />
+                      <span className="text-xs">No screenshots yet</span>
+                    </div>
+                  )}
+                  {isAdmin && (
+                    <div className="mt-2">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleUploadScreenshot}
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploading}
+                      >
+                        <Upload className="w-3 h-3 mr-1" />
+                        {uploading ? "Uploading..." : "Upload Screenshot"}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Dev Logs */}
+                <div>
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    📋 Development Logs
+                  </Label>
+                  <Textarea
+                    value={logs}
+                    onChange={(e) => setLogs(e.target.value)}
+                    disabled={!isAdmin}
+                    rows={4}
+                    className="mt-1 font-mono text-xs"
+                    placeholder="Log entries from development..."
+                  />
+                </div>
+
+                {/* Summary */}
+                <div>
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    📝 Summary of Changes
+                  </Label>
+                  <Textarea
+                    value={summary}
+                    onChange={(e) => setSummary(e.target.value)}
+                    disabled={!isAdmin}
+                    rows={3}
+                    className="mt-1"
+                    placeholder="Summary of what was done..."
+                  />
+                </div>
+
+                {/* Preview Link */}
+                <div>
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    🔗 Preview / Test Link
+                  </Label>
+                  <div className="flex gap-2 mt-1">
+                    <Input
+                      value={previewLink}
+                      onChange={(e) => setPreviewLink(e.target.value)}
+                      disabled={!isAdmin}
+                      placeholder="https://preview-url..."
+                      className="flex-1"
+                    />
+                    {previewLink && (
+                      <Button variant="outline" size="icon" asChild>
+                        <a href={previewLink} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
 

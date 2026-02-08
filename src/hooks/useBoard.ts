@@ -22,6 +22,7 @@ export interface BoardCard {
   summary: string | null;
   preview_link: string | null;
   labels: string[];
+  screenshots: string[];
   created_at: string;
   updated_at: string;
 }
