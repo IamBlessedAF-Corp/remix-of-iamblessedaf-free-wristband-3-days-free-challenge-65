@@ -10,10 +10,10 @@ interface KanbanColumnProps {
   cards: BoardCard[];
   onCardClick: (card: BoardCard) => void;
   onAddCard?: (columnId: string) => void;
-  isAdmin: boolean;
+  canEdit: boolean;
 }
 
-const KanbanColumn = ({ column, cards, onCardClick, onAddCard, isAdmin }: KanbanColumnProps) => {
+const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit }: KanbanColumnProps) => {
   return (
     <div className="flex-shrink-0 w-72 bg-muted/30 rounded-xl flex flex-col max-h-[calc(100vh-120px)]">
       {/* Column header */}
@@ -29,7 +29,7 @@ const KanbanColumn = ({ column, cards, onCardClick, onAddCard, isAdmin }: Kanban
             {cards.length}
           </span>
         </div>
-        {isAdmin && onAddCard && (
+        {canEdit && onAddCard && (
           <Button
             variant="ghost"
             size="icon"
@@ -58,6 +58,7 @@ const KanbanColumn = ({ column, cards, onCardClick, onAddCard, isAdmin }: Kanban
                   card={card}
                   index={index}
                   onClick={onCardClick}
+                  canEdit={canEdit}
                 />
               ))}
               {provided.placeholder}

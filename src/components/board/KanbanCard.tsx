@@ -7,6 +7,7 @@ interface KanbanCardProps {
   card: BoardCard;
   index: number;
   onClick: (card: BoardCard) => void;
+  canEdit: boolean;
 }
 
 const priorityConfig: Record<string, { color: string; icon: React.ReactNode }> = {
@@ -16,7 +17,7 @@ const priorityConfig: Record<string, { color: string; icon: React.ReactNode }> =
   low: { color: "bg-muted", icon: <Clock className="w-3 h-3" /> },
 };
 
-const KanbanCard = ({ card, index, onClick }: KanbanCardProps) => {
+const KanbanCard = ({ card, index, onClick, canEdit }: KanbanCardProps) => {
   const priority = priorityConfig[card.priority] || priorityConfig.medium;
   const hasScreenshots = card.screenshots && card.screenshots.length > 0;
   const hasLogs = !!card.logs;
@@ -25,7 +26,7 @@ const KanbanCard = ({ card, index, onClick }: KanbanCardProps) => {
   const hasReviewEvidence = hasScreenshots || hasLogs || hasSummary || hasPreviewLink;
 
   return (
-    <Draggable draggableId={card.id} index={index}>
+    <Draggable draggableId={card.id} index={index} isDragDisabled={!canEdit}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}

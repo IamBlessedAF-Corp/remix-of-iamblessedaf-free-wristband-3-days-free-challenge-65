@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import KanbanColumn from "./KanbanColumn";
 import CardDetailModal from "./CardDetailModal";
@@ -10,10 +10,29 @@ interface KanbanBoardProps {
   isAdmin: boolean;
 }
 
+/** Columns at position >= 9 are review/done — locked for non-admins */
+const REVIEW_POSITION_THRESHOLD = 9;
+
 const KanbanBoard = ({ isAdmin }: KanbanBoardProps) => {
   const { columns, cards, loading, moveCard, updateCard, createCard, deleteCard } = useBoard();
   const [selectedCard, setSelectedCard] = useState<BoardCard | null>(null);
   const [createColumnId, setCreateColumnId] = useState<string | null>(null);
+
+  const reviewColumnIds = useMemo(
+    () => new Set(columns.filter((c) => c.position >= REVIEW_POSITION_THRESHOLD).map((c) => c.id)),
+    [columns]
+  );
+
+  const isReviewColumn = useCallback(
+    (columnId: string) => reviewColumnIds.has(columnId),
+    [reviewColumnIds]
+  );
+
+  /** Can the current user edit a card in the given column? */
+  const canEditInColumn = useCallback(
+    (columnId: string) => isAdmin || !isReviewColumn(columnId),
+    [isAdmin, isReviewColumn]
+  );
 
   const cardsByColumn = useMemo(() => {
     const map: Record<string, BoardCard[]> = {};
@@ -26,9 +45,15 @@ const KanbanBoard = ({ isAdmin }: KanbanBoardProps) => {
   }, [columns, cards]);
 
   const handleDragEnd = (result: DropResult) => {
-    if (!result.destination || !isAdmin) return;
+    if (!result.destination) return;
 
-    const { draggableId, destination } = result;
+    const { draggableId, source, destination } = result;
+
+    // Non-admins can't drag FROM or TO review columns
+    if (!isAdmin && (isReviewColumn(source.droppableId) || isReviewColumn(destination.droppableId))) {
+      return;
+    }
+
     moveCard(draggableId, destination.droppableId, destination.index);
   };
 
@@ -56,7 +81,7 @@ const KanbanBoard = ({ isAdmin }: KanbanBoardProps) => {
               cards={cardsByColumn[column.id] || []}
               onCardClick={setSelectedCard}
               onAddCard={(colId) => setCreateColumnId(colId)}
-              isAdmin={isAdmin}
+              canEdit={canEditInColumn(column.id)}
             />
           ))}
         </div>
@@ -70,8 +95,8 @@ const KanbanBoard = ({ isAdmin }: KanbanBoardProps) => {
         onSave={updateCard}
         onDelete={deleteCard}
         isAdmin={isAdmin}
+        canEdit={selectedCard ? canEditInColumn(selectedCard.column_id) : false}
       />
-
       <CreateCardModal
         open={!!createColumnId}
         columnId={createColumnId || ""}

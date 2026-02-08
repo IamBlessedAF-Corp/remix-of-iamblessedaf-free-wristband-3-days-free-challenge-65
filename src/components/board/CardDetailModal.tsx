@@ -31,6 +31,7 @@ interface CardDetailModalProps {
   onSave: (cardId: string, updates: Partial<BoardCard>) => void;
   onDelete: (cardId: string) => void;
   isAdmin: boolean;
+  canEdit: boolean;
 }
 
 const CardDetailModal = ({
@@ -41,6 +42,7 @@ const CardDetailModal = ({
   onSave,
   onDelete,
   isAdmin,
+  canEdit,
 }: CardDetailModalProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -169,7 +171,7 @@ const CardDetailModal = ({
                 <Input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  disabled={!isAdmin}
+                  disabled={!canEdit}
                   className="mt-1"
                 />
               </div>
@@ -182,7 +184,7 @@ const CardDetailModal = ({
                 <Textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  disabled={!isAdmin}
+                  disabled={!canEdit}
                   rows={3}
                   className="mt-1"
                 />
@@ -196,7 +198,7 @@ const CardDetailModal = ({
                 <Textarea
                   value={masterPrompt}
                   onChange={(e) => setMasterPrompt(e.target.value)}
-                  disabled={!isAdmin}
+                  disabled={!canEdit}
                   rows={8}
                   className="mt-1 font-mono text-xs"
                   placeholder="Detailed task instructions for execution..."
@@ -211,7 +213,7 @@ const CardDetailModal = ({
                   <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Priority
                   </Label>
-                  <Select value={priority} onValueChange={setPriority} disabled={!isAdmin}>
+                  <Select value={priority} onValueChange={setPriority} disabled={!canEdit}>
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -228,7 +230,7 @@ const CardDetailModal = ({
                   <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Column
                   </Label>
-                  <Select value={columnId} onValueChange={setColumnId} disabled={!isAdmin}>
+                  <Select value={columnId} onValueChange={setColumnId} disabled={!canEdit}>
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -249,7 +251,7 @@ const CardDetailModal = ({
                   <Select
                     value={stagingStatus}
                     onValueChange={setStagingStatus}
-                    disabled={!isAdmin}
+                    disabled={!canEdit}
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
@@ -273,13 +275,13 @@ const CardDetailModal = ({
                       key={l}
                       variant="secondary"
                       className="cursor-pointer"
-                      onClick={() => isAdmin && removeLabel(l)}
+                      onClick={() => canEdit && removeLabel(l)}
                     >
-                      {l} {isAdmin && "×"}
+                      {l} {canEdit && "×"}
                     </Badge>
                   ))}
                 </div>
-                {isAdmin && (
+                {canEdit && (
                   <div className="flex gap-2">
                     <Input
                       value={labelInput}
@@ -318,7 +320,7 @@ const CardDetailModal = ({
                             className="w-full h-32 object-cover object-top cursor-pointer"
                             onClick={() => window.open(url, "_blank")}
                           />
-                          {isAdmin && (
+                          {canEdit && (
                             <button
                               onClick={() => removeScreenshot(url)}
                               className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -336,7 +338,7 @@ const CardDetailModal = ({
                       <span className="text-xs">No screenshots yet</span>
                     </div>
                   )}
-                  {isAdmin && (
+                  {canEdit && (
                     <div className="mt-2">
                       <input
                         ref={fileInputRef}
@@ -366,7 +368,7 @@ const CardDetailModal = ({
                   <Textarea
                     value={logs}
                     onChange={(e) => setLogs(e.target.value)}
-                    disabled={!isAdmin}
+                    disabled={!canEdit}
                     rows={4}
                     className="mt-1 font-mono text-xs"
                     placeholder="Log entries from development..."
@@ -381,7 +383,7 @@ const CardDetailModal = ({
                   <Textarea
                     value={summary}
                     onChange={(e) => setSummary(e.target.value)}
-                    disabled={!isAdmin}
+                    disabled={!canEdit}
                     rows={3}
                     className="mt-1"
                     placeholder="Summary of what was done..."
@@ -397,7 +399,7 @@ const CardDetailModal = ({
                     <Input
                       value={previewLink}
                       onChange={(e) => setPreviewLink(e.target.value)}
-                      disabled={!isAdmin}
+                      disabled={!canEdit}
                       placeholder="https://preview-url..."
                       className="flex-1"
                     />
@@ -427,7 +429,7 @@ const CardDetailModal = ({
               <Separator />
 
               {/* Actions */}
-              {isAdmin && (
+              {canEdit && (
                 <div className="flex items-center justify-between">
                   <Button
                     variant="destructive"
