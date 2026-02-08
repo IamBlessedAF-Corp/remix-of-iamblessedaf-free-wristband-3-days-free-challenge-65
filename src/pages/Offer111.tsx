@@ -10,6 +10,7 @@ import logo from "@/assets/logo.png";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
 import OfferTimer from "@/components/offer/OfferTimer";
 import AuthorAvatar from "@/components/offer/AuthorAvatar";
+import UrgencyBanner from "@/components/offer/UrgencyBanner";
 
 const Offer111 = () => {
   const handleCheckout = () => {
@@ -76,6 +77,7 @@ const Offer111 = () => {
               77% OFF TODAY
             </p>
             <OfferTimer />
+            <UrgencyBanner />
             <div className="h-3" />
             <Button
               onClick={handleCheckout}
@@ -121,6 +123,7 @@ const Offer111 = () => {
                   <DiscountBanner />
                 </div>
                 <OfferTimer />
+                <UrgencyBanner />
                 <div className="h-3" />
                 <Button
                   onClick={handleCheckout}
@@ -206,6 +209,7 @@ const Offer111 = () => {
             transition={{ delay: 1.45 }}
           >
             <OfferTimer />
+            <UrgencyBanner />
             <div className="h-3" />
             <Button
               onClick={handleCheckout}
@@ -243,6 +247,7 @@ const Offer111 = () => {
             transition={{ delay: 1.6 }}
           >
             <OfferTimer />
+            <UrgencyBanner />
             <div className="h-3" />
             <Button
               onClick={handleCheckout}
