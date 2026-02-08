@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Crown, ArrowRight, Lock } from "lucide-react";
+import { Crown, ArrowRight, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ResearchList from "@/components/offer/ResearchList";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
@@ -31,8 +31,8 @@ const Offer111 = () => {
             transition={{ duration: 0.4 }}
           >
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
-              <Lock className="w-4 h-4" />
-              Unlocked! You completed the 3-Day Challenge
+              <Crown className="w-4 h-4" />
+              🎉 You locked in 3 Wristbands + 22 Meals Donated!
             </div>
           </motion.div>
 
@@ -82,11 +82,15 @@ const Offer111 = () => {
               className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
             >
               <Crown className="w-5 h-5 mr-2" />
-              Claim Your Gratitude Pack
+              Claim Your Gratitude Pack + 11 Meals
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
 
-            <p className="text-center text-xs text-muted-foreground mt-4">
+            <div className="flex items-center justify-center gap-2 mt-3 mb-1">
+              <Heart className="w-4 h-4 text-primary" />
+              <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated to Feeding America</p>
+            </div>
+            <p className="text-center text-xs text-muted-foreground mt-1">
               🔒 Secure checkout • Free US Shipping
             </p>
             <RiskReversalGuarantee />
@@ -123,10 +127,14 @@ const Offer111 = () => {
                   className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
                 >
                   <Crown className="w-5 h-5 mr-2" />
-                  Claim Your Gratitude Pack — $111
+                  Claim Your Gratitude Pack + 11 Meals — $111
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
-                <p className="text-center text-xs text-muted-foreground mt-4">
+                <div className="flex items-center justify-center gap-2 mt-3 mb-1">
+                  <Heart className="w-4 h-4 text-primary" />
+                  <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated to Feeding America</p>
+                </div>
+                <p className="text-center text-xs text-muted-foreground mt-1">
                   🔒 Secure checkout • Free US Shipping
                 </p>
                 <RiskReversalGuarantee />
@@ -204,11 +212,15 @@ const Offer111 = () => {
               className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
             >
               <Crown className="w-5 h-5 mr-2" />
-              Claim Your Gratitude Pack — $111
+              Claim Your Gratitude Pack + 11 Meals — $111
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
 
-            <p className="text-center text-xs text-muted-foreground mt-4">
+            <div className="flex items-center justify-center gap-2 mt-3 mb-1">
+              <Heart className="w-4 h-4 text-primary" />
+              <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated to Feeding America</p>
+            </div>
+            <p className="text-center text-xs text-muted-foreground mt-1">
               🔒 Secure checkout • Free US Shipping
             </p>
             <RiskReversalGuarantee />
@@ -237,11 +249,15 @@ const Offer111 = () => {
               className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
             >
               <Crown className="w-5 h-5 mr-2" />
-              Claim Your Gratitude Pack — $111
+              Claim Your Gratitude Pack + 11 Meals — $111
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
 
-            <p className="text-center text-xs text-muted-foreground mt-4">
+            <div className="flex items-center justify-center gap-2 mt-3 mb-1">
+              <Heart className="w-4 h-4 text-primary" />
+              <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated to Feeding America</p>
+            </div>
+            <p className="text-center text-xs text-muted-foreground mt-1">
               🔒 Secure checkout • Free US Shipping
             </p>
             <RiskReversalGuarantee />
@@ -264,6 +280,7 @@ const Offer111 = () => {
                 <p>🔒 256-bit SSL Encrypted · Secure Payment · Your data is never shared</p>
                 <p>📦 100% Satisfaction Guaranteed · Free US Shipping · Intl $14.95 Flat · 7–14 day delivery</p>
                 <p>💳 One-time payment. No subscriptions. No hidden fees.</p>
+                <p>🍽 11 meals donated to Feeding America with every Gratitude Pack</p>
               </div>
             </div>
           </motion.div>
