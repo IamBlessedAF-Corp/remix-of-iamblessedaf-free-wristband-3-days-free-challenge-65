@@ -8,12 +8,25 @@ import { motion } from "framer-motion";
 
 const MAX_CHARS = 130;
 
-const CustomMessageBox = () => {
-  const [message, setMessage] = useState("");
+interface CustomMessageBoxProps {
+  /** Controlled message value (optional — falls back to internal state) */
+  value?: string;
+  onChange?: (message: string) => void;
+}
+
+const CustomMessageBox = ({ value, onChange }: CustomMessageBoxProps) => {
+  const [internalMessage, setInternalMessage] = useState("");
   const [gender, setGender] = useState<string>("");
   const [saved, setSaved] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Use controlled or uncontrolled mode
+  const message = value !== undefined ? value : internalMessage;
+  const setMessage = (val: string) => {
+    if (onChange) onChange(val);
+    else setInternalMessage(val);
+  };
 
   const charsLeft = MAX_CHARS - message.length;
 
