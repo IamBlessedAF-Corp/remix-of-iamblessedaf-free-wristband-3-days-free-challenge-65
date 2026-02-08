@@ -79,7 +79,7 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
   return (
     <>
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="flex gap-4 overflow-x-auto pb-4 px-4">
+        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 px-3 sm:px-4 snap-x snap-mandatory sm:snap-none">
           {columns.map((column) => (
             <KanbanColumn
               key={column.id}
