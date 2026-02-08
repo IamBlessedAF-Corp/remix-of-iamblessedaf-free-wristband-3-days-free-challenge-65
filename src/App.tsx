@@ -16,6 +16,7 @@ import OfferMonthly from "./pages/OfferMonthly";
 import Offer1111 from "./pages/Offer1111";
 import Offer4444 from "./pages/Offer4444";
 import AIVideoContest from "./pages/AIVideoContest";
+import Board from "./pages/Board";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/offer/1111" element={<Offer1111 />} />
           <Route path="/offer/4444" element={<Offer4444 />} />
           <Route path="/make-2500-with-1-ai-clip" element={<AIVideoContest />} />
+          <Route path="/board" element={<Board />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
