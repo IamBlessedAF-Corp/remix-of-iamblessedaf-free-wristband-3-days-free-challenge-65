@@ -2,49 +2,49 @@ import { motion } from "framer-motion";
 
 const VALUES = [
   {
-    emoji: "💎",
-    title: "Instant Identity Boost",
-    benefit: "Wear your gratitude, spark conversations, feel the rewire daily",
+    emoji: "🧠",
+    title: "Neural Pathway Activator",
+    benefit: "Huberman-aligned protocol: received gratitude → mPFC → 27× serotonin surge",
     description:
-      "Your personal \"IamBlessedAF\" shirt + wristbands — people ask about it → you explain gratitude → brain rewire activates.",
+      "Received gratitude triggers medial prefrontal cortex activation → serotonin + dopamine cascade. This pack automates that loop. Daily ROI: 27× baseline happiness.",
+    value: "$210",
+    sub: "Based on 8+ peer-reviewed studies · mPFC protocol",
+  },
+  {
+    emoji: "⚡",
+    title: "Identity Encoding System",
+    benefit: "\"IamBlessedAF\" shirt = daily trigger for self-concept rewire",
+    description:
+      "Wear → get asked → explain gratitude → brain encodes identity. Each conversation = one neural pathway reinforcement cycle. Compound effect: 365 cycles/year.",
     value: "$45",
     sub: "Premium cotton · Double-sided print · S–3XL",
   },
   {
-    emoji: "🎁",
-    title: "Gift the Magic",
-    benefit: "Custom shirt for your best friend with YOUR message — they scan QR, join the challenge, double the impact",
+    emoji: "🎯",
+    title: "Gratitude Deployment Unit",
+    benefit: "Custom shirt for your target recipient — triggers THEIR mPFC → YOUR 27× dopamine hit",
     description:
-      "They wear it, feel it, text you back. That text = your 27× dopamine hit. Imagine their face opening this.",
+      "They receive your message → feel gratitude → text you back. That response = your received gratitude trigger. Net result: bilateral brain rewire. Two brains, one shirt.",
     value: "$45",
     sub: "One-side custom print · Free shipping · Sizes S–3XL",
   },
   {
-    emoji: "❤️",
-    title: "Real Impact Now",
-    benefit: "11 meals donated immediately — turn tough days into life-changing good",
+    emoji: "📊",
+    title: "Micro-Dose Trigger Array",
+    benefit: "3 wristbands = 50+ micro-gratitude activations/day at $0.02/trigger",
     description:
-      "Bad day? You already fed 11 people before breakfast. That's not a purchase — that's a legacy. No bad day survives that.",
-    value: "Priceless",
-    sub: "Backed by Feeding America",
-  },
-  {
-    emoji: "📿",
-    title: "Daily Trigger System",
-    benefit: "3 wristbands = 50+ micro-gratitude moments per day",
-    description:
-      "Glance at wrist → micro-gratitude moment → repeat. Cost per hack: $0.02. Give extras away to start gratitude convos.",
+      "Glance → micro-gratitude → cortisol drop → repeat. 50×/day × 365 days = 18,250 neural activations/year. Cost per activation: $0.02. Best ROI in behavioral neuroscience.",
     value: "$33",
-    sub: "NFC-enabled · Waterproof silicone · IamBlessedAF debossed",
+    sub: "NFC-enabled · Waterproof silicone · Debossed trigger",
   },
   {
-    emoji: "🧠",
-    title: "Brain Hack Included",
-    benefit: "Aligns with Huberman's protocol — stronger pro-social circuits, less stress",
+    emoji: "📈",
+    title: "Impact Metric: 11 Meals Deployed",
+    benefit: "Instant charitable impact — measurable mood elevation even on worst-case days",
     description:
-      "Received gratitude → mPFC activation → serotonin + dopamine surge. This pack triggers that loop daily. ROI: 27× happier.",
-    value: "$210",
-    sub: "Based on 8+ peer-reviewed studies",
+      "Bad day scenario: you already deployed 11 meals before cortisol peaked. Measurable impact = measurable mood shift. No bad day survives verified altruism data.",
+    value: "Priceless",
+    sub: "Feeding America verified · Instant deployment",
   },
 ];
 
@@ -57,10 +57,10 @@ const GrokValueStack = () => {
       transition={{ duration: 0.5, delay: 0.15 }}
     >
       <p className="text-center text-xl md:text-2xl font-bold text-foreground mb-1">
-        Your $111 Pack — <span className="text-primary">$333+ Value</span>
+        Precision Pack Breakdown — <span className="text-primary font-mono">$333+ Value</span>
       </p>
-      <p className="text-center text-sm text-muted-foreground mb-4">
-        That's $0.30/day to feel 27× happier for a full year. Here's what's inside:
+      <p className="text-center text-sm text-muted-foreground mb-4 font-mono">
+        $111 ÷ 365 days = $0.30/day → 27× happiness ROI. System specs:
       </p>
 
       {VALUES.map((item, i) => (

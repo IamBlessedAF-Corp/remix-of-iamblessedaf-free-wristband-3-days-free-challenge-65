@@ -34,9 +34,9 @@ const Offer111Grok = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
           >
-            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold font-mono">
               <Lock className="w-4 h-4" />
-              You earned this → Turn gratitude into identity
+              ⚡ Protocol Unlocked → Precision Gratitude System
             </div>
           </motion.div>
 
@@ -51,10 +51,11 @@ const Offer111Grok = () => {
             transition={{ duration: 0.5, delay: 0.12 }}
           >
             <p className="text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight">
-              Imagine Your Best Friend Opening This Shirt with a Message from <span className="text-primary">You</span>
+              Deploy the Gratitude Trigger:{" "}
+              <span className="text-primary">Custom Shirt → mPFC Activation</span> in Your Target
             </p>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              They read it. They feel it. They text you back — and that text triggers your 27× dopamine hit. Gift the magic.
+            <p className="text-sm text-muted-foreground max-w-md mx-auto font-mono">
+              They read your message → mPFC fires → they text you back → YOUR 27× dopamine cascade activates. Bilateral rewire complete.
             </p>
           </motion.div>
 
@@ -81,9 +82,9 @@ const Offer111Grok = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             <p className="text-2xl md:text-3xl font-bold text-foreground mb-1 leading-tight">
-              This is why <span className="text-primary">IamBlessedAF</span> starts with the most powerful words
+              Identity Encoding: <span className="text-primary">IamBlessedAF</span> leverages the most powerful neural trigger
             </p>
-            <p className="text-4xl md:text-5xl font-black text-primary mb-2">
+            <p className="text-4xl md:text-5xl font-black text-primary mb-2 font-mono">
               "I AM"
             </p>
             <div className="overflow-hidden -my-6">
@@ -93,8 +94,8 @@ const Offer111Grok = () => {
                 className="w-full max-w-sm h-auto object-contain mx-auto"
               />
             </div>
-            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-4 leading-relaxed">
-              Co-created with a PhD neuroscientist. 7+ years of research into conversation triggers that naturally evoke gratitude.
+            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-4 leading-relaxed font-mono">
+              Co-developed with PhD neuroscientist. 7+ years calibrating conversation triggers for maximum mPFC activation and identity encoding.
             </p>
           </motion.div>
 
@@ -102,8 +103,8 @@ const Offer111Grok = () => {
           <GrokQuotesSection delay={0.45} />
 
           {/* ─── 8. Product Sections ─── */}
-          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
-            GRATITUDE PACK
+          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4 font-mono">
+            PRECISION PACK CONTENTS
           </p>
           <ProductSections
             afterWristband={
@@ -160,8 +161,8 @@ const Offer111Grok = () => {
           />
 
           {/* ─── 12. Backed by Science ─── */}
-          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4 mt-4">
-            Backed by Science
+          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4 mt-4 font-mono">
+            Clinical Evidence Base
           </p>
           <ResearchList delay={0.8} />
 

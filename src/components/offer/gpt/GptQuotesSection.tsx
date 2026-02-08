@@ -3,20 +3,20 @@ import AuthorAvatar from "@/components/offer/AuthorAvatar";
 
 const QUOTES = [
   {
-    text: "Received gratitude activates mPFC circuits → serotonin + dopamine surge. This is the fastest documented neural rewire protocol.",
+    text: "The most potent form of gratitude isn't giving thanks — it's receiving genuine appreciation. That's where the brain truly transforms.",
     author: "huberman" as const,
   },
   {
-    text: "Repetitive 'I Am' identity encoding with emotional charge → permanent self-concept modification. Measurable within 21 days.",
+    text: "Whatever you consistently attach to 'I Am' with strong emotion — you will eventually become.",
     author: "tony-robbins" as const,
   },
   {
-    text: "Frequency shift: shame (20Hz) → joy (540Hz). That's a 27× multiplier. Gratitude is the highest-ROI emotional input.",
+    text: "When you feel gratitude, your body believes it's already receiving the blessing — and begins creating it.",
     author: "joe-dispenza" as const,
   },
 ];
 
-const GrokQuotesSection = ({ delay = 0 }: { delay?: number }) => {
+const GptQuotesSection = ({ delay = 0 }: { delay?: number }) => {
   return (
     <motion.div
       className="max-w-lg mx-auto mb-8 space-y-3"
@@ -25,7 +25,7 @@ const GrokQuotesSection = ({ delay = 0 }: { delay?: number }) => {
       transition={{ duration: 0.5, delay }}
     >
       <p className="text-center text-lg font-bold text-foreground mb-2">
-        Clinical Evidence Base
+        Words That Changed Everything ✨
       </p>
 
       {QUOTES.map((q, i) => (
@@ -33,7 +33,7 @@ const GrokQuotesSection = ({ delay = 0 }: { delay?: number }) => {
           key={i}
           className="bg-card border border-border/50 rounded-2xl p-4 shadow-soft"
         >
-          <p className="text-sm italic text-foreground leading-relaxed font-mono">
+          <p className="text-sm italic text-foreground leading-relaxed">
             "{q.text}"
           </p>
           <footer className="mt-2">
@@ -45,4 +45,4 @@ const GrokQuotesSection = ({ delay = 0 }: { delay?: number }) => {
   );
 };
 
-export default GrokQuotesSection;
+export default GptQuotesSection;
