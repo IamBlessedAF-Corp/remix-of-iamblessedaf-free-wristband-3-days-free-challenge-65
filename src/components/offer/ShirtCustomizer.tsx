@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PenLine, User, ArrowRight, Check, Sparkles, Shirt } from "lucide-react";
+import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -66,9 +67,29 @@ const ShirtCustomizer = ({
     return () => clearTimeout(timer);
   }, []);
 
+  const fireConfetti = useCallback(() => {
+    const end = Date.now() + 600;
+    const colors = ["hsl(var(--primary))", "#FFD700", "#FF6B6B", "#4ECDC4"];
+    const frame = () => {
+      confetti({
+        particleCount: 3,
+        angle: 60 + Math.random() * 60,
+        spread: 55,
+        origin: { x: Math.random(), y: 0.6 },
+        colors,
+        ticks: 100,
+        gravity: 1.2,
+        scalar: 0.9,
+      });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    };
+    frame();
+  }, []);
+
   const handleSave = () => {
     if (hasName && hasMessage && gender) {
       setSaved(true);
+      fireConfetti();
       localStorage.setItem("friendShirtMessage", message);
       localStorage.setItem("friendShirtGender", gender);
       localStorage.setItem("friendShirtName", friendName);
