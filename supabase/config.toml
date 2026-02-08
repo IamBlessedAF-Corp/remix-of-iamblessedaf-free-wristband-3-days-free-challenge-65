@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.schedule-challenge-messages]
 verify_jwt = false
+
+[functions.send-scheduled-messages]
+verify_jwt = false
