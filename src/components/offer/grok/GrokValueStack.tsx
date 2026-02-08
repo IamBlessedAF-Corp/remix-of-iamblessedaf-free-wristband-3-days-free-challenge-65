@@ -3,37 +3,47 @@ import { motion } from "framer-motion";
 const VALUES = [
   {
     emoji: "💎",
-    title: "Your \"IamBlessedAF\" Identity Shirt",
+    title: "Instant Identity Boost",
+    benefit: "Wear your gratitude, spark conversations, feel the rewire daily",
     description:
-      "Wear it → people ask about it → you explain gratitude → brain rewire activates. Value: $45",
+      "Your personal \"IamBlessedAF\" shirt + wristbands — people ask about it → you explain gratitude → brain rewire activates.",
+    value: "$45",
     sub: "Premium cotton · Double-sided print · S–3XL",
   },
   {
     emoji: "🎁",
-    title: "FREE Custom Shirt for Your Best Friend",
+    title: "Gift the Magic",
+    benefit: "Custom shirt for your best friend with YOUR message — they scan QR, join the challenge, double the impact",
     description:
-      "Your personal message printed on a shirt. They wear it, feel it, text you back. That text = your 27× dopamine hit. Value: $45",
-    sub: "One-side custom print · Free shipping",
-  },
-  {
-    emoji: "📿",
-    title: "3 Gratitude Trigger Wristbands",
-    description:
-      "Glance at wrist → micro-gratitude moment → repeat 50×/day. Cost per hack: $0.02. Value: $33",
-    sub: "NFC-enabled · Waterproof silicone",
+      "They wear it, feel it, text you back. That text = your 27× dopamine hit. Imagine their face opening this.",
+    value: "$45",
+    sub: "One-side custom print · Free shipping · Sizes S–3XL",
   },
   {
     emoji: "❤️",
-    title: "11 Meals Donated Instantly",
+    title: "Real Impact Now",
+    benefit: "11 meals donated immediately — turn tough days into life-changing good",
     description:
-      "Bad day? You already fed 11 people before breakfast. That's not a purchase — that's a legacy. Value: Priceless",
+      "Bad day? You already fed 11 people before breakfast. That's not a purchase — that's a legacy. No bad day survives that.",
+    value: "Priceless",
     sub: "Backed by Feeding America",
   },
   {
-    emoji: "🧠",
-    title: "Neuroscience-Backed Brain Rewire",
+    emoji: "📿",
+    title: "Daily Trigger System",
+    benefit: "3 wristbands = 50+ micro-gratitude moments per day",
     description:
-      "Huberman protocol: received gratitude → mPFC activation → serotonin + dopamine surge. ROI: 27× happier.",
+      "Glance at wrist → micro-gratitude moment → repeat. Cost per hack: $0.02. Give extras away to start gratitude convos.",
+    value: "$33",
+    sub: "NFC-enabled · Waterproof silicone · IamBlessedAF debossed",
+  },
+  {
+    emoji: "🧠",
+    title: "Brain Hack Included",
+    benefit: "Aligns with Huberman's protocol — stronger pro-social circuits, less stress",
+    description:
+      "Received gratitude → mPFC activation → serotonin + dopamine surge. This pack triggers that loop daily. ROI: 27× happier.",
+    value: "$210",
     sub: "Based on 8+ peer-reviewed studies",
   },
 ];
@@ -50,7 +60,7 @@ const GrokValueStack = () => {
         Your $111 Pack — <span className="text-primary">$333+ Value</span>
       </p>
       <p className="text-center text-sm text-muted-foreground mb-4">
-        That's $0.30/day to feel 27× happier for a full year.
+        That's $0.30/day to feel 27× happier for a full year. Here's what's inside:
       </p>
 
       {VALUES.map((item, i) => (
@@ -67,12 +77,18 @@ const GrokValueStack = () => {
               <p className="text-sm md:text-base font-bold text-foreground leading-snug">
                 {item.title}
               </p>
+              <p className="text-sm font-semibold text-primary leading-snug mt-0.5">
+                {item.benefit}
+              </p>
               <p className="text-sm text-muted-foreground leading-relaxed mt-1">
                 {item.description}
               </p>
-              <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">
-                {item.sub}
-              </p>
+              <div className="flex items-center justify-between mt-1">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                  {item.sub}
+                </p>
+                <span className="text-xs font-bold text-foreground">Value: {item.value}</span>
+              </div>
             </div>
           </div>
         </motion.div>

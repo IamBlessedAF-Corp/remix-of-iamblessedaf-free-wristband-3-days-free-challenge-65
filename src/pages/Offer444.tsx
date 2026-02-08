@@ -60,7 +60,7 @@ const Offer444 = () => {
           >
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
               <Lock className="w-4 h-4" />
-              Unlocked! You completed the 3-Day Challenge
+              You earned this → Lock gratitude as a daily habit
             </div>
           </motion.div>
 
@@ -75,10 +75,10 @@ const Offer444 = () => {
             transition={{ duration: 0.5, delay: 0.12 }}
           >
             <p className="text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight">
-              3 Custom Friend Shirts with a message from <span className="text-primary">You!</span>
+              Imagine 3 Friends Opening Custom Shirts with a Message from <span className="text-primary">You</span>
             </p>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              Write your gratitude message once — we print it on 3 shirts for your 3 closest people.
+              They read it. They feel it. They text you back — each text triggers your 27× dopamine hit. Multiply the loop.
             </p>
           </motion.div>
 
