@@ -7,10 +7,6 @@ interface ShirtMessagePreviewProps {
 }
 
 const ShirtMessagePreview = ({ message }: ShirtMessagePreviewProps) => {
-  const prefixLine1a = "I am Blessed AF";
-  const prefixLine1b = "to Have a Best Friend";
-  const prefixLine2 = "TY! I'll Never Forget when You...";
-
   return (
     <div className="w-full max-w-lg mx-auto select-none">
       {/* Shirt image with print area overlay */}
@@ -22,58 +18,75 @@ const ShirtMessagePreview = ({ message }: ShirtMessagePreviewProps) => {
           draggable={false}
         />
 
-        {/* Dashed print area rectangle */}
+        {/* Dashed print area — smaller rectangle below the logo */}
         <div
           className="absolute pointer-events-none"
           style={{
-            top: "24%",
-            left: "22%",
-            width: "56%",
-            bottom: "12%",
-            border: "2px dashed rgba(0,0,0,0.25)",
+            top: "36%",
+            left: "27%",
+            width: "46%",
+            height: "42%",
+            border: "2px dashed rgba(0,0,0,0.2)",
             borderRadius: "4px",
           }}
         />
 
-        {/* Text overlay — below the red logo, inside the print area */}
+        {/* Text overlay — inside the print area, below the logo */}
         <div
           className="absolute pointer-events-none flex flex-col items-center justify-start overflow-hidden"
           style={{
-            top: "46%",
-            left: "24%",
-            width: "52%",
-            bottom: "14%",
+            top: "38%",
+            left: "29%",
+            width: "42%",
+            height: "38%",
           }}
         >
           <p
             className="text-foreground leading-tight font-semibold text-center"
             style={{
               fontFamily: FONT_FAMILY,
-              fontSize: "clamp(0.45rem, 1.8vw, 0.8rem)",
+              fontSize: "clamp(0.4rem, 1.6vw, 0.75rem)",
             }}
           >
-            {prefixLine1a}
-            <br />
-            {prefixLine1b}
+            To Have a Best Friend
           </p>
           <p
             className="text-foreground leading-tight font-semibold mt-0.5 text-center"
             style={{
               fontFamily: FONT_FAMILY,
-              fontSize: "clamp(0.4rem, 1.6vw, 0.7rem)",
+              fontSize: "clamp(0.35rem, 1.4vw, 0.65rem)",
             }}
           >
-            {prefixLine2}
+            Gave me this shirt and said;
           </p>
-          {message && (
+          <p
+            className="text-foreground leading-tight font-semibold mt-0.5 text-center"
+            style={{
+              fontFamily: FONT_FAMILY,
+              fontSize: "clamp(0.35rem, 1.4vw, 0.65rem)",
+            }}
+          >
+            "TY! I'll Never Forget when You...
+          </p>
+          {message ? (
             <p
-              className="text-foreground leading-snug font-medium mt-1 break-words whitespace-pre-wrap text-center"
+              className="text-foreground leading-snug font-medium mt-0.5 break-words whitespace-pre-wrap text-center"
               style={{
                 fontFamily: FONT_FAMILY,
-                fontSize: "clamp(0.35rem, 1.4vw, 0.65rem)",
+                fontSize: "clamp(0.3rem, 1.3vw, 0.6rem)",
               }}
             >
-              {message}
+              {message}"
+            </p>
+          ) : (
+            <p
+              className="text-muted-foreground leading-snug font-medium mt-0.5 text-center italic"
+              style={{
+                fontFamily: FONT_FAMILY,
+                fontSize: "clamp(0.3rem, 1.3vw, 0.6rem)",
+              }}
+            >
+              [Your message here]"
             </p>
           )}
         </div>
