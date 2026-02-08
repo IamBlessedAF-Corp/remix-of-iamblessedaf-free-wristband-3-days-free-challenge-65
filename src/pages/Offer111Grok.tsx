@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
 import GrokHeroSection from "@/components/offer/grok/GrokHeroSection";
 import GrokValueStack from "@/components/offer/grok/GrokValueStack";
-import GrokSocialProof from "@/components/offer/grok/GrokSocialProof";
+import SocialProofSection from "@/components/offer/SocialProofSection";
 import GrokQuotesSection from "@/components/offer/grok/GrokQuotesSection";
 import GrokCtaBlock from "@/components/offer/grok/GrokCtaBlock";
 import GrokRiskReversal from "@/components/offer/grok/GrokRiskReversal";
@@ -77,8 +77,8 @@ const Offer111Grok = () => {
             showScarcity
           />
 
-          {/* ─── 5. Social Proof: Testimonials + Metrics ─── */}
-          <GrokSocialProof />
+          {/* ─── 5. Social Proof: Testimonials + Live Metrics ─── */}
+          <SocialProofSection variant="data" delay={0.3} />
 
           {/* ─── 6. Branding — "I AM" section ─── */}
           <motion.div

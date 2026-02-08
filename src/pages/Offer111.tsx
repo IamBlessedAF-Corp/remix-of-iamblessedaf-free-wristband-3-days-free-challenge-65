@@ -11,6 +11,7 @@ import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
 import OfferTimer from "@/components/offer/OfferTimer";
 import AuthorAvatar from "@/components/offer/AuthorAvatar";
 import UrgencyBanner from "@/components/offer/UrgencyBanner";
+import SocialProofSection from "@/components/offer/SocialProofSection";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
 import { useGamificationStats } from "@/hooks/useGamificationStats";
 const Offer111 = () => {
@@ -101,6 +102,9 @@ const Offer111 = () => {
             </p>
             <RiskReversalGuarantee />
           </motion.div>
+
+          {/* Social Proof — testimonials + live metrics */}
+          <SocialProofSection variant="story" delay={0.25} />
 
           {/* Product Sections */}
           <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
