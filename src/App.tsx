@@ -13,6 +13,8 @@ import Offer111Grok from "./pages/Offer111Grok";
 import Offer111Gpt from "./pages/Offer111Gpt";
 import Offer444 from "./pages/Offer444";
 import OfferMonthly from "./pages/OfferMonthly";
+import Offer1111 from "./pages/Offer1111";
+import Offer4444 from "./pages/Offer4444";
 import AIVideoContest from "./pages/AIVideoContest";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +37,8 @@ const App = () => (
           <Route path="/offer/111/gpt" element={<Offer111Gpt />} />
           <Route path="/offer/444" element={<Offer444 />} />
           <Route path="/offer/11mo" element={<OfferMonthly />} />
+          <Route path="/offer/1111" element={<Offer1111 />} />
+          <Route path="/offer/4444" element={<Offer4444 />} />
           <Route path="/make-2500-with-1-ai-clip" element={<AIVideoContest />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
