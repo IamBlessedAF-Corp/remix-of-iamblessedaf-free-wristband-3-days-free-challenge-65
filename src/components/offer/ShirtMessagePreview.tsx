@@ -116,7 +116,7 @@ const ShirtTextOverlay = ({
             fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
           }}
         >
-          {friendName || "[Name]"}
+          {friendName || "[Name]"},
         </span>
       )}
       <span
