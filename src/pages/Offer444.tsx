@@ -17,13 +17,16 @@ import ResearchList from "@/components/offer/ResearchList";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
+import { useGamificationStats } from "@/hooks/useGamificationStats";
 import DownsellModal from "@/components/offer/DownsellModal";
 
 const Offer444 = () => {
   const [showDownsell, setShowDownsell] = useState(false);
   const navigate = useNavigate();
+  const { rewardCheckout } = useGamificationStats();
 
   const handleCheckout = () => {
+    rewardCheckout("pack-444");
     if (import.meta.env.DEV) {
       console.log("Redirecting to Stripe checkout for $444 Habit Lock Pack");
     }

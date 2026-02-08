@@ -9,11 +9,15 @@ import GrokRiskReversal from "@/components/offer/grok/GrokRiskReversal";
 import GrokViralFooter from "@/components/offer/grok/GrokViralFooter";
 import ResearchList from "@/components/offer/ResearchList";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
+import { useGamificationStats } from "@/hooks/useGamificationStats";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
 
 const Offer4444 = () => {
+  const { rewardCheckout } = useGamificationStats();
+
   const handleCheckout = () => {
+    rewardCheckout("pack-4444");
     if (import.meta.env.DEV) {
       console.log("Redirecting to Stripe checkout for $4,444 Patron Pack");
     }

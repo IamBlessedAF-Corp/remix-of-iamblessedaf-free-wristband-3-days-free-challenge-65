@@ -12,11 +12,15 @@ import CustomMessageBox from "@/components/offer/CustomMessageBox";
 import ProductSections from "@/components/offer/ProductSections";
 import ResearchList from "@/components/offer/ResearchList";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
+import { useGamificationStats } from "@/hooks/useGamificationStats";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
 
 const Offer1111 = () => {
+  const { rewardCheckout } = useGamificationStats();
+
   const handleCheckout = () => {
+    rewardCheckout("pack-1111");
     if (import.meta.env.DEV) {
       console.log("Redirecting to Stripe checkout for $1,111 Kingdom Ambassador Pack");
     }

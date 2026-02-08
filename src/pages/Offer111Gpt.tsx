@@ -16,17 +16,20 @@ import CustomMessageBox from "@/components/offer/CustomMessageBox";
 import DiscountBanner from "@/components/offer/DiscountBanner";
 import ResearchList from "@/components/offer/ResearchList";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
+import { useGamificationStats } from "@/hooks/useGamificationStats";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
 
 const Offer111Gpt = () => {
   const [purchased, setPurchased] = useState(false);
+  const { rewardCheckout } = useGamificationStats();
 
   useEffect(() => {
     window.dispatchEvent(new CustomEvent("track", { detail: { event: "upsell2_view" } }));
   }, []);
 
   const handleCheckout = () => {
+    rewardCheckout("pack-111");
     if (import.meta.env.DEV) {
       console.log("1-click add to order: $111 Gratitude Pack (GPT variant)");
     }
