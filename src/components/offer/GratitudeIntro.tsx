@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FriendShirtSection } from "@/components/offer/ProductSections";
 import CustomMessageBox from "@/components/offer/CustomMessageBox";
+import ShirtMessagePreview from "@/components/offer/ShirtMessagePreview";
 import OfferTimer from "@/components/offer/OfferTimer";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
 import AuthorAvatar from "@/components/offer/AuthorAvatar";
 
 const GratitudeIntro = () => {
+  const [message, setMessage] = useState("");
 
   return (
     <motion.div
@@ -47,8 +50,24 @@ const GratitudeIntro = () => {
       <OfferTimer />
       <div className="h-4" />
 
+      {/* Live Shirt Preview — shows message on the shirt */}
+      <motion.div
+        className="mb-6"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.15 }}
+      >
+        <p className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+          👕 Live Shirt Preview
+        </p>
+        <ShirtMessagePreview message={message} />
+      </motion.div>
+
       {/* Friend Shirt showcase with Custom Message Box embedded */}
-      <FriendShirtSection delay={0.15} afterHeroSlot={<CustomMessageBox />} />
+      <FriendShirtSection
+        delay={0.15}
+        afterHeroSlot={<CustomMessageBox value={message} onChange={setMessage} />}
+      />
 
       <p className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2 leading-tight">
         Claim Your <span className="text-primary">FREE</span> Custom Shirt → Trigger 27× More Joy
