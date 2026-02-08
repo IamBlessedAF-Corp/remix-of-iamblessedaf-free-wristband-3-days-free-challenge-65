@@ -1,20 +1,20 @@
 import { motion } from "framer-motion";
-import { Crown, ArrowRight } from "lucide-react";
+import { Heart, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OfferTimer from "@/components/offer/OfferTimer";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
 
-interface GrokCtaBlockProps {
+interface GptCtaBlockProps {
   onCheckout: () => void;
   delay?: number;
   showScarcity?: boolean;
 }
 
-const GrokCtaBlock = ({
+const GptCtaBlock = ({
   onCheckout,
   delay = 0,
   showScarcity = false,
-}: GrokCtaBlockProps) => {
+}: GptCtaBlockProps) => {
   return (
     <motion.div
       className="mb-8"
@@ -24,8 +24,8 @@ const GrokCtaBlock = ({
     >
       {showScarcity && (
         <div className="bg-primary/10 border border-primary/20 rounded-xl p-3 mb-3 text-center">
-          <p className="text-xs font-semibold text-primary uppercase tracking-wider font-mono">
-            ⚡ 99 custom units remaining — protocol window closing
+          <p className="text-xs font-semibold text-primary uppercase tracking-wider">
+            💌 Only 99 custom shirts available — make yours before they're gone
           </p>
         </div>
       )}
@@ -33,15 +33,15 @@ const GrokCtaBlock = ({
       <OfferTimer />
       <div className="h-3" />
 
-      {/* Price anchor — ROI framing */}
+      {/* Price anchor — warm framing */}
       <div className="text-center mb-3">
         <div className="flex items-center justify-center gap-3">
-          <span className="text-sm text-muted-foreground line-through font-mono">$333</span>
-          <span className="text-3xl font-black text-foreground font-mono">$111</span>
+          <span className="text-sm text-muted-foreground line-through">$333</span>
+          <span className="text-3xl font-black text-foreground">$111</span>
           <span className="text-sm text-muted-foreground">one-time</span>
         </div>
-        <p className="text-xs text-muted-foreground mt-1 font-mono">
-          $111 ÷ 365 = $0.30/day · ROI: 27× happiness multiplier
+        <p className="text-xs text-muted-foreground mt-1">
+          That's less than a dinner out — but the feeling lasts all year
         </p>
         <p className="text-xs text-muted-foreground">
           Free US Shipping · International $14.95 Flat
@@ -52,13 +52,13 @@ const GrokCtaBlock = ({
         onClick={onCheckout}
         className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
       >
-        <Crown className="w-5 h-5 mr-2" />
-        ACTIVATE: Deploy 11 Meals + Lock In My Protocol
+        <Heart className="w-5 h-5 mr-2" />
+        YES! Send Love to My Best Friend 💌
         <ArrowRight className="w-5 h-5 ml-2" />
       </Button>
 
-      <p className="text-center text-xs text-muted-foreground mt-3 font-mono">
-        One-time secure deployment · Instant protocol access
+      <p className="text-center text-xs text-muted-foreground mt-3">
+        One beautiful act of gratitude · Secure payment · Instant access
       </p>
 
       <div className="mt-4">
@@ -68,4 +68,4 @@ const GrokCtaBlock = ({
   );
 };
 
-export default GrokCtaBlock;
+export default GptCtaBlock;

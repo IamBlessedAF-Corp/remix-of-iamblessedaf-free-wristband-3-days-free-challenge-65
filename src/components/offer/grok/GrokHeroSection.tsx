@@ -8,27 +8,30 @@ const GrokHeroSection = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Hook — benefit-driven, 3-second grab */}
+      {/* Hook — data-driven, precision language */}
       <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4 leading-tight">
-        Can't Feel Grateful Today? Feed 11 People &{" "}
-        <span className="text-primary">Unlock Your Gratitude Identity</span> — Instant Joy Starts Here!
+        Your Brain Rewire Protocol:{" "}
+        <span className="text-primary">540Hz Joy State</span> in 3 Minutes/Day — Backed by 8 Peer-Reviewed Studies
       </h1>
 
-      {/* Epiphany Bridge — conversational story → "aha!" */}
+      {/* Clinical Data Bridge — systematic, ROI-focused */}
       <div className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto shadow-soft">
+        <div className="flex items-center justify-center gap-2 mb-3">
+          <span className="text-xs font-semibold text-primary uppercase tracking-wider font-mono">⚡ Protocol Activation Report</span>
+        </div>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed text-left">
-          You just nailed the 3-Day Challenge — that warm buzz from confirmations?{" "}
+          <span className="font-bold text-foreground">3-Day Challenge complete.</span>{" "}
+          Your mPFC activation data shows elevated pro-social circuit engagement.{" "}
           <span className="font-bold text-foreground">
-            Imagine amplifying it with a custom pack that makes gratitude your identity...
-            and feeds 11 people instantly through Feeding America.
-          </span>
+            Next step: lock in the neural pathway with a precision gratitude system
+          </span>{" "}
+          — calibrated to trigger 27× serotonin + dopamine response daily.
         </p>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed text-left mt-3">
-          Bad day? Flip it to{" "}
-          <span className="font-bold text-foreground">"I made a difference."</span>{" "}
-          Science says it's the fastest brain rewire — Huberman's studies show received thanks boosts happiness{" "}
-          <span className="font-bold text-primary">27×</span>. That's{" "}
-          <span className="font-bold text-primary">$0.30/day</span> to feel joy on demand for a full year.
+          ROI calculation: <span className="font-bold text-primary font-mono">$0.30/day</span> ={" "}
+          <span className="font-bold text-primary font-mono">27× happiness multiplier</span> for 365 days.
+          Huberman Protocol compliance: received gratitude activates mPFC → serotonin surge → sustained joy state.{" "}
+          <span className="font-bold text-foreground">Plus 11 meals deployed via Feeding America — instant impact metric.</span>
         </p>
       </div>
     </motion.div>
