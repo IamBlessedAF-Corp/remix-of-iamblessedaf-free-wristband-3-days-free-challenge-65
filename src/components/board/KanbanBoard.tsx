@@ -71,16 +71,16 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
     [columns]
   );
 
-  /** Critical cards in review/error columns that block the pipeline */
+  /** All critical-priority cards pulse as blockers regardless of column */
   const blockingCardIds = useMemo(() => {
     const ids = new Set<string>();
     cards.forEach((card) => {
-      if (card.priority === "critical" && reviewColumnIds.has(card.column_id)) {
+      if (card.priority === "critical") {
         ids.add(card.id);
       }
     });
     return ids;
-  }, [cards, reviewColumnIds]);
+  }, [cards]);
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
