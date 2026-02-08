@@ -196,6 +196,45 @@ export type Database = {
         }
         Relationships: []
       }
+      sms_deliveries: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          message: string
+          recipient_name: string | null
+          recipient_phone: string
+          source_page: string | null
+          status: string
+          twilio_sid: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          message: string
+          recipient_name?: string | null
+          recipient_phone: string
+          source_page?: string | null
+          status?: string
+          twilio_sid?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          message?: string
+          recipient_name?: string | null
+          recipient_phone?: string
+          source_page?: string | null
+          status?: string
+          twilio_sid?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

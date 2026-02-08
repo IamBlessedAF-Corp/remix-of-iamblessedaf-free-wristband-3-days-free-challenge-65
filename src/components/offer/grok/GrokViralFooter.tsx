@@ -42,7 +42,12 @@ const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
         : DEFAULT_MESSAGE;
 
       const { data, error } = await supabase.functions.invoke("send-sms", {
-        body: { to: phone.trim(), message: personalizedMessage },
+        body: {
+          to: phone.trim(),
+          message: personalizedMessage,
+          recipientName: friendName.trim() || null,
+          sourcePage: "/offer/111/grok",
+        },
       });
 
       if (error) throw error;
