@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle2, Users, Heart, Sparkles, Gift, Truck } from "lucide-react";
+import { CheckCircle2, Users, Heart, Sparkles, Gift } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import wristbandsImg from "@/assets/product-wristbands-new.avif";
@@ -84,9 +84,9 @@ const Challenge = () => {
   const features = useMemo(() => {
     if (isReferred) {
       return [
-        { icon: Gift, text: "FREE Wristband ($11 Value)" },
-        { icon: Truck, text: "$9.95 Shipping (US)" },
-        { icon: Heart, text: "Upgrade: 3 for $22 Free Ship" },
+        { icon: Gift, text: "FREE Wristband Gift 🎁" },
+        { icon: Heart, text: "Someone is Grateful for You" },
+        { icon: Sparkles, text: "Win $1,111 This Week" },
       ];
     }
     return [
@@ -139,9 +139,8 @@ const Challenge = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
                 >
-                  You Just Got a{" "}
-                  <span className="text-primary">FREE Wristband</span>{" "}
-                  Valued at $11!
+                  Someone Sent You a{" "}
+                  <span className="text-primary">FREE Wristband!</span>
                 </motion.h1>
 
                 {/* Wristband image */}
@@ -166,29 +165,9 @@ const Challenge = () => {
                 >
                   Someone who cares about you sent you a{" "}
                   <span className="font-bold text-foreground">FREE "I Am Blessed AF" Wristband</span> as a 
-                  gratitude gift. Claim yours below!
+                  gratitude gift. Sign up to claim yours!
                 </motion.p>
 
-                <motion.div
-                  className="bg-card border border-border/50 rounded-xl p-4 mb-4 max-w-md w-full"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.45 }}
-                >
-                  <div className="flex items-center justify-between gap-4 text-sm">
-                    <div className="text-center flex-1">
-                      <p className="font-bold text-foreground">1 Wristband</p>
-                      <p className="text-primary font-bold text-lg">FREE</p>
-                      <p className="text-muted-foreground text-xs">+ $9.95 shipping 🇺🇸</p>
-                    </div>
-                    <div className="w-px h-12 bg-border" />
-                    <div className="text-center flex-1">
-                      <p className="font-bold text-foreground">3 Wristbands</p>
-                      <p className="text-primary font-bold text-lg">$22</p>
-                      <p className="text-muted-foreground text-xs">FREE shipping 🇺🇸</p>
-                    </div>
-                  </div>
-                </motion.div>
 
                 <motion.p
                   className="text-sm font-semibold text-primary mb-8"
@@ -406,12 +385,12 @@ const Challenge = () => {
                   {
                     step: "1",
                     title: "Claim Your Gift",
-                    description: "Sign up above to reserve your FREE 'I Am Blessed AF' wristband ($11 value).",
+                    description: "Sign up above to reserve your FREE 'I Am Blessed AF' wristband.",
                   },
                   {
                     step: "2",
-                    title: "Choose Your Option",
-                    description: "Pay just $9.95 shipping for 1 wristband, or get all 3 colors for $22 with FREE shipping.",
+                    title: "Complete Checkout",
+                    description: "Choose your wristband option and complete your order.",
                   },
                   {
                     step: "3",

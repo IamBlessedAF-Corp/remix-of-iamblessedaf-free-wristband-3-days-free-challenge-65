@@ -241,25 +241,12 @@ const ChallengeThanks = () => {
               <Gift className="w-5 h-5 text-primary" />
               <h2 className="font-bold text-lg">Claim Your FREE Wristband</h2>
             </div>
-            <div className="flex items-center justify-between gap-4 text-sm mb-4">
-              <div className="text-center flex-1">
-                <p className="font-bold text-foreground">1 Wristband</p>
-                <p className="text-primary font-bold text-lg">FREE</p>
-                <p className="text-muted-foreground text-xs">+ $9.95 shipping 🇺🇸</p>
-              </div>
-              <div className="w-px h-12 bg-border" />
-              <div className="text-center flex-1">
-                <p className="font-bold text-foreground">3 Wristbands</p>
-                <p className="text-primary font-bold text-lg">$22</p>
-                <p className="text-muted-foreground text-xs">FREE shipping 🇺🇸</p>
-              </div>
-            </div>
-            <Button className="w-full h-12 text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground">
-              🎁 Pay $9.95 Shipping → Claim Wristband
-            </Button>
-            <p className="text-xs text-muted-foreground text-center mt-2">
-              Or upgrade to all 3 colors for $22 with FREE shipping
+            <p className="text-sm text-muted-foreground mb-4">
+              Your gift is reserved! Tap below to choose your option and complete checkout.
             </p>
+            <Button className="w-full h-12 text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground">
+              🎁 Claim My Wristband →
+            </Button>
           </motion.div>
         )}
 
@@ -314,9 +301,8 @@ const ChallengeThanks = () => {
           </div>
 
           <p className="text-sm text-muted-foreground mb-4">
-            Send a <span className="font-semibold text-foreground">FREE wristband ($11 value)</span> to someone you're grateful for. 
-            They just cover <span className="font-semibold text-foreground">$9.95 shipping</span>, or grab all 3 for{" "}
-            <span className="font-semibold text-foreground">$22 with FREE shipping</span>.
+            Send a <span className="font-semibold text-foreground">FREE wristband</span> to someone you're grateful for. 
+            They'll get to choose their option at checkout.
           </p>
 
           {/* Referral Link */}
