@@ -103,6 +103,7 @@ const Board = () => {
           currentCardTitle={autoExec.currentCardTitle}
           processedCount={autoExec.processedCount}
           onExecute={autoExec.execute}
+          onSweep={autoExec.sweep}
           onStop={autoExec.stop}
         />
       </header>

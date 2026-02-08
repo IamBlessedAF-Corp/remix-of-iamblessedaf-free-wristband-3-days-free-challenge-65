@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { BoardColumn } from "@/hooks/useBoard";
 import { PipelineMode } from "@/hooks/useAutoExecute";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Square, Zap, Sparkles, Play, ShieldCheck, Workflow } from "lucide-react";
+import { Loader2, Square, Zap, Sparkles, Play, ShieldCheck, Workflow, Brush } from "lucide-react";
 
 interface PipelineControlsProps {
   columns: BoardColumn[];
@@ -18,6 +18,7 @@ interface PipelineControlsProps {
   currentCardTitle: string | null;
   processedCount: number;
   onExecute: (columnId: string, mode: PipelineMode, columnMap?: Record<string, string>) => void;
+  onSweep: (columnIds: string[]) => void;
   onStop: () => void;
 }
 
@@ -31,18 +32,31 @@ const MODES: { value: PipelineMode; label: string; shortLabel: string; icon: Rea
 
 export default function PipelineControls({
   columns, isRunning, currentPhase, currentCardTitle, processedCount,
-  onExecute, onStop,
+  onExecute, onSweep, onStop,
 }: PipelineControlsProps) {
   const [selectedColumn, setSelectedColumn] = useState("");
   const [selectedMode, setSelectedMode] = useState<PipelineMode>("execute");
 
+  // Identify validation columns (positions 7 and 8 = "Validation New" and "Validation System")
+  const validationColumnIds = useMemo(
+    () => columns.filter((c) => c.position === 7 || c.position === 8).map((c) => c.id),
+    [columns]
+  );
+
+  const validationCardCount = useMemo(() => validationColumnIds.length, [validationColumnIds]);
+
   const handleStart = () => {
     if (!selectedColumn) return;
     if (selectedMode === "full") {
-      // Full pipeline only needs one source column — cards processed end-to-end
       onExecute(selectedColumn, "full", { clarify: selectedColumn });
     } else {
       onExecute(selectedColumn, selectedMode);
+    }
+  };
+
+  const handleSweep = () => {
+    if (validationColumnIds.length > 0) {
+      onSweep(validationColumnIds);
     }
   };
 
@@ -70,7 +84,7 @@ export default function PipelineControls({
   return (
     <div className="flex flex-col gap-2 w-full">
       {/* Row 1: Mode selector */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         {MODES.map((m) => (
           <button
             key={m.value}
@@ -89,7 +103,7 @@ export default function PipelineControls({
         ))}
       </div>
 
-      {/* Row 2: Column selection + Go */}
+      {/* Row 2: Column selection + Go + Sweep */}
       <div className="flex items-center gap-2">
         <Select value={selectedColumn} onValueChange={setSelectedColumn}>
           <SelectTrigger className="flex-1 h-8 text-xs bg-background">
@@ -112,6 +126,18 @@ export default function PipelineControls({
         >
           <Zap className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Go</span>
+        </Button>
+
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleSweep}
+          disabled={validationColumnIds.length === 0}
+          className="gap-1 flex-shrink-0 h-8 border-amber-500/50 text-amber-600 hover:bg-amber-500/10"
+          title="Sweep: Run Validate + Six Sigma on all cards stuck in validation columns"
+        >
+          <Brush className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Sweep</span>
         </Button>
       </div>
     </div>
