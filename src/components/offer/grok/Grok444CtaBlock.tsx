@@ -3,6 +3,7 @@ import { Crown, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OfferTimer from "@/components/offer/OfferTimer";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
+import UrgencyBanner from "@/components/offer/UrgencyBanner";
 
 interface Grok444CtaBlockProps {
   onCheckout: () => void;
@@ -31,6 +32,8 @@ const Grok444CtaBlock = ({
       )}
 
       <OfferTimer />
+      <UrgencyBanner variant="shirts" />
+      <UrgencyBanner variant="wristbands" />
       <div className="h-3" />
 
       {/* Price anchor */}
