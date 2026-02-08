@@ -19,6 +19,7 @@ interface ShirtCustomizerProps {
   onMessageChange: (message: string) => void;
   selectedSize: string;
   onSizeChange: (size: string) => void;
+  hideNameInput?: boolean;
 }
 
 /** Step indicator dots */
@@ -47,6 +48,7 @@ const ShirtCustomizer = ({
   onMessageChange,
   selectedSize,
   onSizeChange,
+  hideNameInput = false,
 }: ShirtCustomizerProps) => {
   const [saved, setSaved] = useState(false);
   const [gender, setGender] = useState(() => localStorage.getItem("friendShirtGender") || "");
@@ -57,12 +59,16 @@ const ShirtCustomizer = ({
   const hasName = friendName.trim().length > 0;
   const hasMessage = message.trim().length > 0;
   const hasSize = !!gender;
-  const currentStep = !hasName ? 0 : !hasMessage ? 1 : !hasSize ? 2 : 3;
+  const totalSteps = hideNameInput ? 2 : 3;
+  const currentStep = hideNameInput
+    ? (!hasMessage ? 0 : !hasSize ? 1 : 2)
+    : (!hasName ? 0 : !hasMessage ? 1 : !hasSize ? 2 : 3);
 
   const charsLeft = MAX_CHARS - message.length;
 
-  // Auto-focus name input on mount
+  // Auto-focus name input on mount (only if showing it)
   useEffect(() => {
+    if (hideNameInput) return;
     const timer = setTimeout(() => nameInputRef.current?.focus(), 600);
     return () => clearTimeout(timer);
   }, []);
@@ -109,42 +115,44 @@ const ShirtCustomizer = ({
       transition={{ duration: 0.4 }}
     >
       {/* Step indicator */}
-      <StepDots current={currentStep} total={3} />
+      <StepDots current={currentStep} total={totalSteps} />
 
-      {/* ── Step 1: Friend's name ── */}
-      <div>
-        <label className="flex items-center gap-1.5 text-sm font-semibold text-foreground mb-1.5">
-          <User className="w-3.5 h-3.5 text-primary" />
-          Who's this for?
-        </label>
-        <div className="relative">
-          <Input
-            ref={nameInputRef}
-            placeholder="Your best friend's name"
-            value={friendName}
-            onChange={(e) => {
-              if (e.target.value.length <= MAX_NAME_CHARS) {
-                onFriendNameChange(e.target.value);
-                setSaved(false);
-              }
-            }}
-            maxLength={MAX_NAME_CHARS}
-            className="h-11 text-base font-medium border-border/60 focus:border-primary rounded-xl pl-4 pr-10"
-          />
-          <AnimatePresence>
-            {hasName && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
-              >
-                <Check className="w-4 h-4 text-primary" />
-              </motion.div>
-            )}
-          </AnimatePresence>
+      {/* ── Step 1: Friend's name (hidden when managed externally) ── */}
+      {!hideNameInput && (
+        <div>
+          <label className="flex items-center gap-1.5 text-sm font-semibold text-foreground mb-1.5">
+            <User className="w-3.5 h-3.5 text-primary" />
+            What's your best friend's name?
+          </label>
+          <div className="relative">
+            <Input
+              ref={nameInputRef}
+              placeholder="Your best friend's name"
+              value={friendName}
+              onChange={(e) => {
+                if (e.target.value.length <= MAX_NAME_CHARS) {
+                  onFriendNameChange(e.target.value);
+                  setSaved(false);
+                }
+              }}
+              maxLength={MAX_NAME_CHARS}
+              className="h-11 text-base font-medium border-border/60 focus:border-primary rounded-xl pl-4 pr-10"
+            />
+            <AnimatePresence>
+              {hasName && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0 }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  <Check className="w-4 h-4 text-primary" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── Step 2: Message ── */}
       <AnimatePresence>
