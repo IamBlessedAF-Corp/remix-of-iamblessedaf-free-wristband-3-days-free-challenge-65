@@ -47,22 +47,22 @@ const ShirtMessagePreview = ({
           draggable={false}
         />
 
-        {/* Text overlay — positioned inside the existing dashed print area on the mockup */}
+        {/* Text overlay — positioned inside the dashed print area, starting right below the logo */}
         <div
-          className="absolute pointer-events-none flex flex-col items-center justify-center"
+          className="absolute pointer-events-none flex flex-col items-center justify-start overflow-hidden"
           style={{
-            top: "33%",
-            left: "24%",
-            width: "52%",
-            bottom: "20%",
-            padding: "2%",
+            top: "38%",
+            left: "25%",
+            width: "50%",
+            bottom: "18%",
+            padding: "1% 2%",
           }}
         >
           <p
             className="text-foreground leading-tight font-semibold text-center"
             style={{
               fontFamily,
-              fontSize: "clamp(0.55rem, 2.2vw, 1rem)",
+              fontSize: "clamp(0.5rem, 2vw, 0.9rem)",
             }}
           >
             {prefixLine1}
@@ -71,7 +71,7 @@ const ShirtMessagePreview = ({
             className="text-foreground leading-tight font-semibold mt-0.5 text-center"
             style={{
               fontFamily,
-              fontSize: "clamp(0.5rem, 2vw, 0.9rem)",
+              fontSize: "clamp(0.45rem, 1.8vw, 0.8rem)",
             }}
           >
             {prefixLine2}
@@ -81,7 +81,7 @@ const ShirtMessagePreview = ({
               className="text-foreground leading-snug font-medium mt-1 break-words whitespace-pre-wrap text-center"
               style={{
                 fontFamily,
-                fontSize: "clamp(0.45rem, 1.8vw, 0.8rem)",
+                fontSize: "clamp(0.4rem, 1.6vw, 0.75rem)",
               }}
             >
               {message}
