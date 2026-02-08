@@ -47,50 +47,46 @@ const ShirtMessagePreview = ({
           draggable={false}
         />
 
-        {/* Dashed print area — matches the rectangle on the mockup */}
+        {/* Text overlay — positioned inside the existing dashed print area on the mockup */}
         <div
-          className="absolute pointer-events-none"
+          className="absolute pointer-events-none flex flex-col items-center justify-center"
           style={{
-            top: "30%",
-            left: "22%",
-            width: "56%",
-            height: "50%",
-            border: "2px dashed hsl(var(--border))",
-            borderRadius: "4px",
+            top: "33%",
+            left: "24%",
+            width: "52%",
+            bottom: "20%",
+            padding: "2%",
           }}
         >
-          {/* Text content inside print area */}
-          <div className="flex flex-col items-center justify-start h-full px-2 pt-[18%]">
+          <p
+            className="text-foreground leading-tight font-semibold text-center"
+            style={{
+              fontFamily,
+              fontSize: "clamp(0.55rem, 2.2vw, 1rem)",
+            }}
+          >
+            {prefixLine1}
+          </p>
+          <p
+            className="text-foreground leading-tight font-semibold mt-0.5 text-center"
+            style={{
+              fontFamily,
+              fontSize: "clamp(0.5rem, 2vw, 0.9rem)",
+            }}
+          >
+            {prefixLine2}
+          </p>
+          {message && (
             <p
-              className="text-foreground leading-tight font-semibold text-center"
+              className="text-foreground leading-snug font-medium mt-1 break-words whitespace-pre-wrap text-center"
               style={{
                 fontFamily,
-                fontSize: "clamp(0.6rem, 2.5vw, 1.1rem)",
+                fontSize: "clamp(0.45rem, 1.8vw, 0.8rem)",
               }}
             >
-              {prefixLine1}
+              {message}
             </p>
-            <p
-              className="text-foreground leading-tight font-semibold mt-0.5 text-center"
-              style={{
-                fontFamily,
-                fontSize: "clamp(0.55rem, 2.2vw, 0.95rem)",
-              }}
-            >
-              {prefixLine2}
-            </p>
-            {message && (
-              <p
-                className="text-foreground leading-snug font-medium mt-1.5 break-words whitespace-pre-wrap text-center"
-                style={{
-                  fontFamily,
-                  fontSize: "clamp(0.5rem, 2vw, 0.85rem)",
-                }}
-              >
-                {message}
-              </p>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
