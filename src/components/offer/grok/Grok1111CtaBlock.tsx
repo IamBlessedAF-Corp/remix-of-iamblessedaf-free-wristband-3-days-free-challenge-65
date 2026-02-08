@@ -25,7 +25,7 @@ const Grok1111CtaBlock = ({
       {showScarcity && (
         <div className="bg-primary/10 border border-primary/20 rounded-xl p-3 mb-3 text-center">
           <p className="text-xs font-semibold text-primary uppercase tracking-wider">
-            ⚡ Only 11 Evangelist Packs available — 11,111 meals waiting to be donated
+            ⚡ Only 11 Kingdom Ambassador Packs available — 11,111 meals waiting to be donated
           </p>
         </div>
       )}
@@ -50,7 +50,7 @@ const Grok1111CtaBlock = ({
         className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
       >
         <Crown className="w-5 h-5 mr-2" />
-        YES! Feed 11,111 People & Become the Evangelist!
+        YES! Feed 11,111 People & Become a Kingdom Ambassador!
         <ArrowRight className="w-5 h-5 ml-2" />
       </Button>
 

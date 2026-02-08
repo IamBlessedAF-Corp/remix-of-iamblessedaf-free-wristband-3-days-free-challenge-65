@@ -12,7 +12,7 @@ const Grok1111HeroSection = () => {
       <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4 leading-tight">
         $1,111 ÷ 365 ={" "}
         <span className="text-primary">$3.04/day</span> to Become the{" "}
-        <span className="text-primary">Gratitude Evangelist</span> Your Circle Needs
+        <span className="text-primary">Kingdom Ambassador</span> with One Mission: "Go & Make Disciples of All Nations"
       </h1>
 
       {/* Epiphany Bridge — math-heavy */}
@@ -26,7 +26,7 @@ const Grok1111HeroSection = () => {
           111 wristbands to hand out to family, friends, coworkers — turning every interaction into a gratitude trigger.
         </p>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed text-left mt-3">
-          The full Evangelist stack:{" "}
+          The full Ambassador stack:{" "}
           <span className="font-bold text-foreground">7 black shirts + 11 custom friend shirts + 111 wristbands</span>{" "}
           + <span className="font-bold text-primary">11,111 meals donated</span> instantly.
           Total value: <span className="font-bold text-foreground line-through">$2,222</span>.{" "}
