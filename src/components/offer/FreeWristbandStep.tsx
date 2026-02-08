@@ -5,6 +5,7 @@ import productWristbands from "@/assets/product-wristbands.avif";
 import ImageZoomModal from "./ImageZoomModal";
 import { useState } from "react";
 import RiskReversalGuarantee from "./RiskReversalGuarantee";
+import UrgencyBanner from "./UrgencyBanner";
 
 interface FreeWristbandStepProps {
   onCheckout: () => void;
@@ -111,6 +112,7 @@ const FreeWristbandStep = ({ onCheckout, onSkip }: FreeWristbandStepProps) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
       >
+        <UrgencyBanner variant="wristbands" />
         <Button
           onClick={onCheckout}
           className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"

@@ -5,6 +5,7 @@ import WristbandProductCard from "./WristbandProductCard";
 import RiskReversalGuarantee from "./RiskReversalGuarantee";
 import ResearchList from "./ResearchList";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
+import UrgencyBanner from "./UrgencyBanner";
 
 interface UpsellWristbandStepProps {
   onCheckout: () => void;
@@ -95,6 +96,7 @@ const UpsellWristbandStep = ({ onCheckout, onSkip }: UpsellWristbandStepProps) =
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
+        <UrgencyBanner variant="wristbands" />
         <Button
           onClick={onCheckout}
           className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle2, Users, Heart, Sparkles, Gift } from "lucide-react";
+import UrgencyBanner from "@/components/offer/UrgencyBanner";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import wristbandsImg from "@/assets/product-wristbands-new.avif";
@@ -230,6 +231,16 @@ const Challenge = () => {
                 </div>
               ))}
             </motion.div>
+          </motion.div>
+
+          {/* Wristband urgency */}
+          <motion.div
+            className="max-w-md mx-auto mb-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.55 }}
+          >
+            <UrgencyBanner variant="wristbands" />
           </motion.div>
 
           {/* Signup Card */}
