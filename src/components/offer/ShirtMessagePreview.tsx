@@ -44,31 +44,40 @@ const ShirtTextOverlay = ({
   >
     {/* Static prefix lines */}
     <p
+      className="text-foreground leading-tight font-bold text-center pointer-events-none"
+      style={{
+        fontFamily: FONT_FAMILY,
+        fontSize: `clamp(${0.35 * scale}rem, ${1.4 * scale}vw, ${0.65 * scale}rem)`,
+      }}
+    >
+      I am Blessed AF
+    </p>
+    <p
       className="text-foreground leading-tight font-semibold text-center pointer-events-none"
       style={{
         fontFamily: FONT_FAMILY,
-        fontSize: `clamp(${0.4 * scale}rem, ${1.6 * scale}vw, ${0.75 * scale}rem)`,
+        fontSize: `clamp(${0.35 * scale}rem, ${1.4 * scale}vw, ${0.65 * scale}rem)`,
       }}
     >
-      To Have a Best Friend
+      to Have a Best Friend
+    </p>
+    <p
+      className="text-primary leading-tight font-semibold mt-0.5 text-center pointer-events-none italic"
+      style={{
+        fontFamily: FONT_FAMILY,
+        fontSize: `clamp(${0.3 * scale}rem, ${1.2 * scale}vw, ${0.55 * scale}rem)`,
+      }}
+    >
+      [Your Best Friend First Name]
     </p>
     <p
       className="text-foreground leading-tight font-semibold mt-0.5 text-center pointer-events-none"
       style={{
         fontFamily: FONT_FAMILY,
-        fontSize: `clamp(${0.35 * scale}rem, ${1.4 * scale}vw, ${0.65 * scale}rem)`,
+        fontSize: `clamp(${0.3 * scale}rem, ${1.2 * scale}vw, ${0.55 * scale}rem)`,
       }}
     >
-      Gave me this shirt and said;
-    </p>
-    <p
-      className="text-foreground leading-tight font-semibold mt-0.5 text-center pointer-events-none"
-      style={{
-        fontFamily: FONT_FAMILY,
-        fontSize: `clamp(${0.35 * scale}rem, ${1.4 * scale}vw, ${0.65 * scale}rem)`,
-      }}
-    >
-      "TY! I'll Never Forget when You...
+      TY! I'll Never Forget when You...
     </p>
 
     {/* Editable area */}
