@@ -23,6 +23,13 @@ export interface BoardCard {
   preview_link: string | null;
   labels: string[];
   screenshots: string[];
+  stage: string;
+  vs_score: number;
+  cc_score: number;
+  hu_score: number;
+  r_score: number;
+  ad_score: number;
+  delegation_score: number;
   created_at: string;
   updated_at: string;
 }

@@ -37,11 +37,13 @@ serve(async (req) => {
       if (error || !data) throw new Error("Card not found");
       card = data;
     } else if (source_column_id) {
+      // Sort by delegation_score DESC so highest-priority cards are processed first
       const { data, error } = await supabase
         .from("board_cards")
         .select("*")
         .eq("column_id", source_column_id)
         .neq("id", docsCard.id) // Never process the docs card itself
+        .order("delegation_score", { ascending: false, nullsFirst: false })
         .order("position", { ascending: true })
         .limit(1)
         .single();
