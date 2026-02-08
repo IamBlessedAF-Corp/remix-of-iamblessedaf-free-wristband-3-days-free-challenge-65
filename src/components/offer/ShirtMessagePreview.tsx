@@ -22,10 +22,10 @@ const ShirtMessagePreview = ({ message }: ShirtMessagePreviewProps) => {
         <div
           className="absolute pointer-events-none"
           style={{
-            top: "40%",
+            top: "50%",
             left: "32.5%",
             width: "35%",
-            height: "38%",
+            height: "28.5%",
             border: "2px dashed rgba(0,0,0,0.2)",
             borderRadius: "4px",
           }}
@@ -35,10 +35,10 @@ const ShirtMessagePreview = ({ message }: ShirtMessagePreviewProps) => {
         <div
           className="absolute pointer-events-none flex flex-col items-center justify-start overflow-hidden"
           style={{
-            top: "41%",
+            top: "51%",
             left: "34%",
             width: "32%",
-            height: "36%",
+            height: "26.5%",
           }}
         >
           <p
