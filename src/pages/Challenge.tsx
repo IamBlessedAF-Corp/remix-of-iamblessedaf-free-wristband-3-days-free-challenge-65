@@ -456,35 +456,7 @@ const Challenge = () => {
         <p>© {new Date().getFullYear()} I am Blessed AF. All rights reserved.</p>
       </footer>
 
-      {/* Spin the Wheel — auto-shows after 4s for first-time visitors */}
-      {!isReferred && (
-        <>
-          <SpinWheel
-            segments={spinLogic.segments}
-            isSpinning={spinLogic.isSpinning}
-            hasWon={spinLogic.hasWon}
-            showWheel={spinLogic.showWheel}
-            rotation={spinLogic.rotation}
-            onSpin={spinLogic.spin}
-            onClose={spinLogic.closeWheel}
-          />
-
-          {/* Floating re-trigger button — visible when wheel is dismissed & not yet claimed */}
-          {!spinLogic.showWheel && !spinLogic.alreadyClaimed && (
-            <motion.button
-              onClick={spinLogic.openWheel}
-              className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-glow font-bold text-sm animate-pulse-glow"
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", delay: 0.5, damping: 15 }}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              🎰 Try Your Luck
-            </motion.button>
-          )}
-        </>
-      )}
+      {/* Spin the Wheel — DISABLED */}
     </div>
   );
 };
