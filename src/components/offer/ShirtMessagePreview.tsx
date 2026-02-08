@@ -22,14 +22,27 @@ const ShirtMessagePreview = ({ message }: ShirtMessagePreviewProps) => {
           draggable={false}
         />
 
-        {/* Text overlay — below the red logo, centered on the shirt body */}
+        {/* Dashed print area rectangle */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            top: "24%",
+            left: "22%",
+            width: "56%",
+            bottom: "12%",
+            border: "2px dashed rgba(0,0,0,0.25)",
+            borderRadius: "4px",
+          }}
+        />
+
+        {/* Text overlay — below the red logo, inside the print area */}
         <div
           className="absolute pointer-events-none flex flex-col items-center justify-start overflow-hidden"
           style={{
-            top: "40%",
-            left: "26%",
-            width: "48%",
-            bottom: "16%",
+            top: "46%",
+            left: "24%",
+            width: "52%",
+            bottom: "14%",
           }}
         >
           <p
