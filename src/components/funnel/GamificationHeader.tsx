@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Flame, Heart, Globe, Users } from "lucide-react";
 import { useGamificationStats } from "@/hooks/useGamificationStats";
 import BcCoinButton from "@/components/gamification/BcCoinButton";
+import FunnelProgressBar from "@/components/funnel/FunnelProgressBar";
 
 /** Animated rolling number */
 function RollingNumber({ value, className = "" }: { value: number; className?: string }) {
@@ -113,6 +114,9 @@ const GamificationHeader = () => {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Cross-funnel progress bar */}
+      <FunnelProgressBar />
     </div>
   );
 };
