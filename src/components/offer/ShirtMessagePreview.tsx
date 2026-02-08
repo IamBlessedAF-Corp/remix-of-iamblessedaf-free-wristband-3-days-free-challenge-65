@@ -5,32 +5,43 @@ import shirtMockup from "@/assets/shirt-mockup-blank.png";
 
 const FONT_FAMILY = "'Indie Flower', cursive";
 const MAX_CHARS = 130;
+const MAX_NAME_CHARS = 20;
 
 interface ShirtMessagePreviewProps {
   message: string;
   onChange?: (message: string) => void;
+  friendName: string;
+  onFriendNameChange?: (name: string) => void;
 }
 
 /** Shared shirt text overlay — used in both inline and zoomed views */
 const ShirtTextOverlay = ({
   message,
+  friendName,
   isEditable,
   isFocused,
   inputRef,
+  nameInputRef,
   onFocus,
   onBlur,
   onChange,
+  onFriendNameChange,
   onTap,
+  onNameTap,
   scale = 1,
 }: {
   message: string;
+  friendName: string;
   isEditable: boolean;
   isFocused: boolean;
   inputRef?: React.RefObject<HTMLTextAreaElement>;
+  nameInputRef?: React.RefObject<HTMLInputElement>;
   onFocus?: () => void;
   onBlur?: () => void;
   onChange?: (msg: string) => void;
+  onFriendNameChange?: (name: string) => void;
   onTap?: () => void;
+  onNameTap?: () => void;
   scale?: number;
 }) => (
   <div
@@ -61,15 +72,51 @@ const ShirtTextOverlay = ({
     >
       to Have a Best Friend
     </p>
-    <p
-      className="text-primary leading-tight font-semibold mt-0.5 text-center pointer-events-none italic"
-      style={{
-        fontFamily: FONT_FAMILY,
-        fontSize: `clamp(${0.3 * scale}rem, ${1.2 * scale}vw, ${0.55 * scale}rem)`,
-      }}
-    >
-      [Your Best Friend First Name]
-    </p>
+    {/* Editable friend name */}
+    {isEditable && onFriendNameChange ? (
+      <div className="w-full mt-0.5 relative cursor-text" onClick={onNameTap}>
+        {!friendName && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+            <span
+              className="text-primary/60 italic"
+              style={{
+                fontFamily: FONT_FAMILY,
+                fontSize: `clamp(${0.28 * scale}rem, ${1.15 * scale}vw, ${0.5 * scale}rem)`,
+              }}
+            >
+              Tap to add name...
+            </span>
+          </div>
+        )}
+        <input
+          ref={nameInputRef}
+          type="text"
+          value={friendName}
+          onChange={(e) => {
+            if (e.target.value.length <= MAX_NAME_CHARS) {
+              onFriendNameChange(e.target.value);
+            }
+          }}
+          maxLength={MAX_NAME_CHARS}
+          className="w-full bg-transparent border-0 outline-none text-primary text-center p-0 m-0 leading-tight font-semibold italic placeholder:text-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+          style={{
+            fontFamily: FONT_FAMILY,
+            fontSize: `clamp(${0.3 * scale}rem, ${1.2 * scale}vw, ${0.55 * scale}rem)`,
+            caretColor: "hsl(var(--primary))",
+          }}
+        />
+      </div>
+    ) : (
+      <p
+        className="text-primary leading-tight font-semibold mt-0.5 text-center pointer-events-none italic"
+        style={{
+          fontFamily: FONT_FAMILY,
+          fontSize: `clamp(${0.3 * scale}rem, ${1.2 * scale}vw, ${0.55 * scale}rem)`,
+        }}
+      >
+        {friendName || "[Your Best Friend First Name]"}
+      </p>
+    )}
     <p
       className="text-foreground leading-tight font-semibold mt-0.5 text-center pointer-events-none"
       style={{
@@ -158,15 +205,20 @@ const ShirtTextOverlay = ({
   </div>
 );
 
-const ShirtMessagePreview = ({ message, onChange }: ShirtMessagePreviewProps) => {
+const ShirtMessagePreview = ({ message, onChange, friendName, onFriendNameChange }: ShirtMessagePreviewProps) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const isEditable = !!onChange;
 
   const handleTap = () => {
     if (isEditable) inputRef.current?.focus();
+  };
+
+  const handleNameTap = () => {
+    if (isEditable) nameInputRef.current?.focus();
   };
 
   return (
@@ -198,13 +250,17 @@ const ShirtMessagePreview = ({ message, onChange }: ShirtMessagePreviewProps) =>
           {/* Inline text overlay */}
           <ShirtTextOverlay
             message={message}
+            friendName={friendName}
             isEditable={isEditable}
             isFocused={isFocused}
             inputRef={inputRef}
+            nameInputRef={nameInputRef}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             onChange={onChange}
+            onFriendNameChange={onFriendNameChange}
             onTap={handleTap}
+            onNameTap={handleNameTap}
           />
 
           {/* Zoom hint icon */}
@@ -270,6 +326,7 @@ const ShirtMessagePreview = ({ message, onChange }: ShirtMessagePreviewProps) =>
               {/* Zoomed text overlay — read-only, larger scale */}
               <ShirtTextOverlay
                 message={message}
+                friendName={friendName}
                 isEditable={false}
                 isFocused={false}
                 scale={1.3}

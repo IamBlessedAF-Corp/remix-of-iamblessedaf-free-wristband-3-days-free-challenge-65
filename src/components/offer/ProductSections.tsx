@@ -217,7 +217,7 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
 /* ══════════════════════════════════════════════════
    Friend Shirt — Shopify-style product card
    ══════════════════════════════════════════════════ */
-const FriendShirtSection = ({ delay = 0, afterHeroSlot, message = "", onMessageChange }: { delay?: number; afterHeroSlot?: React.ReactNode; message?: string; onMessageChange?: (msg: string) => void }) => {
+const FriendShirtSection = ({ delay = 0, afterHeroSlot, message = "", onMessageChange, friendName = "", onFriendNameChange }: { delay?: number; afterHeroSlot?: React.ReactNode; message?: string; onMessageChange?: (msg: string) => void; friendName?: string; onFriendNameChange?: (name: string) => void }) => {
   const [zoomed, setZoomed] = useState(false);
   const [zoomedImage, setZoomedImage] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -272,7 +272,7 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot, message = "", onMessageC
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.15 }}
                   >
-                    <ShirtMessagePreview message={message} onChange={onMessageChange} />
+                    <ShirtMessagePreview message={message} onChange={onMessageChange} friendName={friendName} onFriendNameChange={onFriendNameChange} />
                   </motion.div>
                 ) : current.type === "image" ? (
                   <motion.img
