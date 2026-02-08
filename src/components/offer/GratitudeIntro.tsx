@@ -67,6 +67,7 @@ const GratitudeIntro = () => {
       {/* Friend Shirt showcase with Custom Message Box embedded */}
       <FriendShirtSection
         delay={0.15}
+        message={message}
         afterHeroSlot={<CustomMessageBox value={message} onChange={setMessage} />}
       />
 
