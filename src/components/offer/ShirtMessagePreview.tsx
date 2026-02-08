@@ -33,7 +33,8 @@ const ShirtMessagePreview = ({
   const fontFamily =
     FONT_OPTIONS.find((f) => f.id === activeFont)?.family ?? FONT_OPTIONS[0].family;
 
-  const prefixLine1 = "I am Blessed AF to Have a Best Friend";
+  const prefixLine1a = "I am Blessed AF";
+  const prefixLine1b = "to Have a Best Friend";
   const prefixLine2 = "TY! I'll Never Forget when You...";
 
   return (
@@ -64,7 +65,9 @@ const ShirtMessagePreview = ({
               fontSize: "clamp(0.45rem, 1.8vw, 0.8rem)",
             }}
           >
-            {prefixLine1}
+            {prefixLine1a}
+            <br />
+            {prefixLine1b}
           </p>
           <p
             className="text-foreground leading-tight font-semibold mt-0.5 text-center"
