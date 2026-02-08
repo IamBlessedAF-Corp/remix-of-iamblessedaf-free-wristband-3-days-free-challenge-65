@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Heart } from "lucide-react";
 
 const GrokHeroSection = () => {
   return (
@@ -9,27 +8,27 @@ const GrokHeroSection = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Benefit-driven headline — ROI-first */}
+      {/* Hook — benefit-driven, 3-second grab */}
       <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4 leading-tight">
-        Invest $111 → Get{" "}
-        <span className="text-primary">27× Happier</span>, Feed 11 People &{" "}
-        <span className="text-primary">Rewire Your Brain</span> for Life
+        Can't Feel Grateful Today? Feed 11 People &{" "}
+        <span className="text-primary">Unlock Your Gratitude Identity</span> — Instant Joy Starts Here!
       </h1>
 
-      {/* Epiphany Bridge — math-heavy */}
+      {/* Epiphany Bridge — conversational story → "aha!" */}
       <div className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto shadow-soft">
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed text-left">
-          You proved it works in 3 days. Now the math:{" "}
+          You just nailed the 3-Day Challenge — that warm buzz from confirmations?{" "}
           <span className="font-bold text-foreground">
-            $111 = 1 identity shirt + 1 custom friend shirt + 3 wristbands + 11 meals donated
+            Imagine amplifying it with a custom pack that makes gratitude your identity...
+            and feeds 11 people instantly through Feeding America.
           </span>
-          . That's <span className="font-bold text-primary">$0.30/day</span> to feel joy on demand for a year.
         </p>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed text-left mt-3">
-          Worst day ever? Look down at your shirt:{" "}
-          <span className="font-bold text-foreground">"I already fed 11 people today."</span>{" "}
-          Huberman's research: received gratitude boosts serotonin + dopamine{" "}
-          <span className="font-bold text-primary">27×</span>. This pack triggers that loop daily.
+          Bad day? Flip it to{" "}
+          <span className="font-bold text-foreground">"I made a difference."</span>{" "}
+          Science says it's the fastest brain rewire — Huberman's studies show received thanks boosts happiness{" "}
+          <span className="font-bold text-primary">27×</span>. That's{" "}
+          <span className="font-bold text-primary">$0.30/day</span> to feel joy on demand for a full year.
         </p>
       </div>
     </motion.div>

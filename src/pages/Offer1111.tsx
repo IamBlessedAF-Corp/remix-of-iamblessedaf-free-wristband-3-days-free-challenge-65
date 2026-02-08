@@ -35,7 +35,7 @@ const Offer1111 = () => {
           >
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
               <Lock className="w-4 h-4" />
-              Unlocked! You completed the 11-Day Challenge
+              You earned this → Become the Gratitude Evangelist
             </div>
           </motion.div>
 
@@ -50,10 +50,10 @@ const Offer1111 = () => {
             transition={{ duration: 0.5, delay: 0.12 }}
           >
             <p className="text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight">
-              11 Custom Friend Shirts with a message from <span className="text-primary">You!</span>
+              Imagine 11 People Opening Custom Shirts with Messages from <span className="text-primary">You</span>
             </p>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              Write your gratitude message — we print it on 11 shirts for the 11 people who shaped your life.
+              Parents. Siblings. Best friends. Mentors. Each text back triggers your 27× dopamine hit — 11 times over.
             </p>
           </motion.div>
 

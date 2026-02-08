@@ -27,7 +27,7 @@ const Offer111Grok = () => {
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-2xl mx-auto">
 
-          {/* ─── 1. Unlock Badge ─── */}
+          {/* ─── 1. Hook Badge — benefit-driven, not congratulatory ─── */}
           <motion.div
             className="text-center mb-6"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -36,14 +36,14 @@ const Offer111Grok = () => {
           >
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
               <Lock className="w-4 h-4" />
-              Unlocked! You completed the 3-Day Challenge
+              You earned this → Turn gratitude into identity
             </div>
           </motion.div>
 
-          {/* ─── 2. Hero: Benefit Headline + Epiphany Bridge ─── */}
+          {/* ─── 2. Hero: Hook → Story → Aha! ─── */}
           <GrokHeroSection />
 
-          {/* ─── Friend Shirt with Custom Message ─── */}
+          {/* ─── Friend Shirt with Custom Message — storytelling intro ─── */}
           <motion.div
             className="text-center mb-6"
             initial={{ opacity: 0, y: 20 }}
@@ -51,7 +51,10 @@ const Offer111Grok = () => {
             transition={{ duration: 0.5, delay: 0.12 }}
           >
             <p className="text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight">
-              This is Why we want to send your Best Friend this Shirt with a Custom Message from <span className="text-primary">You!</span>
+              Imagine Your Best Friend Opening This Shirt with a Message from <span className="text-primary">You</span>
+            </p>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              They read it. They feel it. They text you back — and that text triggers your 27× dopamine hit. Gift the magic.
             </p>
           </motion.div>
 
