@@ -2,13 +2,16 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import GamificationHeader from "@/components/funnel/GamificationHeader";
 import logo from "@/assets/logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex flex-col">
+      <GamificationHeader />
+      <div className="flex-1 flex flex-col items-center justify-center p-4">
       <motion.div
         className="text-center max-w-md"
         initial={{ opacity: 0, y: 20 }}
@@ -49,6 +52,7 @@ const Index = () => {
           100% Free • Win $1,111 • Takes 2 minutes/day
         </p>
       </motion.div>
+      </div>
     </div>
   );
 };

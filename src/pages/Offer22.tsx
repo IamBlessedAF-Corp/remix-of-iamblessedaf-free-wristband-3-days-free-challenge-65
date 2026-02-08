@@ -1,6 +1,7 @@
 import { useState } from "react";
 import FreeWristbandStep from "@/components/offer/FreeWristbandStep";
 import UpsellWristbandStep from "@/components/offer/UpsellWristbandStep";
+import GamificationHeader from "@/components/funnel/GamificationHeader";
 
 type Step = "free-wristband" | "upsell-22";
 
@@ -33,6 +34,7 @@ const Offer22 = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <GamificationHeader />
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-2xl mx-auto">
           {step === "free-wristband" && (

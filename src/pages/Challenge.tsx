@@ -18,6 +18,7 @@ import { CheckCircle2, Users, Heart, Sparkles, Gift } from "lucide-react";
 import UrgencyBanner from "@/components/offer/UrgencyBanner";
 import SpinWheel from "@/components/challenge/SpinWheel";
 import { useSpinLogic } from "@/hooks/useSpinLogic";
+import GamificationHeader from "@/components/funnel/GamificationHeader";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import wristbandsImg from "@/assets/product-wristbands-new.avif";
@@ -102,6 +103,7 @@ const Challenge = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <GamificationHeader />
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-accent/50 to-background" />

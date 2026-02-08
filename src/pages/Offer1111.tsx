@@ -11,6 +11,7 @@ import { FriendShirtSection } from "@/components/offer/ProductSections";
 import CustomMessageBox from "@/components/offer/CustomMessageBox";
 import ProductSections from "@/components/offer/ProductSections";
 import ResearchList from "@/components/offer/ResearchList";
+import GamificationHeader from "@/components/funnel/GamificationHeader";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
 
@@ -23,6 +24,7 @@ const Offer1111 = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <GamificationHeader />
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-2xl mx-auto">
 

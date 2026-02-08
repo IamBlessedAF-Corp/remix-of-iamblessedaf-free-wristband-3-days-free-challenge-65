@@ -11,6 +11,7 @@ import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
 import OfferTimer from "@/components/offer/OfferTimer";
 import AuthorAvatar from "@/components/offer/AuthorAvatar";
 import UrgencyBanner from "@/components/offer/UrgencyBanner";
+import GamificationHeader from "@/components/funnel/GamificationHeader";
 
 const Offer111 = () => {
   const handleCheckout = () => {
@@ -22,6 +23,7 @@ const Offer111 = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <GamificationHeader />
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-2xl mx-auto">
           {/* Unlock Badge */}
