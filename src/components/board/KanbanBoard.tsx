@@ -23,11 +23,11 @@ interface KanbanBoardProps {
 const REVIEW_POSITION_THRESHOLD = 10;
 
 /** WIP column only allows 1 active card at a time */
-const WIP_COLUMN_NAME = "🔨 Work in Progress";
+const WIP_COLUMN_NAME = "6)  🔨 Work in Progress";
 const WIP_LIMIT = 1;
 
 /** Done column name for publish gate */
-const DONE_COLUMN_NAME = "✅ Done";
+const DONE_COLUMN_NAME = "12)  ✅ Done";
 
 const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, createCard, deleteCard }: KanbanBoardProps) => {
   const [selectedCard, setSelectedCard] = useState<BoardCard | null>(null);
