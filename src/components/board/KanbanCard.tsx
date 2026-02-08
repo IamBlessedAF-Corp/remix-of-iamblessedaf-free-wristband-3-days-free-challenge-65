@@ -1,7 +1,7 @@
 import { Draggable } from "@hello-pangea/dnd";
 import type { BoardCard } from "@/hooks/useBoard";
 import { Badge } from "@/components/ui/badge";
-import { Clock, AlertTriangle, Zap, Star } from "lucide-react";
+import { Clock, AlertTriangle, Zap, Star, Image, FileText, ExternalLink, ClipboardList } from "lucide-react";
 
 interface KanbanCardProps {
   card: BoardCard;
@@ -18,6 +18,11 @@ const priorityConfig: Record<string, { color: string; icon: React.ReactNode }> =
 
 const KanbanCard = ({ card, index, onClick }: KanbanCardProps) => {
   const priority = priorityConfig[card.priority] || priorityConfig.medium;
+  const hasScreenshots = card.screenshots && card.screenshots.length > 0;
+  const hasLogs = !!card.logs;
+  const hasSummary = !!card.summary;
+  const hasPreviewLink = !!card.preview_link;
+  const hasReviewEvidence = hasScreenshots || hasLogs || hasSummary || hasPreviewLink;
 
   return (
     <Draggable draggableId={card.id} index={index}>
@@ -44,6 +49,53 @@ const KanbanCard = ({ card, index, onClick }: KanbanCardProps) => {
             <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
               {card.description}
             </p>
+          )}
+
+          {/* Screenshot thumbnail */}
+          {hasScreenshots && (
+            <div className="mb-2 rounded overflow-hidden border border-border">
+              <img
+                src={card.screenshots[0]}
+                alt="Screenshot"
+                className="w-full h-24 object-cover object-top"
+                loading="lazy"
+              />
+              {card.screenshots.length > 1 && (
+                <div className="text-[10px] text-center text-muted-foreground bg-muted py-0.5">
+                  +{card.screenshots.length - 1} more screenshots
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Review evidence indicators */}
+          {hasReviewEvidence && (
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              {hasScreenshots && (
+                <div className="flex items-center gap-0.5 text-muted-foreground" title="Has screenshots">
+                  <Image className="w-3 h-3" />
+                  <span className="text-[10px]">{card.screenshots.length}</span>
+                </div>
+              )}
+              {hasLogs && (
+                <div className="flex items-center gap-0.5 text-muted-foreground" title="Has dev logs">
+                  <FileText className="w-3 h-3" />
+                  <span className="text-[10px]">Logs</span>
+                </div>
+              )}
+              {hasSummary && (
+                <div className="flex items-center gap-0.5 text-muted-foreground" title="Has summary">
+                  <ClipboardList className="w-3 h-3" />
+                  <span className="text-[10px]">Summary</span>
+                </div>
+              )}
+              {hasPreviewLink && (
+                <div className="flex items-center gap-0.5 text-primary" title="Has preview link">
+                  <ExternalLink className="w-3 h-3" />
+                  <span className="text-[10px]">Preview</span>
+                </div>
+              )}
+            </div>
           )}
 
           {/* Labels */}

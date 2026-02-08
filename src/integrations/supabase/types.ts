@@ -56,6 +56,7 @@ export type Database = {
           position: number
           preview_link: string | null
           priority: string | null
+          screenshots: string[] | null
           staging_status: string | null
           summary: string | null
           title: string
@@ -72,6 +73,7 @@ export type Database = {
           position?: number
           preview_link?: string | null
           priority?: string | null
+          screenshots?: string[] | null
           staging_status?: string | null
           summary?: string | null
           title: string
@@ -88,6 +90,7 @@ export type Database = {
           position?: number
           preview_link?: string | null
           priority?: string | null
+          screenshots?: string[] | null
           staging_status?: string | null
           summary?: string | null
           title?: string
