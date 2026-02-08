@@ -24,6 +24,7 @@ export interface BoardCard {
   labels: string[];
   screenshots: string[];
   stage: string;
+  completed_at: string | null;
   vs_score: number;
   cc_score: number;
   hu_score: number;
@@ -58,15 +59,26 @@ export function useBoard() {
   }, [fetchBoard]);
 
   const moveCard = async (cardId: string, newColumnId: string, newPosition: number) => {
+    // Check if we're moving to the Done column
+    const doneCol = columns.find((c) => c.name.includes("✅ Done"));
+    const isDone = doneCol?.id === newColumnId;
+    const completedAt = isDone ? new Date().toISOString() : undefined;
+
     setCards((prev) =>
       prev.map((c) =>
-        c.id === cardId ? { ...c, column_id: newColumnId, position: newPosition } : c
+        c.id === cardId
+          ? { ...c, column_id: newColumnId, position: newPosition, ...(isDone ? { completed_at: completedAt! } : {}) }
+          : c
       )
     );
-    await (from("board_cards") as any).update({
+
+    const updatePayload: Record<string, any> = {
       column_id: newColumnId,
       position: newPosition,
-    }).eq("id", cardId);
+    };
+    if (isDone) updatePayload.completed_at = completedAt;
+
+    await (from("board_cards") as any).update(updatePayload).eq("id", cardId);
   };
 
   const updateCard = async (cardId: string, updates: Partial<BoardCard>) => {

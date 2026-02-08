@@ -49,6 +49,7 @@ export type Database = {
           ad_score: number | null
           cc_score: number | null
           column_id: string
+          completed_at: string | null
           created_at: string
           delegation_score: number | null
           description: string | null
@@ -73,6 +74,7 @@ export type Database = {
           ad_score?: number | null
           cc_score?: number | null
           column_id: string
+          completed_at?: string | null
           created_at?: string
           delegation_score?: number | null
           description?: string | null
@@ -97,6 +99,7 @@ export type Database = {
           ad_score?: number | null
           cc_score?: number | null
           column_id?: string
+          completed_at?: string | null
           created_at?: string
           delegation_score?: number | null
           description?: string | null
