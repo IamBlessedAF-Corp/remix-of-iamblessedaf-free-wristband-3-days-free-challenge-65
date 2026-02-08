@@ -1,13 +1,39 @@
 import { Flame } from "lucide-react";
 import { motion } from "framer-motion";
+import { useUrgencyStock } from "@/hooks/useUrgencyStock";
 
 interface UrgencyBannerProps {
-  totalShirts?: number;
-  remaining?: number;
+  /** What product we're showing urgency for */
+  variant?: "shirts" | "wristbands";
 }
 
-const UrgencyBanner = ({ totalShirts = 111, remaining = 14 }: UrgencyBannerProps) => {
-  const claimedPercent = Math.round(((totalShirts - remaining) / totalShirts) * 100);
+const CONFIG = {
+  shirts: {
+    total: 111,
+    baseRemaining: 14,
+    decayPerVisit: 2,
+    floor: 3,
+    label: "FREE Shirts",
+    emoji: "👕",
+  },
+  wristbands: {
+    total: 1111,
+    baseRemaining: 91,
+    decayPerVisit: 9,
+    floor: 7,
+    label: "FREE Wristbands",
+    emoji: "📿",
+  },
+};
+
+const UrgencyBanner = ({ variant = "shirts" }: UrgencyBannerProps) => {
+  const cfg = CONFIG[variant];
+  const { remaining, total, claimedPercent } = useUrgencyStock(
+    cfg.total,
+    cfg.baseRemaining,
+    cfg.decayPerVisit,
+    cfg.floor
+  );
 
   return (
     <motion.div
@@ -19,7 +45,7 @@ const UrgencyBanner = ({ totalShirts = 111, remaining = 14 }: UrgencyBannerProps
       <div className="flex items-center justify-center gap-2 mb-2">
         <Flame className="w-4 h-4 text-destructive animate-pulse" />
         <p className="text-sm font-bold text-destructive">
-          Only {remaining} of {totalShirts} FREE Shirts Left!
+          Only {remaining} of {total.toLocaleString()} {cfg.label} Left!
         </p>
         <Flame className="w-4 h-4 text-destructive animate-pulse" />
       </div>
