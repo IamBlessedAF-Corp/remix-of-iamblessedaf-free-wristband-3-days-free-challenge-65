@@ -43,7 +43,7 @@ export default function PipelineControls({
     [columns]
   );
 
-  const validationCardCount = useMemo(() => validationColumnIds.length, [validationColumnIds]);
+  // validationColumnIds.length is used directly — no wrapper needed
 
   const handleStart = () => {
     if (!selectedColumn) return;

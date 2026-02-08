@@ -8,6 +8,7 @@ import { getStageInfo } from "./StageSelector";
 import { cn } from "@/lib/utils";
 import { autoCaptureForCard } from "@/utils/screenshotCapture";
 import { toast } from "sonner";
+import { getDelegationBadge, getNextAction } from "@/utils/boardHelpers";
 
 interface KanbanCardProps {
   card: BoardCard;
@@ -26,60 +27,6 @@ const priorityConfig: Record<string, { color: string; icon: React.ReactNode }> =
   medium: { color: "bg-primary", icon: <Star className="w-3 h-3" /> },
   low: { color: "bg-muted", icon: <Clock className="w-3 h-3" /> },
 };
-
-function getDelegationBadge(score: number) {
-  if (score >= 70) return { text: `D:${score.toFixed(0)}`, className: "bg-green-500/20 text-green-400 border-green-500/40" };
-  if (score >= 40) return { text: `D:${score.toFixed(0)}`, className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/40" };
-  return { text: `D:${score.toFixed(0)}`, className: "bg-red-500/20 text-red-400 border-red-500/40" };
-}
-
-/** Map column position to next-action label & description */
-function getNextAction(
-  card: BoardCard,
-  columns?: BoardColumn[]
-): { label: string; description: string; nextColumnId: string | null } | null {
-  if (!columns || columns.length === 0) return null;
-
-  const currentCol = columns.find((c) => c.id === card.column_id);
-  if (!currentCol) return null;
-
-  const sorted = [...columns].sort((a, b) => a.position - b.position);
-  const currentIdx = sorted.findIndex((c) => c.id === currentCol.id);
-  const nextCol = currentIdx < sorted.length - 1 ? sorted[currentIdx + 1] : null;
-
-  // Don't show action for the Done column
-  if (currentCol.name.includes("✅ Done")) return null;
-
-  const nextColumnId = nextCol?.id ?? null;
-
-  // Derive action label from current column context
-  if (currentCol.name.includes("Ideas"))
-    return { label: "→ Send to Backlog", description: "Queue for prioritization", nextColumnId };
-  if (currentCol.name.includes("Backlog"))
-    return { label: "→ Clarify Scope", description: "Define requirements & acceptance criteria", nextColumnId };
-  if (currentCol.name.includes("Clarification"))
-    return { label: "→ Start Today", description: "Move to today's work queue", nextColumnId };
-  if (currentCol.name.includes("Today"))
-    return { label: "→ Begin Work", description: "Start active execution", nextColumnId };
-  if (currentCol.name.includes("Work in Progress"))
-    return { label: "→ Security Check", description: "Submit for security review", nextColumnId };
-  if (currentCol.name.includes("Security"))
-    return { label: "→ Validate", description: "Push to validation queue", nextColumnId };
-  if (currentCol.name.includes("Credentials"))
-    return { label: "→ Validate", description: "Credentials ready — validate", nextColumnId };
-  if (currentCol.name.includes("Validation (New)"))
-    return { label: "→ System Validate", description: "Run automated checks", nextColumnId };
-  if (currentCol.name.includes("Validation (System)"))
-    return { label: "→ Review", description: "Submit for final review", nextColumnId };
-  if (currentCol.name.includes("Errors"))
-    return { label: "→ Back to Review", description: "Fix applied — re-review", nextColumnId };
-  if (currentCol.name.includes("👀 Review"))
-    return { label: "→ Mark Done ✅", description: "Approve and complete", nextColumnId };
-  if (currentCol.name.includes("3 Outcomes"))
-    return { label: "→ Ideate", description: "Break into actionable ideas", nextColumnId };
-
-  return { label: "→ Advance", description: "Move to next stage", nextColumnId };
-}
 
 const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning, columns, onAdvance }: KanbanCardProps) => {
   const [capturing, setCapturing] = useState(false);

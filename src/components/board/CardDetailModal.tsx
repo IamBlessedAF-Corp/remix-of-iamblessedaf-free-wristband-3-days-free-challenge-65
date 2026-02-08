@@ -25,6 +25,7 @@ import type { BoardCard, BoardColumn } from "@/hooks/useBoard";
 import StageSelector from "./StageSelector";
 import DecisionMatrixInput from "./DecisionMatrixInput";
 import CardAIChat from "./CardAIChat";
+import { computeDelegationScore } from "@/utils/boardHelpers";
 
 interface CardDetailModalProps {
   card: BoardCard | null;
@@ -35,16 +36,6 @@ interface CardDetailModalProps {
   onDelete: (cardId: string) => void;
   isAdmin: boolean;
   canEdit: boolean;
-}
-
-function computeDelegationScore(scores: Record<string, number>): number {
-  const vs = scores.vs_score || 0;
-  const cc = scores.cc_score || 0;
-  const hu = scores.hu_score || 0;
-  const r = scores.r_score || 0;
-  const ad = scores.ad_score || 0;
-  const maxDenom = 5 * (0.3 + 0.25 + 0.3 + 0.15 + 0.3);
-  return ((vs * 0.3 + cc * 0.25 + (5 - hu) * 0.3 + r * 0.15 + ad * 0.3) * 100) / maxDenom;
 }
 
 const CardDetailModal = ({
