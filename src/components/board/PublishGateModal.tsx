@@ -106,6 +106,7 @@ const PublishGateModal = ({ card, open, onClose, onConfirm }: PublishGateModalPr
     },
   ];
 
+  const screenshotsMissing = (card.screenshots?.length ?? 0) === 0;
   const allPassed = checks.every((c) => c.passed);
   const passedCount = checks.filter((c) => c.passed).length;
 
@@ -121,6 +122,19 @@ const PublishGateModal = ({ card, open, onClose, onConfirm }: PublishGateModalPr
             Moving <strong className="text-foreground">"{card.title}"</strong> to Done.
           </DialogDescription>
         </DialogHeader>
+
+        {/* Hard gate warning for missing screenshots */}
+        {screenshotsMissing && (
+          <div className="flex items-start gap-2 px-3 py-2 rounded-lg border border-destructive bg-destructive/10">
+            <AlertTriangle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+            <div>
+              <p className="text-xs font-semibold text-destructive">⚠️ No proof-of-work screenshots</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Capture at least one screenshot before approving. Use the 📸 button on the card.
+              </p>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-1.5">
           {checks.map((check) => (
@@ -168,28 +182,38 @@ const PublishGateModal = ({ card, open, onClose, onConfirm }: PublishGateModalPr
           <Button variant="outline" size="sm" onClick={onClose} className="flex-1 text-xs h-8">
             Go Back & Fix
           </Button>
-          <Button
-            size="sm"
-            onClick={() => {
-              if (allPassed) fireConfetti();
-              onConfirm();
-            }}
-            className={`flex-1 gap-1.5 text-xs h-8 ${
-              allPassed
-                ? "bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500"
-                : "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            }`}
-          >
-            {allPassed ? (
-              <>
-                <Rocket className="w-3 h-3" /> Move to Done
-              </>
-            ) : (
-              <>
-                <AlertTriangle className="w-3 h-3" /> Move Anyway
-              </>
-            )}
-          </Button>
+          {screenshotsMissing ? (
+            <Button
+              size="sm"
+              disabled
+              className="flex-1 gap-1.5 text-xs h-8 opacity-50 cursor-not-allowed"
+            >
+              <Camera className="w-3 h-3" /> Screenshots Required
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              onClick={() => {
+                if (allPassed) fireConfetti();
+                onConfirm();
+              }}
+              className={`flex-1 gap-1.5 text-xs h-8 ${
+                allPassed
+                  ? "bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+                  : "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              }`}
+            >
+              {allPassed ? (
+                <>
+                  <Rocket className="w-3 h-3" /> Move to Done
+                </>
+              ) : (
+                <>
+                  <AlertTriangle className="w-3 h-3" /> Move Anyway
+                </>
+              )}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
