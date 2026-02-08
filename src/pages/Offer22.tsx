@@ -39,35 +39,23 @@ const Offer22 = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 leading-tight">
-              <span className="text-3xl md:text-4xl">🎉</span> Congrats! You Gave the 1st Step to Rewire Your{" "}
-              <span className="text-primary">BRAIN</span> to Feel Happier!{" "}
-              <span className="text-3xl md:text-4xl">🧠</span>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3 leading-tight">
+              Invest $22 → Feel{" "}
+              <span className="text-primary">27× Happier</span>{" "}
+              Every Day 🧠
             </h2>
-
-            <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-4 shadow-soft">
-              <p className="text-sm md:text-base italic text-foreground leading-relaxed">
-                "Gratitude is the fastest & repeatable way to shift emotional state by changing physiology and perception. Make it a daily ritual."
-              </p>
-              <footer className="mt-2 text-xs md:text-sm text-muted-foreground font-semibold">
-                — Tony Robbins
-              </footer>
-            </blockquote>
+            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-4 leading-relaxed">
+              You just proved gratitude works. Now lock it into your daily routine with physical triggers that keep your brain rewired — <span className="font-bold text-foreground">for less than a dinner out.</span>
+            </p>
           </motion.div>
 
           {/* Product heading */}
-          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
-            TRIGGER REMINDERS
+          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-2">
+            DAILY TRIGGER WRISTBANDS
           </p>
-
-          <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-6 shadow-soft">
-            <p className="text-sm md:text-base italic text-foreground leading-relaxed">
-              "Whatever you consistently attach to 'I am' with strong emotion and repetition—such as 'I am bold'—you will eventually become. Unlike saying 'I'm going to be bold.'"
-            </p>
-            <footer className="mt-3 text-xs md:text-sm text-muted-foreground font-semibold">
-              — Tony Robbins
-            </footer>
-          </blockquote>
+          <p className="text-center text-sm text-muted-foreground max-w-md mx-auto mb-4">
+            3 silicone wristbands that trigger a gratitude micro-moment every time you glance at your wrist. <span className="font-bold text-foreground">Cost per gratitude hack: $0.02/day.</span>
+          </p>
 
           {/* Wristband Product */}
           <WristbandProductCard delay={0.4} />
@@ -86,7 +74,7 @@ const Offer22 = () => {
               className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
             >
               <Crown className="w-5 h-5 mr-2" />
-              Claim Your Wristbands — $22
+              YES! Lock In My Daily Gratitude Trigger — $22
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             <p className="text-center text-xs text-muted-foreground mt-4">
@@ -163,7 +151,7 @@ const Offer22 = () => {
               className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
             >
               <Crown className="w-5 h-5 mr-2" />
-              Claim Your Wristbands — $22
+              YES! Lock In My Daily Gratitude Trigger — $22
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
 
@@ -188,7 +176,7 @@ const Offer22 = () => {
               className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
             >
               <Crown className="w-5 h-5 mr-2" />
-              Claim Your Wristbands — $22
+              YES! Lock In My Daily Gratitude Trigger — $22
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
 

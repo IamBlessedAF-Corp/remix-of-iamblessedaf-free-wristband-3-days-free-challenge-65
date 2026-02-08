@@ -107,18 +107,30 @@ const Challenge = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              3 Days. 1 Real Gratitude Message per Day.{" "}
-              <span className="text-primary">Win $1,111 This Week.</span>
+              Real Gratitude = Real{" "}
+              <span className="text-primary">Brain Rewire.</span>{" "}
+              Start Free + Win $1,111.
             </motion.h1>
 
             {/* Subheadline */}
             <motion.p
-              className="text-lg md:text-xl text-muted-foreground mb-8 max-w-lg"
+              className="text-lg md:text-xl text-muted-foreground mb-4 max-w-lg"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              No apps. No journaling. Real people. Real confirmation.
+              2 min/day × 3 days. Science says received thanks boosts happiness{" "}
+              <span className="font-bold text-foreground">27×</span>. No apps. No journaling. Just real humans confirming your gratitude.
+            </motion.p>
+
+            {/* Social proof stat */}
+            <motion.p
+              className="text-sm font-semibold text-primary mb-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.45 }}
+            >
+              🔥 2,340 joined · 25k+ meals donated — your turn.
             </motion.p>
 
             {/* Feature badges */}
@@ -250,7 +262,7 @@ const Challenge = () => {
                         Joining...
                       </span>
                     ) : (
-                      "Join the Free Challenge"
+                      "Start My Free 3-Day Brain Rewire →"
                     )}
                   </Button>
                 </form>

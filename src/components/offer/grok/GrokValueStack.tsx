@@ -3,31 +3,38 @@ import { motion } from "framer-motion";
 const VALUES = [
   {
     emoji: "💎",
-    title: "Instant Identity Boost",
+    title: "Your \"IamBlessedAF\" Identity Shirt",
     description:
-      'Your personal "IamBlessedAF" shirt + wristbands — wear your gratitude, spark conversations, feel the rewire daily.',
-    sub: "Premium cotton · Double-sided print",
+      "Wear it → people ask about it → you explain gratitude → brain rewire activates. Value: $45",
+    sub: "Premium cotton · Double-sided print · S–3XL",
   },
   {
     emoji: "🎁",
-    title: "Gift the Magic",
+    title: "FREE Custom Shirt for Your Best Friend",
     description:
-      'Custom shirt for your best friend with your message ("IamBlessedAF to have U") — they scan QR, join challenge, double the impact.',
-    sub: "One-side print · Sizes S–3XL",
+      "Your personal message printed on a shirt. They wear it, feel it, text you back. That text = your 27× dopamine hit. Value: $45",
+    sub: "One-side custom print · Free shipping",
+  },
+  {
+    emoji: "📿",
+    title: "3 Gratitude Trigger Wristbands",
+    description:
+      "Glance at wrist → micro-gratitude moment → repeat 50×/day. Cost per hack: $0.02. Value: $33",
+    sub: "NFC-enabled · Waterproof silicone",
   },
   {
     emoji: "❤️",
-    title: "Real Impact Now",
+    title: "11 Meals Donated Instantly",
     description:
-      "11 meals donated immediately — turn tough days into life-changing good.",
+      "Bad day? You already fed 11 people before breakfast. That's not a purchase — that's a legacy. Value: Priceless",
     sub: "Backed by Feeding America",
   },
   {
     emoji: "🧠",
-    title: "Brain Hack Included",
+    title: "Neuroscience-Backed Brain Rewire",
     description:
-      "Aligns with Huberman's protocol — stronger pro-social circuits, less stress.",
-    sub: "mPFC activation + serotonin surge",
+      "Huberman protocol: received gratitude → mPFC activation → serotonin + dopamine surge. ROI: 27× happier.",
+    sub: "Based on 8+ peer-reviewed studies",
   },
 ];
 
@@ -39,8 +46,11 @@ const GrokValueStack = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.15 }}
     >
-      <p className="text-center text-xl md:text-2xl font-bold text-foreground mb-4">
-        What You Get <span className="text-primary">Today</span>
+      <p className="text-center text-xl md:text-2xl font-bold text-foreground mb-1">
+        Your $111 Pack — <span className="text-primary">$333+ Value</span>
+      </p>
+      <p className="text-center text-sm text-muted-foreground mb-4">
+        That's $0.30/day to feel 27× happier for a full year.
       </p>
 
       {VALUES.map((item, i) => (

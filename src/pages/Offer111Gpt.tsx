@@ -89,11 +89,11 @@ const Offer111Gpt = () => {
             transition={{ duration: 0.5, delay: 0.05 }}
           >
             <h1 className="text-3xl md:text-4xl font-black text-foreground mb-3 leading-tight">
-              You Unlocked Something{" "}
-              <span className="text-primary">Special</span> 🎁
+              $111 → Feel{" "}
+              <span className="text-primary">27× Happier</span> + Feed 11 People 🎁
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
-              Because you finished the challenge, this one-time Gratitude Pack is yours — at the lowest price we'll ever offer.
+              You proved gratitude rewires your brain in 3 days. This pack makes it permanent — for <span className="font-bold text-foreground">$0.30/day</span>.
             </p>
           </motion.div>
 
