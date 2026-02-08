@@ -51,6 +51,7 @@ const ShirtCustomizer = ({
   hideNameInput = false,
 }: ShirtCustomizerProps) => {
   const [saved, setSaved] = useState(false);
+  const [bouncing, setBouncing] = useState(false);
   const [gender, setGender] = useState(() => localStorage.getItem("friendShirtGender") || "");
   const nameInputRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
@@ -93,17 +94,22 @@ const ShirtCustomizer = ({
   }, []);
 
   const handleSave = () => {
-    if (hasName && hasMessage && gender) {
-      setSaved(true);
-      fireConfetti();
-      localStorage.setItem("friendShirtMessage", message);
-      localStorage.setItem("friendShirtGender", gender);
-      localStorage.setItem("friendShirtName", friendName);
-      localStorage.setItem("friendShirtSize", selectedSize);
+    if (hasName && hasMessage && gender && !bouncing) {
+      setBouncing(true);
+      // Bounce first, then confetti + save after the bounce lands
+      setTimeout(() => {
+        setSaved(true);
+        fireConfetti();
+        setBouncing(false);
+        localStorage.setItem("friendShirtMessage", message);
+        localStorage.setItem("friendShirtGender", gender);
+        localStorage.setItem("friendShirtName", friendName);
+        localStorage.setItem("friendShirtSize", selectedSize);
 
-      window.dispatchEvent(
-        new CustomEvent("track", { detail: { event: "message_saved" } })
-      );
+        window.dispatchEvent(
+          new CustomEvent("track", { detail: { event: "message_saved" } })
+        );
+      }, 250);
     }
   };
 
@@ -327,11 +333,20 @@ const ShirtCustomizer = ({
         {hasName && hasMessage && gender && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: bouncing ? [1, 1.08, 0.95, 1.03, 1] : 1,
+            }}
+            transition={
+              bouncing
+                ? { scale: { duration: 0.25, ease: "easeInOut" } }
+                : { duration: 0.3, delay: 0.1 }
+            }
           >
             <Button
               onClick={handleSave}
+              disabled={bouncing}
               className={`w-full h-12 text-base font-bold rounded-xl transition-all duration-300 ${
                 saved
                   ? "bg-primary/20 text-primary border border-primary/30"
