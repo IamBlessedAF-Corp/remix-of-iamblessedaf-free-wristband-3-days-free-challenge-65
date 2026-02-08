@@ -64,6 +64,15 @@ const GamificationHeader = () => {
               <RollingNumber value={stats.hearts} className="font-bold tabular-nums" />
             </div>
 
+            {/* Meals donated */}
+            <div className="flex items-center gap-1 shrink-0">
+              <span className="text-sm">🍽️</span>
+              <RollingNumber value={stats.mealsImpact} className="font-bold tabular-nums" />
+              <span className="hidden sm:inline opacity-70 text-[10px] leading-tight max-w-[90px] truncate">
+                {stats.mealsImpact === 1 ? "person" : "people"} thanked you
+              </span>
+            </div>
+
             {/* Streak */}
             <div className="flex items-center gap-1 shrink-0">
               <Flame className="w-3.5 h-3.5 text-orange-400" />
