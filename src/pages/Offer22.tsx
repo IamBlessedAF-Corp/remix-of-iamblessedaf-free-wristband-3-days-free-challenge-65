@@ -2,16 +2,26 @@ import { useState } from "react";
 import FreeWristbandStep from "@/components/offer/FreeWristbandStep";
 import UpsellWristbandStep from "@/components/offer/UpsellWristbandStep";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
+import GratitudeSetupFlow from "@/components/challenge/GratitudeSetupFlow";
 import { useGamificationStats } from "@/hooks/useGamificationStats";
 
-type Step = "free-wristband" | "upsell-22";
+type Step = "free-wristband" | "gratitude-setup" | "upsell-22";
 
 const Offer22 = () => {
   const [step, setStep] = useState<Step>("free-wristband");
   const { rewardCheckout } = useGamificationStats();
 
   const handleFreeWristbandCheckout = () => {
-    // Instead of going to Stripe for $9.95, show the upsell first
+    setStep("gratitude-setup");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleGratitudeComplete = () => {
+    setStep("upsell-22");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleGratitudeSkip = () => {
     setStep("upsell-22");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -45,6 +55,12 @@ const Offer22 = () => {
             <FreeWristbandStep
               onCheckout={handleFreeWristbandCheckout}
               onSkip={handleSkipFree}
+            />
+          )}
+          {step === "gratitude-setup" && (
+            <GratitudeSetupFlow
+              onComplete={handleGratitudeComplete}
+              onSkip={handleGratitudeSkip}
             />
           )}
           {step === "upsell-22" && (

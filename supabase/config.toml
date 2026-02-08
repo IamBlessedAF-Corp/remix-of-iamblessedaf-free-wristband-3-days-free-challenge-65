@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.sms-status-webhook]
 verify_jwt = false
+
+[functions.schedule-challenge-messages]
+verify_jwt = false
