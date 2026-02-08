@@ -24,6 +24,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { BoardCard, BoardColumn } from "@/hooks/useBoard";
 import StageSelector from "./StageSelector";
 import DecisionMatrixInput from "./DecisionMatrixInput";
+import CardAIChat from "./CardAIChat";
 
 interface CardDetailModalProps {
   card: BoardCard | null;
@@ -337,6 +338,11 @@ const CardDetailModal = ({
                   </div>
                 </div>
               </div>
+
+              <Separator />
+
+              {/* AI Assistant */}
+              <CardAIChat cardId={card.id} cardTitle={card.title} disabled={!canEdit} />
 
               {/* Timestamps */}
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
