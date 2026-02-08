@@ -4,12 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, AlertTriangle, Zap, Star, Image, FileText, ExternalLink, ClipboardList, CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
 import { getStageInfo } from "./StageSelector";
+import { cn } from "@/lib/utils";
 
 interface KanbanCardProps {
   card: BoardCard;
   index: number;
   onClick: (card: BoardCard) => void;
   canEdit: boolean;
+  isBlocking?: boolean;
 }
 
 const priorityConfig: Record<string, { color: string; icon: React.ReactNode }> = {
@@ -25,7 +27,7 @@ function getDelegationBadge(score: number) {
   return { text: `D:${score.toFixed(0)}`, className: "bg-red-500/20 text-red-400 border-red-500/40" };
 }
 
-const KanbanCard = ({ card, index, onClick, canEdit }: KanbanCardProps) => {
+const KanbanCard = ({ card, index, onClick, canEdit, isBlocking }: KanbanCardProps) => {
   const priority = priorityConfig[card.priority] || priorityConfig.medium;
   const hasScreenshots = card.screenshots && card.screenshots.length > 0;
   const hasLogs = !!card.logs;
@@ -35,6 +37,8 @@ const KanbanCard = ({ card, index, onClick, canEdit }: KanbanCardProps) => {
   const stageInfo = getStageInfo(card.stage);
   const delegation = getDelegationBadge(card.delegation_score || 0);
 
+  const isCriticalBlocking = isBlocking && card.priority === "critical";
+
   return (
     <Draggable draggableId={card.id} index={index} isDragDisabled={!canEdit}>
       {(provided, snapshot) => (
@@ -43,9 +47,11 @@ const KanbanCard = ({ card, index, onClick, canEdit }: KanbanCardProps) => {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           onClick={() => onClick(card)}
-          className={`bg-card border border-border rounded-lg p-3 mb-2 cursor-pointer transition-all hover:shadow-md ${
-            snapshot.isDragging ? "shadow-lg ring-2 ring-primary/30 rotate-2" : ""
-          }`}
+          className={cn(
+            "bg-card border border-border rounded-lg p-3 mb-2 cursor-pointer transition-all hover:shadow-md",
+            snapshot.isDragging && "shadow-lg ring-2 ring-primary/30 rotate-2",
+            isCriticalBlocking && "animate-pulse border-destructive bg-destructive/10 ring-1 ring-destructive/30"
+          )}
         >
           {/* Top row: stage + delegation score */}
           <div className="flex items-center justify-between mb-1.5">

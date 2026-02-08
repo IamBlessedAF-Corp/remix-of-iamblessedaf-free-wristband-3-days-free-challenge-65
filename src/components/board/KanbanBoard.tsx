@@ -71,6 +71,17 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
     [columns]
   );
 
+  /** Critical cards in review/error columns that block the pipeline */
+  const blockingCardIds = useMemo(() => {
+    const ids = new Set<string>();
+    cards.forEach((card) => {
+      if (card.priority === "critical" && reviewColumnIds.has(card.column_id)) {
+        ids.add(card.id);
+      }
+    });
+    return ids;
+  }, [cards, reviewColumnIds]);
+
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
@@ -147,6 +158,7 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
               onAddCard={(colId) => setCreateColumnId(colId)}
               canEdit={canEditInColumn(column.id)}
               wipLimit={column.id === wipColumnId ? WIP_LIMIT : undefined}
+              blockingCardIds={blockingCardIds}
             />
           ))}
         </div>
