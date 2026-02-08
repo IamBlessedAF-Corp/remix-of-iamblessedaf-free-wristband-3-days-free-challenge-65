@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ImageZoomModal from "./ImageZoomModal";
+import ShirtMessagePreview from "./ShirtMessagePreview";
 import productTshirtFront from "@/assets/product-tshirt-front.webp";
 import productTshirtBack from "@/assets/product-tshirt-back.webp";
 import productTshirtVideo from "@/assets/product-tshirt-video2.mp4";
 import productTshirtModel1 from "@/assets/product-tshirt-model1.png";
 import productTshirtModel2 from "@/assets/product-tshirt-model2.png";
 import productTshirtModel3 from "@/assets/product-tshirt-model3.png";
-import productFriendShirt from "@/assets/product-friend-shirt.png";
+import shirtMockupFront from "@/assets/shirt-mockup-blank.png";
+import shirtMockupBack from "@/assets/shirt-mockup-back.png";
 import friendShirtVideo from "@/assets/friend-shirt-video.mp4";
 import friendShirtModel1 from "@/assets/friend-shirt-model1.png";
 import friendShirtModel2 from "@/assets/friend-shirt-model2.png";
 import friendShirtModel3 from "@/assets/friend-shirt-model3.png";
-import friendShirtBack from "@/assets/friend-shirt-back.png";
-import friendShirtFront from "@/assets/friend-shirt-front.png";
-import friendShirtFront2 from "@/assets/friend-shirt-front2.png";
 import productWristbands from "@/assets/product-wristbands.avif";
 
 const TSHIRT_SIZES = ["S", "M", "L", "XL", "2XL", "3XL"];
@@ -218,15 +217,17 @@ const TshirtProductSection = ({ delay = 0 }: { delay?: number }) => {
 /* ══════════════════════════════════════════════════
    Friend Shirt — Shopify-style product card
    ══════════════════════════════════════════════════ */
-const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afterHeroSlot?: React.ReactNode }) => {
+const FriendShirtSection = ({ delay = 0, afterHeroSlot, message = "" }: { delay?: number; afterHeroSlot?: React.ReactNode; message?: string }) => {
   const [zoomed, setZoomed] = useState(false);
   const [zoomedImage, setZoomedImage] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState("M");
 
+  // First item is the live preview component, rest are standard images/video
   const media = [
-    { type: "image" as const, src: friendShirtFront, label: "Front" },
-    { type: "image" as const, src: friendShirtBack, label: "Back" },
+    { type: "preview" as const, src: shirtMockupFront, label: "Front Preview" },
+    { type: "image" as const, src: shirtMockupBack, label: "Back" },
+    { type: "image" as const, src: friendShirtModel1, label: "Model 1" },
     { type: "image" as const, src: friendShirtModel2, label: "Model 2" },
     { type: "image" as const, src: friendShirtModel3, label: "Model 3" },
     { type: "video" as const, src: friendShirtVideo, label: "Video" },
@@ -262,7 +263,18 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
               onClick={() => current.type === "image" && handleZoom(current.src)}
             >
               <AnimatePresence mode="wait">
-                {current.type === "image" ? (
+                {current.type === "preview" ? (
+                  <motion.div
+                    key="preview"
+                    className="w-full h-full flex items-center justify-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <ShirtMessagePreview message={message} />
+                  </motion.div>
+                ) : current.type === "image" ? (
                   <motion.img
                     key={activeIndex}
                     src={current.src}
