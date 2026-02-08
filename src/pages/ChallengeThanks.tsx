@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CheckCircle, Mail, MessageSquare, Share2, Copy, Loader2 } from "lucide-react";
+import { CheckCircle, Mail, MessageSquare, Share2, Copy, Loader2, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -42,9 +42,21 @@ const FacebookIcon = () => (
 const ChallengeThanks = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, loading } = useAuth();
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+
+  // Check if this user arrived via a referral (wristband gift flow)
+  const incomingRef = searchParams.get("ref") || sessionStorage.getItem("referral_code");
+  const isReferred = !!incomingRef;
+
+  // Clear sessionStorage referral after reading it
+  useEffect(() => {
+    if (sessionStorage.getItem("referral_code")) {
+      sessionStorage.removeItem("referral_code");
+    }
+  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -202,7 +214,7 @@ const ChallengeThanks = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          You're In! 🎉
+          {isReferred ? "Your Gift is Ready! 🎁" : "You're In! 🎉"}
         </motion.h1>
 
         {/* Confirmation Message */}
@@ -212,8 +224,44 @@ const ChallengeThanks = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          Get ready to spread some blessings.
+          {isReferred
+            ? "Your FREE wristband is reserved. Complete shipping below to claim it!"
+            : "Get ready to spread some blessings."}
         </motion.p>
+
+        {/* Wristband Claim CTA for referred users */}
+        {isReferred && (
+          <motion.div
+            className="bg-card rounded-2xl shadow-premium p-6 mb-8 border border-primary/30"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.55 }}
+          >
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Gift className="w-5 h-5 text-primary" />
+              <h2 className="font-bold text-lg">Claim Your FREE Wristband</h2>
+            </div>
+            <div className="flex items-center justify-between gap-4 text-sm mb-4">
+              <div className="text-center flex-1">
+                <p className="font-bold text-foreground">1 Wristband</p>
+                <p className="text-primary font-bold text-lg">FREE</p>
+                <p className="text-muted-foreground text-xs">+ $9.95 shipping 🇺🇸</p>
+              </div>
+              <div className="w-px h-12 bg-border" />
+              <div className="text-center flex-1">
+                <p className="font-bold text-foreground">3 Wristbands</p>
+                <p className="text-primary font-bold text-lg">$22</p>
+                <p className="text-muted-foreground text-xs">FREE shipping 🇺🇸</p>
+              </div>
+            </div>
+            <Button className="w-full h-12 text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground">
+              🎁 Pay $9.95 Shipping → Claim Wristband
+            </Button>
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              Or upgrade to all 3 colors for $22 with FREE shipping
+            </p>
+          </motion.div>
+        )}
 
         {/* Next Steps Card */}
         <motion.div
@@ -222,7 +270,9 @@ const ChallengeThanks = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <h2 className="font-bold text-lg mb-4">What Happens Next?</h2>
+          <h2 className="font-bold text-lg mb-4">
+            {isReferred ? "Plus: Join the FREE Challenge!" : "What Happens Next?"}
+          </h2>
 
           <div className="space-y-4 text-left">
             <div className="flex items-start gap-3">

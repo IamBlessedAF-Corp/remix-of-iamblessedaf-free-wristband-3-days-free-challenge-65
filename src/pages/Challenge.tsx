@@ -38,11 +38,12 @@ const Challenge = () => {
   const isReferred = !!referralCode;
 
   // Redirect to thanks page when user is authenticated via Google
+  // BUT only if they're NOT arriving via a referral link (they need to see the wristband offer first)
   useEffect(() => {
-    if (user) {
+    if (user && !isReferred) {
       navigate("/challenge/thanks");
     }
-  }, [user, navigate]);
+  }, [user, navigate, isReferred]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -60,11 +61,19 @@ const Challenge = () => {
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSubmitting(false);
-    navigate("/challenge/thanks");
+    // Pass referral code to thanks page so it can be used for checkout
+    const thanksUrl = referralCode
+      ? `/challenge/thanks?ref=${referralCode}`
+      : "/challenge/thanks";
+    navigate(thanksUrl);
   };
 
   const handleGoogleSignup = async () => {
     setGoogleLoading(true);
+    // Store referral code in sessionStorage so it persists through the OAuth redirect
+    if (referralCode) {
+      sessionStorage.setItem("referral_code", referralCode);
+    }
     const { error } = await signInWithGoogle();
     if (error) {
       console.error("Google sign-in error:", error);
