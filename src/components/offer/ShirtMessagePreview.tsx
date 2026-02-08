@@ -21,7 +21,7 @@ const ShirtMessagePreview = ({ message, onChange }: ShirtMessagePreviewProps) =>
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto select-none">
+    <div className="w-full mx-auto select-none" style={{ maxWidth: "614px" }}>
       {/* Shirt image with print area overlay */}
       <div className="relative w-full">
         <img
