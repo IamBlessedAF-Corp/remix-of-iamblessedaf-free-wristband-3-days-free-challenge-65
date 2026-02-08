@@ -98,18 +98,18 @@ const PublishGateModal = ({ card, open, onClose, onConfirm }: PublishGateModalPr
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           {checks.map((check) => (
             <div
               key={check.label}
-              className={`flex items-center gap-2.5 px-3 py-2 rounded-md border transition-colors ${
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg border transition-colors ${
                 check.passed
-                  ? "border-primary/20 bg-primary/5"
+                  ? "border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/40"
                   : "border-destructive/20 bg-destructive/5"
               }`}
             >
               {check.passed ? (
-                <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               ) : (
                 <XCircle className="w-4 h-4 text-destructive shrink-0" />
               )}
@@ -128,8 +128,10 @@ const PublishGateModal = ({ card, open, onClose, onConfirm }: PublishGateModalPr
 
         <div className="flex items-center gap-2 pt-1">
           <Badge
-            variant={allPassed ? "default" : "destructive"}
-            className="text-[10px] px-1.5 py-0.5"
+            variant={allPassed ? "outline" : "destructive"}
+            className={`text-[10px] px-1.5 py-0.5 ${
+              allPassed ? "border-emerald-300 text-emerald-700 bg-emerald-50 dark:border-emerald-700 dark:text-emerald-300 dark:bg-emerald-950/40" : ""
+            }`}
           >
             {passedCount}/{checks.length}
           </Badge>
@@ -145,8 +147,11 @@ const PublishGateModal = ({ card, open, onClose, onConfirm }: PublishGateModalPr
           <Button
             size="sm"
             onClick={onConfirm}
-            variant={allPassed ? "default" : "destructive"}
-            className="flex-1 gap-1.5 text-xs h-8"
+            className={`flex-1 gap-1.5 text-xs h-8 ${
+              allPassed
+                ? "bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+                : "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            }`}
           >
             {allPassed ? (
               <>
