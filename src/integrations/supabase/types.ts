@@ -317,6 +317,51 @@ export type Database = {
         }
         Relationships: []
       }
+      challenge_participants: {
+        Row: {
+          challenge_start_date: string | null
+          challenge_status: string | null
+          created_at: string | null
+          display_name: string | null
+          friend_1_name: string
+          friend_2_name: string | null
+          friend_3_name: string | null
+          id: string
+          opted_in_sms: boolean | null
+          phone: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          challenge_start_date?: string | null
+          challenge_status?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          friend_1_name: string
+          friend_2_name?: string | null
+          friend_3_name?: string | null
+          id?: string
+          opted_in_sms?: boolean | null
+          phone: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          challenge_start_date?: string | null
+          challenge_status?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          friend_1_name?: string
+          friend_2_name?: string | null
+          friend_3_name?: string | null
+          id?: string
+          opted_in_sms?: boolean | null
+          phone?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       creator_profiles: {
         Row: {
           blessings_confirmed: number
@@ -358,6 +403,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      scheduled_gratitude_messages: {
+        Row: {
+          created_at: string | null
+          day_number: number
+          friend_name: string
+          id: string
+          message_body: string
+          message_sent_at: string | null
+          participant_id: string
+          reminder_send_at: string | null
+          scheduled_send_at: string | null
+          status: string | null
+          twilio_message_sid: string | null
+          twilio_reminder_sid: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          day_number: number
+          friend_name: string
+          id?: string
+          message_body: string
+          message_sent_at?: string | null
+          participant_id: string
+          reminder_send_at?: string | null
+          scheduled_send_at?: string | null
+          status?: string | null
+          twilio_message_sid?: string | null
+          twilio_reminder_sid?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          day_number?: number
+          friend_name?: string
+          id?: string
+          message_body?: string
+          message_sent_at?: string | null
+          participant_id?: string
+          reminder_send_at?: string | null
+          scheduled_send_at?: string | null
+          status?: string | null
+          twilio_message_sid?: string | null
+          twilio_reminder_sid?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_gratitude_messages_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "challenge_participants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sms_deliveries: {
         Row: {
