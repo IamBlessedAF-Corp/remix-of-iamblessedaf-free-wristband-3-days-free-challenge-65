@@ -13,16 +13,30 @@ const Board = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSubmitting(true);
-    const result = await signInWithEmail(email, password);
-    if (result.error) {
-      setError(typeof result.error === "object" && "message" in result.error
-        ? (result.error as any).message
-        : "Login failed");
+
+    if (isSignUp) {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: `${window.location.origin}/board` },
+      });
+      if (signUpError) {
+        setError(signUpError.message);
+      }
+    } else {
+      const result = await signInWithEmail(email, password);
+      if (result.error) {
+        setError(typeof result.error === "object" && "message" in result.error
+          ? (result.error as any).message
+          : "Login failed");
+      }
     }
     setSubmitting(false);
   };
@@ -45,7 +59,7 @@ const Board = () => {
               <Shield className="w-10 h-10 text-primary" />
             </div>
             <CardTitle>Admin Board</CardTitle>
-            <CardDescription>Sign in with your admin credentials</CardDescription>
+            <CardDescription>{isSignUp ? "Create your account" : "Sign in with your credentials"}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
@@ -76,8 +90,15 @@ const Board = () => {
                 ) : (
                   <LogIn className="w-4 h-4 mr-1" />
                 )}
-                Sign In
+                {isSignUp ? "Create Account" : "Sign In"}
               </Button>
+              <button
+                type="button"
+                className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => { setIsSignUp(!isSignUp); setError(""); }}
+              >
+                {isSignUp ? "Already have an account? Sign in" : "Need an account? Sign up"}
+              </button>
             </form>
           </CardContent>
         </Card>
