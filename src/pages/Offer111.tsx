@@ -12,10 +12,12 @@ import OfferTimer from "@/components/offer/OfferTimer";
 import AuthorAvatar from "@/components/offer/AuthorAvatar";
 import UrgencyBanner from "@/components/offer/UrgencyBanner";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
-
+import { useGamificationStats } from "@/hooks/useGamificationStats";
 const Offer111 = () => {
+  const { rewardCheckout } = useGamificationStats();
+
   const handleCheckout = () => {
-    // Placeholder for Stripe checkout
+    rewardCheckout("pack-111");
     if (import.meta.env.DEV) {
       console.log("Redirecting to Stripe checkout for $111 pack");
     }

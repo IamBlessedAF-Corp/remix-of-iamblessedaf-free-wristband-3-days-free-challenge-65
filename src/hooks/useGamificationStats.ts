@@ -1,6 +1,38 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
+/**
+ * Reward tiers — maps each checkout offer to BC coins, hearts, meals, wristbands, friends blessed.
+ * Aligned with Feeding America donation tiers.
+ */
+export type OfferTier =
+  | "free-wristband"
+  | "wristband-22"
+  | "pack-111"
+  | "pack-444"
+  | "pack-1111"
+  | "pack-4444"
+  | "monthly-11";
+
+export interface TierReward {
+  coins: number;
+  hearts: number;
+  meals: number;
+  wristbands: number;
+  friends: number;
+  streak: boolean; // whether this purchase increments the streak
+}
+
+export const TIER_REWARDS: Record<OfferTier, TierReward> = {
+  "free-wristband": { coins: 10, hearts: 5, meals: 0, wristbands: 1, friends: 0, streak: false },
+  "wristband-22":   { coins: 50, hearts: 30, meals: 22, wristbands: 3, friends: 0, streak: false },
+  "pack-111":       { coins: 111, hearts: 80, meals: 11, wristbands: 3, friends: 1, streak: true },
+  "pack-444":       { coins: 444, hearts: 250, meals: 1111, wristbands: 14, friends: 3, streak: true },
+  "pack-1111":      { coins: 1111, hearts: 700, meals: 11111, wristbands: 111, friends: 11, streak: true },
+  "pack-4444":      { coins: 4444, hearts: 3000, meals: 44444, wristbands: 444, friends: 44, streak: true },
+  "monthly-11":     { coins: 25, hearts: 15, meals: 1, wristbands: 0, friends: 0, streak: true },
+};
+
 interface GamificationStats {
   blessedCoins: number;
   hearts: number;
@@ -128,5 +160,23 @@ export function useGamificationStats() {
     []
   );
 
-  return { stats, addCoins, addHearts, incrementStreak, addImpact };
+  /** Fire-and-forget: reward the user for completing a checkout at a given tier */
+  const rewardCheckout = useCallback((tier: OfferTier) => {
+    const r = TIER_REWARDS[tier];
+    setStats((s) => {
+      const updated = {
+        ...s,
+        blessedCoins: s.blessedCoins + r.coins,
+        hearts: s.hearts + r.hearts,
+        mealsImpact: s.mealsImpact + r.meals,
+        wristbandsImpact: s.wristbandsImpact + r.wristbands,
+        friendsBlessed: s.friendsBlessed + r.friends,
+        streak: r.streak ? s.streak + 1 : s.streak,
+      };
+      saveLocal(updated);
+      return updated;
+    });
+  }, []);
+
+  return { stats, addCoins, addHearts, incrementStreak, addImpact, rewardCheckout };
 }
