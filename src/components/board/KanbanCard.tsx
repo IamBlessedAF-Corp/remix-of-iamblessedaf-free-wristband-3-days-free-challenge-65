@@ -1,5 +1,5 @@
 import { Draggable } from "@hello-pangea/dnd";
-import type { BoardCard } from "@/hooks/useBoard";
+import type { BoardCard, BoardColumn } from "@/hooks/useBoard";
 import { Badge } from "@/components/ui/badge";
 import { Clock, AlertTriangle, Zap, Star, Image, FileText, ExternalLink, ClipboardList, CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
@@ -13,12 +13,14 @@ interface KanbanCardProps {
   canEdit: boolean;
   isBlocking?: boolean;
   isWarning?: boolean;
+  columns?: BoardColumn[];
+  onAdvance?: (cardId: string, nextColumnId: string) => void;
 }
 
 const priorityConfig: Record<string, { color: string; icon: React.ReactNode }> = {
-  critical: { color: "bg-red-500", icon: <AlertTriangle className="w-3 h-3" /> },
+  critical: { color: "bg-destructive", icon: <AlertTriangle className="w-3 h-3" /> },
   high: { color: "bg-orange-500", icon: <Zap className="w-3 h-3" /> },
-  medium: { color: "bg-blue-500", icon: <Star className="w-3 h-3" /> },
+  medium: { color: "bg-primary", icon: <Star className="w-3 h-3" /> },
   low: { color: "bg-muted", icon: <Clock className="w-3 h-3" /> },
 };
 
@@ -28,26 +30,55 @@ function getDelegationBadge(score: number) {
   return { text: `D:${score.toFixed(0)}`, className: "bg-red-500/20 text-red-400 border-red-500/40" };
 }
 
-/** Derive the critical next action based on the card's stage */
-function getNextAction(card: BoardCard): { label: string; description: string } | null {
-  const stage = card.stage || "idea";
-  switch (stage) {
-    case "idea":
-      return { label: "Clarify Scope", description: "Define requirements & acceptance criteria" };
-    case "spec":
-      return { label: "Start Execution", description: "Begin implementation in dev environment" };
-    case "dev":
-      return { label: "Submit for Review", description: "Code complete — push to validation" };
-    case "review":
-      return { label: "Validate & Test", description: "Run QA checks and capture proof" };
-    case "live":
-      return { label: "Monitor & Close", description: "Verify production stability" };
-    default:
-      return { label: "Move Forward", description: "Advance to next pipeline stage" };
-  }
+/** Map column position to next-action label & description */
+function getNextAction(
+  card: BoardCard,
+  columns?: BoardColumn[]
+): { label: string; description: string; nextColumnId: string | null } | null {
+  if (!columns || columns.length === 0) return null;
+
+  const currentCol = columns.find((c) => c.id === card.column_id);
+  if (!currentCol) return null;
+
+  const sorted = [...columns].sort((a, b) => a.position - b.position);
+  const currentIdx = sorted.findIndex((c) => c.id === currentCol.id);
+  const nextCol = currentIdx < sorted.length - 1 ? sorted[currentIdx + 1] : null;
+
+  // Don't show action for the Done column
+  if (currentCol.name.includes("✅ Done")) return null;
+
+  const nextColumnId = nextCol?.id ?? null;
+
+  // Derive action label from current column context
+  if (currentCol.name.includes("Ideas"))
+    return { label: "→ Send to Backlog", description: "Queue for prioritization", nextColumnId };
+  if (currentCol.name.includes("Backlog"))
+    return { label: "→ Clarify Scope", description: "Define requirements & acceptance criteria", nextColumnId };
+  if (currentCol.name.includes("Clarification"))
+    return { label: "→ Start Today", description: "Move to today's work queue", nextColumnId };
+  if (currentCol.name.includes("Today"))
+    return { label: "→ Begin Work", description: "Start active execution", nextColumnId };
+  if (currentCol.name.includes("Work in Progress"))
+    return { label: "→ Security Check", description: "Submit for security review", nextColumnId };
+  if (currentCol.name.includes("Security"))
+    return { label: "→ Validate", description: "Push to validation queue", nextColumnId };
+  if (currentCol.name.includes("Credentials"))
+    return { label: "→ Validate", description: "Credentials ready — validate", nextColumnId };
+  if (currentCol.name.includes("Validation (New)"))
+    return { label: "→ System Validate", description: "Run automated checks", nextColumnId };
+  if (currentCol.name.includes("Validation (System)"))
+    return { label: "→ Review", description: "Submit for final review", nextColumnId };
+  if (currentCol.name.includes("Errors"))
+    return { label: "→ Back to Review", description: "Fix applied — re-review", nextColumnId };
+  if (currentCol.name.includes("👀 Review"))
+    return { label: "→ Mark Done ✅", description: "Approve and complete", nextColumnId };
+  if (currentCol.name.includes("3 Outcomes"))
+    return { label: "→ Ideate", description: "Break into actionable ideas", nextColumnId };
+
+  return { label: "→ Advance", description: "Move to next stage", nextColumnId };
 }
 
-const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning }: KanbanCardProps) => {
+const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning, columns, onAdvance }: KanbanCardProps) => {
   const priority = priorityConfig[card.priority] || priorityConfig.medium;
   const hasScreenshots = card.screenshots && card.screenshots.length > 0;
   const hasLogs = !!card.logs;
@@ -56,10 +87,17 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning }: Ka
   const hasReviewEvidence = hasScreenshots || hasLogs || hasSummary || hasPreviewLink;
   const stageInfo = getStageInfo(card.stage);
   const delegation = getDelegationBadge(card.delegation_score || 0);
-  const nextAction = getNextAction(card);
+  const nextAction = getNextAction(card, columns);
 
   const isCriticalBlocking = isBlocking || card.priority === "critical";
   const isHighWarning = isWarning && card.priority === "high";
+
+  const handleAdvanceClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (nextAction?.nextColumnId && onAdvance && canEdit) {
+      onAdvance(card.id, nextAction.nextColumnId);
+    }
+  };
 
   return (
     <Draggable draggableId={card.id} index={index} isDragDisabled={!canEdit}>
@@ -96,14 +134,21 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning }: Ka
 
           {/* Critical next action button */}
           {nextAction && (
-            <div className={cn(
-              "rounded-md px-2.5 py-1.5 mb-2 border",
-              isCriticalBlocking
-                ? "bg-destructive/15 border-destructive/30"
-                : isHighWarning
-                  ? "bg-orange-500/10 border-orange-400/30"
-                  : "bg-muted/50 border-border"
-            )}>
+            <button
+              onClick={handleAdvanceClick}
+              disabled={!canEdit || !nextAction.nextColumnId}
+              className={cn(
+                "w-full text-left rounded-md px-2.5 py-1.5 mb-2 border transition-all",
+                canEdit && nextAction.nextColumnId
+                  ? "cursor-pointer hover:brightness-110 active:scale-[0.98]"
+                  : "cursor-default opacity-60",
+                isCriticalBlocking
+                  ? "bg-destructive/15 border-destructive/30 hover:bg-destructive/25"
+                  : isHighWarning
+                    ? "bg-orange-500/10 border-orange-400/30 hover:bg-orange-500/20"
+                    : "bg-muted/50 border-border hover:bg-muted"
+              )}
+            >
               <div className={cn(
                 "text-[11px] font-bold leading-tight",
                 isCriticalBlocking ? "text-destructive" : isHighWarning ? "text-orange-500" : "text-foreground"
@@ -113,7 +158,7 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning }: Ka
               <div className="text-[10px] text-muted-foreground leading-tight mt-0.5">
                 {nextAction.description}
               </div>
-            </div>
+            </button>
           )}
 
           {/* Description preview */}
