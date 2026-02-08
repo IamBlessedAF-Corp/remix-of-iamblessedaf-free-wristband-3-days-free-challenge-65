@@ -25,7 +25,8 @@ const MODES: { value: PipelineMode; label: string; shortLabel: string; icon: Rea
   { value: "clarify", label: "Clarify", shortLabel: "💡", icon: <Sparkles className="w-3.5 h-3.5" />, description: "Generate master prompts" },
   { value: "execute", label: "Execute", shortLabel: "⚡", icon: <Play className="w-3.5 h-3.5" />, description: "Run AI on prompts" },
   { value: "validate", label: "Validate", shortLabel: "🔍", icon: <ShieldCheck className="w-3.5 h-3.5" />, description: "Test & verify" },
-  { value: "full", label: "Full Pipeline", shortLabel: "🎯", icon: <Workflow className="w-3.5 h-3.5" />, description: "Clarify → Execute → Validate" },
+  { value: "sixsigma", label: "Six Sigma", shortLabel: "🔬", icon: <ShieldCheck className="w-3.5 h-3.5" />, description: "DMAIC verification" },
+  { value: "full", label: "Full Pipeline", shortLabel: "🎯", icon: <Workflow className="w-3.5 h-3.5" />, description: "Clarify → Execute → Validate → 6σ" },
 ];
 
 export default function PipelineControls({
@@ -39,11 +40,12 @@ export default function PipelineControls({
   const [clarifyCol, setClarifyCol] = useState("");
   const [executeCol, setExecuteCol] = useState("");
   const [validateCol, setValidateCol] = useState("");
+  const [sixsigmaCol, setSixsigmaCol] = useState("");
 
   const handleStart = () => {
     if (selectedMode === "full") {
       if (!clarifyCol || !executeCol || !validateCol) return;
-      onExecute(clarifyCol, "full", { clarify: clarifyCol, execute: executeCol, validate: validateCol });
+      onExecute(clarifyCol, "full", { clarify: clarifyCol, execute: executeCol, validate: validateCol, sixsigma: sixsigmaCol });
     } else {
       if (!selectedColumn) return;
       onExecute(selectedColumn, selectedMode);
@@ -116,6 +118,12 @@ export default function PipelineControls({
               label="Validate"
               value={validateCol}
               onChange={setValidateCol}
+              columns={columns}
+            />
+            <ColumnPicker
+              label="6σ"
+              value={sixsigmaCol}
+              onChange={setSixsigmaCol}
               columns={columns}
             />
           </div>

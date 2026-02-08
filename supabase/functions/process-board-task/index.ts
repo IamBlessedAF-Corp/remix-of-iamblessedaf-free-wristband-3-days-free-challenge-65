@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { runSixSigmaChecks, formatSixSigmaLog } from "./six-sigma.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -64,6 +65,8 @@ serve(async (req) => {
       return await handleClarify(supabase, card, docsCard, LOVABLE_API_KEY, timestamp, source_column_id);
     } else if (mode === "validate") {
       return await handleValidate(supabase, card, docsCard, LOVABLE_API_KEY, timestamp, source_column_id);
+    } else if (mode === "sixsigma") {
+      return await handleSixSigma(supabase, card, docsCard, timestamp, source_column_id);
     } else {
       return await handleExecute(supabase, card, docsCard, LOVABLE_API_KEY, timestamp, source_column_id);
     }
@@ -153,6 +156,14 @@ async function handleExecute(
   supabase: any, card: any, docsCard: any,
   apiKey: string, timestamp: string, sourceColumnId: string
 ) {
+  // Enforce WIP limit before moving card into WIP
+  const wipOk = await checkWipLimit(supabase);
+  if (!wipOk) {
+    return json({
+      done: true, message: "WIP limit reached — finish current card before processing more",
+      wip_blocked: true,
+    });
+  }
   if (!card.master_prompt) {
     const nextColumnId = await getNextColumnId(supabase, card.column_id);
     if (nextColumnId) {
@@ -300,6 +311,82 @@ Respond with JSON:
     issues_count: (parsed.issues || []).length,
     next_source_column_id: sourceColumnId || card.column_id,
   });
+}
+
+// ===================== MODE: SIX SIGMA =====================
+async function handleSixSigma(
+  supabase: any, card: any, docsCard: any,
+  timestamp: string, sourceColumnId: string
+) {
+  const result = runSixSigmaChecks(card);
+  const sixSigmaLog = formatSixSigmaLog(result);
+  const logEntry = `[${timestamp}] SIX SIGMA VERIFICATION:\n${sixSigmaLog}`;
+
+  if (result.passed) {
+    // Move to next column (toward Review)
+    const nextColumnId = await getNextColumnId(supabase, card.column_id);
+    await supabase.from("board_cards").update({
+      logs: appendLog(card.logs, logEntry),
+      labels: [
+        ...(card.labels || []).filter((l: string) => !l.startsWith("sixsigma")),
+        `sixsigma-${result.score}`,
+        "sixsigma-passed",
+      ],
+      ...(nextColumnId ? { column_id: nextColumnId } : {}),
+    }).eq("id", card.id);
+
+    await appendDocsLog(supabase, docsCard,
+      `[${timestamp}] 🔬 SIX SIGMA PASSED: "${card.title}" — Score: ${result.score}% — Cleared for deployment`
+    );
+
+    return json({
+      done: false, processed_card_id: card.id, card_title: card.title,
+      mode: "sixsigma", passed: true, score: result.score,
+      checks_passed: result.checks.filter((c: any) => c.passed).length,
+      checks_total: result.checks.length,
+      next_source_column_id: sourceColumnId || card.column_id,
+    });
+  } else {
+    // Block — send to Errors column
+    const errorColumnId = await getErrorColumnId(supabase);
+    await supabase.from("board_cards").update({
+      logs: appendLog(card.logs, logEntry),
+      labels: [
+        ...(card.labels || []).filter((l: string) => !l.startsWith("sixsigma")),
+        `sixsigma-${result.score}`,
+        "sixsigma-blocked",
+      ],
+      summary: `🔬 SIX SIGMA BLOCKED (${result.score}%)\n\n${sixSigmaLog}\n\n---\n\n${card.summary || ""}`.slice(0, 2000),
+      ...(errorColumnId ? { column_id: errorColumnId } : {}),
+    }).eq("id", card.id);
+
+    await appendDocsLog(supabase, docsCard,
+      `[${timestamp}] 🔬 SIX SIGMA BLOCKED: "${card.title}" — Score: ${result.score}% — Sent to Errors`
+    );
+
+    return json({
+      done: false, processed_card_id: card.id, card_title: card.title,
+      mode: "sixsigma", passed: false, score: result.score,
+      checks_passed: result.checks.filter((c: any) => c.passed).length,
+      checks_total: result.checks.length,
+      next_source_column_id: sourceColumnId || card.column_id,
+    });
+  }
+}
+
+// ===================== WIP LIMIT HELPER =====================
+const WIP_LIMIT = 1;
+
+async function checkWipLimit(supabase: any): Promise<boolean> {
+  const { data: wipCol } = await supabase
+    .from("board_columns").select("id").ilike("name", "%Work in Progress%").limit(1).single();
+  if (!wipCol) return true; // No WIP column found, allow
+
+  const { count } = await supabase
+    .from("board_cards").select("id", { count: "exact", head: true })
+    .eq("column_id", wipCol.id);
+
+  return (count || 0) < WIP_LIMIT;
 }
 
 // ===================== HELPERS =====================

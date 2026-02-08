@@ -9,19 +9,19 @@ const SHARE_TEXTS = [
     label: "Best Friend",
     emoji: "💙",
     relation: "best friend",
-    text: "Hey! I just did something cool — sent you a surprise that'll make sense when it arrives 😏 Meanwhile, I wanted to say: I'm genuinely grateful to have you in my life. You've made more of a difference than you know. 💙 #IamBlessedAF",
+    text: "Hey! Someone who cares about you just sent you a FREE 'I Am Blessed AF' Wristband (valued at $11) 🎁 They're grateful for YOU. Claim yours here → iamblessedaf.com/claim — just cover $9.95 shipping, or grab all 3 colors for $22 with FREE shipping! 💙 #IamBlessedAF",
   },
   {
     label: "Family",
     emoji: "❤️",
     relation: "parent or sibling",
-    text: "Hey, just wanted to say something I don't say enough — thank you for everything you've done for me. I've been doing this gratitude challenge and it reminded me how blessed I am to have you. Love you ❤️ iamblessedaf.com",
+    text: "Someone who loves you just sent you a FREE 'I Am Blessed AF' Wristband (valued at $11) as a gratitude gift ❤️ They wanted you to know you're appreciated. Claim it here → iamblessedaf.com/claim — just $9.95 shipping, or get the 3-pack for $22 with FREE shipping!",
   },
   {
     label: "Mentor",
     emoji: "🙏",
     relation: "mentor or partner",
-    text: "I've been reflecting on the people who shaped my life, and you're at the top. Thank you for believing in me and pushing me to be better. Genuinely grateful 🙏 iamblessedaf.com",
+    text: "You just received a FREE 'I Am Blessed AF' Wristband (valued at $11) from someone who's genuinely grateful for your impact 🙏 Claim yours → iamblessedaf.com/claim — $9.95 shipping, or upgrade to all 3 colors for $22 (free shipping). You deserve this.",
   },
 ];
 
@@ -68,11 +68,12 @@ const GptViralShare = ({ referralLink = "https://iamblessedaf.com/r/{code}" }: G
       {/* Header */}
       <div className="text-center mb-6">
         <p className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-          Your Pack is on the way! 🎉
+          🎁 Gift a FREE Wristband!
         </p>
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Complete your <span className="font-bold text-foreground">Happiness Guarantee</span>:
-          send a gratitude text to 3 people you appreciate.
+          Someone you love gets a <span className="font-bold text-primary">FREE wristband (valued at $11)</span> — 
+          they just cover <span className="font-bold text-foreground">$9.95 shipping</span>, or grab all 3 for{" "}
+          <span className="font-bold text-foreground">$22 with FREE shipping</span>.
         </p>
       </div>
 
@@ -150,10 +151,10 @@ const GptViralShare = ({ referralLink = "https://iamblessedaf.com/r/{code}" }: G
       <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 text-center">
         <Heart className="w-5 h-5 text-primary mx-auto mb-2" />
         <p className="text-sm font-bold text-foreground mb-1">
-          Share the Blessing
+          🎁 Share the Blessing — Gift a FREE Wristband
         </p>
         <p className="text-xs text-muted-foreground mb-3">
-          Invite 2 friends → they each get a surprise bonus with their first order.
+          Your friends get a FREE wristband valued at $11 — just $9.95 shipping, or 3 for $22 with free shipping.
         </p>
         <Button
           variant="outline"
@@ -162,7 +163,7 @@ const GptViralShare = ({ referralLink = "https://iamblessedaf.com/r/{code}" }: G
           className="text-xs"
         >
           <Copy className="w-3.5 h-3.5 mr-1.5" />
-          Copy My Referral Link
+          Copy My Gift Link
         </Button>
       </div>
     </motion.div>
