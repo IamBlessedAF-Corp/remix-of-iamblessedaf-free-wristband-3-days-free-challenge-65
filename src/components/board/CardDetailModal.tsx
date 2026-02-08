@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ExternalLink, Save, Trash2, Clock, Upload, X, Image } from "lucide-react";
+import { ExternalLink, Save, Trash2, Clock, Upload, X, Image, Clipboard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { BoardCard, BoardColumn } from "@/hooks/useBoard";
 import StageSelector from "./StageSelector";
@@ -89,6 +89,37 @@ const CardDetailModal = ({
     }
   }, [card]);
 
+  const handlePasteScreenshot = useCallback(async () => {
+    if (!card) return;
+    try {
+      const clipboardItems = await navigator.clipboard.read();
+      for (const item of clipboardItems) {
+        const imageType = item.types.find((t) => t.startsWith("image/"));
+        if (imageType) {
+          const blob = await item.getType(imageType);
+          setUploading(true);
+          const fileName = `${card.id}/${Date.now()}-pasted.png`;
+          const { data, error } = await supabase.storage
+            .from("board-screenshots")
+            .upload(fileName, blob, { upsert: false, contentType: imageType });
+          if (error) {
+            console.error("Paste upload failed:", error);
+            setUploading(false);
+            return;
+          }
+          const { data: urlData } = supabase.storage
+            .from("board-screenshots")
+            .getPublicUrl(data.path);
+          setScreenshots((prev) => [...prev, urlData.publicUrl]);
+          setUploading(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.error("Clipboard paste failed:", err);
+    }
+  }, [card]);
+
   if (!card) return null;
 
   const delegationScore = computeDelegationScore(scores);
@@ -143,6 +174,7 @@ const CardDetailModal = ({
   };
 
   const removeScreenshot = (url: string) => setScreenshots(screenshots.filter((s) => s !== url));
+
   const addLabel = () => {
     const trimmed = labelInput.trim();
     if (trimmed && !labels.includes(trimmed)) {
@@ -295,10 +327,13 @@ const CardDetailModal = ({
                     </div>
                   )}
                   {canEdit && (
-                    <div className="mt-2">
+                    <div className="mt-2 flex gap-2">
                       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUploadScreenshot} />
                       <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
-                        <Upload className="w-3 h-3 mr-1" />{uploading ? "Uploading..." : "Upload Screenshot"}
+                        <Upload className="w-3 h-3 mr-1" />{uploading ? "Uploading..." : "Upload"}
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={handlePasteScreenshot} disabled={uploading}>
+                        <Clipboard className="w-3 h-3 mr-1" />Paste from Clipboard
                       </Button>
                     </div>
                   )}

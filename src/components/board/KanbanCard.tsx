@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Draggable } from "@hello-pangea/dnd";
 import type { BoardCard, BoardColumn } from "@/hooks/useBoard";
 import { Badge } from "@/components/ui/badge";
-import { Clock, AlertTriangle, Zap, Star, Image, FileText, ExternalLink, ClipboardList, CheckCircle2, Camera, Loader2 } from "lucide-react";
+import { Clock, AlertTriangle, Zap, Star, Image, FileText, ExternalLink, ClipboardList, CheckCircle2, Upload, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { getStageInfo } from "./StageSelector";
 import { cn } from "@/lib/utils";
-import { autoCaptureForCard } from "@/utils/screenshotCapture";
+import { uploadAndAttachScreenshot } from "@/utils/screenshotUpload";
 import { toast } from "sonner";
 import { getDelegationBadge, getNextAction } from "@/utils/boardHelpers";
 
@@ -19,6 +19,7 @@ interface KanbanCardProps {
   isWarning?: boolean;
   columns?: BoardColumn[];
   onAdvance?: (cardId: string, nextColumnId: string) => void;
+  onScreenshotAdded?: (cardId: string, screenshots: string[]) => void;
 }
 
 const priorityConfig: Record<string, { color: string; icon: React.ReactNode }> = {
@@ -28,8 +29,9 @@ const priorityConfig: Record<string, { color: string; icon: React.ReactNode }> =
   low: { color: "bg-muted", icon: <Clock className="w-3 h-3" /> },
 };
 
-const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning, columns, onAdvance }: KanbanCardProps) => {
-  const [capturing, setCapturing] = useState(false);
+const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning, columns, onAdvance, onScreenshotAdded }: KanbanCardProps) => {
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const priority = priorityConfig[card.priority] || priorityConfig.medium;
   const hasScreenshots = card.screenshots && card.screenshots.length > 0;
   const hasLogs = !!card.logs;
@@ -56,22 +58,29 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning, colu
     }
   };
 
-  const handleManualCapture = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (capturing) return;
-    setCapturing(true);
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || uploading) return;
+    setUploading(true);
     try {
-      const url = await autoCaptureForCard(card.id, card.title, card.screenshots || [], "manual");
-      if (url) {
-        toast.success("📸 Screenshot captured successfully!");
+      const result = await uploadAndAttachScreenshot(file, card.id, card.screenshots || [], "proof");
+      if (result) {
+        toast.success("📸 Screenshot uploaded!");
+        onScreenshotAdded?.(card.id, result.screenshots);
       } else {
-        toast.error("Failed to capture screenshot");
+        toast.error("Upload failed");
       }
     } catch {
-      toast.error("Screenshot capture error");
+      toast.error("Screenshot upload error");
     } finally {
-      setCapturing(false);
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  const handleUploadClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    fileInputRef.current?.click();
   };
 
   return (
@@ -169,27 +178,37 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning, colu
             </div>
           )}
 
-          {/* Manual capture button for review/error cards missing screenshots */}
+          {/* Upload proof screenshot for review/error cards missing screenshots */}
           {showCaptureButton && (
-            <button
-              onClick={handleManualCapture}
-              disabled={capturing}
-              className={cn(
-                "w-full flex items-center justify-center gap-1.5 rounded-md px-2.5 py-1.5 mb-2 border text-[11px] font-medium transition-all",
-                "border-dashed border-destructive/40 bg-destructive/5 text-destructive hover:bg-destructive/10",
-                capturing && "opacity-60 cursor-wait"
-              )}
-            >
-              {capturing ? (
-                <>
-                  <Loader2 className="w-3 h-3 animate-spin" /> Capturing…
-                </>
-              ) : (
-                <>
-                  <Camera className="w-3 h-3" /> 📸 Capture Proof Screenshot
-                </>
-              )}
-            </button>
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileUpload}
+                onClick={(e) => e.stopPropagation()}
+              />
+              <button
+                onClick={handleUploadClick}
+                disabled={uploading}
+                className={cn(
+                  "w-full flex items-center justify-center gap-1.5 rounded-md px-2.5 py-1.5 mb-2 border text-[11px] font-medium transition-all",
+                  "border-dashed border-destructive/40 bg-destructive/5 text-destructive hover:bg-destructive/10",
+                  uploading && "opacity-60 cursor-wait"
+                )}
+              >
+                {uploading ? (
+                  <>
+                    <Loader2 className="w-3 h-3 animate-spin" /> Uploading…
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-3 h-3" /> 📸 Upload Proof Screenshot
+                  </>
+                )}
+              </button>
+            </>
           )}
 
           {/* Review evidence indicators */}
