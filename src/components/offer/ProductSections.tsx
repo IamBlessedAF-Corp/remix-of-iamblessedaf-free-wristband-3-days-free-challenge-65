@@ -261,6 +261,24 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
         transition={{ duration: 0.5, delay }}
       >
         <div className="bg-card rounded-none border border-border/60 overflow-hidden">
+          {/* ── Name input ABOVE the shirt ── */}
+          <div className="px-4 pt-4 pb-2">
+            <label className="flex items-center gap-1.5 text-sm font-semibold text-foreground mb-1.5">
+              <span className="text-primary">👤</span>
+              What's your best friend's name?
+            </label>
+            <input
+              type="text"
+              placeholder="Your best friend's name"
+              value={friendName}
+              onChange={(e) => {
+                if (e.target.value.length <= 20) setFriendName(e.target.value);
+              }}
+              maxLength={20}
+              className="w-full h-11 text-base font-medium border border-border/60 focus:border-primary rounded-xl pl-4 pr-4 bg-background text-foreground placeholder:text-muted-foreground outline-none transition-colors"
+            />
+          </div>
+
           {/* Media gallery */}
           <div className="relative bg-secondary/30">
             <div
@@ -319,7 +337,7 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
             </div>
           </div>
 
-          {/* Built-in customizer — replaces old afterHeroSlot for CustomMessageBox */}
+          {/* Built-in customizer — message, gender, size (name is now above) */}
           <div className="px-4 py-4 border-t border-border/30">
             <ShirtCustomizer
               friendName={friendName}
@@ -328,6 +346,7 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
               onMessageChange={setMessage}
               selectedSize={selectedSize}
               onSizeChange={setSelectedSize}
+              hideNameInput
             />
           </div>
 
