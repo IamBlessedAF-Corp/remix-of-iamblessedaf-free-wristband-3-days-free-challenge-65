@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,8 +12,12 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(supabaseUrl, serviceRoleKey);
+
   try {
-    const { to, message } = await req.json();
+    const { to, message, recipientName, sourcePage } = await req.json();
 
     if (!to || !message) {
       return new Response(
@@ -43,6 +48,9 @@ serve(async (req) => {
     }
     const formattedTo = cleanTo.startsWith("+") ? cleanTo : `+${cleanTo}`;
 
+    // Build the status callback URL for Twilio delivery updates
+    const statusCallbackUrl = `${supabaseUrl}/functions/v1/sms-status-webhook`;
+
     // Send SMS via Twilio REST API
     const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
     const credentials = btoa(`${accountSid}:${authToken}`);
@@ -51,6 +59,7 @@ serve(async (req) => {
       To: formattedTo,
       From: fromNumber,
       Body: message,
+      StatusCallback: statusCallbackUrl,
     });
 
     const twilioRes = await fetch(twilioUrl, {
@@ -66,6 +75,17 @@ serve(async (req) => {
 
     if (!twilioRes.ok) {
       console.error("Twilio error:", JSON.stringify(twilioData));
+
+      // Log failed delivery
+      await supabase.from("sms_deliveries").insert({
+        recipient_phone: formattedTo,
+        recipient_name: recipientName || null,
+        message,
+        status: "failed",
+        error_message: twilioData.message || "Twilio API error",
+        source_page: sourcePage || null,
+      });
+
       return new Response(
         JSON.stringify({
           error: twilioData.message || "Failed to send SMS",
@@ -74,6 +94,16 @@ serve(async (req) => {
         { status: twilioRes.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Log successful send
+    await supabase.from("sms_deliveries").insert({
+      recipient_phone: formattedTo,
+      recipient_name: recipientName || null,
+      message,
+      twilio_sid: twilioData.sid,
+      status: twilioData.status || "queued",
+      source_page: sourcePage || null,
+    });
 
     return new Response(
       JSON.stringify({
