@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -41,9 +41,9 @@ const CreateCardModal = ({ open, columnId, columns, onClose, onCreate }: CreateC
   const [stage, setStage] = useState("stage-1");
   const [scores, setScores] = useState({ vs_score: 0, cc_score: 0, hu_score: 0, r_score: 0, ad_score: 0 });
 
-  if (selectedColumn !== columnId && columnId) {
-    setSelectedColumn(columnId);
-  }
+  useEffect(() => {
+    if (columnId) setSelectedColumn(columnId);
+  }, [columnId]);
 
   const delegationScore = computeDelegationScore(scores);
 

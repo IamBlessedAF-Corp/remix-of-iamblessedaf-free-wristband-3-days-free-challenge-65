@@ -7,35 +7,38 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Import supabase dynamically to ensure env vars are loaded
-    (async () => {
+    let subscription: { unsubscribe: () => void } | null = null;
+
+    const init = async () => {
       try {
         const { supabase } = await import("@/integrations/supabase/client");
-        
-        // Set up auth state listener BEFORE checking current session
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          (event, session) => {
+
+        const { data: { subscription: sub } } = supabase.auth.onAuthStateChange(
+          (_event, session) => {
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
           }
         );
+        subscription = sub;
 
-        // Check for existing session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
-        });
-
-        return () => subscription.unsubscribe();
+        const { data: { session } } = await supabase.auth.getSession();
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
       } catch (error) {
         if (import.meta.env.DEV) {
           console.error("Failed to initialize auth:", error);
         }
         setLoading(false);
       }
-    })();
+    };
+
+    init();
+
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, []);
 
   const signInWithGoogle = async () => {
