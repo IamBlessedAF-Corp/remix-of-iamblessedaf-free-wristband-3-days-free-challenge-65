@@ -115,11 +115,11 @@ const FreeWristbandStep = ({ onCheckout, onSkip }: FreeWristbandStepProps) => {
         <UrgencyBanner variant="wristbands" />
         <Button
           onClick={onCheckout}
-          className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
+          className="w-full h-16 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl px-4"
         >
-          <Gift className="w-5 h-5 mr-2" />
-          Claim My FREE Wristband — Just $9.95 Shipping
-          <ArrowRight className="w-5 h-5 ml-2" />
+          <Gift className="w-5 h-5 mr-2 flex-shrink-0" />
+          <span>Claim My FREE Wristband</span>
+          <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
         </Button>
         <p className="text-center text-xs text-muted-foreground mt-4">
           🔒 Secure checkout · Your wristband is 100% free — only cover delivery
