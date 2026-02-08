@@ -58,7 +58,7 @@ const ShirtTextOverlay = ({
       className="text-foreground leading-tight font-bold text-center pointer-events-none"
       style={{
         fontFamily: FONT_FAMILY,
-        fontSize: `clamp(${0.46 * scale}rem, ${1.85 * scale}vw, ${0.863 * scale}rem)`,
+        fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
       }}
     >
       I am Blessed AF
@@ -67,7 +67,7 @@ const ShirtTextOverlay = ({
       className="text-foreground leading-tight font-semibold text-center pointer-events-none"
       style={{
         fontFamily: FONT_FAMILY,
-        fontSize: `clamp(${0.46 * scale}rem, ${1.85 * scale}vw, ${0.863 * scale}rem)`,
+        fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
       }}
     >
       to Have a Best Friend
