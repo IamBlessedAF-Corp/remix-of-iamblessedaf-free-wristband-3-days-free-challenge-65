@@ -37,7 +37,7 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking }: KanbanCardPro
   const stageInfo = getStageInfo(card.stage);
   const delegation = getDelegationBadge(card.delegation_score || 0);
 
-  const isCriticalBlocking = isBlocking && card.priority === "critical";
+  const isCriticalBlocking = isBlocking || card.priority === "critical";
 
   return (
     <Draggable draggableId={card.id} index={index} isDragDisabled={!canEdit}>
