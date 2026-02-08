@@ -97,7 +97,7 @@ const ShirtTextOverlay = ({
               }
             }}
             maxLength={MAX_NAME_CHARS}
-            className="bg-transparent border-0 outline-none text-primary text-center p-0 m-0 leading-tight font-semibold italic placeholder:text-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="bg-transparent border-0 outline-none text-primary text-center p-0 m-0 leading-tight font-bold italic placeholder:text-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             style={{
               fontFamily: FONT_FAMILY,
               fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
@@ -110,7 +110,7 @@ const ShirtTextOverlay = ({
         </div>
       ) : (
         <span
-          className="text-primary leading-tight font-semibold pointer-events-none italic"
+          className="text-primary leading-tight font-bold pointer-events-none italic"
           style={{
             fontFamily: FONT_FAMILY,
             fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
@@ -161,10 +161,10 @@ const ShirtTextOverlay = ({
             }
           }}
           maxLength={MAX_CHARS}
-          className="w-full bg-transparent border-0 outline-none resize-none text-foreground text-center p-0 m-0 leading-snug placeholder:text-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="w-full bg-transparent border-0 outline-none resize-none text-foreground font-bold text-center p-0 m-0 leading-snug placeholder:text-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           style={{
             fontFamily: FONT_FAMILY,
-            fontSize: `clamp(${0.37 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
+            fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
             minHeight: `clamp(21px, ${5.29 * scale}vw, 53px)`,
             caretColor: "hsl(var(--primary))",
           }}
@@ -172,10 +172,10 @@ const ShirtTextOverlay = ({
         />
         {message && (
           <span
-            className="text-foreground font-medium pointer-events-none block text-center -mt-1"
+            className="text-foreground font-bold pointer-events-none block text-center -mt-1"
             style={{
               fontFamily: FONT_FAMILY,
-              fontSize: `clamp(${0.37 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
+              fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
             }}
           >
             "
@@ -185,20 +185,20 @@ const ShirtTextOverlay = ({
     ) : (
       message ? (
         <p
-          className="text-foreground leading-snug font-medium mt-0.5 break-words whitespace-pre-wrap text-center pointer-events-none"
+          className="text-foreground leading-snug font-bold mt-0.5 break-words whitespace-pre-wrap text-center pointer-events-none"
           style={{
             fontFamily: FONT_FAMILY,
-            fontSize: `clamp(${0.397 * scale}rem, ${1.719 * scale}vw, ${0.794 * scale}rem)`,
+            fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
           }}
         >
           {message}"
         </p>
       ) : (
         <p
-          className="text-muted-foreground leading-snug font-medium mt-0.5 text-center italic pointer-events-none"
+          className="text-muted-foreground leading-snug font-bold mt-0.5 text-center italic pointer-events-none"
           style={{
             fontFamily: FONT_FAMILY,
-            fontSize: `clamp(${0.397 * scale}rem, ${1.719 * scale}vw, ${0.794 * scale}rem)`,
+            fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
           }}
         >
           [Your message here]"
