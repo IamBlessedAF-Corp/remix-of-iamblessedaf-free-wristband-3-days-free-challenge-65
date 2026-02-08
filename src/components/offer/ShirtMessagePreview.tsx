@@ -58,7 +58,7 @@ const ShirtTextOverlay = ({
       className="text-foreground leading-tight font-bold text-center pointer-events-none"
       style={{
         fontFamily: FONT_FAMILY,
-        fontSize: `clamp(${0.4 * scale}rem, ${1.61 * scale}vw, ${0.75 * scale}rem)`,
+        fontSize: `clamp(${0.46 * scale}rem, ${1.85 * scale}vw, ${0.863 * scale}rem)`,
       }}
     >
       I am Blessed AF
@@ -67,7 +67,7 @@ const ShirtTextOverlay = ({
       className="text-foreground leading-tight font-semibold text-center pointer-events-none"
       style={{
         fontFamily: FONT_FAMILY,
-        fontSize: `clamp(${0.4 * scale}rem, ${1.61 * scale}vw, ${0.75 * scale}rem)`,
+        fontSize: `clamp(${0.46 * scale}rem, ${1.85 * scale}vw, ${0.863 * scale}rem)`,
       }}
     >
       to Have a Best Friend
@@ -81,7 +81,7 @@ const ShirtTextOverlay = ({
               className="text-primary/60 italic"
               style={{
                 fontFamily: FONT_FAMILY,
-                fontSize: `clamp(${0.32 * scale}rem, ${1.32 * scale}vw, ${0.575 * scale}rem)`,
+                fontSize: `clamp(${0.368 * scale}rem, ${1.518 * scale}vw, ${0.661 * scale}rem)`,
               }}
             >
               Tap to add name...
@@ -101,7 +101,7 @@ const ShirtTextOverlay = ({
           className="w-full bg-transparent border-0 outline-none text-primary text-center p-0 m-0 leading-tight font-semibold italic placeholder:text-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           style={{
             fontFamily: FONT_FAMILY,
-            fontSize: `clamp(${0.345 * scale}rem, ${1.38 * scale}vw, ${0.633 * scale}rem)`,
+            fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
             caretColor: "hsl(var(--primary))",
           }}
         />
@@ -111,7 +111,7 @@ const ShirtTextOverlay = ({
         className="text-primary leading-tight font-semibold mt-0.5 text-center pointer-events-none italic"
         style={{
           fontFamily: FONT_FAMILY,
-          fontSize: `clamp(${0.345 * scale}rem, ${1.38 * scale}vw, ${0.633 * scale}rem)`,
+          fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
         }}
       >
         {friendName || "[Your Best Friend First Name]"}
@@ -121,7 +121,7 @@ const ShirtTextOverlay = ({
       className="text-foreground leading-tight font-semibold mt-0.5 text-center pointer-events-none"
       style={{
         fontFamily: FONT_FAMILY,
-        fontSize: `clamp(${0.345 * scale}rem, ${1.38 * scale}vw, ${0.633 * scale}rem)`,
+        fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
       }}
     >
       TY! I'll Never Forget when You...
@@ -134,13 +134,13 @@ const ShirtTextOverlay = ({
           <div className="absolute inset-0 flex items-center justify-center gap-1 pointer-events-none z-10">
             <PenLine
               className="text-primary animate-pulse"
-              style={{ width: `clamp(9px, ${1.725 * scale}vw, 16px)`, height: `clamp(9px, ${1.725 * scale}vw, 16px)` }}
+              style={{ width: `clamp(10px, ${1.984 * scale}vw, 18px)`, height: `clamp(10px, ${1.984 * scale}vw, 18px)` }}
             />
             <span
               className="text-muted-foreground/70 italic"
               style={{
                 fontFamily: FONT_FAMILY,
-                fontSize: `clamp(${0.288 * scale}rem, ${1.265 * scale}vw, ${0.575 * scale}rem)`,
+                fontSize: `clamp(${0.331 * scale}rem, ${1.455 * scale}vw, ${0.661 * scale}rem)`,
               }}
             >
               Tap to write...
@@ -161,8 +161,8 @@ const ShirtTextOverlay = ({
           className="w-full bg-transparent border-0 outline-none resize-none text-foreground text-center p-0 m-0 leading-snug placeholder:text-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           style={{
             fontFamily: FONT_FAMILY,
-            fontSize: `clamp(${0.322 * scale}rem, ${1.38 * scale}vw, ${0.633 * scale}rem)`,
-            minHeight: `clamp(18px, ${4.6 * scale}vw, 46px)`,
+            fontSize: `clamp(${0.37 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
+            minHeight: `clamp(21px, ${5.29 * scale}vw, 53px)`,
             caretColor: "hsl(var(--primary))",
           }}
           rows={2}
@@ -172,7 +172,7 @@ const ShirtTextOverlay = ({
             className="text-foreground font-medium pointer-events-none block text-center -mt-1"
             style={{
               fontFamily: FONT_FAMILY,
-              fontSize: `clamp(${0.322 * scale}rem, ${1.38 * scale}vw, ${0.633 * scale}rem)`,
+              fontSize: `clamp(${0.37 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
             }}
           >
             "
@@ -185,7 +185,7 @@ const ShirtTextOverlay = ({
           className="text-foreground leading-snug font-medium mt-0.5 break-words whitespace-pre-wrap text-center pointer-events-none"
           style={{
             fontFamily: FONT_FAMILY,
-            fontSize: `clamp(${0.345 * scale}rem, ${1.495 * scale}vw, ${0.69 * scale}rem)`,
+            fontSize: `clamp(${0.397 * scale}rem, ${1.719 * scale}vw, ${0.794 * scale}rem)`,
           }}
         >
           {message}"
@@ -195,7 +195,7 @@ const ShirtTextOverlay = ({
           className="text-muted-foreground leading-snug font-medium mt-0.5 text-center italic pointer-events-none"
           style={{
             fontFamily: FONT_FAMILY,
-            fontSize: `clamp(${0.345 * scale}rem, ${1.495 * scale}vw, ${0.69 * scale}rem)`,
+            fontSize: `clamp(${0.397 * scale}rem, ${1.719 * scale}vw, ${0.794 * scale}rem)`,
           }}
         >
           [Your message here]"
