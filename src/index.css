@@ -150,4 +150,20 @@
   .focus-premium {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
   }
+
+  /* Credential-blocked card — faster, stronger red blink */
+  @keyframes credential-blink {
+    0%, 100% {
+      opacity: 1;
+      box-shadow: 0 0 0 2px hsl(0 100% 50% / 0.5), 0 0 12px 2px hsl(0 100% 50% / 0.3);
+    }
+    50% {
+      opacity: 0.7;
+      box-shadow: 0 0 0 3px hsl(0 100% 50% / 0.8), 0 0 24px 4px hsl(0 100% 50% / 0.5);
+    }
+  }
+
+  .credential-blocked-blink {
+    animation: credential-blink 0.8s ease-in-out infinite;
+  }
 }

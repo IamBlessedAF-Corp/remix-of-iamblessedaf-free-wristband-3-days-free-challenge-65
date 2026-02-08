@@ -93,13 +93,14 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning, colu
   const delegation = getDelegationBadge(card.delegation_score || 0);
   const nextAction = getNextAction(card, columns);
 
-  const isCriticalBlocking = isBlocking || card.priority === "critical";
-  const isHighWarning = isWarning && card.priority === "high";
-
   // Determine if this card is in a review/error column and missing screenshots
   const currentCol = columns?.find((c) => c.id === card.column_id);
   const isInReviewColumn = currentCol?.name.includes("🚨 Errors") || currentCol?.name.includes("👀 Review");
   const showCaptureButton = isInReviewColumn && !hasScreenshots && canEdit;
+
+  const isCriticalBlocking = isBlocking || card.priority === "critical";
+  const isHighWarning = isWarning && card.priority === "high";
+  const isCredentialBlocked = currentCol?.name.includes("🔑 Needed Credentials") || card.labels?.includes("credentials-blocked");
 
   const handleAdvanceClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -137,8 +138,9 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning, colu
           className={cn(
             "bg-card border border-border rounded-lg p-3 mb-2 cursor-pointer transition-all hover:shadow-md",
             snapshot.isDragging && "shadow-lg ring-2 ring-primary/30 rotate-2",
-            isCriticalBlocking && "animate-pulse border-destructive bg-destructive/10 ring-1 ring-destructive/30",
-            isHighWarning && !isCriticalBlocking && "animate-pulse border-orange-400 bg-orange-500/10 ring-1 ring-orange-400/30"
+            isCredentialBlocked && "credential-blocked-blink border-red-600 bg-red-600/15 ring-2 ring-red-500/50",
+            !isCredentialBlocked && isCriticalBlocking && "animate-pulse border-destructive bg-destructive/10 ring-1 ring-destructive/30",
+            !isCredentialBlocked && isHighWarning && !isCriticalBlocking && "animate-pulse border-orange-400 bg-orange-500/10 ring-1 ring-orange-400/30"
           )}
         >
           {/* Top row: stage + delegation score */}
@@ -150,6 +152,14 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning, colu
               {delegation.text}
             </Badge>
           </div>
+
+          {/* Credential blocked banner */}
+          {isCredentialBlocked && (
+            <div className="flex items-center gap-1.5 px-2 py-1 mb-2 rounded bg-red-600/20 border border-red-500/40">
+              <span className="text-sm">🔑</span>
+              <span className="text-[10px] font-bold text-red-400">BLOCKED — Credentials Required</span>
+            </div>
+          )}
 
           {/* Priority bar */}
           <div className={`h-1 w-8 rounded-full ${priority.color} mb-2`} />

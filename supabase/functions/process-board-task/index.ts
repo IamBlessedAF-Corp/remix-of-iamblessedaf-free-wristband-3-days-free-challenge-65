@@ -60,6 +60,18 @@ serve(async (req) => {
       return json({ done: false, processed_card_id: card.id, skipped: true, card_title: card.title });
     }
 
+    // Skip cards in the "Needed Credentials" column — these are blocked until secrets are added
+    const { data: cardCol } = await supabase
+      .from("board_columns").select("name").eq("id", card.column_id).single();
+    if (cardCol?.name?.includes("🔑 Needed Credentials")) {
+      return json({
+        done: false, processed_card_id: card.id, skipped: true,
+        card_title: card.title,
+        reason: "Card is blocked — waiting for credentials to be configured",
+        credentials_blocked: true,
+      });
+    }
+
     const timestamp = new Date().toISOString();
 
     // ---- Route to the right mode ----
