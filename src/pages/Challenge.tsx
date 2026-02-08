@@ -17,7 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { CheckCircle2, Users, Heart, Sparkles, Gift, Truck } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
-import wristbandsImg from "@/assets/product-wristbands.png";
+import wristbandsImg from "@/assets/product-wristbands-new.avif";
 
 const formSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters").max(100),
