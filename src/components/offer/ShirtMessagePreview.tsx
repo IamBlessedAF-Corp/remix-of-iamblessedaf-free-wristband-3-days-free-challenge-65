@@ -74,37 +74,58 @@ const ShirtTextOverlay = ({
     </p>
     {/* Editable friend name — own line */}
     {isEditable && onFriendNameChange ? (
-      <div className="w-full mt-0.5 relative cursor-text" onClick={onNameTap}>
-        {!friendName && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+      <div className="w-full mt-0.5 flex items-center justify-center cursor-text" onClick={onNameTap}>
+        <span
+          className="text-primary font-bold italic pointer-events-none"
+          style={{
+            fontFamily: FONT_FAMILY,
+            fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
+          }}
+        >
+          "
+        </span>
+        <div className="relative inline-flex items-center">
+          {!friendName && (
             <span
-              className="text-primary/60 italic"
+              className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 text-primary/60 italic whitespace-nowrap"
               style={{
                 fontFamily: FONT_FAMILY,
                 fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
               }}
             >
-              Tap to add name...
+              Name
             </span>
-          </div>
-        )}
-        <input
-          ref={nameInputRef}
-          type="text"
-          value={friendName}
-          onChange={(e) => {
-            if (e.target.value.length <= MAX_NAME_CHARS) {
-              onFriendNameChange(e.target.value);
-            }
-          }}
-          maxLength={MAX_NAME_CHARS}
-          className="w-full bg-transparent border-0 outline-none text-primary text-center p-0 m-0 leading-tight font-bold italic placeholder:text-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+          )}
+          <input
+            ref={nameInputRef}
+            type="text"
+            value={friendName}
+            onChange={(e) => {
+              if (e.target.value.length <= MAX_NAME_CHARS) {
+                onFriendNameChange(e.target.value);
+              }
+            }}
+            maxLength={MAX_NAME_CHARS}
+            className="bg-transparent border-0 outline-none text-primary text-center p-0 m-0 leading-tight font-bold italic placeholder:text-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            style={{
+              fontFamily: FONT_FAMILY,
+              fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
+              caretColor: "hsl(var(--primary))",
+              width: friendName ? `${Math.max(friendName.length, 3)}ch` : "4ch",
+              minWidth: "3ch",
+              maxWidth: "80%",
+            }}
+          />
+        </div>
+        <span
+          className="text-primary font-bold italic pointer-events-none"
           style={{
             fontFamily: FONT_FAMILY,
             fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
-            caretColor: "hsl(var(--primary))",
           }}
-        />
+        >
+          ,
+        </span>
       </div>
     ) : (
       <p
@@ -114,7 +135,7 @@ const ShirtTextOverlay = ({
           fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
         }}
       >
-        {friendName || "[Name]"}
+        "{friendName || "[Name]"},
       </p>
     )}
     {/* TY line */}
@@ -176,7 +197,7 @@ const ShirtTextOverlay = ({
               fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
             }}
           >
-            "
+            !
           </span>
         )}
       </div>
@@ -189,7 +210,7 @@ const ShirtTextOverlay = ({
             fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
           }}
         >
-          {message}"
+          {message}!
         </p>
       ) : (
         <p
@@ -199,7 +220,7 @@ const ShirtTextOverlay = ({
             fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
           }}
         >
-          [Your message here]"
+          [Your message here]!
         </p>
       )
     )}
