@@ -3,7 +3,7 @@ import { Lock } from "lucide-react";
 import Grok4444HeroSection from "@/components/offer/grok/Grok4444HeroSection";
 import Grok4444ValueStack from "@/components/offer/grok/Grok4444ValueStack";
 import Grok4444CtaBlock from "@/components/offer/grok/Grok4444CtaBlock";
-import GrokSocialProof from "@/components/offer/grok/GrokSocialProof";
+import SocialProofSection from "@/components/offer/SocialProofSection";
 import GrokQuotesSection from "@/components/offer/grok/GrokQuotesSection";
 import GrokRiskReversal from "@/components/offer/grok/GrokRiskReversal";
 import GrokViralFooter from "@/components/offer/grok/GrokViralFooter";
@@ -55,8 +55,8 @@ const Offer4444 = () => {
             showScarcity
           />
 
-          {/* ─── 5. Social Proof ─── */}
-          <GrokSocialProof />
+          {/* ─── 5. Social Proof — Live Metrics ─── */}
+          <SocialProofSection variant="data" delay={0.35} />
 
           {/* ─── 6. What You Get Breakdown ─── */}
           <motion.div

@@ -6,7 +6,7 @@ import ProductSections from "@/components/offer/ProductSections";
 import GptHeroSection from "@/components/offer/gpt/GptHeroSection";
 import GptValueStack from "@/components/offer/gpt/GptValueStack";
 import GptCtaBlock from "@/components/offer/gpt/GptCtaBlock";
-import GptSocialProof from "@/components/offer/gpt/GptSocialProof";
+import SocialProofSection from "@/components/offer/SocialProofSection";
 import GptQuotesSection from "@/components/offer/gpt/GptQuotesSection";
 import GptRiskReversal from "@/components/offer/gpt/GptRiskReversal";
 import GptMessageModule from "@/components/offer/gpt/GptMessageModule";
@@ -120,8 +120,8 @@ const Offer111Gpt = () => {
             showScarcity
           />
 
-          {/* ─── 5. Social Proof: Emotional Stories ─── */}
-          <GptSocialProof />
+          {/* ─── 5. Social Proof: Emotional Stories + Live Metrics ─── */}
+          <SocialProofSection variant="story" delay={0.3} />
 
           {/* ─── 6. Branding — "I AM" (warm) ─── */}
           <motion.div

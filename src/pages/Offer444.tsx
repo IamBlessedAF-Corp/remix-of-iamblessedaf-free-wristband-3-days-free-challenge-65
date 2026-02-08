@@ -5,7 +5,7 @@ import { Lock } from "lucide-react";
 import Grok444HeroSection from "@/components/offer/grok/Grok444HeroSection";
 import Grok444ValueStack from "@/components/offer/grok/Grok444ValueStack";
 import Grok444CtaBlock from "@/components/offer/grok/Grok444CtaBlock";
-import GrokSocialProof from "@/components/offer/grok/GrokSocialProof";
+import SocialProofSection from "@/components/offer/SocialProofSection";
 import GrokQuotesSection from "@/components/offer/grok/GrokQuotesSection";
 import GrokRiskReversal from "@/components/offer/grok/GrokRiskReversal";
 import GrokViralFooter from "@/components/offer/grok/GrokViralFooter";
@@ -99,8 +99,8 @@ const Offer444 = () => {
             showScarcity
           />
 
-          {/* ─── 6. Social Proof ─── */}
-          <GrokSocialProof />
+          {/* ─── 6. Social Proof — Live Metrics ─── */}
+          <SocialProofSection variant="data" delay={0.35} />
 
           {/* ─── 7. Branding — "I AM" section ─── */}
           <motion.div
