@@ -88,7 +88,7 @@ const Offer111 = () => {
               className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
             >
               <Crown className="w-5 h-5 mr-2" />
-              Claim Your Gratitude Pack + 11 Meals
+              YES! Feed 11 People &amp; Claim My $111 Pack Now!
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
 
@@ -97,7 +97,7 @@ const Offer111 = () => {
               <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated to Feeding America</p>
             </div>
             <p className="text-center text-xs text-muted-foreground mt-1">
-              🔒 Secure checkout • Free US Shipping
+              Instant Gratitude Access + Shipping within 24hrs
             </p>
             <RiskReversalGuarantee />
           </motion.div>
@@ -134,7 +134,7 @@ const Offer111 = () => {
                   className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
                 >
                   <Crown className="w-5 h-5 mr-2" />
-                  Claim Your Gratitude Pack + 11 Meals — $111
+                  YES! Feed 11 People &amp; Claim My $111 Pack Now!
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                 <div className="flex items-center justify-center gap-2 mt-3 mb-1">
@@ -142,7 +142,7 @@ const Offer111 = () => {
                   <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated to Feeding America</p>
                 </div>
                 <p className="text-center text-xs text-muted-foreground mt-1">
-                  🔒 Secure checkout • Free US Shipping
+                  Instant Gratitude Access + Shipping within 24hrs
                 </p>
                 <RiskReversalGuarantee />
               </motion.div>
@@ -220,7 +220,7 @@ const Offer111 = () => {
               className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
             >
               <Crown className="w-5 h-5 mr-2" />
-              Claim Your Gratitude Pack + 11 Meals — $111
+              YES! Feed 11 People &amp; Claim My $111 Pack Now!
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
 
@@ -229,7 +229,7 @@ const Offer111 = () => {
               <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated to Feeding America</p>
             </div>
             <p className="text-center text-xs text-muted-foreground mt-1">
-              🔒 Secure checkout • Free US Shipping
+              Instant Gratitude Access + Shipping within 24hrs
             </p>
             <RiskReversalGuarantee />
           </motion.div>
@@ -258,7 +258,7 @@ const Offer111 = () => {
               className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
             >
               <Crown className="w-5 h-5 mr-2" />
-              Claim Your Gratitude Pack + 11 Meals — $111
+              YES! Feed 11 People &amp; Claim My $111 Pack Now!
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
 
@@ -267,7 +267,7 @@ const Offer111 = () => {
               <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated to Feeding America</p>
             </div>
             <p className="text-center text-xs text-muted-foreground mt-1">
-              🔒 Secure checkout • Free US Shipping
+              Instant Gratitude Access + Shipping within 24hrs
             </p>
             <RiskReversalGuarantee />
           </motion.div>
