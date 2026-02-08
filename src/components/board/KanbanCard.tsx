@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { Draggable } from "@hello-pangea/dnd";
 import type { BoardCard, BoardColumn } from "@/hooks/useBoard";
 import { Badge } from "@/components/ui/badge";
-import { Clock, AlertTriangle, Zap, Star, Image, FileText, ExternalLink, ClipboardList, CheckCircle2 } from "lucide-react";
+import { Clock, AlertTriangle, Zap, Star, Image, FileText, ExternalLink, ClipboardList, CheckCircle2, Camera, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { getStageInfo } from "./StageSelector";
 import { cn } from "@/lib/utils";
+import { autoCaptureForCard } from "@/utils/screenshotCapture";
+import { toast } from "sonner";
 
 interface KanbanCardProps {
   card: BoardCard;
@@ -79,6 +82,7 @@ function getNextAction(
 }
 
 const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning, columns, onAdvance }: KanbanCardProps) => {
+  const [capturing, setCapturing] = useState(false);
   const priority = priorityConfig[card.priority] || priorityConfig.medium;
   const hasScreenshots = card.screenshots && card.screenshots.length > 0;
   const hasLogs = !!card.logs;
@@ -92,10 +96,33 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning, colu
   const isCriticalBlocking = isBlocking || card.priority === "critical";
   const isHighWarning = isWarning && card.priority === "high";
 
+  // Determine if this card is in a review/error column and missing screenshots
+  const currentCol = columns?.find((c) => c.id === card.column_id);
+  const isInReviewColumn = currentCol?.name.includes("🚨 Errors") || currentCol?.name.includes("👀 Review");
+  const showCaptureButton = isInReviewColumn && !hasScreenshots && canEdit;
+
   const handleAdvanceClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (nextAction?.nextColumnId && onAdvance && canEdit) {
       onAdvance(card.id, nextAction.nextColumnId);
+    }
+  };
+
+  const handleManualCapture = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (capturing) return;
+    setCapturing(true);
+    try {
+      const url = await autoCaptureForCard(card.id, card.title, card.screenshots || [], "manual");
+      if (url) {
+        toast.success("📸 Screenshot captured successfully!");
+      } else {
+        toast.error("Failed to capture screenshot");
+      }
+    } catch {
+      toast.error("Screenshot capture error");
+    } finally {
+      setCapturing(false);
     }
   };
 
@@ -183,6 +210,29 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning, colu
                 </div>
               )}
             </div>
+          )}
+
+          {/* Manual capture button for review/error cards missing screenshots */}
+          {showCaptureButton && (
+            <button
+              onClick={handleManualCapture}
+              disabled={capturing}
+              className={cn(
+                "w-full flex items-center justify-center gap-1.5 rounded-md px-2.5 py-1.5 mb-2 border text-[11px] font-medium transition-all",
+                "border-dashed border-destructive/40 bg-destructive/5 text-destructive hover:bg-destructive/10",
+                capturing && "opacity-60 cursor-wait"
+              )}
+            >
+              {capturing ? (
+                <>
+                  <Loader2 className="w-3 h-3 animate-spin" /> Capturing…
+                </>
+              ) : (
+                <>
+                  <Camera className="w-3 h-3" /> 📸 Capture Proof Screenshot
+                </>
+              )}
+            </button>
           )}
 
           {/* Review evidence indicators */}

@@ -7,6 +7,7 @@ import PublishGateModal from "./PublishGateModal";
 import { type BoardCard, type BoardColumn } from "@/hooks/useBoard";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { autoCaptureForCard } from "@/utils/screenshotCapture";
 
 interface KanbanBoardProps {
   isAdmin: boolean;
@@ -21,6 +22,9 @@ interface KanbanBoardProps {
 
 /** Columns at position >= 10 are review/done — locked for non-admins */
 const REVIEW_POSITION_THRESHOLD = 10;
+
+/** Columns that should trigger auto-capture (Errors + Review) */
+const AUTO_CAPTURE_COLUMN_NAMES = ["🚨 Errors", "👀 Review"];
 
 /** WIP column only allows 1 active card at a time */
 const WIP_COLUMN_NAME = "6)  🔨 Work in Progress";
@@ -71,6 +75,36 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
     [columns]
   );
 
+  /** Column IDs that should trigger auto-screenshot capture */
+  const autoCaptureColumnIds = useMemo(
+    () => new Set(
+      columns
+        .filter((c) => AUTO_CAPTURE_COLUMN_NAMES.some((name) => c.name.includes(name)))
+        .map((c) => c.id)
+    ),
+    [columns]
+  );
+
+  /** Trigger auto-capture if card moves to a review/error column */
+  const triggerAutoCapture = useCallback(
+    (cardId: string, targetColumnId: string) => {
+      if (!autoCaptureColumnIds.has(targetColumnId)) return;
+      const card = cards.find((c) => c.id === cardId);
+      if (!card) return;
+      // Skip if card already has screenshots
+      if (card.screenshots && card.screenshots.length > 0) return;
+      const targetCol = columns.find((c) => c.id === targetColumnId);
+      const phase = targetCol?.name.includes("Error") ? "error-review" : "review";
+      // Fire-and-forget — don't block the UI
+      autoCaptureForCard(cardId, card.title, card.screenshots || [], phase)
+        .then((url) => {
+          if (url) toast.info("📸 Auto-captured proof-of-work screenshot");
+        })
+        .catch(() => {});
+    },
+    [autoCaptureColumnIds, cards, columns]
+  );
+
   /** All critical-priority cards pulse as blockers regardless of column */
   const blockingCardIds = useMemo(() => {
     const ids = new Set<string>();
@@ -119,10 +153,13 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
       const newPosition = targetCards.length;
       moveCard(cardId, nextColumnId, newPosition);
 
+      // Auto-capture screenshot for review/error columns
+      triggerAutoCapture(cardId, nextColumnId);
+
       const targetCol = columns.find((c) => c.id === nextColumnId);
       toast.success(`Card advanced to ${targetCol?.name || "next column"}`);
     },
-    [wipColumnId, doneColumnId, cardsByColumn, cards, columns, moveCard]
+    [wipColumnId, doneColumnId, cardsByColumn, cards, columns, moveCard, triggerAutoCapture]
   );
 
   const handleDragEnd = (result: DropResult) => {
@@ -159,6 +196,8 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
     }
 
     moveCard(draggableId, destination.droppableId, destination.index);
+    // Auto-capture screenshot for review/error columns
+    triggerAutoCapture(draggableId, destination.droppableId);
   };
 
   const handlePublishConfirm = () => {
