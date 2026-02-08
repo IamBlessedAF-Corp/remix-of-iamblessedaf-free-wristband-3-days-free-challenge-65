@@ -1,38 +1,12 @@
-import { useState } from "react";
 import shirtMockup from "@/assets/shirt-mockup-blank.png";
 
-export const FONT_OPTIONS = [
-  { id: "caveat", label: "Caveat", family: "'Caveat', cursive" },
-  { id: "dancing", label: "Dancing Script", family: "'Dancing Script', cursive" },
-  { id: "satisfy", label: "Satisfy", family: "'Satisfy', cursive" },
-  { id: "pacifico", label: "Pacifico", family: "'Pacifico', cursive" },
-  { id: "indie", label: "Indie Flower", family: "'Indie Flower', cursive" },
-] as const;
-
-export type FontId = (typeof FONT_OPTIONS)[number]["id"];
+const FONT_FAMILY = "'Indie Flower', cursive";
 
 interface ShirtMessagePreviewProps {
   message: string;
-  selectedFont?: FontId;
-  onFontChange?: (font: FontId) => void;
 }
 
-const ShirtMessagePreview = ({
-  message,
-  selectedFont = "caveat",
-  onFontChange,
-}: ShirtMessagePreviewProps) => {
-  const [internalFont, setInternalFont] = useState<FontId>("caveat");
-
-  const activeFont = selectedFont ?? internalFont;
-  const setFont = (f: FontId) => {
-    if (onFontChange) onFontChange(f);
-    else setInternalFont(f);
-  };
-
-  const fontFamily =
-    FONT_OPTIONS.find((f) => f.id === activeFont)?.family ?? FONT_OPTIONS[0].family;
-
+const ShirtMessagePreview = ({ message }: ShirtMessagePreviewProps) => {
   const prefixLine1a = "I am Blessed AF";
   const prefixLine1b = "to Have a Best Friend";
   const prefixLine2 = "TY! I'll Never Forget when You...";
@@ -61,7 +35,7 @@ const ShirtMessagePreview = ({
           <p
             className="text-foreground leading-tight font-semibold text-center"
             style={{
-              fontFamily,
+              fontFamily: FONT_FAMILY,
               fontSize: "clamp(0.45rem, 1.8vw, 0.8rem)",
             }}
           >
@@ -72,7 +46,7 @@ const ShirtMessagePreview = ({
           <p
             className="text-foreground leading-tight font-semibold mt-0.5 text-center"
             style={{
-              fontFamily,
+              fontFamily: FONT_FAMILY,
               fontSize: "clamp(0.4rem, 1.6vw, 0.7rem)",
             }}
           >
@@ -82,36 +56,13 @@ const ShirtMessagePreview = ({
             <p
               className="text-foreground leading-snug font-medium mt-1 break-words whitespace-pre-wrap text-center"
               style={{
-                fontFamily,
+                fontFamily: FONT_FAMILY,
                 fontSize: "clamp(0.35rem, 1.4vw, 0.65rem)",
               }}
             >
               {message}
             </p>
           )}
-        </div>
-      </div>
-
-      {/* Font selector — 5 options */}
-      <div className="mt-4 mb-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center mb-2">
-          ✍️ Choose Handwriting Style
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          {FONT_OPTIONS.map((font) => (
-            <button
-              key={font.id}
-              onClick={() => setFont(font.id)}
-              className={`px-3 py-1.5 rounded-lg text-sm border transition-all duration-200 ${
-                activeFont === font.id
-                  ? "border-primary bg-primary/10 text-primary font-semibold shadow-sm"
-                  : "border-border/60 bg-card text-foreground hover:border-primary/40"
-              }`}
-              style={{ fontFamily: font.family }}
-            >
-              {font.label}
-            </button>
-          ))}
         </div>
       </div>
     </div>
