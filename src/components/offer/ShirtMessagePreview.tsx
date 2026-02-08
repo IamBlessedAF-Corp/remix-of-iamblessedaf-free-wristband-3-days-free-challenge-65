@@ -169,37 +169,29 @@ const ShirtTextOverlay = ({
             </span>
           </div>
         )}
-        <textarea
-          ref={inputRef}
-          value={message}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          onChange={(e) => {
-            if (e.target.value.length <= MAX_CHARS) {
-              onChange(e.target.value);
-            }
-          }}
-          maxLength={MAX_CHARS}
-          className="w-full bg-transparent border-0 outline-none resize-none text-primary font-bold text-center p-0 m-0 leading-snug placeholder:text-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-          style={{
-            fontFamily: FONT_FAMILY,
-            fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
-            minHeight: `clamp(21px, ${5.29 * scale}vw, 53px)`,
-            caretColor: "hsl(var(--primary))",
-          }}
-          rows={2}
-        />
-        {message && (
-          <span
-            className="text-primary font-bold pointer-events-none block text-center -mt-1"
+        <div className="w-full relative">
+          <textarea
+            ref={inputRef}
+            value={message}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            onChange={(e) => {
+              if (e.target.value.length <= MAX_CHARS) {
+                onChange(e.target.value);
+              }
+            }}
+            maxLength={MAX_CHARS}
+            className="w-full bg-transparent border-0 outline-none resize-none text-primary font-bold text-center p-0 m-0 leading-snug placeholder:text-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             style={{
               fontFamily: FONT_FAMILY,
               fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
+              minHeight: `clamp(21px, ${5.29 * scale}vw, 53px)`,
+              caretColor: "hsl(var(--primary))",
             }}
-          >
-            !
-          </span>
-        )}
+            rows={2}
+          />
+        </div>
+        {/* !" suffix rendered inline via CSS so it stays on the last line of text */}
       </div>
     ) : (
       message ? (
@@ -210,7 +202,7 @@ const ShirtTextOverlay = ({
             fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
           }}
         >
-          {message}!
+          {message}!"
         </p>
       ) : (
         <p
@@ -220,7 +212,7 @@ const ShirtTextOverlay = ({
             fontSize: `clamp(${0.397 * scale}rem, ${1.587 * scale}vw, ${0.728 * scale}rem)`,
           }}
         >
-          [Your message here]!
+          [Your message here]!"
         </p>
       )
     )}
