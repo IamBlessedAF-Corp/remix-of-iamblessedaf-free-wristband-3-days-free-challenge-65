@@ -60,9 +60,11 @@ serve(async (req) => {
       return json({ done: false, processed_card_id: card.id, skipped: true, card_title: card.title });
     }
 
-    // Skip cards in the "Needed Credentials" column — these are blocked until secrets are added
+    // Fetch card's column once (reused for credential check + routing)
     const { data: cardCol } = await supabase
-      .from("board_columns").select("name").eq("id", card.column_id).single();
+      .from("board_columns").select("name, position").eq("id", card.column_id).single();
+
+    // Skip cards in the "Needed Credentials" column — blocked until secrets are added
     if (cardCol?.name?.includes("🔑 Needed Credentials")) {
       return json({
         done: false, processed_card_id: card.id, skipped: true,

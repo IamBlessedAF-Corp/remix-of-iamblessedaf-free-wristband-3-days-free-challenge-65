@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { Bot, Send, Sparkles, Play, Loader2 } from "lucide-react";
 
@@ -89,22 +88,22 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
 
       {/* Quick Actions */}
       <div className="flex gap-1.5 p-2 border-b border-border overflow-x-auto">
-        <Badge
-          variant="outline"
-          className="cursor-pointer hover:bg-primary/10 whitespace-nowrap text-[10px] flex-shrink-0"
+        <button
+          type="button"
+          className="inline-flex items-center cursor-pointer hover:bg-primary/10 whitespace-nowrap text-[10px] flex-shrink-0 border border-border rounded-full px-2 py-0.5 text-foreground transition-colors"
           onClick={() => sendMessage("", "suggest_next")}
         >
           <Sparkles className="w-3 h-3 mr-1" />
           Suggest Next Steps
-        </Badge>
-        <Badge
-          variant="outline"
-          className="cursor-pointer hover:bg-primary/10 whitespace-nowrap text-[10px] flex-shrink-0"
+        </button>
+        <button
+          type="button"
+          className="inline-flex items-center cursor-pointer hover:bg-primary/10 whitespace-nowrap text-[10px] flex-shrink-0 border border-border rounded-full px-2 py-0.5 text-foreground transition-colors"
           onClick={() => sendMessage("", "execute")}
         >
           <Play className="w-3 h-3 mr-1" />
           Execute Task
-        </Badge>
+        </button>
       </div>
 
       {/* Messages */}
