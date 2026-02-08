@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import confetti from "canvas-confetti";
 import {
   Dialog,
   DialogContent,
@@ -45,6 +47,28 @@ function shortenUrl(url: string): string {
 }
 
 const PublishGateModal = ({ card, open, onClose, onConfirm }: PublishGateModalProps) => {
+  const fireConfetti = useCallback(() => {
+    const end = Date.now() + 600;
+    const colors = ["#10b981", "#34d399", "#6ee7b7", "#fbbf24", "#f59e0b"];
+    (function frame() {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.7 },
+        colors,
+      });
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.7 },
+        colors,
+      });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    })();
+  }, []);
+
   if (!card) return null;
 
   const checks: CheckItem[] = [
@@ -146,7 +170,10 @@ const PublishGateModal = ({ card, open, onClose, onConfirm }: PublishGateModalPr
           </Button>
           <Button
             size="sm"
-            onClick={onConfirm}
+            onClick={() => {
+              if (allPassed) fireConfetti();
+              onConfirm();
+            }}
             className={`flex-1 gap-1.5 text-xs h-8 ${
               allPassed
                 ? "bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500"
