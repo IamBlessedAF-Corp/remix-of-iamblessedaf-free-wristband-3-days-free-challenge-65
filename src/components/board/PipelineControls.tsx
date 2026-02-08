@@ -36,26 +36,17 @@ export default function PipelineControls({
   const [selectedColumn, setSelectedColumn] = useState("");
   const [selectedMode, setSelectedMode] = useState<PipelineMode>("execute");
 
-  // For full pipeline, we auto-map columns
-  const [clarifyCol, setClarifyCol] = useState("");
-  const [executeCol, setExecuteCol] = useState("");
-  const [validateCol, setValidateCol] = useState("");
-  const [sixsigmaCol, setSixsigmaCol] = useState("");
-
   const handleStart = () => {
+    if (!selectedColumn) return;
     if (selectedMode === "full") {
-      if (!clarifyCol || !executeCol || !validateCol) return;
-      onExecute(clarifyCol, "full", { clarify: clarifyCol, execute: executeCol, validate: validateCol, sixsigma: sixsigmaCol });
+      // Full pipeline only needs one source column — cards processed end-to-end
+      onExecute(selectedColumn, "full", { clarify: selectedColumn });
     } else {
-      if (!selectedColumn) return;
       onExecute(selectedColumn, selectedMode);
     }
   };
 
-  const isFullMode = selectedMode === "full";
-  const canStart = isFullMode
-    ? !!(clarifyCol && executeCol && validateCol)
-    : !!selectedColumn;
+  const canStart = !!selectedColumn;
 
   if (isRunning) {
     return (
@@ -100,47 +91,18 @@ export default function PipelineControls({
 
       {/* Row 2: Column selection + Go */}
       <div className="flex items-center gap-2">
-        {isFullMode ? (
-          <div className="flex flex-1 gap-1.5 overflow-x-auto">
-            <ColumnPicker
-              label="Clarify"
-              value={clarifyCol}
-              onChange={setClarifyCol}
-              columns={columns}
-            />
-            <ColumnPicker
-              label="Execute"
-              value={executeCol}
-              onChange={setExecuteCol}
-              columns={columns}
-            />
-            <ColumnPicker
-              label="Validate"
-              value={validateCol}
-              onChange={setValidateCol}
-              columns={columns}
-            />
-            <ColumnPicker
-              label="6σ"
-              value={sixsigmaCol}
-              onChange={setSixsigmaCol}
-              columns={columns}
-            />
-          </div>
-        ) : (
-          <Select value={selectedColumn} onValueChange={setSelectedColumn}>
-            <SelectTrigger className="flex-1 h-8 text-xs bg-background">
-              <SelectValue placeholder="Pick column..." />
-            </SelectTrigger>
-            <SelectContent className="z-50 bg-popover">
-              {columns.map((col) => (
-                <SelectItem key={col.id} value={col.id} className="text-xs">
-                  {col.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
+        <Select value={selectedColumn} onValueChange={setSelectedColumn}>
+          <SelectTrigger className="flex-1 h-8 text-xs bg-background">
+            <SelectValue placeholder={selectedMode === "full" ? "Source column..." : "Pick column..."} />
+          </SelectTrigger>
+          <SelectContent className="z-50 bg-popover">
+            {columns.map((col) => (
+              <SelectItem key={col.id} value={col.id} className="text-xs">
+                {col.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
         <Button
           size="sm"
@@ -153,29 +115,5 @@ export default function PipelineControls({
         </Button>
       </div>
     </div>
-  );
-}
-
-function ColumnPicker({
-  label, value, onChange, columns,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  columns: BoardColumn[];
-}) {
-  return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="flex-1 min-w-[80px] h-8 text-[10px] sm:text-xs bg-background">
-        <SelectValue placeholder={label} />
-      </SelectTrigger>
-      <SelectContent className="z-50 bg-popover">
-        {columns.map((col) => (
-          <SelectItem key={col.id} value={col.id} className="text-xs">
-            {col.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
   );
 }
