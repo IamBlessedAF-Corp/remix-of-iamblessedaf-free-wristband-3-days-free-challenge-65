@@ -1,1 +1,7 @@
 project_id = "rgcqhfswkcgjtiwaalrd"
+
+[functions.confirm-blessing]
+verify_jwt = false
+
+[functions.process-board-task]
+verify_jwt = false
