@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,8 +8,6 @@ import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
 import AuthorAvatar from "@/components/offer/AuthorAvatar";
 
 const GratitudeIntro = () => {
-  const [message, setMessage] = useState("");
-  const [friendName, setFriendName] = useState("");
 
   return (
     <motion.div
@@ -51,14 +48,8 @@ const GratitudeIntro = () => {
       <div className="h-4" />
 
 
-      {/* Friend Shirt showcase — message input is inline on the shirt */}
-      <FriendShirtSection
-        delay={0.15}
-        message={message}
-        onMessageChange={setMessage}
-        friendName={friendName}
-        onFriendNameChange={setFriendName}
-      />
+      {/* Friend Shirt showcase — customizer is built-in */}
+      <FriendShirtSection delay={0.15} />
 
       <p className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2 leading-tight">
         Claim Your <span className="text-primary">FREE</span> Custom Shirt → Trigger 27× More Joy
