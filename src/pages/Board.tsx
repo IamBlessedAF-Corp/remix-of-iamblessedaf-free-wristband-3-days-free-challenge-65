@@ -1,14 +1,26 @@
 import { useState } from "react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useBoard } from "@/hooks/useBoard";
+import { useAutoExecute } from "@/hooks/useAutoExecute";
 import KanbanBoard from "@/components/board/KanbanBoard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Loader2, LogIn, LogOut, LayoutDashboard, Shield, Eye, EyeOff } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Loader2, LogIn, LogOut, LayoutDashboard, Shield, Eye, EyeOff, Play, Square, Zap } from "lucide-react";
 
 const Board = () => {
   const { user, isAdmin, loading, signInWithEmail, signOut } = useAdminAuth();
+  const board = useBoard();
+  const autoExec = useAutoExecute(board.refetch);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -16,6 +28,7 @@ const Board = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [selectedSourceColumn, setSelectedSourceColumn] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -169,6 +182,11 @@ const Board = () => {
     );
   }
 
+  const handleStartAutoExec = () => {
+    if (!selectedSourceColumn) return;
+    autoExec.execute(selectedSourceColumn);
+  };
+
   // Admin — show the board
   return (
     <div className="min-h-screen bg-background">
@@ -181,6 +199,49 @@ const Board = () => {
           </h1>
         </div>
         <div className="flex items-center gap-3">
+          {/* Auto-Execute Controls */}
+          <div className="flex items-center gap-2 border-r border-border pr-3 mr-1">
+            {autoExec.isRunning ? (
+              <>
+                <div className="flex items-center gap-2 text-xs">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                  <span className="text-muted-foreground">
+                    Processing{autoExec.currentCardTitle ? `: ${autoExec.currentCardTitle}` : "..."}
+                  </span>
+                  <span className="font-mono text-primary">{autoExec.processedCount}</span>
+                </div>
+                <Button variant="destructive" size="sm" onClick={autoExec.stop}>
+                  <Square className="w-3 h-3 mr-1" />
+                  Stop
+                </Button>
+              </>
+            ) : (
+              <>
+                <Select value={selectedSourceColumn} onValueChange={setSelectedSourceColumn}>
+                  <SelectTrigger className="w-[180px] h-8 text-xs">
+                    <SelectValue placeholder="Pick source column..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {board.columns.map((col) => (
+                      <SelectItem key={col.id} value={col.id} className="text-xs">
+                        {col.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  size="sm"
+                  onClick={handleStartAutoExec}
+                  disabled={!selectedSourceColumn}
+                  className="gap-1"
+                >
+                  <Zap className="w-3.5 h-3.5" />
+                  Auto-Execute
+                </Button>
+              </>
+            )}
+          </div>
+
           <span className="text-xs text-muted-foreground">{user.email}</span>
           <Button variant="ghost" size="sm" onClick={signOut}>
             <LogOut className="w-4 h-4" />
@@ -190,7 +251,16 @@ const Board = () => {
 
       {/* Board */}
       <main className="pt-4">
-        <KanbanBoard isAdmin={isAdmin} />
+        <KanbanBoard
+          isAdmin={isAdmin}
+          columns={board.columns}
+          cards={board.cards}
+          loading={board.loading}
+          moveCard={board.moveCard}
+          updateCard={board.updateCard}
+          createCard={board.createCard}
+          deleteCard={board.deleteCard}
+        />
       </main>
     </div>
   );

@@ -3,18 +3,24 @@ import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import KanbanColumn from "./KanbanColumn";
 import CardDetailModal from "./CardDetailModal";
 import CreateCardModal from "./CreateCardModal";
-import { useBoard, type BoardCard } from "@/hooks/useBoard";
+import { type BoardCard, type BoardColumn } from "@/hooks/useBoard";
 import { Loader2 } from "lucide-react";
 
 interface KanbanBoardProps {
   isAdmin: boolean;
+  columns: BoardColumn[];
+  cards: BoardCard[];
+  loading: boolean;
+  moveCard: (cardId: string, newColumnId: string, newPosition: number) => Promise<void>;
+  updateCard: (cardId: string, updates: Partial<BoardCard>) => Promise<void>;
+  createCard: (card: Partial<BoardCard>) => Promise<any>;
+  deleteCard: (cardId: string) => Promise<void>;
 }
 
 /** Columns at position >= 9 are review/done — locked for non-admins */
 const REVIEW_POSITION_THRESHOLD = 9;
 
-const KanbanBoard = ({ isAdmin }: KanbanBoardProps) => {
-  const { columns, cards, loading, moveCard, updateCard, createCard, deleteCard } = useBoard();
+const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, createCard, deleteCard }: KanbanBoardProps) => {
   const [selectedCard, setSelectedCard] = useState<BoardCard | null>(null);
   const [createColumnId, setCreateColumnId] = useState<string | null>(null);
 
