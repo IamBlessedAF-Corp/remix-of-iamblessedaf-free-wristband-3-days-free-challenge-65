@@ -17,7 +17,7 @@ import logo from "@/assets/logo.png";
 const Offer1111 = () => {
   const handleCheckout = () => {
     if (import.meta.env.DEV) {
-      console.log("Redirecting to Stripe checkout for $1,111 Evangelist Pack");
+      console.log("Redirecting to Stripe checkout for $1,111 Kingdom Ambassador Pack");
     }
   };
 
@@ -35,7 +35,7 @@ const Offer1111 = () => {
           >
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
               <Lock className="w-4 h-4" />
-              You earned this → Become the Gratitude Evangelist
+              You earned this → Become a Kingdom Ambassador
             </div>
           </motion.div>
 
@@ -94,7 +94,7 @@ const Offer1111 = () => {
             </div>
             <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-4 leading-relaxed">
               7 shirts. Every day of the week. 11 people wearing your message. 111 wristbands in the wild.{" "}
-              <span className="font-bold text-foreground">You're not buying merch — you're building a movement.</span>
+              <span className="font-bold text-foreground">You're not buying merch — you're answering the call: "Go & make disciples of all nations."</span>
             </p>
           </motion.div>
 
@@ -103,7 +103,7 @@ const Offer1111 = () => {
 
           {/* ─── 9. Product Sections ─── */}
           <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
-            EVANGELIST PACK
+            KINGDOM AMBASSADOR PACK
           </p>
 
           {/* Quantity callout */}

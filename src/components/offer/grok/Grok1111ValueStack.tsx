@@ -31,7 +31,7 @@ const VALUES = [
   },
   {
     emoji: "🧠",
-    title: "Full Evangelist Protocol — Value: $2,222+",
+    title: "Full Kingdom Ambassador Protocol — Value: $2,222+",
     description:
       "7-day identity loop + 11-person gratitude cascade + 111 micro-triggers in your community. Huberman's research x maximum surface area. You pay 50% off.",
     sub: "Based on 8+ peer-reviewed studies",
@@ -50,7 +50,7 @@ const Grok1111ValueStack = () => {
         Your $1,111 Pack — <span className="text-primary">$2,222+ Value</span>
       </p>
       <p className="text-center text-sm text-muted-foreground mb-4">
-        $3.04/day to become the Gratitude Evangelist & feed 11,111 people. That's the math.
+        $3.04/day to become a Kingdom Ambassador & feed 11,111 people. That's the math.
       </p>
 
       {VALUES.map((item, i) => (
