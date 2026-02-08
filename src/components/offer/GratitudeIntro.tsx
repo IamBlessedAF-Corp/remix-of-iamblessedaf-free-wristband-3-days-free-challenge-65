@@ -4,13 +4,14 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FriendShirtSection } from "@/components/offer/ProductSections";
 import CustomMessageBox from "@/components/offer/CustomMessageBox";
-import ShirtMessagePreview from "@/components/offer/ShirtMessagePreview";
+import ShirtMessagePreview, { type FontId } from "@/components/offer/ShirtMessagePreview";
 import OfferTimer from "@/components/offer/OfferTimer";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
 import AuthorAvatar from "@/components/offer/AuthorAvatar";
 
 const GratitudeIntro = () => {
   const [message, setMessage] = useState("");
+  const [selectedFont, setSelectedFont] = useState<FontId>("caveat");
 
   return (
     <motion.div
@@ -60,7 +61,7 @@ const GratitudeIntro = () => {
         <p className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
           👕 Live Shirt Preview
         </p>
-        <ShirtMessagePreview message={message} />
+        <ShirtMessagePreview message={message} selectedFont={selectedFont} onFontChange={setSelectedFont} />
       </motion.div>
 
       {/* Friend Shirt showcase with Custom Message Box embedded */}

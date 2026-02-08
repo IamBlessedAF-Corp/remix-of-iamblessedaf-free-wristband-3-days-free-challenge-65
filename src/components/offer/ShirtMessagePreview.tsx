@@ -1,58 +1,119 @@
-import friendShirtFront from "@/assets/friend-shirt-front.png";
+import { useState } from "react";
+import shirtMockup from "@/assets/shirt-mockup-blank.png";
+
+export const FONT_OPTIONS = [
+  { id: "caveat", label: "Caveat", family: "'Caveat', cursive" },
+  { id: "dancing", label: "Dancing Script", family: "'Dancing Script', cursive" },
+  { id: "satisfy", label: "Satisfy", family: "'Satisfy', cursive" },
+  { id: "pacifico", label: "Pacifico", family: "'Pacifico', cursive" },
+  { id: "indie", label: "Indie Flower", family: "'Indie Flower', cursive" },
+] as const;
+
+export type FontId = (typeof FONT_OPTIONS)[number]["id"];
 
 interface ShirtMessagePreviewProps {
   message: string;
+  selectedFont?: FontId;
+  onFontChange?: (font: FontId) => void;
 }
 
-const ShirtMessagePreview = ({ message }: ShirtMessagePreviewProps) => {
+const ShirtMessagePreview = ({
+  message,
+  selectedFont = "caveat",
+  onFontChange,
+}: ShirtMessagePreviewProps) => {
+  const [internalFont, setInternalFont] = useState<FontId>("caveat");
+
+  const activeFont = selectedFont ?? internalFont;
+  const setFont = (f: FontId) => {
+    if (onFontChange) onFontChange(f);
+    else setInternalFont(f);
+  };
+
+  const fontFamily =
+    FONT_OPTIONS.find((f) => f.id === activeFont)?.family ?? FONT_OPTIONS[0].family;
+
   const prefixLine1 = "I am Blessed AF to Have a Best Friend";
   const prefixLine2 = "TY! I'll Never Forget when You...";
 
   return (
-    <div className="relative w-full max-w-md mx-auto select-none">
-      {/* Shirt image */}
-      <img
-        src={friendShirtFront}
-        alt="Friend Shirt Preview"
-        className="w-full h-auto object-contain"
-        draggable={false}
-      />
+    <div className="w-full max-w-lg mx-auto select-none">
+      {/* Shirt image with print area overlay */}
+      <div className="relative w-full">
+        <img
+          src={shirtMockup}
+          alt="Shirt Mockup Preview"
+          className="w-full h-auto object-contain"
+          draggable={false}
+        />
 
-      {/* Text overlay — positioned on the shirt chest area */}
-      <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        style={{ paddingTop: "28%", paddingBottom: "20%", paddingLeft: "18%", paddingRight: "18%" }}
-      >
-        <div className="text-center w-full">
-          <p
-            className="text-foreground leading-tight font-semibold"
-            style={{
-              fontFamily: "'Caveat', cursive",
-              fontSize: "clamp(0.65rem, 2.2vw, 1rem)",
-            }}
-          >
-            {prefixLine1}
-          </p>
-          <p
-            className="text-foreground leading-tight font-semibold mt-0.5"
-            style={{
-              fontFamily: "'Caveat', cursive",
-              fontSize: "clamp(0.6rem, 2vw, 0.9rem)",
-            }}
-          >
-            {prefixLine2}
-          </p>
-          {message && (
+        {/* Dashed print area — matches the rectangle on the mockup */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            top: "30%",
+            left: "22%",
+            width: "56%",
+            height: "50%",
+            border: "2px dashed hsl(var(--border))",
+            borderRadius: "4px",
+          }}
+        >
+          {/* Text content inside print area */}
+          <div className="flex flex-col items-center justify-start h-full px-2 pt-[18%]">
             <p
-              className="text-foreground leading-snug font-medium mt-1 break-words whitespace-pre-wrap"
+              className="text-foreground leading-tight font-semibold text-center"
               style={{
-                fontFamily: "'Caveat', cursive",
-                fontSize: "clamp(0.55rem, 1.8vw, 0.85rem)",
+                fontFamily,
+                fontSize: "clamp(0.6rem, 2.5vw, 1.1rem)",
               }}
             >
-              {message}
+              {prefixLine1}
             </p>
-          )}
+            <p
+              className="text-foreground leading-tight font-semibold mt-0.5 text-center"
+              style={{
+                fontFamily,
+                fontSize: "clamp(0.55rem, 2.2vw, 0.95rem)",
+              }}
+            >
+              {prefixLine2}
+            </p>
+            {message && (
+              <p
+                className="text-foreground leading-snug font-medium mt-1.5 break-words whitespace-pre-wrap text-center"
+                style={{
+                  fontFamily,
+                  fontSize: "clamp(0.5rem, 2vw, 0.85rem)",
+                }}
+              >
+                {message}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Font selector — 5 options */}
+      <div className="mt-4 mb-2">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center mb-2">
+          ✍️ Choose Handwriting Style
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {FONT_OPTIONS.map((font) => (
+            <button
+              key={font.id}
+              onClick={() => setFont(font.id)}
+              className={`px-3 py-1.5 rounded-lg text-sm border transition-all duration-200 ${
+                activeFont === font.id
+                  ? "border-primary bg-primary/10 text-primary font-semibold shadow-sm"
+                  : "border-border/60 bg-card text-foreground hover:border-primary/40"
+              }`}
+              style={{ fontFamily: font.family }}
+            >
+              {font.label}
+            </button>
+          ))}
         </div>
       </div>
     </div>
