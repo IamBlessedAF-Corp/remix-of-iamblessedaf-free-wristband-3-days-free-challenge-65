@@ -83,7 +83,7 @@ const ChallengeThanks = () => {
   }, [user, loading, navigate]);
 
   const shareUrl = referralCode
-    ? `${window.location.origin}/challenge?ref=${referralCode}`
+    ? `${window.location.origin}/r/${referralCode}`
     : "";
 
   const copyToClipboard = () => {
@@ -96,11 +96,11 @@ const ChallengeThanks = () => {
   };
 
   // Short, punchy share texts optimized for each platform
-  const tiktokText = `🔥 FREE 3-Day Gratitude Challenge\n💰 Win $1,111\n✅ Real people confirm your blessings\n\nJoin me 👇\n${shareUrl}`;
-  const instagramText = `🙏 Just joined the 3-Day Gratitude Challenge!\n\n3 days. 1 message/day. Win $1,111.\n\nNo apps. Real confirmation.\n\n🔗 Link in bio or tap: ${shareUrl}\n\n#grateful #blessed #gratitudechallenge #iamblessedaf`;
-  const youtubeText = `🎯 3-Day Gratitude Challenge - Win $1,111!\n\nI'm doing this FREE challenge where you send 1 real gratitude message per day for 3 days.\n\n✅ Real people confirm your blessings\n💰 Win $1,111 this week\n\nJoin the challenge: ${shareUrl}`;
-  const twitterText = `🔥 3-Day Gratitude Challenge\n\n✅ 1 real message/day\n✅ Real confirmation\n💰 Win $1,111\n\nFREE to join 👇`;
-  const facebookText = `Just joined this amazing FREE 3-Day Gratitude Challenge! Send 1 real gratitude message per day, get real confirmation, and win $1,111. Who's in? 🙏`;
+  const tiktokText = `🎁 Someone is GRATEFUL for you!\nThey just sent you a FREE wristband ($11 value)\n\n✅ Just $9.95 shipping (US)\n✅ Or grab all 3 colors for $22 w/ FREE shipping\n\n💰 PLUS: Join the FREE 3-Day Gratitude Challenge & win $1,111!\n\nClaim yours 👇\n${shareUrl}`;
+  const instagramText = `🎁 Someone just sent you a FREE "I Am Blessed AF" Wristband!\n\nThey're grateful for YOU 🙏\n\n✅ FREE wristband ($11 value)\n✅ Just $9.95 shipping, or all 3 for $22 w/ free shipping\n💰 PLUS: Join the 3-Day Challenge & win $1,111!\n\nClaim yours → ${shareUrl}\n\n#grateful #blessed #iamblessedaf #gratitudechallenge`;
+  const youtubeText = `🎁 Gift a FREE Wristband to Someone You're Grateful For!\n\nSend a FREE "I Am Blessed AF" wristband ($11 value) to someone you care about.\n\n✅ They just cover $9.95 shipping (US)\n✅ Or upgrade to all 3 colors for $22 with FREE shipping\n💰 PLUS they can join the 3-Day Gratitude Challenge & win $1,111!\n\nSend the gift: ${shareUrl}`;
+  const twitterText = `🎁 Just sent someone a FREE wristband because I'm grateful for them!\n\n✅ $11 value — just $9.95 shipping\n✅ Or 3 for $22 w/ FREE shipping\n💰 + FREE 3-Day Challenge to win $1,111\n\nSend one to someone you love 👇`;
+  const facebookText = `🎁 I just sent someone a FREE "I Am Blessed AF" wristband ($11 value) because I'm grateful for them! They just pay $9.95 shipping, or can grab all 3 colors for $22 with free shipping. PLUS they can join the FREE 3-Day Gratitude Challenge and win $1,111! Send one to someone you love 🙏`;
 
   const shareToTikTok = () => {
     navigator.clipboard.writeText(tiktokText);
@@ -260,11 +260,13 @@ const ChallengeThanks = () => {
         >
           <div className="flex items-center justify-center gap-2 mb-4">
             <Share2 className="w-5 h-5 text-primary" />
-            <h3 className="font-bold">Invite Friends, Multiply Blessings</h3>
+            <h3 className="font-bold">🎁 Gift a FREE Wristband</h3>
           </div>
 
           <p className="text-sm text-muted-foreground mb-4">
-            The more people you bring, the bigger the blessing circle.
+            Send a <span className="font-semibold text-foreground">FREE wristband ($11 value)</span> to someone you're grateful for. 
+            They just cover <span className="font-semibold text-foreground">$9.95 shipping</span>, or grab all 3 for{" "}
+            <span className="font-semibold text-foreground">$22 with FREE shipping</span>.
           </p>
 
           {/* Referral Link */}

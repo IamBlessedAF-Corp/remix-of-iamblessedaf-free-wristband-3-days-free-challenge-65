@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Challenge from "./pages/Challenge";
 import ChallengeThanks from "./pages/ChallengeThanks";
+import ReferralRedirect from "./pages/ReferralRedirect";
 import Confirm from "./pages/Confirm";
 import Offer22 from "./pages/Offer22";
 import Offer111 from "./pages/Offer111";
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/challenge" element={<Challenge />} />
           <Route path="/challenge/thanks" element={<ChallengeThanks />} />
+          <Route path="/r/:code" element={<ReferralRedirect />} />
           <Route path="/confirm/:token" element={<Confirm />} />
           <Route path="/offer/22" element={<Offer22 />} />
           <Route path="/offer/111" element={<Offer111 />} />

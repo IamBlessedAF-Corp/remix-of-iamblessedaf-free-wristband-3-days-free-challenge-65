@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -14,9 +14,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle2, Users, Heart, Sparkles } from "lucide-react";
+import { CheckCircle2, Users, Heart, Sparkles, Gift, Truck } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
+import wristbandsImg from "@/assets/product-wristbands.png";
 
 const formSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters").max(100),
@@ -28,9 +29,13 @@ type FormValues = z.infer<typeof formSchema>;
 
 const Challenge = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const { signInWithGoogle, user } = useAuth();
+
+  const referralCode = searchParams.get("ref");
+  const isReferred = !!referralCode;
 
   // Redirect to thanks page when user is authenticated via Google
   useEffect(() => {
@@ -50,11 +55,9 @@ const Challenge = () => {
 
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
-    // Webhook placeholder for GoHighLevel integration
     if (import.meta.env.DEV) {
-      console.log("Form submitted:", data);
+      console.log("Form submitted:", data, "ref:", referralCode);
     }
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSubmitting(false);
     navigate("/challenge/thanks");
@@ -67,20 +70,27 @@ const Challenge = () => {
       console.error("Google sign-in error:", error);
       setGoogleLoading(false);
     }
-    // On success, the OAuth redirect handles the rest
   };
 
-  const features = [
-    { icon: CheckCircle2, text: "100% Free to Join" },
-    { icon: Users, text: "Real Human Confirmation" },
-    { icon: Heart, text: "Win $1,111 This Week" },
-  ];
+  const features = useMemo(() => {
+    if (isReferred) {
+      return [
+        { icon: Gift, text: "FREE Wristband ($11 Value)" },
+        { icon: Truck, text: "$9.95 Shipping (US)" },
+        { icon: Heart, text: "Upgrade: 3 for $22 Free Ship" },
+      ];
+    }
+    return [
+      { icon: CheckCircle2, text: "100% Free to Join" },
+      { icon: Users, text: "Real Human Confirmation" },
+      { icon: Heart, text: "Win $1,111 This Week" },
+    ];
+  }, [isReferred]);
 
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        {/* Subtle gradient background */}
         <div className="absolute inset-0 bg-gradient-to-b from-accent/50 to-background" />
         
         <div className="relative container mx-auto px-4 py-8 md:py-16">
@@ -100,38 +110,120 @@ const Challenge = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
             />
 
-            {/* Main Headline */}
-            <motion.h1
-              className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              Real Gratitude = Real{" "}
-              <span className="text-primary">Brain Rewire.</span>{" "}
-              Start Free + Win $1,111.
-            </motion.h1>
+            {/* Referred: Wristband Gift Hero */}
+            {isReferred ? (
+              <>
+                {/* Gift badge */}
+                <motion.div
+                  className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 text-primary px-4 py-2 rounded-full text-sm font-bold mb-4"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.25 }}
+                >
+                  <Gift className="w-4 h-4" />
+                  Someone is Grateful for YOU 🎁
+                </motion.div>
 
-            {/* Subheadline */}
-            <motion.p
-              className="text-lg md:text-xl text-muted-foreground mb-4 max-w-lg"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              2 min/day × 3 days. Science says received thanks boosts happiness{" "}
-              <span className="font-bold text-foreground">27×</span>. No apps. No journaling. Just real humans confirming your gratitude.
-            </motion.p>
+                <motion.h1
+                  className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                >
+                  You Just Got a{" "}
+                  <span className="text-primary">FREE Wristband</span>{" "}
+                  Valued at $11!
+                </motion.h1>
 
-            {/* Social proof stat */}
-            <motion.p
-              className="text-sm font-semibold text-primary mb-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.45 }}
-            >
-              🔥 2,340 joined · 25k+ meals donated — your turn.
-            </motion.p>
+                {/* Wristband image */}
+                <motion.div
+                  className="w-full max-w-xs mx-auto mb-4 rounded-xl overflow-hidden border border-border/50 shadow-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 }}
+                >
+                  <img
+                    src={wristbandsImg}
+                    alt="I Am Blessed AF Wristbands"
+                    className="w-full h-auto object-cover"
+                  />
+                </motion.div>
+
+                <motion.p
+                  className="text-lg md:text-xl text-muted-foreground mb-2 max-w-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  Someone who cares about you sent you a{" "}
+                  <span className="font-bold text-foreground">FREE "I Am Blessed AF" Wristband</span> as a 
+                  gratitude gift. Claim yours below!
+                </motion.p>
+
+                <motion.div
+                  className="bg-card border border-border/50 rounded-xl p-4 mb-4 max-w-md w-full"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.45 }}
+                >
+                  <div className="flex items-center justify-between gap-4 text-sm">
+                    <div className="text-center flex-1">
+                      <p className="font-bold text-foreground">1 Wristband</p>
+                      <p className="text-primary font-bold text-lg">FREE</p>
+                      <p className="text-muted-foreground text-xs">+ $9.95 shipping 🇺🇸</p>
+                    </div>
+                    <div className="w-px h-12 bg-border" />
+                    <div className="text-center flex-1">
+                      <p className="font-bold text-foreground">3 Wristbands</p>
+                      <p className="text-primary font-bold text-lg">$22</p>
+                      <p className="text-muted-foreground text-xs">FREE shipping 🇺🇸</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.p
+                  className="text-sm font-semibold text-primary mb-8"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  🙏 Plus: Join the FREE 3-Day Challenge + Win $1,111!
+                </motion.p>
+              </>
+            ) : (
+              <>
+                {/* Default: Challenge Hero */}
+                <motion.h1
+                  className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                >
+                  Real Gratitude = Real{" "}
+                  <span className="text-primary">Brain Rewire.</span>{" "}
+                  Start Free + Win $1,111.
+                </motion.h1>
+
+                <motion.p
+                  className="text-lg md:text-xl text-muted-foreground mb-4 max-w-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  2 min/day × 3 days. Science says received thanks boosts happiness{" "}
+                  <span className="font-bold text-foreground">27×</span>. No apps. No journaling. Just real humans confirming your gratitude.
+                </motion.p>
+
+                <motion.p
+                  className="text-sm font-semibold text-primary mb-8"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.45 }}
+                >
+                  🔥 2,340 joined · 25k+ meals donated — your turn.
+                </motion.p>
+              </>
+            )}
 
             {/* Feature badges */}
             <motion.div
@@ -185,7 +277,7 @@ const Challenge = () => {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                {googleLoading ? "Connecting..." : "Continue with Google"}
+                {googleLoading ? "Connecting..." : isReferred ? "Claim My FREE Wristband" : "Continue with Google"}
               </Button>
 
               {/* Divider */}
@@ -259,8 +351,10 @@ const Challenge = () => {
                     {isSubmitting ? (
                       <span className="flex items-center gap-2">
                         <Sparkles className="w-5 h-5 animate-pulse" />
-                        Joining...
+                        {isReferred ? "Claiming..." : "Joining..."}
                       </span>
+                    ) : isReferred ? (
+                      "🎁 Claim My FREE Wristband →"
                     ) : (
                       "Start My Free 3-Day Brain Rewire →"
                     )}
@@ -270,7 +364,9 @@ const Challenge = () => {
 
               {/* Trust badge */}
               <p className="text-center text-xs text-muted-foreground mt-6">
-                🔒 Powered by real human confirmation
+                {isReferred 
+                  ? "🔒 Your wristband is reserved • Powered by real human connection"
+                  : "🔒 Powered by real human confirmation"}
               </p>
             </div>
           </motion.div>
@@ -287,30 +383,51 @@ const Challenge = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h2 className="text-2xl md:text-4xl font-bold mb-4">How It Works</h2>
+            <h2 className="text-2xl md:text-4xl font-bold mb-4">
+              {isReferred ? "How to Claim Your Gift" : "How It Works"}
+            </h2>
             <p className="text-muted-foreground max-w-lg mx-auto">
-              Simple. Powerful. Life-changing.
+              {isReferred ? "3 simple steps to your free wristband." : "Simple. Powerful. Life-changing."}
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {[
-              {
-                step: "1",
-                title: "Send Gratitude",
-                description: "Each morning, text one person you're genuinely grateful for.",
-              },
-              {
-                step: "2",
-                title: "They Confirm",
-                description: "Your recipient confirms they received your blessing.",
-              },
-              {
-                step: "3",
-                title: "Win Together",
-                description: "Complete 3 days and enter to win $1,111. Simple.",
-              },
-            ].map((item, index) => (
+            {(isReferred
+              ? [
+                  {
+                    step: "1",
+                    title: "Claim Your Gift",
+                    description: "Sign up above to reserve your FREE 'I Am Blessed AF' wristband ($11 value).",
+                  },
+                  {
+                    step: "2",
+                    title: "Choose Your Option",
+                    description: "Pay just $9.95 shipping for 1 wristband, or get all 3 colors for $22 with FREE shipping.",
+                  },
+                  {
+                    step: "3",
+                    title: "Join the Challenge",
+                    description: "Bonus: Enter the FREE 3-Day Gratitude Challenge and win $1,111!",
+                  },
+                ]
+              : [
+                  {
+                    step: "1",
+                    title: "Send Gratitude",
+                    description: "Each morning, text one person you're genuinely grateful for.",
+                  },
+                  {
+                    step: "2",
+                    title: "They Confirm",
+                    description: "Your recipient confirms they received your blessing.",
+                  },
+                  {
+                    step: "3",
+                    title: "Win Together",
+                    description: "Complete 3 days and enter to win $1,111. Simple.",
+                  },
+                ]
+            ).map((item, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
