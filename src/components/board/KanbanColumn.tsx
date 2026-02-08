@@ -14,9 +14,11 @@ interface KanbanColumnProps {
   wipLimit?: number;
   blockingCardIds?: Set<string>;
   warningCardIds?: Set<string>;
+  allColumns?: BoardColumn[];
+  onAdvanceCard?: (cardId: string, nextColumnId: string) => void;
 }
 
-const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit, wipLimit, blockingCardIds, warningCardIds }: KanbanColumnProps) => {
+const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit, wipLimit, blockingCardIds, warningCardIds, allColumns, onAdvanceCard }: KanbanColumnProps) => {
   const isAtLimit = wipLimit !== undefined && cards.length >= wipLimit;
 
   return (
@@ -68,6 +70,8 @@ const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit, wipLimit
                   canEdit={canEdit}
                   isBlocking={blockingCardIds?.has(card.id)}
                   isWarning={warningCardIds?.has(card.id)}
+                  columns={allColumns}
+                  onAdvance={onAdvanceCard}
                 />
               ))}
               {provided.placeholder}

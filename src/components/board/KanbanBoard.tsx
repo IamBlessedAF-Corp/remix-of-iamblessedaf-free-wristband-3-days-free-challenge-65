@@ -93,6 +93,38 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
     return ids;
   }, [cards, reviewColumnIds]);
 
+  /** Handle the next-action button advancing a card to the next column */
+  const handleAdvanceCard = useCallback(
+    (cardId: string, nextColumnId: string) => {
+      // WIP limit check
+      if (wipColumnId && nextColumnId === wipColumnId) {
+        const wipCards = cardsByColumn[wipColumnId] || [];
+        if (wipCards.length >= WIP_LIMIT) {
+          toast.error(`WIP limit reached (${WIP_LIMIT}). Finish the current card first.`);
+          return;
+        }
+      }
+
+      // Publish gate check for Done column
+      if (doneColumnId && nextColumnId === doneColumnId) {
+        const card = cards.find((c) => c.id === cardId);
+        if (card) {
+          setPublishGateCard(card);
+          setPendingDrop({ cardId, columnId: nextColumnId, position: 0 });
+          return;
+        }
+      }
+
+      const targetCards = cardsByColumn[nextColumnId] || [];
+      const newPosition = targetCards.length;
+      moveCard(cardId, nextColumnId, newPosition);
+
+      const targetCol = columns.find((c) => c.id === nextColumnId);
+      toast.success(`Card advanced to ${targetCol?.name || "next column"}`);
+    },
+    [wipColumnId, doneColumnId, cardsByColumn, cards, columns, moveCard]
+  );
+
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
@@ -171,6 +203,8 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
               wipLimit={column.id === wipColumnId ? WIP_LIMIT : undefined}
               blockingCardIds={blockingCardIds}
               warningCardIds={warningCardIds}
+              allColumns={columns}
+              onAdvanceCard={handleAdvanceCard}
             />
           ))}
         </div>
