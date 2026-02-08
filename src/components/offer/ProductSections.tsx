@@ -279,6 +279,33 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
             />
           </div>
 
+          {/* ── Message input ABOVE the shirt ── */}
+          {friendName.trim().length > 0 && (
+            <div className="px-4 pb-3">
+              <label className="flex items-center gap-1.5 text-sm font-semibold text-foreground mb-1.5">
+                <span className="text-primary">✏️</span>
+                Your message to {friendName}
+              </label>
+              <p className="text-xs text-muted-foreground mb-2">
+                💡 Mention a specific moment you felt grateful — the more personal, the more powerful
+              </p>
+              <textarea
+                placeholder={`e.g. "you stayed up all night to help me move — I felt so loved"`}
+                value={message}
+                onChange={(e) => {
+                  if (e.target.value.length <= 130) setMessage(e.target.value);
+                }}
+                maxLength={130}
+                className="w-full min-h-[80px] resize-none text-sm border border-border/60 focus:border-primary rounded-xl px-4 py-2 bg-background text-foreground placeholder:text-muted-foreground outline-none transition-colors"
+              />
+              <div className="flex justify-end mt-1">
+                <span className={`text-xs font-medium ${130 - message.length <= 20 ? (130 - message.length <= 0 ? "text-destructive" : "text-primary") : "text-muted-foreground"}`}>
+                  {130 - message.length}/130
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Media gallery */}
           <div className="relative bg-secondary/30">
             <div
@@ -337,7 +364,7 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
             </div>
           </div>
 
-          {/* Built-in customizer — message, gender, size (name is now above) */}
+          {/* Built-in customizer — gender, size, save (name + message are above) */}
           <div className="px-4 py-4 border-t border-border/30">
             <ShirtCustomizer
               friendName={friendName}
@@ -347,6 +374,7 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
               selectedSize={selectedSize}
               onSizeChange={setSelectedSize}
               hideNameInput
+              hideMessageInput
             />
           </div>
 

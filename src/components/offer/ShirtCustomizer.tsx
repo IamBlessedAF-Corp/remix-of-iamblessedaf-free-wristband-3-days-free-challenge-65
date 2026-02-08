@@ -20,6 +20,7 @@ interface ShirtCustomizerProps {
   selectedSize: string;
   onSizeChange: (size: string) => void;
   hideNameInput?: boolean;
+  hideMessageInput?: boolean;
 }
 
 /** Step indicator dots */
@@ -49,6 +50,7 @@ const ShirtCustomizer = ({
   selectedSize,
   onSizeChange,
   hideNameInput = false,
+  hideMessageInput = false,
 }: ShirtCustomizerProps) => {
   const [saved, setSaved] = useState(false);
   const [bouncing, setBouncing] = useState(false);
@@ -60,10 +62,15 @@ const ShirtCustomizer = ({
   const hasName = friendName.trim().length > 0;
   const hasMessage = message.trim().length > 0;
   const hasSize = !!gender;
-  const totalSteps = hideNameInput ? 2 : 3;
-  const currentStep = hideNameInput
-    ? (!hasMessage ? 0 : !hasSize ? 1 : 2)
-    : (!hasName ? 0 : !hasMessage ? 1 : !hasSize ? 2 : 3);
+  const hiddenCount = (hideNameInput ? 1 : 0) + (hideMessageInput ? 1 : 0);
+  const totalSteps = 3 - hiddenCount;
+  const currentStep = (() => {
+    let step = 0;
+    if (!hideNameInput) { if (!hasName) return step; step++; }
+    if (!hideMessageInput) { if (!hasMessage) return step; step++; }
+    if (!hasSize) return step;
+    return step + 1;
+  })();
 
   const charsLeft = MAX_CHARS - message.length;
 
@@ -160,71 +167,73 @@ const ShirtCustomizer = ({
         </div>
       )}
 
-      {/* ── Step 2: Message ── */}
-      <AnimatePresence>
-        {hasName && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <label className="flex items-center gap-1.5 text-sm font-semibold text-foreground mb-1.5">
-              <PenLine className="w-3.5 h-3.5 text-primary" />
-              Your message to {friendName}
-            </label>
-            <p className="text-xs text-muted-foreground mb-2">
-              💡 Mention a specific moment you felt grateful — the more personal, the more powerful
-            </p>
-            <div className="relative">
-              <Textarea
-                ref={messageRef}
-                placeholder={`e.g. "you stayed up all night to help me move — I felt so loved"`}
-                value={message}
-                onChange={(e) => {
-                  if (e.target.value.length <= MAX_CHARS) {
-                    onMessageChange(e.target.value);
-                    setSaved(false);
+      {/* ── Step 2: Message (hidden when managed externally) ── */}
+      {!hideMessageInput && (
+        <AnimatePresence>
+          {hasName && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <label className="flex items-center gap-1.5 text-sm font-semibold text-foreground mb-1.5">
+                <PenLine className="w-3.5 h-3.5 text-primary" />
+                Your message to {friendName}
+              </label>
+              <p className="text-xs text-muted-foreground mb-2">
+                💡 Mention a specific moment you felt grateful — the more personal, the more powerful
+              </p>
+              <div className="relative">
+                <Textarea
+                  ref={messageRef}
+                  placeholder={`e.g. "you stayed up all night to help me move — I felt so loved"`}
+                  value={message}
+                  onChange={(e) => {
+                    if (e.target.value.length <= MAX_CHARS) {
+                      onMessageChange(e.target.value);
+                      setSaved(false);
+                    }
+                  }}
+                  maxLength={MAX_CHARS}
+                  className="min-h-[80px] resize-none text-sm border-border/60 focus:border-primary rounded-xl"
+                  onFocus={() =>
+                    window.dispatchEvent(
+                      new CustomEvent("track", {
+                        detail: { event: "message_started" },
+                      })
+                    )
                   }
-                }}
-                maxLength={MAX_CHARS}
-                className="min-h-[80px] resize-none text-sm border-border/60 focus:border-primary rounded-xl"
-                onFocus={() =>
-                  window.dispatchEvent(
-                    new CustomEvent("track", {
-                      detail: { event: "message_started" },
-                    })
-                  )
-                }
-              />
-              <div className="flex justify-between items-center mt-1">
-                <AnimatePresence>
-                  {hasMessage && (
-                    <motion.span
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="text-xs text-primary font-medium flex items-center gap-1"
-                    >
-                      <Sparkles className="w-3 h-3" /> Looking great!
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-                <span
-                  className={`text-xs font-medium ml-auto ${
-                    charsLeft <= 20
-                      ? charsLeft <= 0
-                        ? "text-destructive"
-                        : "text-primary"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {charsLeft}/{MAX_CHARS}
-                </span>
+                />
+                <div className="flex justify-between items-center mt-1">
+                  <AnimatePresence>
+                    {hasMessage && (
+                      <motion.span
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="text-xs text-primary font-medium flex items-center gap-1"
+                      >
+                        <Sparkles className="w-3 h-3" /> Looking great!
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                  <span
+                    className={`text-xs font-medium ml-auto ${
+                      charsLeft <= 20
+                        ? charsLeft <= 0
+                          ? "text-destructive"
+                          : "text-primary"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    {charsLeft}/{MAX_CHARS}
+                  </span>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
 
       {/* ── Step 3: Gender + Size ── */}
       <AnimatePresence>
