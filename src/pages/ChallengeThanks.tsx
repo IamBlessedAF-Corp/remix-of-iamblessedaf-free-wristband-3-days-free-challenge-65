@@ -179,58 +179,86 @@ const ChallengeThanks = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <GamificationHeader />
-      <div className="flex-1 flex flex-col items-center justify-center p-4">
+      <div className="flex-1 flex flex-col items-center px-4 pt-6 pb-12 sm:pt-10">
       <div className="max-w-md w-full text-center">
-        {/* Success Animation */}
+        {/* Success check — compact */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: "spring", duration: 0.6, bounce: 0.5 }}
-          className="mb-8"
+          transition={{ type: "spring", duration: 0.5, bounce: 0.4 }}
+          className="mb-4"
         >
           <div className="relative inline-block">
             <motion.div
               className="absolute inset-0 bg-primary/20 rounded-full blur-xl"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              animate={{ scale: [1, 1.15, 1] }}
+              transition={{ duration: 2.5, repeat: Infinity }}
             />
-            <div className="relative bg-primary rounded-full p-6 inline-block shadow-glow">
-              <CheckCircle className="w-16 h-16 text-primary-foreground" />
+            <div className="relative bg-primary rounded-full p-4 inline-block shadow-glow">
+              <CheckCircle className="w-10 h-10 text-primary-foreground" />
             </div>
           </div>
         </motion.div>
 
-        {/* Logo */}
+        {/* Logo — tighter */}
         <motion.img
           src={logo}
           alt="I am Blessed AF"
-          className="w-full max-w-md h-auto object-contain mx-auto mb-6 px-4"
-          initial={{ opacity: 0, y: 20 }}
+          className="w-full max-w-[280px] sm:max-w-sm h-auto object-contain mx-auto mb-4"
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.2 }}
         />
 
-        {/* Headline */}
+        {/* Benefit-driven headline */}
         <motion.h1
-          className="text-4xl md:text-5xl font-bold text-foreground mb-4"
-          initial={{ opacity: 0, y: 20 }}
+          className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-foreground mb-3 leading-tight tracking-tight"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          {isReferred ? (
+            "Your Gift is Ready! 🎁"
+          ) : (
+            <>
+              Can't Feel Grateful Today?{" "}
+              <span className="text-primary">Feed 11 People</span> &amp; Unlock Your Gratitude Identity.
+            </>
+          )}
+        </motion.h1>
+
+        {/* Sub-headline — benefit-first */}
+        <motion.p
+          className="text-base sm:text-lg text-muted-foreground mb-6 max-w-sm mx-auto"
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          {isReferred ? "Your Gift is Ready! 🎁" : "You're In! 🎉"}
-        </motion.h1>
-
-        {/* Confirmation Message */}
-        <motion.p
-          className="text-lg text-muted-foreground mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
           {isReferred
             ? "Your FREE wristband is reserved. Complete shipping below to claim it!"
-            : "Get ready to spread some blessings."}
+            : "Your challenge starts tomorrow. Right now, you can change 11 lives with one tap."}
         </motion.p>
+
+        {/* Primary CTA — above the fold */}
+        {!isReferred && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, type: "spring", bounce: 0.3 }}
+            className="mb-8"
+          >
+            <Button
+              size="lg"
+              className="w-full sm:w-auto px-8 h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all"
+              onClick={() => navigate("/offer/22")}
+            >
+              🍽️ Start Feeding People Now
+            </Button>
+            <p className="text-xs text-muted-foreground mt-2">
+              100% goes to meals · You earn <span className="font-semibold text-primary">+75 XP</span> &amp; <span className="font-semibold text-primary">50 BC</span>
+            </p>
+          </motion.div>
+        )}
 
         {/* Wristband Claim CTA for referred users */}
         {isReferred && (
