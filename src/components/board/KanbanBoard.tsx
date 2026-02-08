@@ -82,6 +82,17 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
     return ids;
   }, [cards]);
 
+  /** High-priority cards in review/error columns get softer orange pulse */
+  const warningCardIds = useMemo(() => {
+    const ids = new Set<string>();
+    cards.forEach((card) => {
+      if (card.priority === "high" && reviewColumnIds.has(card.column_id)) {
+        ids.add(card.id);
+      }
+    });
+    return ids;
+  }, [cards, reviewColumnIds]);
+
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
@@ -159,6 +170,7 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
               canEdit={canEditInColumn(column.id)}
               wipLimit={column.id === wipColumnId ? WIP_LIMIT : undefined}
               blockingCardIds={blockingCardIds}
+              warningCardIds={warningCardIds}
             />
           ))}
         </div>

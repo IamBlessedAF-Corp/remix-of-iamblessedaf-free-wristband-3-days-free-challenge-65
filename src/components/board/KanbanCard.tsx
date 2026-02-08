@@ -12,6 +12,7 @@ interface KanbanCardProps {
   onClick: (card: BoardCard) => void;
   canEdit: boolean;
   isBlocking?: boolean;
+  isWarning?: boolean;
 }
 
 const priorityConfig: Record<string, { color: string; icon: React.ReactNode }> = {
@@ -27,7 +28,26 @@ function getDelegationBadge(score: number) {
   return { text: `D:${score.toFixed(0)}`, className: "bg-red-500/20 text-red-400 border-red-500/40" };
 }
 
-const KanbanCard = ({ card, index, onClick, canEdit, isBlocking }: KanbanCardProps) => {
+/** Derive the critical next action based on the card's stage */
+function getNextAction(card: BoardCard): { label: string; description: string } | null {
+  const stage = card.stage || "idea";
+  switch (stage) {
+    case "idea":
+      return { label: "Clarify Scope", description: "Define requirements & acceptance criteria" };
+    case "spec":
+      return { label: "Start Execution", description: "Begin implementation in dev environment" };
+    case "dev":
+      return { label: "Submit for Review", description: "Code complete — push to validation" };
+    case "review":
+      return { label: "Validate & Test", description: "Run QA checks and capture proof" };
+    case "live":
+      return { label: "Monitor & Close", description: "Verify production stability" };
+    default:
+      return { label: "Move Forward", description: "Advance to next pipeline stage" };
+  }
+}
+
+const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning }: KanbanCardProps) => {
   const priority = priorityConfig[card.priority] || priorityConfig.medium;
   const hasScreenshots = card.screenshots && card.screenshots.length > 0;
   const hasLogs = !!card.logs;
@@ -36,8 +56,10 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking }: KanbanCardPro
   const hasReviewEvidence = hasScreenshots || hasLogs || hasSummary || hasPreviewLink;
   const stageInfo = getStageInfo(card.stage);
   const delegation = getDelegationBadge(card.delegation_score || 0);
+  const nextAction = getNextAction(card);
 
   const isCriticalBlocking = isBlocking || card.priority === "critical";
+  const isHighWarning = isWarning && card.priority === "high";
 
   return (
     <Draggable draggableId={card.id} index={index} isDragDisabled={!canEdit}>
@@ -50,7 +72,8 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking }: KanbanCardPro
           className={cn(
             "bg-card border border-border rounded-lg p-3 mb-2 cursor-pointer transition-all hover:shadow-md",
             snapshot.isDragging && "shadow-lg ring-2 ring-primary/30 rotate-2",
-            isCriticalBlocking && "animate-pulse border-destructive bg-destructive/10 ring-1 ring-destructive/30"
+            isCriticalBlocking && "animate-pulse border-destructive bg-destructive/10 ring-1 ring-destructive/30",
+            isHighWarning && !isCriticalBlocking && "animate-pulse border-orange-400 bg-orange-500/10 ring-1 ring-orange-400/30"
           )}
         >
           {/* Top row: stage + delegation score */}
@@ -70,6 +93,28 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking }: KanbanCardPro
           <h4 className="text-sm font-semibold text-foreground leading-tight mb-2">
             {card.title}
           </h4>
+
+          {/* Critical next action button */}
+          {nextAction && (
+            <div className={cn(
+              "rounded-md px-2.5 py-1.5 mb-2 border",
+              isCriticalBlocking
+                ? "bg-destructive/15 border-destructive/30"
+                : isHighWarning
+                  ? "bg-orange-500/10 border-orange-400/30"
+                  : "bg-muted/50 border-border"
+            )}>
+              <div className={cn(
+                "text-[11px] font-bold leading-tight",
+                isCriticalBlocking ? "text-destructive" : isHighWarning ? "text-orange-500" : "text-foreground"
+              )}>
+                ▶ {nextAction.label}
+              </div>
+              <div className="text-[10px] text-muted-foreground leading-tight mt-0.5">
+                {nextAction.description}
+              </div>
+            </div>
+          )}
 
           {/* Description preview */}
           {card.description && (

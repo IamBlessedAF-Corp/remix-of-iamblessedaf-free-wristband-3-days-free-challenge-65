@@ -13,9 +13,10 @@ interface KanbanColumnProps {
   canEdit: boolean;
   wipLimit?: number;
   blockingCardIds?: Set<string>;
+  warningCardIds?: Set<string>;
 }
 
-const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit, wipLimit, blockingCardIds }: KanbanColumnProps) => {
+const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit, wipLimit, blockingCardIds, warningCardIds }: KanbanColumnProps) => {
   const isAtLimit = wipLimit !== undefined && cards.length >= wipLimit;
 
   return (
@@ -66,6 +67,7 @@ const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit, wipLimit
                   onClick={onCardClick}
                   canEdit={canEdit}
                   isBlocking={blockingCardIds?.has(card.id)}
+                  isWarning={warningCardIds?.has(card.id)}
                 />
               ))}
               {provided.placeholder}
