@@ -16,6 +16,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle2, Users, Heart, Sparkles, Gift } from "lucide-react";
 import UrgencyBanner from "@/components/offer/UrgencyBanner";
+import SpinWheel from "@/components/challenge/SpinWheel";
+import { useSpinLogic } from "@/hooks/useSpinLogic";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import wristbandsImg from "@/assets/product-wristbands-new.avif";
@@ -34,6 +36,7 @@ const Challenge = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const { signInWithGoogle, user } = useAuth();
+  const spinLogic = useSpinLogic();
 
   const referralCode = searchParams.get("ref");
   const isReferred = !!referralCode;
@@ -450,6 +453,19 @@ const Challenge = () => {
       <footer className="py-8 text-center text-sm text-muted-foreground">
         <p>© {new Date().getFullYear()} I am Blessed AF. All rights reserved.</p>
       </footer>
+
+      {/* Spin the Wheel — auto-shows after 4s for first-time visitors */}
+      {!isReferred && (
+        <SpinWheel
+          segments={spinLogic.segments}
+          isSpinning={spinLogic.isSpinning}
+          hasWon={spinLogic.hasWon}
+          showWheel={spinLogic.showWheel}
+          rotation={spinLogic.rotation}
+          onSpin={spinLogic.spin}
+          onClose={spinLogic.closeWheel}
+        />
+      )}
     </div>
   );
 };
