@@ -295,10 +295,14 @@ Respond with JSON:
 
   const statusLabel = parsed.status === "pass" ? "validated" : parsed.status === "warn" ? "validated-warn" : "validation-failed";
 
+  // Auto-populate preview_link based on card labels/title if not set
+  const previewLink = card.preview_link || inferPreviewLink(card);
+
   await supabase.from("board_cards").update({
     summary: `[${parsed.status?.toUpperCase()}] ${parsed.recommendation || ""}\n\n${card.summary || ""}`.slice(0, 2000),
     logs: appendLog(card.logs, logEntry),
     labels: [...(card.labels || []).filter((l: string) => !l.startsWith("validat")), statusLabel],
+    ...(previewLink && !card.preview_link ? { preview_link: previewLink } : {}),
     ...(nextColumnId ? { column_id: nextColumnId } : {}),
   }).eq("id", card.id);
 
@@ -506,4 +510,31 @@ async function appendDocsLog(supabase: any, docsCard: any, entry: string) {
 
   // Update in-memory reference too
   docsCard.logs = updatedLogs;
+}
+
+/** Infer a preview link based on card title, description, and labels */
+function inferPreviewLink(card: any): string | null {
+  const text = `${card.title} ${card.description || ""} ${(card.labels || []).join(" ")}`.toLowerCase();
+
+  // Map keywords to routes
+  const routeMap: Array<[RegExp, string]> = [
+    [/challenge|spin|wheel|entry/, "/challenge"],
+    [/offer.?22|wristband.?free|downsell.?\$?22/, "/offer/22"],
+    [/offer.?111|gratitude.?pack|\$111/, "/offer/111"],
+    [/offer.?444|\$444/, "/offer/444"],
+    [/offer.?1111|\$1,?111/, "/offer/1111"],
+    [/offer.?4444|\$4,?444/, "/offer/4444"],
+    [/monthly|subscription|\$11.?mo/, "/offer/monthly"],
+    [/board|kanban|pipeline/, "/board"],
+    [/contest|creator|video/, "/contest"],
+  ];
+
+  for (const [pattern, route] of routeMap) {
+    if (pattern.test(text)) return route;
+  }
+
+  // If it mentions "all pages" or "every page", link to the main offer
+  if (/all.?page|every.?page|across.?all/.test(text)) return "/offer/111";
+
+  return null;
 }

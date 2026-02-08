@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { captureAndUploadScreenshot, addScreenshotToCard } from "@/utils/screenshotCapture";
 
 export type PipelineMode = "clarify" | "execute" | "validate" | "sixsigma" | "full";
 
@@ -45,6 +46,24 @@ export function useAutoExecute(onRefetch: () => void) {
     setState((s) => ({ ...s, isRunning: false }));
   }, []);
 
+  /** Capture a proof-of-work screenshot for a card */
+  const captureProof = useCallback(async (cardId: string, phase: string) => {
+    try {
+      const url = await captureAndUploadScreenshot(cardId, `proof-${phase}`);
+      if (url) {
+        // Fetch current card screenshots
+        const { data } = await (supabase.from("board_cards" as any) as any)
+          .select("screenshots")
+          .eq("id", cardId)
+          .single();
+        await addScreenshotToCard(cardId, url, (data?.screenshots as string[]) || []);
+        toast.info(`📸 Screenshot captured for ${phase}`);
+      }
+    } catch (e) {
+      console.warn("Screenshot capture failed:", e);
+    }
+  }, []);
+
   /** Invoke a single phase on a single card by ID */
   const runSinglePhase = useCallback(
     async (cardId: string, mode: string): Promise<{ ok: boolean; data: any }> => {
@@ -63,13 +82,18 @@ export function useAutoExecute(onRefetch: () => void) {
           return { ok: false, data };
         }
 
+        // Auto-capture screenshot after validate or sixsigma phases
+        if (mode === "validate" || mode === "sixsigma") {
+          await captureProof(cardId, mode);
+        }
+
         return { ok: true, data };
       } catch (e: any) {
         toast.error(e?.message || "Unknown error");
         return { ok: false, data: null };
       }
     },
-    []
+    [captureProof]
   );
 
   /** Run a single mode on a column until empty (batch mode for individual phases) */
