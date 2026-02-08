@@ -3,6 +3,7 @@ import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import KanbanColumn from "./KanbanColumn";
 import CardDetailModal from "./CardDetailModal";
 import CreateCardModal from "./CreateCardModal";
+import PublishGateModal from "./PublishGateModal";
 import { type BoardCard, type BoardColumn } from "@/hooks/useBoard";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -25,9 +26,14 @@ const REVIEW_POSITION_THRESHOLD = 10;
 const WIP_COLUMN_NAME = "🔨 Work in Progress";
 const WIP_LIMIT = 1;
 
+/** Done column name for publish gate */
+const DONE_COLUMN_NAME = "✅ Done";
+
 const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, createCard, deleteCard }: KanbanBoardProps) => {
   const [selectedCard, setSelectedCard] = useState<BoardCard | null>(null);
   const [createColumnId, setCreateColumnId] = useState<string | null>(null);
+  const [publishGateCard, setPublishGateCard] = useState<BoardCard | null>(null);
+  const [pendingDrop, setPendingDrop] = useState<{ cardId: string; columnId: string; position: number } | null>(null);
 
   const reviewColumnIds = useMemo(
     () => new Set(columns.filter((c) => c.position >= REVIEW_POSITION_THRESHOLD).map((c) => c.id)),
@@ -60,6 +66,11 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
     [columns]
   );
 
+  const doneColumnId = useMemo(
+    () => columns.find((c) => c.name === DONE_COLUMN_NAME)?.id,
+    [columns]
+  );
+
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
@@ -83,7 +94,31 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
       }
     }
 
+    // Publish Gate: intercept moves TO Done column
+    if (doneColumnId && destination.droppableId === doneColumnId && source.droppableId !== doneColumnId) {
+      const card = cards.find((c) => c.id === draggableId);
+      if (card) {
+        setPublishGateCard(card);
+        setPendingDrop({ cardId: draggableId, columnId: destination.droppableId, position: destination.index });
+        return;
+      }
+    }
+
     moveCard(draggableId, destination.droppableId, destination.index);
+  };
+
+  const handlePublishConfirm = () => {
+    if (pendingDrop) {
+      moveCard(pendingDrop.cardId, pendingDrop.columnId, pendingDrop.position);
+      toast.success("Card moved to Done — ready to publish! 🚀");
+    }
+    setPublishGateCard(null);
+    setPendingDrop(null);
+  };
+
+  const handlePublishCancel = () => {
+    setPublishGateCard(null);
+    setPendingDrop(null);
   };
 
   const handleCreateCard = async (card: Partial<BoardCard>) => {
@@ -133,6 +168,12 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
         columns={columns}
         onClose={() => setCreateColumnId(null)}
         onCreate={handleCreateCard}
+      />
+      <PublishGateModal
+        card={publishGateCard}
+        open={!!publishGateCard}
+        onClose={handlePublishCancel}
+        onConfirm={handlePublishConfirm}
       />
     </>
   );
