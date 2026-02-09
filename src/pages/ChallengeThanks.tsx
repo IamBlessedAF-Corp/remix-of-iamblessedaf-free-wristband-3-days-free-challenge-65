@@ -166,10 +166,10 @@ const ChallengeThanks = () => {
         <div className="text-center max-w-md">
           <h1 className="text-2xl font-bold mb-4">Almost there!</h1>
           <p className="text-muted-foreground mb-6">
-            Complete your registration to get your unique referral link.
+            Join the free challenge to get your unique referral link.
           </p>
           <Button onClick={() => navigate("/challenge")}>
-            Complete Registration
+            Join the Free Challenge
           </Button>
         </div>
       </div>
@@ -273,10 +273,13 @@ const ChallengeThanks = () => {
               <h2 className="font-bold text-lg">Claim Your FREE Wristband</h2>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Your gift is reserved! Tap below to choose your option and complete checkout.
+              Your gift is reserved! Tap below to choose your wristband and claim it.
             </p>
-            <Button className="w-full h-12 text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground">
-              🎁 Claim My Wristband →
+            <Button
+              className="w-full h-12 text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground"
+              onClick={() => navigate("/offer/22")}
+            >
+              🎁 Claim My FREE Wristband →
             </Button>
           </motion.div>
         )}
