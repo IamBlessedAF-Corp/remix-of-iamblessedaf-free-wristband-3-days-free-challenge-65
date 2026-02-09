@@ -395,7 +395,7 @@ const Challenge = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
             {(isReferred
               ? [
                   {
@@ -405,11 +405,6 @@ const Challenge = () => {
                   },
                   {
                     step: "2",
-                    title: "Complete Checkout",
-                    description: "Choose your wristband option and complete your order.",
-                  },
-                  {
-                    step: "3",
                     title: "Join the Challenge",
                     description: "Bonus: Enter the FREE 3-Day Gratitude Challenge and win $1,111!",
                   },
