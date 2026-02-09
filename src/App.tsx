@@ -22,6 +22,7 @@ import AIVideoContest from "./pages/AIVideoContest";
 import Board from "./pages/Board";
 import Portal from "./pages/Portal";
 import AdminLinks from "./pages/AdminLinks";
+import Impact from "./pages/Impact";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/board" element={<Board />} />
           <Route path="/portal" element={<Portal />} />
           <Route path="/admin/links" element={<AdminLinks />} />
+          <Route path="/impact" element={<Impact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
