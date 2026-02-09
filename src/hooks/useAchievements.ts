@@ -43,6 +43,9 @@ export function useAchievements() {
   const { stats } = useGamificationStats();
   const [unlocked, setUnlocked] = useState<UnlockedBadge[]>(loadUnlocked);
   const [newlyUnlocked, setNewlyUnlocked] = useState<Achievement | null>(null);
+  // Track purchases & shares in state so changes trigger re-evaluation
+  const [purchases, setPurchases] = useState<string[]>(loadPurchases);
+  const [sharesCount, setSharesCount] = useState<number>(loadShares);
 
   // Build stats object for condition evaluation
   const achievementStats: AchievementStats = useMemo(() => {
@@ -58,10 +61,10 @@ export function useAchievements() {
       friendsBlessed: stats.friendsBlessed,
       totalXp: funnel.totalXp || 0,
       completedSteps: funnel.completedSteps || [],
-      sharesCount: loadShares(),
-      purchaseTiers: loadPurchases(),
+      sharesCount,
+      purchaseTiers: purchases,
     };
-  }, [stats]);
+  }, [stats, purchases, sharesCount]);
 
   // Check for newly unlocked achievements
   useEffect(() => {
@@ -97,17 +100,21 @@ export function useAchievements() {
 
   /** Record a purchase tier for achievement tracking */
   const recordPurchase = useCallback((tier: string) => {
-    const purchases = loadPurchases();
-    if (!purchases.includes(tier)) {
-      purchases.push(tier);
-      localStorage.setItem(PURCHASES_KEY, JSON.stringify(purchases));
-    }
+    setPurchases((prev) => {
+      if (prev.includes(tier)) return prev;
+      const updated = [...prev, tier];
+      localStorage.setItem(PURCHASES_KEY, JSON.stringify(updated));
+      return updated;
+    });
   }, []);
 
   /** Record a share action */
   const recordShare = useCallback(() => {
-    const count = loadShares() + 1;
-    localStorage.setItem(SHARES_KEY, JSON.stringify(count));
+    setSharesCount((prev) => {
+      const updated = prev + 1;
+      localStorage.setItem(SHARES_KEY, JSON.stringify(updated));
+      return updated;
+    });
   }, []);
 
   const unlockedIds = useMemo(() => new Set(unlocked.map((u) => u.achievementId)), [unlocked]);
