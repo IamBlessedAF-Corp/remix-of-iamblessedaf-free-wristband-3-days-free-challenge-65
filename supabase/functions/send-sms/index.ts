@@ -1,4 +1,3 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
@@ -7,7 +6,76 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-serve(async (req) => {
+/** Check if a number is US/Canada (+1) */
+function isNorthAmerican(phone: string): boolean {
+  return phone.startsWith("+1");
+}
+
+/** Send a WhatsApp message via Twilio */
+async function sendWhatsApp(
+  accountSid: string,
+  authToken: string,
+  fromWhatsApp: string,
+  to: string,
+  message: string,
+  statusCallbackUrl: string
+): Promise<{ ok: boolean; data: any }> {
+  const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+  const credentials = btoa(`${accountSid}:${authToken}`);
+
+  const body = new URLSearchParams({
+    To: `whatsapp:${to}`,
+    From: `whatsapp:${fromWhatsApp}`,
+    Body: message,
+    StatusCallback: statusCallbackUrl,
+  });
+
+  const res = await fetch(twilioUrl, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${credentials}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: body.toString(),
+  });
+
+  const data = await res.json();
+  return { ok: res.ok, data };
+}
+
+/** Send a regular SMS via Twilio */
+async function sendSMS(
+  accountSid: string,
+  authToken: string,
+  fromNumber: string,
+  to: string,
+  message: string,
+  statusCallbackUrl: string
+): Promise<{ ok: boolean; data: any; status: number }> {
+  const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+  const credentials = btoa(`${accountSid}:${authToken}`);
+
+  const body = new URLSearchParams({
+    To: to,
+    From: fromNumber,
+    Body: message,
+    StatusCallback: statusCallbackUrl,
+  });
+
+  const res = await fetch(twilioUrl, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${credentials}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: body.toString(),
+  });
+
+  const data = await res.json();
+  return { ok: res.ok, data, status: res.status };
+}
+
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -17,7 +85,7 @@ serve(async (req) => {
   const supabase = createClient(supabaseUrl, serviceRoleKey);
 
   try {
-    const { to, message, recipientName, sourcePage } = await req.json();
+    const { to, message, recipientName, sourcePage, preferWhatsApp } = await req.json();
 
     if (!to || !message) {
       return new Response(
@@ -48,50 +116,59 @@ serve(async (req) => {
     }
     const formattedTo = cleanTo.startsWith("+") ? cleanTo : `+${cleanTo}`;
 
-    // Build the status callback URL for Twilio delivery updates
     const statusCallbackUrl = `${supabaseUrl}/functions/v1/sms-status-webhook`;
+    const isIntl = !isNorthAmerican(formattedTo);
 
-    // Send SMS via Twilio REST API
-    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
-    const credentials = btoa(`${accountSid}:${authToken}`);
+    // Determine channel strategy:
+    // - International + preferWhatsApp (default for intl): try WhatsApp first, fall back to SMS
+    // - US/Canada: always SMS
+    // - Explicit preferWhatsApp=true: try WhatsApp first regardless
+    const shouldTryWhatsApp = preferWhatsApp === true || (isIntl && preferWhatsApp !== false);
 
-    const body = new URLSearchParams({
-      To: formattedTo,
-      From: fromNumber,
-      Body: message,
-      StatusCallback: statusCallbackUrl,
-    });
+    let channel = "sms";
+    let twilioResult: { ok: boolean; data: any; status?: number };
 
-    const twilioRes = await fetch(twilioUrl, {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${credentials}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: body.toString(),
-    });
+    if (shouldTryWhatsApp) {
+      console.log(`Trying WhatsApp first for ${formattedTo}`);
+      const waResult = await sendWhatsApp(
+        accountSid, authToken, fromNumber, formattedTo, message, statusCallbackUrl
+      );
 
-    const twilioData = await twilioRes.json();
+      if (waResult.ok) {
+        channel = "whatsapp";
+        twilioResult = { ...waResult, status: 200 };
+      } else {
+        console.log(`WhatsApp failed (${waResult.data?.code || "unknown"}), falling back to SMS`);
+        twilioResult = await sendSMS(
+          accountSid, authToken, fromNumber, formattedTo, message, statusCallbackUrl
+        );
+        channel = "sms";
+      }
+    } else {
+      twilioResult = await sendSMS(
+        accountSid, authToken, fromNumber, formattedTo, message, statusCallbackUrl
+      );
+    }
 
-    if (!twilioRes.ok) {
-      console.error("Twilio error:", JSON.stringify(twilioData));
+    if (!twilioResult.ok) {
+      console.error("Send error:", JSON.stringify(twilioResult.data));
 
-      // Log failed delivery
       await supabase.from("sms_deliveries").insert({
         recipient_phone: formattedTo,
         recipient_name: recipientName || null,
         message,
         status: "failed",
-        error_message: twilioData.message || "Twilio API error",
+        error_message: twilioResult.data.message || "Twilio API error",
         source_page: sourcePage || null,
       });
 
       return new Response(
         JSON.stringify({
-          error: twilioData.message || "Failed to send SMS",
-          code: twilioData.code,
+          error: twilioResult.data.message || "Failed to send message",
+          code: twilioResult.data.code,
+          channel,
         }),
-        { status: twilioRes.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: twilioResult.status || 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -100,16 +177,17 @@ serve(async (req) => {
       recipient_phone: formattedTo,
       recipient_name: recipientName || null,
       message,
-      twilio_sid: twilioData.sid,
-      status: twilioData.status || "queued",
+      twilio_sid: twilioResult.data.sid,
+      status: twilioResult.data.status || "queued",
       source_page: sourcePage || null,
     });
 
     return new Response(
       JSON.stringify({
         success: true,
-        sid: twilioData.sid,
-        status: twilioData.status,
+        sid: twilioResult.data.sid,
+        status: twilioResult.data.status,
+        channel,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
