@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { Map, ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Zap, Target, Shield, TrendingUp, Users, Gift, Star, Rocket, Crown, Lock, Globe, Sparkles, BarChart3, Megaphone, Cpu, ArrowLeft, Layers, Database, CreditCard, MessageSquare, Paintbrush, Server, FlaskConical } from "lucide-react";
+import { Map, ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Zap, Target, Shield, TrendingUp, Users, Gift, Star, Rocket, Crown, Lock, Globe, Sparkles, BarChart3, Megaphone, Cpu, ArrowLeft, Layers, Database, CreditCard, MessageSquare, Paintbrush, Server, FlaskConical, Download } from "lucide-react";
 import { PHASE_NEXT_STEPS } from "@/data/roadmapNextSteps";
+import { TRACKING_GROUPS } from "@/data/trackingGroups";
+import { exportRoadmapMarkdown, downloadMarkdown } from "@/utils/roadmapExport";
 import RoadmapItemActions from "@/components/roadmap/RoadmapItemActions";
 
 /* ─── Types ─── */
@@ -678,8 +680,99 @@ function TechCategoryRow({ category }: { category: TechCategory }) {
   );
 }
 
+/* ─── Tracking Groups Section ─── */
+function TrackingGroupsSection() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="border border-border/50 rounded-xl bg-card overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-secondary/30 transition-colors"
+      >
+        <BarChart3 className="w-5 h-5 text-primary shrink-0" />
+        <div className="flex-1">
+          <h2 className="text-sm font-bold text-foreground">📊 Tracking & Engagement Groups</h2>
+          <p className="text-[11px] text-muted-foreground">
+            {TRACKING_GROUPS.reduce((s, g) => s + g.items.length, 0)} trackable actions across {TRACKING_GROUPS.length} categories
+          </p>
+        </div>
+        <span className="text-[9px] px-1.5 py-0.5 rounded-full border bg-amber-500/10 text-amber-400 border-amber-500/30 font-semibold">
+          Growth
+        </span>
+        {open ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+      </button>
+      {open && (
+        <div className="border-t border-border/30 animate-in fade-in slide-in-from-top-1 duration-150">
+          {TRACKING_GROUPS.map((group) => (
+            <TrackingGroupRow key={group.id} group={group} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TrackingGroupRow({ group }: { group: typeof TRACKING_GROUPS[0] }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="border-b border-border/20 last:border-0">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-3 px-5 py-3 text-left hover:bg-secondary/20 transition-colors"
+      >
+        <span className="text-sm shrink-0">{group.icon}</span>
+        <span className="text-xs font-semibold text-foreground flex-1">{group.title}</span>
+        <span className="text-[9px] text-muted-foreground font-mono">{group.items.length} items</span>
+        {open ? <ChevronDown className="w-3 h-3 text-muted-foreground" /> : <ChevronRight className="w-3 h-3 text-muted-foreground" />}
+      </button>
+      {open && (
+        <div className="divide-y divide-border/20 bg-secondary/[0.03] animate-in fade-in slide-in-from-top-1 duration-100">
+          {group.items.map((item, idx) => (
+            <div key={idx} className="px-5 py-2.5 pl-12">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Target className="w-3 h-3 text-muted-foreground shrink-0" />
+                <span className="text-xs font-medium text-foreground">{item.title}</span>
+                <span className={`text-[9px] px-1.5 py-0.5 rounded-full border font-semibold ${PRIORITY_BADGE[item.priority]}`}>
+                  {item.priority}
+                </span>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1 ml-5">{item.detail}</p>
+              <RoadmapItemActions title={item.title} detail={item.detail} phaseName="Tracking & Engagement" />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── Main Page ─── */
 export default function Roadmap() {
+  const handleExport = () => {
+    const exportPhases = PHASES.map((p) => ({
+      title: p.title,
+      subtitle: p.subtitle,
+      status: p.status,
+      delegationScore: p.delegationScore,
+      items: p.items.map((i) => ({
+        title: i.title,
+        status: i.status,
+        priority: i.priority,
+        detail: i.detail,
+        labels: i.labels,
+      })),
+    }));
+    const exportTracking = TRACKING_GROUPS.map((g) => ({
+      title: g.title,
+      items: g.items.map((i) => ({ title: i.title, detail: i.detail, priority: i.priority })),
+    }));
+    const md = exportRoadmapMarkdown(exportPhases, PHASE_NEXT_STEPS, exportTracking);
+    const date = new Date().toISOString().substring(0, 10);
+    downloadMarkdown(md, `roadmap-${date}.md`);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -689,10 +782,17 @@ export default function Roadmap() {
             <ArrowLeft className="w-4 h-4" />
           </a>
           <Map className="w-5 h-5 text-primary" />
-          <div>
+          <div className="flex-1">
             <h1 className="text-base font-bold text-foreground">IamBlessedAF — Project Roadmap</h1>
             <p className="text-[10px] text-muted-foreground">The Gratitude Engine™ · Deep Matrix Architecture · All Stages</p>
           </div>
+          <button
+            onClick={handleExport}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold rounded-md bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Export .md
+          </button>
         </div>
       </header>
 
@@ -704,6 +804,7 @@ export default function Roadmap() {
         <MatrixLegend />
         <PipelineLegend />
         <TechStackSection />
+        <TrackingGroupsSection />
 
         {/* Phase Sections */}
         <div className="space-y-3">
