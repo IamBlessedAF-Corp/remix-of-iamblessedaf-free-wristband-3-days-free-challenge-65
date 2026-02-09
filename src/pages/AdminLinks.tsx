@@ -11,6 +11,7 @@ import CampaignTable from "@/components/admin/CampaignTable";
 import TopLinksTable from "@/components/admin/TopLinksTable";
 import UtmBuilder from "@/components/admin/UtmBuilder";
 import RecentBuilderLinks from "@/components/admin/RecentBuilderLinks";
+import PerLinkTrafficChart from "@/components/admin/PerLinkTrafficChart";
 import BoardLoginForm from "@/components/board/BoardLoginForm";
 
 const PERIOD_OPTIONS = [
@@ -22,7 +23,7 @@ const PERIOD_OPTIONS = [
 export default function AdminLinks() {
   const { isAdmin, loading: authLoading, signInWithEmail, signOut, user } = useAdminAuth();
   const [days, setDays] = useState(30);
-  const { stats, loading, refetch } = useLinkAnalytics(days);
+  const { stats, links, clicks, loading, refetch } = useLinkAnalytics(days);
 
   if (authLoading) {
     return (
@@ -105,6 +106,8 @@ export default function AdminLinks() {
             />
 
             <DailyClicksChart dailyClicks={stats.dailyClicks} />
+
+            <PerLinkTrafficChart links={links} clicks={clicks} />
 
             <LinkPieCharts
               deviceBreakdown={stats.deviceBreakdown}
