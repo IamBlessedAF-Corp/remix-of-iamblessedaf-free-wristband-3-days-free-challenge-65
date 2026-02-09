@@ -18,14 +18,13 @@ const GratitudeIntro = () => {
     >
       {/* Context badge — acknowledge $22 purchase */}
       <div className="inline-flex items-center gap-2 bg-accent/50 text-foreground px-4 py-2 rounded-full text-sm font-semibold mb-4">
-        ✅ 3 Wristbands locked in · Now unlock the <span className="text-primary font-bold">FREE Shirt</span>
+        ✅ 3 Wristbands Locked In · Now Claim Your <span className="text-primary font-bold">FREE Shirt</span>
       </div>
 
-      {/* Headline — ROI-first */}
+      {/* Headline — simple, benefit-first */}
       <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 leading-tight">
-        You Just Started Feeling{" "}
-        <span className="text-primary">27× Happier</span> — Now Make It{" "}
-        <span className="text-primary">Permanent</span> 🧠
+        You Just Started Rewiring Your Brain.{" "}
+        <span className="text-primary">Now Make It Permanent</span> — With a Gift Your Friend Will Never Forget 🧠
       </h2>
 
       <blockquote className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto mb-4 shadow-soft">
@@ -40,19 +39,18 @@ const GratitudeIntro = () => {
       </blockquote>
 
       <p className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2 leading-tight">
-        This is Why we want to send your Best Friend this Shirt with a Custom Message from <span className="text-primary">You!</span>
+        That's Why We Want to Send Your Best Friend a Custom Shirt with a Message from <span className="text-primary">You!</span>
       </p>
 
       {/* Countdown timer */}
       <OfferTimer />
       <div className="h-4" />
 
-
-      {/* Friend Shirt showcase — customizer is built-in */}
+      {/* Friend Shirt showcase */}
       <FriendShirtSection delay={0.15} />
 
       <p className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2 leading-tight">
-        Claim Your <span className="text-primary">FREE</span> Custom Shirt → Trigger 27× More Joy
+        Claim Your <span className="text-primary">FREE</span> Custom Shirt → Make Someone's Day
       </p>
 
       <OfferTimer />
@@ -61,7 +59,7 @@ const GratitudeIntro = () => {
       <Button
         className="w-full max-w-lg mx-auto h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl mb-1"
       >
-        YES! Claim My FREE Shirt & Start the Brain Rewire
+        YES! Send My Friend This FREE Shirt
         <ArrowRight className="w-5 h-5 ml-2" />
       </Button>
 

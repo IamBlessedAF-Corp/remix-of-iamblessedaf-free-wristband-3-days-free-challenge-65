@@ -95,9 +95,9 @@ const Challenge = () => {
       ];
     }
     return [
-      { icon: CheckCircle2, text: "100% Free to Join" },
-      { icon: Users, text: "Real Human Confirmation" },
-      { icon: Heart, text: "Win $1,111 This Week" },
+      { icon: CheckCircle2, text: "100% Free · No App Needed" },
+      { icon: Users, text: "Real Friends, Real Texts" },
+      { icon: Heart, text: "Win $1,111 + Feed People" },
     ];
   }, [isReferred]);
 
@@ -193,9 +193,10 @@ const Challenge = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
                 >
-                  Real Gratitude = Real{" "}
-                  <span className="text-primary">Brain Rewire.</span>{" "}
-                  Start Free + Win $1,111.
+                  The Happiest People Don't Journal.{" "}
+                  They Text One Friend{" "}
+                  <span className="text-primary">"Thank You"</span> — and Their{" "}
+                  <span className="text-primary">Brain Changes Forever.</span>
                 </motion.h1>
 
                 <motion.p
@@ -204,8 +205,9 @@ const Challenge = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
-                  2 min/day × 3 days. Science says received thanks boosts happiness{" "}
-                  <span className="font-bold text-foreground">27×</span>. No apps. No journaling. Just real humans confirming your gratitude.
+                  Harvard studied 724 people for 85 years. The #1 secret to happiness?{" "}
+                  <span className="font-bold text-foreground">Strong relationships.</span>{" "}
+                  This free 3-day challenge builds them — with just one text a day.
                 </motion.p>
 
                 <motion.p
@@ -214,7 +216,7 @@ const Challenge = () => {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.45 }}
                 >
-                  🔥 2,340 joined · 25k+ meals donated — your turn.
+                  🔥 2,340 people joined · 25k+ meals donated · Win $1,111
                 </motion.p>
               </>
             )}
@@ -360,7 +362,7 @@ const Challenge = () => {
                     ) : isReferred ? (
                       "🎁 Claim My FREE Wristband →"
                     ) : (
-                      "Start My Free 3-Day Brain Rewire →"
+                      "Start My Free 3-Day Challenge →"
                     )}
                   </Button>
                 </form>
@@ -391,7 +393,7 @@ const Challenge = () => {
               {isReferred ? "How to Claim Your Gift" : "How It Works"}
             </h2>
             <p className="text-muted-foreground max-w-lg mx-auto">
-              {isReferred ? "3 simple steps to your free wristband." : "Simple. Powerful. Life-changing."}
+              {isReferred ? "3 simple steps to your free wristband." : "2 minutes a day. 3 days. One text to someone you love."}
             </p>
           </motion.div>
 
@@ -412,18 +414,18 @@ const Challenge = () => {
               : [
                   {
                     step: "1",
-                    title: "Send Gratitude",
-                    description: "Each morning, text one person you're genuinely grateful for.",
+                    title: "Text One Friend",
+                    description: "Write a real 'thank you' to someone who made your life better. Takes 2 minutes.",
                   },
                   {
                     step: "2",
-                    title: "They Confirm",
-                    description: "Your recipient confirms they received your blessing.",
+                    title: "They Feel It",
+                    description: "When they read your words, BOTH your brains release serotonin and dopamine.",
                   },
                   {
                     step: "3",
-                    title: "Win Together",
-                    description: "Complete 3 days and enter to win $1,111. Simple.",
+                    title: "Win $1,111",
+                    description: "Do it 3 days in a row. Enter to win. Plus — 11 meals donated for you.",
                   },
                 ]
             ).map((item, index) => (

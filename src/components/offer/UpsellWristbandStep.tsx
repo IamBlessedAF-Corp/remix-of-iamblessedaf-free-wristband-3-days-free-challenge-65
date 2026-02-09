@@ -40,13 +40,14 @@ const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWris
         transition={{ duration: 0.5, delay: 0.1 }}
       >
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3 leading-tight">
-          Upgrade to <span className="text-primary">3 Wristbands</span> for $22{" "}
-          <span className="text-primary">+ FREE Shipping</span> 🧠
+          Keep One. <span className="text-primary">Gift Two.</span>{" "}
+          Watch <span className="text-primary">3 Lives Change.</span>
         </h2>
         <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-2 leading-relaxed">
-          Instead of 1 wristband + $9.95 shipping, get{" "}
-          <span className="font-bold text-foreground">3 wristbands with FREE US shipping</span>{" "}
-          — keep one, gift two to people you're grateful for.
+          Give a wristband to 2 people you love. When they wear it, they think of you.
+          When they feel grateful,{" "}
+          <span className="font-bold text-foreground">YOUR brain rewards you too</span>{" "}
+          — that's the 27× serotonin boost Huberman found.
         </p>
         <div className="inline-flex items-center gap-2 bg-accent/50 text-foreground px-4 py-2 rounded-full text-sm font-semibold mt-2">
           <Heart className="w-4 h-4 text-primary" />
@@ -87,11 +88,11 @@ const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWris
 
       {/* Product heading */}
       <p className="text-center text-3xl md:text-4xl font-black text-primary mb-2">
-        DAILY TRIGGER WRISTBANDS
+        YOUR DAILY HAPPINESS TRIGGER
       </p>
       <p className="text-center text-sm text-muted-foreground max-w-md mx-auto mb-4">
-        3 silicone wristbands that trigger a gratitude micro-moment every time you glance at your wrist.{" "}
-        <span className="font-bold text-foreground">Cost per gratitude hack: $0.02/day.</span>
+        3 silicone wristbands. Every time you glance at your wrist, your brain fires a gratitude micro-moment.{" "}
+        <span className="font-bold text-foreground">That's happiness for $0.02/day.</span>
       </p>
 
       {/* Wristband Product */}

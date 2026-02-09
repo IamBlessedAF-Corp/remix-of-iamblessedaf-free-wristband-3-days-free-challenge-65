@@ -151,10 +151,10 @@ const GratitudeSetupFlow = ({ onComplete, onSkip }: GratitudeSetupFlowProps) => 
               <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
                 <Users className="w-7 h-7 text-primary" />
               </div>
-              <h2 className="text-2xl font-bold">Who Changed Your Life?</h2>
+              <h2 className="text-2xl font-bold">Who Made Your Life Better?</h2>
               <p className="text-muted-foreground text-sm">
-                Name 3 people you're grateful for. They'll each receive a
-                heartfelt 11:11 message from you during the challenge.
+                Name 3 people you're grateful for. Each one gets a real
+                "thank you" text from you — and BOTH your brains get happier.
               </p>
             </div>
 
@@ -205,8 +205,8 @@ const GratitudeSetupFlow = ({ onComplete, onSkip }: GratitudeSetupFlowProps) => 
             </div>
 
             <p className="text-xs text-center text-muted-foreground italic">
-              "Received thanks boosts happiness 27× more than journaling" —
-              Huberman Lab
+              Harvard's 85-year study: the happiest people had strong
+              relationships — built by saying "thank you" out loud.
             </p>
 
             <Button
@@ -235,11 +235,11 @@ const GratitudeSetupFlow = ({ onComplete, onSkip }: GratitudeSetupFlowProps) => 
                 <Send className="w-7 h-7 text-primary" />
               </div>
               <h2 className="text-2xl font-bold">
-                Your 11:11 Message to {friends.friend1}
+                What Will You Never Forget About {friends.friend1}?
               </h2>
               <p className="text-muted-foreground text-sm">
-                Write a specific memory. This activates your mPFC — the brain's
-                meaning-making center.
+                Write one specific memory. The more real it is, the deeper the
+                connection — and the bigger the happiness boost for both of you.
               </p>
             </div>
 
@@ -407,10 +407,11 @@ const GratitudeSetupFlow = ({ onComplete, onSkip }: GratitudeSetupFlowProps) => 
                 <CheckCircle2 className="w-8 h-8 text-primary" />
               </motion.div>
               <h2 className="text-2xl font-bold">
-                Your Messages Are Scheduled! 🎉
+                You're All Set! 🎉
               </h2>
               <p className="text-muted-foreground text-sm">
-                Your gratitude challenge starts tomorrow at 11:11 AM.
+                Tomorrow at 11:11 AM, your first gratitude text goes out.
+                Get ready to feel something real.
               </p>
             </div>
 

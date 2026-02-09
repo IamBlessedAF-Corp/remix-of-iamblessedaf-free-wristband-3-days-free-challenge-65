@@ -9,29 +9,31 @@ const GptHeroSection = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Hook — emotion-driven, imaginative */}
+      {/* Hook — Version B: emotional storytelling (warm, visual) */}
       <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4 leading-tight">
-        Picture Your Best Friend's Face When They Open a Shirt with{" "}
-        <span className="text-primary">Your Words on It</span> — That Feeling? It Lasts Forever.
+        Imagine Your Best Friend Opening a Package, Reading{" "}
+        <span className="text-primary">Your Words</span>, and Crying{" "}
+        <span className="text-primary">Happy Tears</span>
       </h1>
 
-      {/* Creative Storytelling Bridge — warm, visual, heart-first */}
+      {/* Storytelling Bridge — heart-first, simple */}
       <div className="bg-card border border-border/50 rounded-2xl p-5 max-w-lg mx-auto shadow-soft">
         <div className="flex items-center justify-center gap-2 mb-3">
           <Heart className="w-4 h-4 text-primary" />
-          <span className="text-xs font-semibold text-primary uppercase tracking-wider">Your Story Starts Here</span>
+          <span className="text-xs font-semibold text-primary uppercase tracking-wider">This Is Real</span>
         </div>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed text-left">
-          You just proved something beautiful — you can rewire your brain with gratitude in just 3 days.{" "}
+          You proved it in 3 days — gratitude changes how you feel.{" "}
           <span className="font-bold text-foreground">
-            Now imagine turning that spark into something you can touch, wear, and share.
+            Now imagine turning that feeling into something your friend can touch.
           </span>
         </p>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed text-left mt-3">
-          Write a heartfelt message. We print it on a custom shirt for your best friend. When they open it,
-          when they <em>feel</em> your words —{" "}
-          <span className="font-bold text-foreground">that's the moment both your brains light up.</span>{" "}
-          And 11 people get fed through Feeding America. All from one beautiful act of gratitude.
+          We print YOUR words on a custom shirt. When they open it… when they read what you wrote about that one
+          moment… their eyes water. They call you.{" "}
+          <span className="font-bold text-foreground">BOTH your brains light up with pure joy.</span>{" "}
+          That's not a product. That's a relationship deepened forever.
+          Plus, <span className="font-bold text-primary">11 people get fed</span>.
         </p>
       </div>
     </motion.div>
