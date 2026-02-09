@@ -125,15 +125,19 @@ serve(async (req) => {
       .insert(messages);
     if (mErr) throw mErr;
 
-    // ── Send welcome SMS via Twilio ──
+    // ── Twilio setup ──
     const twilioSid = Deno.env.get("TWILIO_ACCOUNT_SID");
     const twilioAuth = Deno.env.get("TWILIO_AUTH_TOKEN");
     const twilioPhone = Deno.env.get("TWILIO_PHONE_NUMBER");
+    const msgServiceSid = Deno.env.get("TWILIO_MESSAGING_SERVICE_SID");
 
-    if (twilioSid && twilioAuth && twilioPhone) {
+    if (twilioSid && twilioAuth) {
+      const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`;
+      const credentials = btoa(`${twilioSid}:${twilioAuth}`);
       const friendCount = [friends.friend1, friends.friend2, friends.friend3]
         .filter(Boolean).length;
 
+      // ── 1. Send welcome SMS immediately ──
       const welcomeBody = [
         `🙏 Welcome to the Blessed AF 3-Day Gratitude Challenge!`,
         ``,
@@ -146,38 +150,82 @@ serve(async (req) => {
         `We'll text you at 3PM today to help you prepare.`,
         ``,
         `Reply STOP to opt out.`,
-      ]
-        .filter(Boolean)
-        .join("\n");
+      ].filter(Boolean).join("\n");
 
-      const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`;
-      const formData = new URLSearchParams();
-      formData.append("To", phone.trim());
-      formData.append("From", twilioPhone);
-      formData.append("Body", welcomeBody);
+      const welcomeForm = new URLSearchParams();
+      welcomeForm.append("To", phone.trim());
+      if (msgServiceSid) {
+        welcomeForm.append("MessagingServiceSid", msgServiceSid);
+      } else if (twilioPhone) {
+        welcomeForm.append("From", twilioPhone);
+      }
+      welcomeForm.append("Body", welcomeBody);
 
-      const twilioRes = await fetch(twilioUrl, {
+      const welcomeRes = await fetch(twilioUrl, {
         method: "POST",
         headers: {
-          Authorization: `Basic ${btoa(`${twilioSid}:${twilioAuth}`)}`,
+          Authorization: `Basic ${credentials}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: formData,
+        body: welcomeForm,
       });
 
-      if (!twilioRes.ok) {
-        const errBody = await twilioRes.text();
+      if (!welcomeRes.ok) {
+        const errBody = await welcomeRes.text();
         console.error("Twilio welcome SMS failed:", errBody);
       }
 
-      // Log to sms_deliveries for tracking
       await supabase.from("sms_deliveries").insert({
         recipient_phone: phone.trim(),
-        recipient_name: null,
         message: welcomeBody,
         source_page: "challenge-setup",
-        status: twilioRes.ok ? "sent" : "failed",
+        status: welcomeRes.ok ? "sent" : "failed",
       });
+
+      // ── 2. Native schedule Day 1 messages (if Messaging Service available) ──
+      if (msgServiceSid) {
+        for (const msg of messages) {
+          const sendAt = new Date(msg.scheduled_send_at);
+          const minsUntilSend = (sendAt.getTime() - Date.now()) / 60000;
+
+          // Twilio requires 15min–35day window for scheduling
+          if (minsUntilSend >= 15) {
+            // Schedule the 11:11 message reminder to participant
+            if (msg.message_body && msg.status === "scheduled") {
+              const msgBody = `It's 11:11! 🙏 Time to send your gratitude to ${msg.friend_name}.\n\nHere's your message:\n\n"${msg.message_body}"\n\nCopy and send it now! Reply DONE when sent. 🧠\n\n— Blessed AF`;
+
+              const schedForm = new URLSearchParams();
+              schedForm.append("To", phone.trim());
+              schedForm.append("MessagingServiceSid", msgServiceSid);
+              schedForm.append("Body", msgBody);
+              schedForm.append("ScheduleType", "fixed");
+              schedForm.append("SendAt", sendAt.toISOString());
+
+              const schedRes = await fetch(twilioUrl, {
+                method: "POST",
+                headers: {
+                  Authorization: `Basic ${credentials}`,
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: schedForm,
+              });
+
+              if (schedRes.ok) {
+                const schedData = await schedRes.json();
+                // Update DB with Twilio SID — cron will skip this one
+                await supabase
+                  .from("scheduled_gratitude_messages")
+                  .update({ twilio_message_sid: schedData.sid, status: "scheduled" })
+                  .eq("id", msg.participant_id) // Will update via cron fallback
+                console.log(`Natively scheduled Day ${msg.day_number} for ${sendAt.toISOString()}`);
+              } else {
+                console.error(`Native schedule failed for Day ${msg.day_number}:`, await schedRes.text());
+              }
+            }
+          }
+          // Messages < 15min out will be picked up by pg_cron
+        }
+      }
     }
 
     return new Response(
