@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
 import Grok4444HeroSection from "@/components/offer/grok/Grok4444HeroSection";
@@ -10,21 +9,15 @@ import GrokRiskReversal from "@/components/offer/grok/GrokRiskReversal";
 import GrokViralFooter from "@/components/offer/grok/GrokViralFooter";
 import ResearchList from "@/components/offer/ResearchList";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
-import { useGamificationStats } from "@/hooks/useGamificationStats";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
-import PortalUnlockStep from "@/components/offer/PortalUnlockStep";
-
-type Step = "offer" | "portal-unlock";
 
 const Offer4444 = () => {
-  const [step, setStep] = useState<Step>("offer");
-  const { rewardCheckout } = useGamificationStats();
+  const { startCheckout, loading } = useStripeCheckout();
 
   const handleCheckout = () => {
-    rewardCheckout("pack-4444");
-    setStep("portal-unlock");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    startCheckout("pack-4444");
   };
 
   return (
@@ -32,9 +25,6 @@ const Offer4444 = () => {
       <GamificationHeader />
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-2xl mx-auto">
-          {step === "portal-unlock" ? (
-            <PortalUnlockStep />
-          ) : (
             <>
               {/* ─── 1. Unlock Badge ─── */}
               <motion.div className="text-center mb-6" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}>
@@ -157,7 +147,6 @@ const Offer4444 = () => {
               <Grok4444CtaBlock onCheckout={handleCheckout} delay={0.85} />
               <GrokViralFooter delay={0.9} />
             </>
-          )}
         </div>
       </div>
     </div>

@@ -16,6 +16,7 @@ import Offer444 from "./pages/Offer444";
 import OfferMonthly from "./pages/OfferMonthly";
 import Offer1111 from "./pages/Offer1111";
 import Offer4444 from "./pages/Offer4444";
+import OfferSuccess from "./pages/OfferSuccess";
 import AIVideoContest from "./pages/AIVideoContest";
 import Board from "./pages/Board";
 import Portal from "./pages/Portal";
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/offer/11mo" element={<OfferMonthly />} />
           <Route path="/offer/1111" element={<Offer1111 />} />
           <Route path="/offer/4444" element={<Offer4444 />} />
+          <Route path="/offer/success" element={<OfferSuccess />} />
           <Route path="/make-2500-with-1-ai-clip" element={<AIVideoContest />} />
           <Route path="/board" element={<Board />} />
           <Route path="/portal" element={<Portal />} />

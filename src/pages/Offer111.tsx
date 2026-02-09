@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Crown, ArrowRight, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,19 +13,13 @@ import AuthorAvatar from "@/components/offer/AuthorAvatar";
 import UrgencyBanner from "@/components/offer/UrgencyBanner";
 import SocialProofSection from "@/components/offer/SocialProofSection";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
-import PortalUnlockStep from "@/components/offer/PortalUnlockStep";
-import { useGamificationStats } from "@/hooks/useGamificationStats";
-
-type Step = "offer" | "portal-unlock";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 
 const Offer111 = () => {
-  const [step, setStep] = useState<Step>("offer");
-  const { rewardCheckout } = useGamificationStats();
+  const { startCheckout, loading } = useStripeCheckout();
 
   const handleCheckout = () => {
-    rewardCheckout("pack-111");
-    setStep("portal-unlock");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    startCheckout("pack-111");
   };
 
   return (
@@ -34,9 +27,6 @@ const Offer111 = () => {
       <GamificationHeader />
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-2xl mx-auto">
-          {step === "portal-unlock" ? (
-            <PortalUnlockStep />
-          ) : (
             <>
               {/* Unlock Badge */}
               <motion.div
@@ -215,7 +205,6 @@ const Offer111 = () => {
                 </a>
               </motion.div>
             </>
-          )}
         </div>
       </div>
     </div>
