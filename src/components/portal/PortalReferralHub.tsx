@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Copy, Check, Share2, MessageCircle, Link2, Users, Zap,
-  Coins, Gift, ExternalLink, Video
+  Gift, ExternalLink
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,13 +10,16 @@ import { useToast } from "@/hooks/use-toast";
 import { useShortLinks } from "@/hooks/useShortLinks";
 import GiftSmsDialog from "@/components/offer/GiftSmsDialog";
 import type { PortalProfile, BlessingRow } from "@/hooks/usePortalData";
+import SendBlessingForm from "./SendBlessingForm";
 
 interface Props {
   profile: PortalProfile;
   blessings: BlessingRow[];
+  userId: string;
+  onBlessingCreated: () => void;
 }
 
-export default function PortalReferralHub({ profile, blessings }: Props) {
+export default function PortalReferralHub({ profile, blessings, userId, onBlessingCreated }: Props) {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const [smsOpen, setSmsOpen] = useState(false);
@@ -89,6 +92,9 @@ export default function PortalReferralHub({ profile, blessings }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Send a Blessing */}
+      <SendBlessingForm userId={userId} onBlessingCreated={onBlessingCreated} />
 
       {/* Referral link card */}
       <div className="bg-card border border-border/60 rounded-xl p-5 space-y-4">
@@ -190,7 +196,7 @@ export default function PortalReferralHub({ profile, blessings }: Props) {
                   {m.label}
                 </span>
                 <div className="flex items-center gap-1 text-xs font-bold text-primary">
-                  <Coins className="w-3 h-3" />
+                  <span className="text-xs leading-none">🙏</span>
                   +{m.reward.toLocaleString()} BC
                 </div>
               </div>
