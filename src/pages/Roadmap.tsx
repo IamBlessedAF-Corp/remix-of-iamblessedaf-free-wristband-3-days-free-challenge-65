@@ -4,6 +4,7 @@ import { PHASE_NEXT_STEPS } from "@/data/roadmapNextSteps";
 import { TRACKING_GROUPS } from "@/data/trackingGroups";
 import { exportRoadmapMarkdown, downloadMarkdown } from "@/utils/roadmapExport";
 import RoadmapItemActions from "@/components/roadmap/RoadmapItemActions";
+import BulkSendToBoard from "@/components/roadmap/BulkSendToBoard";
 
 /* ─── Types ─── */
 interface RoadmapItem {
@@ -303,18 +304,26 @@ function PhaseSection({ phase }: { phase: RoadmapPhase }) {
           {/* Next Steps Toggle */}
           {nextStepItems.length > 0 && (
             <div className="border-t border-dashed border-border/40">
-              <button
-                onClick={() => setShowNextSteps(!showNextSteps)}
-                className="w-full flex items-center gap-2 px-5 py-2.5 text-left hover:bg-secondary/20 transition-colors"
-              >
-                <FlaskConical className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                <span className="text-[11px] font-bold text-purple-400">
-                  {showNextSteps ? "▾" : "▸"} Next 11 Optimizations
-                </span>
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30 font-semibold">
-                  {nextStepItems.length} items
-                </span>
-              </button>
+              <div className="flex items-center">
+                <button
+                  onClick={() => setShowNextSteps(!showNextSteps)}
+                  className="flex-1 flex items-center gap-2 px-5 py-2.5 text-left hover:bg-secondary/20 transition-colors"
+                >
+                  <FlaskConical className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <span className="text-[11px] font-bold text-purple-400">
+                    {showNextSteps ? "▾" : "▸"} Next 11 Optimizations
+                  </span>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30 font-semibold">
+                    {nextStepItems.length} items
+                  </span>
+                </button>
+                <div className="pr-4">
+                  <BulkSendToBoard
+                    items={nextStepItems.map(i => ({ title: i.title, detail: i.detail, priority: i.priority }))}
+                    sectionLabel={`${phase.title}-optimizations`}
+                  />
+                </div>
+              </div>
               {showNextSteps && (
                 <div className="divide-y divide-border/20 bg-purple-500/[0.02] animate-in fade-in slide-in-from-top-1 duration-150">
                   {nextStepItems.map((item, idx) => (
@@ -718,15 +727,23 @@ function TrackingGroupRow({ group }: { group: typeof TRACKING_GROUPS[0] }) {
 
   return (
     <div className="border-b border-border/20 last:border-0">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 px-5 py-3 text-left hover:bg-secondary/20 transition-colors"
-      >
-        <span className="text-sm shrink-0">{group.icon}</span>
-        <span className="text-xs font-semibold text-foreground flex-1">{group.title}</span>
-        <span className="text-[9px] text-muted-foreground font-mono">{group.items.length} items</span>
-        {open ? <ChevronDown className="w-3 h-3 text-muted-foreground" /> : <ChevronRight className="w-3 h-3 text-muted-foreground" />}
-      </button>
+      <div className="flex items-center">
+        <button
+          onClick={() => setOpen(!open)}
+          className="flex-1 flex items-center gap-3 px-5 py-3 text-left hover:bg-secondary/20 transition-colors"
+        >
+          <span className="text-sm shrink-0">{group.icon}</span>
+          <span className="text-xs font-semibold text-foreground flex-1">{group.title}</span>
+          <span className="text-[9px] text-muted-foreground font-mono">{group.items.length} items</span>
+          {open ? <ChevronDown className="w-3 h-3 text-muted-foreground" /> : <ChevronRight className="w-3 h-3 text-muted-foreground" />}
+        </button>
+        <div className="pr-4">
+          <BulkSendToBoard
+            items={group.items.map(i => ({ title: i.title, detail: i.detail, priority: i.priority }))}
+            sectionLabel={group.title}
+          />
+        </div>
+      </div>
       {open && (
         <div className="divide-y divide-border/20 bg-secondary/[0.03] animate-in fade-in slide-in-from-top-1 duration-100">
           {group.items.map((item, idx) => (
