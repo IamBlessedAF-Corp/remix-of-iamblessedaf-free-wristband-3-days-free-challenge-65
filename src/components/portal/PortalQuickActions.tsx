@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
-  Zap, Gift, Share2, MessageCircle, Users, Coins,
+  Zap, Gift, Share2, MessageCircle, Users,
   Copy, Check, Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -170,7 +170,7 @@ export default function PortalQuickActions({ referralCode, onOpenSocial }: Props
                 <p className="text-xs text-muted-foreground truncate">{action.description}</p>
               </div>
               <div className="flex items-center gap-1 text-primary font-bold text-xs shrink-0">
-                <Coins className="w-3 h-3" />
+                <span className="text-xs leading-none">🙏</span>
                 {action.reward}
               </div>
             </motion.button>

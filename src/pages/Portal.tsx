@@ -182,6 +182,8 @@ const Portal = () => {
               <PortalReferralHub
                 profile={portalData.profile}
                 blessings={portalData.blessings}
+                userId={user.id}
+                onBlessingCreated={portalData.refreshBlessings}
               />
             )}
             {activeTab === "missions" && <PortalMissions />}
