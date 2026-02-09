@@ -51,6 +51,7 @@ const App = () => (
           <Route path="/offer/4444" element={<Offer4444 />} />
           <Route path="/offer/success" element={<OfferSuccess />} />
           <Route path="/make-2500-with-1-ai-clip" element={<AIVideoContest />} />
+          <Route path="/$2xClippers" element={<AIVideoContest />} />
           <Route path="/board" element={<Board />} />
           <Route path="/portal" element={<Portal />} />
           <Route path="/admin/links" element={<AdminLinks />} />
