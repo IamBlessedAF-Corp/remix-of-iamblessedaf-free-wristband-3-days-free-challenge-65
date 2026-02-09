@@ -1,13 +1,14 @@
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
 interface GptStickyBarProps {
   onCheckout: () => void;
+  loading?: boolean;
 }
 
-const GptStickyBar = ({ onCheckout }: GptStickyBarProps) => {
+const GptStickyBar = ({ onCheckout, loading = false }: GptStickyBarProps) => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -39,10 +40,12 @@ const GptStickyBar = ({ onCheckout }: GptStickyBarProps) => {
             onCheckout();
             window.dispatchEvent(new CustomEvent("track", { detail: { event: "upsell2_accept", source: "sticky_bar" } }));
           }}
-          className="flex-1 h-12 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl btn-glow animate-pulse-glow"
+          disabled={loading}
+          className="flex-1 h-12 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl btn-glow animate-pulse-glow disabled:opacity-70 disabled:animate-none"
         >
-          Add to My Order
-          <ArrowRight className="w-4 h-4 ml-2" />
+          {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+          {loading ? "Processing…" : "Add to My Order"}
+          {!loading && <ArrowRight className="w-4 h-4 ml-2" />}
         </Button>
       </div>
     </motion.div>

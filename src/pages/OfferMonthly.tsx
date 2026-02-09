@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Repeat, MessageCircle, Gift, Users, ArrowRight, Check, Sparkles } from "lucide-react";
+import { Repeat, MessageCircle, Gift, Users, ArrowRight, Check, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
@@ -120,11 +120,12 @@ const OfferMonthly = () => {
               {/* CTA */}
               <Button
                 onClick={handleCheckout}
-                className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow transition-all duration-300 rounded-xl"
+                disabled={loading}
+                className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none"
               >
-                <Repeat className="w-5 h-5 mr-2" />
-                YES! Lock In My Daily Brain Rewire — $11/mo
-                <ArrowRight className="w-5 h-5 ml-2" />
+                {loading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Repeat className="w-5 h-5 mr-2" />}
+                {loading ? "Creating checkout…" : "YES! Lock In My Daily Brain Rewire — $11/mo"}
+                {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
               </Button>
 
               {/* Trust indicators */}

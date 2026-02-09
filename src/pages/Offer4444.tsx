@@ -37,7 +37,7 @@ const Offer4444 = () => {
               <Grok4444HeroSection />
               <Grok4444ValueStack />
 
-              <Grok4444CtaBlock onCheckout={handleCheckout} delay={0.35} showScarcity />
+              <Grok4444CtaBlock onCheckout={handleCheckout} delay={0.35} showScarcity loading={loading} />
               <SocialProofSection variant="data" delay={0.35} />
 
               <motion.div className="bg-card border border-border/50 rounded-xl p-5 mb-8 max-w-lg mx-auto shadow-soft" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
@@ -121,7 +121,7 @@ const Offer4444 = () => {
                 </div>
               </motion.div>
 
-              <Grok4444CtaBlock onCheckout={handleCheckout} delay={0.55} />
+              <Grok4444CtaBlock onCheckout={handleCheckout} delay={0.55} loading={loading} />
 
               <motion.div className="text-center mt-4 mb-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }}>
                 <p className="text-xl md:text-2xl font-bold text-foreground mb-2 max-w-lg mx-auto">
@@ -139,12 +139,12 @@ const Offer4444 = () => {
               </motion.div>
 
               <GrokRiskReversal delay={0.7} />
-              <Grok4444CtaBlock onCheckout={handleCheckout} delay={0.75} showScarcity />
+              <Grok4444CtaBlock onCheckout={handleCheckout} delay={0.75} showScarcity loading={loading} />
 
               <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4 mt-4">Backed by Science</p>
               <ResearchList delay={0.8} />
 
-              <Grok4444CtaBlock onCheckout={handleCheckout} delay={0.85} />
+              <Grok4444CtaBlock onCheckout={handleCheckout} delay={0.85} loading={loading} />
               <GrokViralFooter delay={0.9} />
             </>
         </div>

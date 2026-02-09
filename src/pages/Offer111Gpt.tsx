@@ -83,6 +83,7 @@ const Offer111Gpt = () => {
             onCheckout={handleCheckout}
             delay={0.35}
             showScarcity
+            loading={loading}
           />
 
           {/* ─── 5. Social Proof: Emotional Stories + Live Metrics ─── */}
@@ -127,7 +128,7 @@ const Offer111Gpt = () => {
                 <div className="text-center mb-6">
                   <DiscountBanner />
                 </div>
-                <GptCtaBlock onCheckout={handleCheckout} delay={0.5} />
+                <GptCtaBlock onCheckout={handleCheckout} delay={0.5} loading={loading} />
               </>
             }
           />
@@ -173,6 +174,7 @@ const Offer111Gpt = () => {
             onCheckout={handleCheckout}
             delay={0.75}
             showScarcity
+            loading={loading}
           />
 
           {/* ─── 12. Backed by Science (warm) ─── */}
@@ -182,7 +184,7 @@ const Offer111Gpt = () => {
           <ResearchList delay={0.8} />
 
           {/* ─── 13. CTA #4 (final) ─── */}
-          <GptCtaBlock onCheckout={handleCheckout} delay={0.85} />
+          <GptCtaBlock onCheckout={handleCheckout} delay={0.85} loading={loading} />
 
           {/* ─── 14. Decline link ─── */}
           <motion.div
@@ -203,7 +205,7 @@ const Offer111Gpt = () => {
       </div>
 
       {/* ─── Sticky Bottom Bar ─── */}
-      <GptStickyBar onCheckout={handleCheckout} />
+      <GptStickyBar onCheckout={handleCheckout} loading={loading} />
     </div>
   );
 };

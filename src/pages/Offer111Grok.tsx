@@ -71,6 +71,7 @@ const Offer111Grok = () => {
             onCheckout={handleCheckout}
             delay={0.35}
             showScarcity
+            loading={loading}
           />
 
           {/* ─── 5. Social Proof: Testimonials + Live Metrics ─── */}
@@ -114,7 +115,7 @@ const Offer111Grok = () => {
                 <div className="text-center mb-6">
                   <DiscountBanner />
                 </div>
-                <GrokCtaBlock onCheckout={handleCheckout} delay={0.5} />
+                <GrokCtaBlock onCheckout={handleCheckout} delay={0.5} loading={loading} />
               </>
             }
           />
@@ -160,6 +161,7 @@ const Offer111Grok = () => {
             onCheckout={handleCheckout}
             delay={0.75}
             showScarcity
+            loading={loading}
           />
 
           {/* ─── 12. Backed by Science ─── */}
@@ -169,7 +171,7 @@ const Offer111Grok = () => {
           <ResearchList delay={0.8} />
 
           {/* ─── 13. CTA #4 (final) ─── */}
-          <GrokCtaBlock onCheckout={handleCheckout} delay={0.85} />
+          <GrokCtaBlock onCheckout={handleCheckout} delay={0.85} loading={loading} />
 
           {/* ─── 14. Viral Footer + Skip ─── */}
           <GrokViralFooter delay={0.9} />

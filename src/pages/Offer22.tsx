@@ -59,6 +59,7 @@ const Offer22 = () => {
             <UpsellWristbandStep
               onCheckout={handleUpsellCheckout}
               onSkip={handleSkipUpsell}
+              loading={loading}
             />
           )}
         </div>
