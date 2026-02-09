@@ -12,6 +12,7 @@ import GamificationHeader from "@/components/funnel/GamificationHeader";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
+import StickyCtaBar from "@/components/offer/StickyCtaBar";
 
 const Offer4444 = () => {
   const { startCheckout, loading } = useStripeCheckout();
@@ -146,9 +147,17 @@ const Offer4444 = () => {
 
               <Grok4444CtaBlock onCheckout={handleCheckout} delay={0.85} loading={loading} />
               <GrokViralFooter delay={0.9} />
-            </>
+             </>
         </div>
       </div>
+      <StickyCtaBar
+        onCheckout={handleCheckout}
+        loading={loading}
+        price="$4,444"
+        discount="77% to Artist"
+        label="YES! Fund My Artist & Own the Art 🎨"
+        trackingSource="offer_4444"
+      />
     </div>
   );
 };

@@ -14,6 +14,7 @@ import GamificationHeader from "@/components/funnel/GamificationHeader";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
+import StickyCtaBar from "@/components/offer/StickyCtaBar";
 
 const Offer1111 = () => {
   const { startCheckout, loading } = useStripeCheckout();
@@ -126,9 +127,17 @@ const Offer1111 = () => {
 
               <Grok1111CtaBlock onCheckout={handleCheckout} delay={0.85} loading={loading} />
               <GrokViralFooter delay={0.9} />
-            </>
+             </>
         </div>
       </div>
+      <StickyCtaBar
+        onCheckout={handleCheckout}
+        loading={loading}
+        price="$1,111"
+        discount="Save $2,220"
+        label="YES! Become a Kingdom Ambassador 👑"
+        trackingSource="offer_1111"
+      />
     </div>
   );
 };
