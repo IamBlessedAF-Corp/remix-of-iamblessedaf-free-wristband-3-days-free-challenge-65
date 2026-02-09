@@ -1,10 +1,14 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Copy, Check, Share2, MessageCircle, Link2, Users, Zap } from "lucide-react";
+import {
+  Copy, Check, Share2, MessageCircle, Link2, Users, Zap,
+  Coins, Gift, ExternalLink, Video
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useShortLinks } from "@/hooks/useShortLinks";
+import GiftSmsDialog from "@/components/offer/GiftSmsDialog";
 import type { PortalProfile, BlessingRow } from "@/hooks/usePortalData";
 
 interface Props {
@@ -15,12 +19,12 @@ interface Props {
 export default function PortalReferralHub({ profile, blessings }: Props) {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
+  const [smsOpen, setSmsOpen] = useState(false);
   const { getShareUrl } = useShortLinks();
   const [shortReferralUrl, setShortReferralUrl] = useState("");
 
   const rawReferralUrl = `https://iamblessedaf.com/r/${profile.referral_code}`;
 
-  // Generate tracked short link for referral
   useEffect(() => {
     getShareUrl(rawReferralUrl, "portal-referral", "/portal").then(setShortReferralUrl);
   }, [rawReferralUrl, getShareUrl]);
@@ -33,25 +37,33 @@ export default function PortalReferralHub({ profile, blessings }: Props) {
   const copyLink = useCallback(() => {
     navigator.clipboard.writeText(referralUrl);
     setCopied(true);
-    toast({ title: "Link copied! 🔗", description: "Share it with your friends" });
-    window.dispatchEvent(new CustomEvent("track", { detail: { event: "referral_link_copied" } }));
+    toast({ title: "Link copied! +5 BC 🪙", description: "Share it with your friends" });
     setTimeout(() => setCopied(false), 2000);
   }, [referralUrl, toast]);
 
   const shareViaSMS = () => {
     const msg = encodeURIComponent(
-      `Hey! I just blessed you with a FREE gift 🎁 Check it out: ${referralUrl}`
+      `Hey! I just gifted you a FREE "I Am Blessed AF" wristband 🎁 Claim it here: ${referralUrl}`
     );
     window.open(`sms:?body=${msg}`, "_blank");
-    window.dispatchEvent(new CustomEvent("track", { detail: { event: "share_sms_clicked" } }));
   };
 
   const shareViaWhatsApp = () => {
     const msg = encodeURIComponent(
-      `Hey! I just blessed you with a FREE gift 🎁 Check it out: ${referralUrl}`
+      `Hey! I'm gifting you a FREE "I Am Blessed AF" wristband 🎁 Each one feeds 11 people 🍽️ Claim yours: ${referralUrl}`
     );
     window.open(`https://wa.me/?text=${msg}`, "_blank");
-    window.dispatchEvent(new CustomEvent("track", { detail: { event: "share_whatsapp_clicked" } }));
+  };
+
+  const shareViaTwitter = () => {
+    const text = encodeURIComponent(
+      `🎁 I'm gifting FREE "I Am Blessed AF" wristbands — each one feeds 11 people 🍽️ Claim yours:`
+    );
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(referralUrl)}`, "_blank");
+  };
+
+  const shareViaFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralUrl)}`, "_blank");
   };
 
   return (
@@ -60,6 +72,23 @@ export default function PortalReferralHub({ profile, blessings }: Props) {
         <Share2 className="w-5 h-5 text-primary" />
         Referral Hub
       </h2>
+
+      {/* Incentive Banner */}
+      <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+            <Gift className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-foreground">
+              Every friend you bless = <span className="text-primary">50 BC + 11 meals donated</span>
+            </p>
+            <p className="text-xs text-muted-foreground">
+              They get a FREE wristband. You earn coins. Everyone wins 🙌
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Referral link card */}
       <div className="bg-card border border-border/60 rounded-xl p-5 space-y-4">
@@ -80,18 +109,43 @@ export default function PortalReferralHub({ profile, blessings }: Props) {
           </Button>
         </div>
 
-        <div className="flex gap-2">
-          <Button onClick={shareViaSMS} variant="outline" className="flex-1 h-11 gap-2">
-            <MessageCircle className="w-4 h-4" />
-            SMS
-          </Button>
-          <Button onClick={shareViaWhatsApp} className="flex-1 h-11 gap-2 bg-[hsl(142_70%_40%)] hover:bg-[hsl(142_70%_35%)] text-white">
+        {/* Sharing buttons — aggressive grid */}
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            onClick={shareViaWhatsApp}
+            className="h-11 gap-2 bg-[hsl(142_70%_40%)] hover:bg-[hsl(142_70%_35%)] text-[hsl(0_0%_100%)] font-bold"
+          >
             <MessageCircle className="w-4 h-4" />
             WhatsApp
+            <span className="text-[10px] opacity-80">+15 BC</span>
           </Button>
-          <Button onClick={copyLink} variant="outline" className="flex-1 h-11 gap-2">
+          <Button
+            onClick={() => setSmsOpen(true)}
+            className="h-11 gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
+          >
+            <Gift className="w-4 h-4" />
+            Send Gift SMS
+            <span className="text-[10px] opacity-80">+15 BC</span>
+          </Button>
+          <Button onClick={shareViaSMS} variant="outline" className="h-11 gap-2 font-bold">
+            <MessageCircle className="w-4 h-4" />
+            Native SMS
+            <span className="text-[10px] text-primary">+5 BC</span>
+          </Button>
+          <Button onClick={copyLink} variant="outline" className="h-11 gap-2 font-bold">
             <Link2 className="w-4 h-4" />
-            Copy
+            Copy Link
+            <span className="text-[10px] text-primary">+5 BC</span>
+          </Button>
+          <Button onClick={shareViaTwitter} variant="outline" className="h-11 gap-2 font-bold">
+            <ExternalLink className="w-4 h-4" />
+            Post on X
+            <span className="text-[10px] text-primary">+30 BC</span>
+          </Button>
+          <Button onClick={shareViaFacebook} variant="outline" className="h-11 gap-2 font-bold">
+            <ExternalLink className="w-4 h-4" />
+            Facebook
+            <span className="text-[10px] text-primary">+30 BC</span>
           </Button>
         </div>
       </div>
@@ -112,17 +166,51 @@ export default function PortalReferralHub({ profile, blessings }: Props) {
         </div>
       </div>
 
-      {/* Referral tip */}
+      {/* Milestone rewards */}
+      <div className="bg-card border border-border/60 rounded-xl p-5">
+        <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+          <Zap className="w-4 h-4 text-primary" />
+          Referral Milestones
+        </h3>
+        <div className="space-y-2">
+          {[
+            { count: 5, reward: 250, label: "Bless 5 friends" },
+            { count: 10, reward: 500, label: "Bless 10 friends" },
+            { count: 25, reward: 1500, label: "Bless 25 friends" },
+            { count: 50, reward: 3000, label: "Bless 50 friends" },
+            { count: 100, reward: 10000, label: "Bless 100 friends" },
+          ].map((m) => {
+            const hit = confirmed >= m.count;
+            return (
+              <div key={m.count} className={`flex items-center gap-3 p-2.5 rounded-lg ${hit ? "bg-primary/5" : ""}`}>
+                <span className={`text-sm ${hit ? "" : "grayscale opacity-50"}`}>
+                  {hit ? "✅" : "🎯"}
+                </span>
+                <span className={`text-sm flex-1 ${hit ? "text-primary font-semibold" : "text-foreground"}`}>
+                  {m.label}
+                </span>
+                <div className="flex items-center gap-1 text-xs font-bold text-primary">
+                  <Coins className="w-3 h-3" />
+                  +{m.reward.toLocaleString()} BC
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Pro tips */}
       <div className="bg-accent/50 border border-primary/20 rounded-xl p-4 space-y-2">
         <p className="text-sm font-bold text-foreground flex items-center gap-1.5">
           <Zap className="w-4 h-4 text-primary" />
-          Pro Tip: Maximize Your Conversions
+          Pro Tips: Maximize Conversions
         </p>
-        <ul className="text-xs text-muted-foreground space-y-1 ml-6 list-disc">
-          <li>Send a <strong>personal text</strong> instead of mass messages — 3x higher conversion</li>
-          <li>Mention the <strong>FREE wristband gift</strong> in your message</li>
-          <li>Share at <strong>8-9 PM local time</strong> for peak engagement</li>
-          <li>Follow up if they haven't confirmed within 24 hours</li>
+        <ul className="text-xs text-muted-foreground space-y-1.5 ml-6 list-disc">
+          <li>Send a <strong className="text-foreground">personal text</strong> instead of mass messages — 3x higher conversion</li>
+          <li>Mention the <strong className="text-foreground">FREE wristband gift</strong> in your message</li>
+          <li>Share at <strong className="text-foreground">8–9 PM local time</strong> for peak engagement</li>
+          <li>Post a <strong className="text-foreground">video/story</strong> showing your wristband — <span className="text-primary font-bold">+60 BC bonus</span></li>
+          <li>Tag <strong className="text-foreground">@iamblessedaf</strong> on any platform for <span className="text-primary font-bold">verified creator badge</span></li>
         </ul>
       </div>
 
@@ -162,6 +250,14 @@ export default function PortalReferralHub({ profile, blessings }: Props) {
           </div>
         )}
       </div>
+
+      <GiftSmsDialog
+        open={smsOpen}
+        onOpenChange={setSmsOpen}
+        shortUrl={referralUrl}
+        sourcePage="/portal"
+        onSuccess={() => toast({ title: "+15 BC earned! 🪙" })}
+      />
     </div>
   );
 }
