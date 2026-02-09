@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, X, Globe, Tag, Link2 } from "lucide-react";
 import type { LinkSummary, ClickRow } from "@/hooks/useLinkAnalytics";
 
 interface Props {
@@ -24,8 +24,45 @@ function isNamedLink(code: string) {
   return /^[a-zA-Z0-9-_]{2,20}$/.test(code) && !/[A-Z].*[a-z].*[A-Z]/.test(code);
 }
 
+function breakdownToSorted(map: Record<string, number>) {
+  return Object.entries(map)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+}
+
+function BreakdownMiniChart({ label, icon: Icon, data }: { label: string; icon: React.ElementType; data: [string, number][] }) {
+  const total = data.reduce((s, [, v]) => s + v, 0);
+  if (data.length === 0) return null;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+        <Icon className="w-3.5 h-3.5 text-primary" />
+        {label}
+      </div>
+      <div className="space-y-1.5">
+        {data.map(([key, count]) => {
+          const pct = total > 0 ? (count / total) * 100 : 0;
+          return (
+            <div key={key} className="space-y-0.5">
+              <div className="flex justify-between text-[10px]">
+                <span className="text-muted-foreground truncate max-w-[140px]">{key || "(none)"}</span>
+                <span className="font-semibold text-foreground ml-2">{count} <span className="text-muted-foreground font-normal">({pct.toFixed(0)}%)</span></span>
+              </div>
+              <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
+                <div className="h-full bg-primary/60 rounded-full transition-all" style={{ width: `${pct}%` }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function PerLinkTrafficChart({ links, clicks }: Props) {
   const [view, setView] = useState<"bar" | "daily">("bar");
+  const [selectedCode, setSelectedCode] = useState<string | null>(null);
 
   // Named links with clicks
   const namedLinks = useMemo(
@@ -72,6 +109,51 @@ export default function PerLinkTrafficChart({ links, clicks }: Props) {
     return Array.from(codes);
   }, [dailyData]);
 
+  // Detail breakdown for selected link
+  const selectedDetail = useMemo(() => {
+    if (!selectedCode) return null;
+
+    const link = namedLinks.find((l) => l.short_code === selectedCode);
+    if (!link) return null;
+
+    const linkClicks = clicks.filter((c) => c.link_id === link.id);
+
+    const utmSource: Record<string, number> = {};
+    const utmMedium: Record<string, number> = {};
+    const utmCampaign: Record<string, number> = {};
+    const referrers: Record<string, number> = {};
+
+    for (const c of linkClicks) {
+      const src = c.utm_source || "(direct)";
+      utmSource[src] = (utmSource[src] || 0) + 1;
+
+      const med = c.utm_medium || "(none)";
+      utmMedium[med] = (utmMedium[med] || 0) + 1;
+
+      const camp = c.utm_campaign || "(none)";
+      utmCampaign[camp] = (utmCampaign[camp] || 0) + 1;
+
+      const ref = c.referrer ? c.referrer.replace(/https?:\/\//, "").split("/")[0] : "(direct)";
+      referrers[ref] = (referrers[ref] || 0) + 1;
+    }
+
+    return {
+      link,
+      totalClicks: linkClicks.length,
+      utmSource: breakdownToSorted(utmSource),
+      utmMedium: breakdownToSorted(utmMedium),
+      utmCampaign: breakdownToSorted(utmCampaign),
+      referrers: breakdownToSorted(referrers),
+    };
+  }, [selectedCode, namedLinks, clicks]);
+
+  const handleBarClick = (data: any) => {
+    if (data?.activePayload?.[0]?.payload?.code) {
+      const code = data.activePayload[0].payload.code;
+      setSelectedCode((prev) => (prev === code ? null : code));
+    }
+  };
+
   if (barData.length === 0) return null;
 
   return (
@@ -102,34 +184,88 @@ export default function PerLinkTrafficChart({ links, clicks }: Props) {
       </div>
 
       {view === "bar" ? (
-        <ResponsiveContainer width="100%" height={Math.max(200, barData.length * 36)}>
-          <BarChart data={barData} layout="vertical" margin={{ left: 70, right: 16, top: 4, bottom: 4 }}>
-            <XAxis type="number" tick={{ fontSize: 10 }} allowDecimals={false} />
-            <YAxis
-              type="category"
-              dataKey="code"
-              tick={{ fontSize: 11, fontWeight: 600 }}
-              width={65}
-            />
-            <Tooltip
-              contentStyle={{
-                background: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: 8,
-                fontSize: 11,
-              }}
-              formatter={(value: number, _name: string, props: any) => [
-                `${value} clicks`,
-                props.payload.destination,
-              ]}
-            />
-            <Bar dataKey="clicks" radius={[0, 4, 4, 0]} barSize={20}>
-              {barData.map((_, i) => (
-                <Cell key={i} fill={COLORS[i % COLORS.length]} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <>
+          <p className="text-[10px] text-muted-foreground mb-2">Click a bar to see UTM &amp; referrer details</p>
+          <ResponsiveContainer width="100%" height={Math.max(200, barData.length * 36)}>
+            <BarChart
+              data={barData}
+              layout="vertical"
+              margin={{ left: 70, right: 16, top: 4, bottom: 4 }}
+              onClick={handleBarClick}
+              style={{ cursor: "pointer" }}
+            >
+              <XAxis type="number" tick={{ fontSize: 10 }} allowDecimals={false} />
+              <YAxis
+                type="category"
+                dataKey="code"
+                tick={{ fontSize: 11, fontWeight: 600 }}
+                width={65}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: "hsl(var(--card))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: 8,
+                  fontSize: 11,
+                }}
+                formatter={(value: number, _name: string, props: any) => [
+                  `${value} clicks`,
+                  props.payload.destination,
+                ]}
+              />
+              <Bar dataKey="clicks" radius={[0, 4, 4, 0]} barSize={20}>
+                {barData.map((entry, i) => (
+                  <Cell
+                    key={i}
+                    fill={COLORS[i % COLORS.length]}
+                    opacity={selectedCode && selectedCode !== entry.code ? 0.35 : 1}
+                    stroke={selectedCode === entry.code ? "hsl(var(--foreground))" : "none"}
+                    strokeWidth={selectedCode === entry.code ? 2 : 0}
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+
+          {/* Expanded detail panel */}
+          {selectedDetail && (
+            <div className="mt-4 border border-border/50 rounded-lg bg-secondary/30 p-4 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Link2 className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-xs font-bold text-foreground">/{selectedDetail.link.short_code}</span>
+                  <span className="text-[10px] text-muted-foreground">→ {selectedDetail.link.destination_url.replace(/https?:\/\/[^/]+/, "")}</span>
+                </div>
+                <button
+                  onClick={() => setSelectedCode(null)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <p className="text-[10px] text-muted-foreground mb-3">
+                {selectedDetail.totalClicks} tracked click{selectedDetail.totalClicks !== 1 ? "s" : ""} in period
+                {selectedDetail.link.campaign && (
+                  <span className="ml-2 px-1.5 py-0.5 bg-primary/10 text-primary rounded text-[9px] font-semibold">
+                    {selectedDetail.link.campaign}
+                  </span>
+                )}
+              </p>
+
+              {selectedDetail.totalClicks === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">No click-level data in the selected period</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <BreakdownMiniChart label="UTM Source" icon={Tag} data={selectedDetail.utmSource} />
+                  <BreakdownMiniChart label="UTM Medium" icon={Tag} data={selectedDetail.utmMedium} />
+                  <BreakdownMiniChart label="UTM Campaign" icon={Tag} data={selectedDetail.utmCampaign} />
+                  <BreakdownMiniChart label="Referrer" icon={Globe} data={selectedDetail.referrers} />
+                </div>
+              )}
+            </div>
+          )}
+        </>
       ) : (
         <>
           {dailyData.length === 0 ? (
