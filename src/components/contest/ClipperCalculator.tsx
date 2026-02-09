@@ -29,7 +29,7 @@ const ClipperCalculator = () => {
           <Calculator className="w-6 h-6 text-primary" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold">💰 Earnings Calculator</h2>
+          <h2 className="text-2xl font-bold">💰 Earnings Calculator - $2 Per Valid Entry</h2>
           <p className="text-muted-foreground text-sm">See how much you can make clipping for IamBlessedAF</p>
         </div>
       </div>
