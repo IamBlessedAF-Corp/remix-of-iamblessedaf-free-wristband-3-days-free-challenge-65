@@ -44,6 +44,29 @@ interface GamificationStats {
   livePeopleOnline: number;
 }
 
+/** Tracks the last BC earn event for UI toasts */
+let _lastCoinEarn: { amount: number; ts: number } | null = null;
+const _coinEarnListeners = new Set<() => void>();
+
+function notifyCoinEarn(amount: number) {
+  _lastCoinEarn = { amount, ts: Date.now() };
+  _coinEarnListeners.forEach((fn) => fn());
+}
+
+/** Hook to subscribe to BC earn events (used by GamificationHeader) */
+export function useCoinEarnEvent() {
+  const [earn, setEarn] = useState<{ amount: number; ts: number } | null>(null);
+
+  useEffect(() => {
+    const handler = () => setEarn(_lastCoinEarn ? { ..._lastCoinEarn } : null);
+    _coinEarnListeners.add(handler);
+    return () => { _coinEarnListeners.delete(handler); };
+  }, []);
+
+  const dismiss = useCallback(() => setEarn(null), []);
+  return { earn, dismiss };
+}
+
 const STORAGE_KEY = "gamification-stats";
 const GLOBAL_CACHE_KEY = "gamification-global-cache";
 const GLOBAL_CACHE_TTL = 30_000; // 30s
@@ -124,6 +147,7 @@ export function useGamificationStats() {
       saveLocal(updated);
       return updated;
     });
+    notifyCoinEarn(amount);
   }, []);
 
   const addHearts = useCallback((amount: number) => {
@@ -144,6 +168,7 @@ export function useGamificationStats() {
 
   const addImpact = useCallback(
     (meals: number, wristbands: number, friends: number) => {
+      const coinGain = meals * 2 + wristbands * 10 + friends * 25;
       setStats((s) => {
         const updated = {
           ...s,
@@ -151,11 +176,12 @@ export function useGamificationStats() {
           wristbandsImpact: s.wristbandsImpact + wristbands,
           friendsBlessed: s.friendsBlessed + friends,
           hearts: s.hearts + meals + wristbands * 5 + friends * 10,
-          blessedCoins: s.blessedCoins + meals * 2 + wristbands * 10 + friends * 25,
+          blessedCoins: s.blessedCoins + coinGain,
         };
         saveLocal(updated);
         return updated;
       });
+      if (coinGain > 0) notifyCoinEarn(coinGain);
     },
     []
   );
@@ -169,6 +195,7 @@ export function useGamificationStats() {
       saveLocal(updated);
       return updated;
     });
+    notifyCoinEarn(amount);
   }, []);
 
   /** Fire-and-forget: reward the user for completing a checkout at a given tier */
@@ -187,6 +214,7 @@ export function useGamificationStats() {
       saveLocal(updated);
       return updated;
     });
+    notifyCoinEarn(r.coins);
 
     // Also sync to DB wallet if user is authenticated
     try {

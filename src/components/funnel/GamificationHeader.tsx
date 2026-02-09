@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Flame, Heart, Globe, Users, ChevronDown, ChevronUp, Zap } from "lucide-react";
-import { useGamificationStats } from "@/hooks/useGamificationStats";
+import { useGamificationStats, useCoinEarnEvent } from "@/hooks/useGamificationStats";
 import { useFunnelProgress } from "@/hooks/useFunnelProgress";
 import BcCoinButton from "@/components/gamification/BcCoinButton";
 import TrophyCase from "@/components/gamification/TrophyCase";
@@ -38,6 +38,7 @@ const tickerMessages = [
 
 const GamificationHeader = () => {
   const { stats } = useGamificationStats();
+  const { earn: coinEarn, dismiss: dismissCoinEarn } = useCoinEarnEvent();
   const { totalXp, xpJustEarned } = useFunnelProgress();
   const [tickerIndex, setTickerIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
@@ -61,6 +62,13 @@ const GamificationHeader = () => {
     return () => clearInterval(id);
   }, []);
 
+  // Auto-dismiss coin earn toast after 2.5s
+  useEffect(() => {
+    if (!coinEarn) return;
+    const id = setTimeout(dismissCoinEarn, 2500);
+    return () => clearTimeout(id);
+  }, [coinEarn, dismissCoinEarn]);
+
   return (
     <div className="sticky top-0 z-50 w-full">
       {/* ── Primary bar: slim, focused ── */}
@@ -68,7 +76,26 @@ const GamificationHeader = () => {
         <div className="container mx-auto px-3">
           <div className="flex items-center justify-between h-9 gap-1.5 text-xs font-medium">
             {/* Left: BC coins — the #1 action driver */}
-            <BcCoinButton balance={stats.blessedCoins} />
+            <div className="relative">
+              <BcCoinButton balance={stats.blessedCoins} />
+              {/* Floating +BC toast */}
+              <AnimatePresence>
+                {coinEarn && (
+                  <motion.div
+                    key={coinEarn.ts}
+                    initial={{ opacity: 0, y: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, y: -28, scale: 1 }}
+                    exit={{ opacity: 0, y: -40, scale: 0.8 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="absolute left-1/2 -translate-x-1/2 top-0 pointer-events-none z-50"
+                  >
+                    <span className="inline-flex items-center gap-0.5 bg-primary text-primary-foreground px-2 py-0.5 rounded-full text-[11px] font-bold shadow-lg whitespace-nowrap">
+                      🪙 +{coinEarn.amount} BC
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Center: rotating social proof ticker */}
             <div className="flex-1 min-w-0 overflow-hidden mx-2">
