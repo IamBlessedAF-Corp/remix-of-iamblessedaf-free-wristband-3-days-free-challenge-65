@@ -6,6 +6,9 @@ import RiskReversalGuarantee from "./RiskReversalGuarantee";
 import ResearchList from "./ResearchList";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import UrgencyBanner from "./UrgencyBanner";
+import EpiphanyBridge from "./EpiphanyBridge";
+import ImpactCounter from "./ImpactCounter";
+import ViralShareNudge from "./ViralShareNudge";
 
 interface UpsellWristbandStepProps {
   onCheckout: () => void;
@@ -50,6 +53,9 @@ const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWris
           + 22 Meals Donated to Feeding America
         </div>
       </motion.div>
+
+      {/* Epiphany Bridge — Brunson storytelling */}
+      <EpiphanyBridge />
 
       {/* Comparison */}
       <motion.div
@@ -224,6 +230,12 @@ const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWris
           </div>
         </div>
       </motion.div>
+
+      {/* Live Impact Counter */}
+      <ImpactCounter />
+
+      {/* Viral Share Nudge */}
+      <ViralShareNudge />
 
       {/* Skip */}
       <motion.div
