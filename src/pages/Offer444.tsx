@@ -21,6 +21,7 @@ import DownsellModal from "@/components/offer/DownsellModal";
 import EpiphanyBridge from "@/components/offer/EpiphanyBridge";
 import ImpactCounter from "@/components/offer/ImpactCounter";
 import ViralShareNudge from "@/components/offer/ViralShareNudge";
+import StickyCtaBar from "@/components/offer/StickyCtaBar";
 
 const Offer444 = () => {
   const [showDownsell, setShowDownsell] = useState(false);
@@ -170,9 +171,17 @@ const Offer444 = () => {
                 onAccept={handleDownsellAccept}
                 onDecline={handleFinalDecline}
               />
-            </>
+             </>
         </div>
       </div>
+      <StickyCtaBar
+        onCheckout={handleCheckout}
+        loading={loading}
+        price="$444"
+        discount="Save $553"
+        label="YES! Lock My Habit Pack 🔒"
+        trackingSource="offer_444"
+      />
     </div>
   );
 };
