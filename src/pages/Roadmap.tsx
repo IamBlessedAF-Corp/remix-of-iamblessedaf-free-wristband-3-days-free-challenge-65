@@ -1,10 +1,29 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Map, ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Zap, Target, Shield, TrendingUp, Users, Gift, Star, Rocket, Crown, Lock, Globe, Sparkles, BarChart3, Megaphone, Cpu, ArrowLeft, Layers, Database, CreditCard, MessageSquare, Paintbrush, Server, FlaskConical, Download } from "lucide-react";
 import { PHASE_NEXT_STEPS } from "@/data/roadmapNextSteps";
 import { TRACKING_GROUPS } from "@/data/trackingGroups";
 import { exportRoadmapMarkdown, downloadMarkdown } from "@/utils/roadmapExport";
 import RoadmapItemActions from "@/components/roadmap/RoadmapItemActions";
 import BulkSendToBoard from "@/components/roadmap/BulkSendToBoard";
+import RoadmapSearchBar, { type RoadmapFilters } from "@/components/roadmap/RoadmapSearchBar";
+
+/* ─── Filter helper ─── */
+function matchesFilters(
+  title: string,
+  detail: string | undefined,
+  status: string,
+  priority: string | undefined,
+  filters: RoadmapFilters
+): boolean {
+  if (filters.status && status !== filters.status) return false;
+  if (filters.priority && priority !== filters.priority) return false;
+  if (filters.keyword) {
+    const kw = filters.keyword.toLowerCase();
+    const haystack = `${title} ${detail || ""}`.toLowerCase();
+    if (!haystack.includes(kw)) return false;
+  }
+  return true;
+}
 
 /* ─── Types ─── */
 interface RoadmapItem {
@@ -225,7 +244,8 @@ const PHASES: RoadmapPhase[] = [
 ];
 
 /* ─── Collapsible Section Component ─── */
-function PhaseSection({ phase }: { phase: RoadmapPhase }) {
+function PhaseSection({ phase, filters }: { phase: RoadmapPhase; filters: RoadmapFilters }) {
+  const isFiltering = !!(filters.keyword || filters.status || filters.priority);
   const [open, setOpen] = useState(phase.status === "active" || phase.status === "blocked");
   const [showNextSteps, setShowNextSteps] = useState(false);
   const Icon = phase.icon;
@@ -241,6 +261,21 @@ function PhaseSection({ phase }: { phase: RoadmapPhase }) {
     labels: ["next-optimization"],
     isNextStep: true,
   }));
+
+  // Apply filters
+  const filteredItems = phase.items.filter((i) =>
+    matchesFilters(i.title, i.detail, i.status, i.priority, filters)
+  );
+  const filteredNextSteps = nextStepItems.filter((i) =>
+    matchesFilters(i.title, i.detail, i.status, i.priority, filters)
+  );
+
+  // Hide entire section if filtering and nothing matches
+  if (isFiltering && filteredItems.length === 0 && filteredNextSteps.length === 0) return null;
+
+  // Auto-expand when filtering
+  const effectiveOpen = isFiltering || open;
+  const effectiveShowNextSteps = isFiltering ? filteredNextSteps.length > 0 : showNextSteps;
 
   return (
     <div className="border border-border/50 rounded-xl overflow-hidden bg-card">
@@ -284,7 +319,7 @@ function PhaseSection({ phase }: { phase: RoadmapPhase }) {
               {doneCount}/{phase.items.length}
             </span>
           </div>
-          {open ? (
+          {effectiveOpen ? (
             <ChevronDown className="w-4 h-4 text-muted-foreground" />
           ) : (
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -293,16 +328,16 @@ function PhaseSection({ phase }: { phase: RoadmapPhase }) {
       </button>
 
       {/* Expanded Items */}
-      {open && (
+      {effectiveOpen && (
         <div className="border-t border-border/30">
           <div className="divide-y divide-border/20">
-            {phase.items.map((item, idx) => (
+            {filteredItems.map((item, idx) => (
               <RoadmapItemRow key={idx} item={item} phaseName={phase.title} />
             ))}
           </div>
 
           {/* Next Steps Toggle */}
-          {nextStepItems.length > 0 && (
+          {(isFiltering ? filteredNextSteps.length > 0 : nextStepItems.length > 0) && (
             <div className="border-t border-dashed border-border/40">
               <div className="flex items-center">
                 <button
@@ -311,22 +346,22 @@ function PhaseSection({ phase }: { phase: RoadmapPhase }) {
                 >
                   <FlaskConical className="w-3.5 h-3.5 text-purple-400 shrink-0" />
                   <span className="text-[11px] font-bold text-purple-400">
-                    {showNextSteps ? "▾" : "▸"} Next 11 Optimizations
+                    {effectiveShowNextSteps ? "▾" : "▸"} Next 11 Optimizations
                   </span>
                   <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30 font-semibold">
-                    {nextStepItems.length} items
+                    {isFiltering ? filteredNextSteps.length : nextStepItems.length} items
                   </span>
                 </button>
                 <div className="pr-4">
                   <BulkSendToBoard
-                    items={nextStepItems.map(i => ({ title: i.title, detail: i.detail, priority: i.priority }))}
+                    items={(isFiltering ? filteredNextSteps : nextStepItems).map(i => ({ title: i.title, detail: i.detail, priority: i.priority }))}
                     sectionLabel={`${phase.title}-optimizations`}
                   />
                 </div>
               </div>
-              {showNextSteps && (
+              {effectiveShowNextSteps && (
                 <div className="divide-y divide-border/20 bg-purple-500/[0.02] animate-in fade-in slide-in-from-top-1 duration-150">
-                  {nextStepItems.map((item, idx) => (
+                  {(isFiltering ? filteredNextSteps : nextStepItems).map((item, idx) => (
                     <RoadmapItemRow key={`next-${idx}`} item={item} phaseName={phase.title} />
                   ))}
                 </div>
@@ -690,8 +725,18 @@ function TechCategoryRow({ category }: { category: TechCategory }) {
 }
 
 /* ─── Tracking Groups Section ─── */
-function TrackingGroupsSection() {
+function TrackingGroupsSection({ filters }: { filters: RoadmapFilters }) {
+  const isFiltering = !!(filters.keyword || filters.priority);
   const [open, setOpen] = useState(false);
+
+  // Check if any tracking items match (status filter doesn't apply — tracking items have no status)
+  const hasMatches = TRACKING_GROUPS.some((g) =>
+    g.items.some((i) => matchesFilters(i.title, i.detail, "planned", i.priority, { ...filters, status: "" }))
+  );
+
+  if (isFiltering && !hasMatches) return null;
+
+  const effectiveOpen = isFiltering || open;
 
   return (
     <div className="border border-border/50 rounded-xl bg-card overflow-hidden">
@@ -709,12 +754,12 @@ function TrackingGroupsSection() {
         <span className="text-[9px] px-1.5 py-0.5 rounded-full border bg-amber-500/10 text-amber-400 border-amber-500/30 font-semibold">
           Growth
         </span>
-        {open ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+        {effectiveOpen ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
       </button>
-      {open && (
+      {effectiveOpen && (
         <div className="border-t border-border/30 animate-in fade-in slide-in-from-top-1 duration-150">
           {TRACKING_GROUPS.map((group) => (
-            <TrackingGroupRow key={group.id} group={group} />
+            <TrackingGroupRow key={group.id} group={group} filters={filters} />
           ))}
         </div>
       )}
@@ -722,8 +767,19 @@ function TrackingGroupsSection() {
   );
 }
 
-function TrackingGroupRow({ group }: { group: typeof TRACKING_GROUPS[0] }) {
+function TrackingGroupRow({ group, filters }: { group: typeof TRACKING_GROUPS[0]; filters: RoadmapFilters }) {
+  const isFiltering = !!(filters.keyword || filters.priority);
   const [open, setOpen] = useState(false);
+
+  // Filter items (tracking items don't have status, so skip status filter)
+  const filteredItems = group.items.filter((i) =>
+    matchesFilters(i.title, i.detail, "planned", i.priority, { ...filters, status: "" })
+  );
+
+  if (isFiltering && filteredItems.length === 0) return null;
+
+  const effectiveOpen = isFiltering || open;
+  const displayItems = isFiltering ? filteredItems : group.items;
 
   return (
     <div className="border-b border-border/20 last:border-0">
@@ -734,19 +790,21 @@ function TrackingGroupRow({ group }: { group: typeof TRACKING_GROUPS[0] }) {
         >
           <span className="text-sm shrink-0">{group.icon}</span>
           <span className="text-xs font-semibold text-foreground flex-1">{group.title}</span>
-          <span className="text-[9px] text-muted-foreground font-mono">{group.items.length} items</span>
-          {open ? <ChevronDown className="w-3 h-3 text-muted-foreground" /> : <ChevronRight className="w-3 h-3 text-muted-foreground" />}
+          <span className="text-[9px] text-muted-foreground font-mono">
+            {isFiltering ? `${filteredItems.length}/${group.items.length}` : `${group.items.length} items`}
+          </span>
+          {effectiveOpen ? <ChevronDown className="w-3 h-3 text-muted-foreground" /> : <ChevronRight className="w-3 h-3 text-muted-foreground" />}
         </button>
         <div className="pr-4">
           <BulkSendToBoard
-            items={group.items.map(i => ({ title: i.title, detail: i.detail, priority: i.priority }))}
+            items={displayItems.map(i => ({ title: i.title, detail: i.detail, priority: i.priority }))}
             sectionLabel={group.title}
           />
         </div>
       </div>
-      {open && (
+      {effectiveOpen && (
         <div className="divide-y divide-border/20 bg-secondary/[0.03] animate-in fade-in slide-in-from-top-1 duration-100">
-          {group.items.map((item, idx) => (
+          {displayItems.map((item, idx) => (
             <div key={idx} className="px-5 py-2.5 pl-12">
               <div className="flex items-center gap-2 flex-wrap">
                 <Target className="w-3 h-3 text-muted-foreground shrink-0" />
@@ -767,6 +825,27 @@ function TrackingGroupRow({ group }: { group: typeof TRACKING_GROUPS[0] }) {
 
 /* ─── Main Page ─── */
 export default function Roadmap() {
+  const [filters, setFilters] = useState<RoadmapFilters>({ keyword: "", status: "", priority: "" });
+
+  // Compute match counts for the search bar
+  const { matchCount, totalCount } = useMemo(() => {
+    const allPhaseItems = PHASES.flatMap((p) => p.items);
+    const allNextSteps = PHASES.flatMap((p) =>
+      (PHASE_NEXT_STEPS[p.id] || []).map((ns) => ({ ...ns, status: "planned" as const }))
+    );
+    const allTrackingItems = TRACKING_GROUPS.flatMap((g) =>
+      g.items.map((i) => ({ ...i, status: "planned" as const }))
+    );
+    const all = [
+      ...allPhaseItems.map((i) => ({ title: i.title, detail: i.detail, status: i.status, priority: i.priority })),
+      ...allNextSteps.map((i) => ({ title: i.title, detail: i.detail, status: i.status, priority: i.priority })),
+      ...allTrackingItems.map((i) => ({ title: i.title, detail: i.detail, status: i.status, priority: i.priority })),
+    ];
+    const total = all.length;
+    const matched = all.filter((i) => matchesFilters(i.title, i.detail, i.status, i.priority, filters)).length;
+    return { matchCount: matched, totalCount: total };
+  }, [filters]);
+
   const handleExport = () => {
     const exportPhases = PHASES.map((p) => ({
       title: p.title,
@@ -814,6 +893,9 @@ export default function Roadmap() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-5">
+        {/* Search & Filter */}
+        <RoadmapSearchBar filters={filters} onChange={setFilters} matchCount={matchCount} totalCount={totalCount} />
+
         {/* Overview Stats */}
         <SummaryStats />
 
@@ -821,12 +903,12 @@ export default function Roadmap() {
         <MatrixLegend />
         <PipelineLegend />
         <TechStackSection />
-        <TrackingGroupsSection />
+        <TrackingGroupsSection filters={filters} />
 
         {/* Phase Sections */}
         <div className="space-y-3">
           {PHASES.map((phase) => (
-            <PhaseSection key={phase.id} phase={phase} />
+            <PhaseSection key={phase.id} phase={phase} filters={filters} />
           ))}
         </div>
 
