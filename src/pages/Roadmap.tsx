@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Map, ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Zap, Target, Shield, TrendingUp, Users, Gift, Star, Rocket, Crown, Lock, Globe, Sparkles, BarChart3, Megaphone, Cpu, ArrowLeft } from "lucide-react";
+import { Map, ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Zap, Target, Shield, TrendingUp, Users, Gift, Star, Rocket, Crown, Lock, Globe, Sparkles, BarChart3, Megaphone, Cpu, ArrowLeft, Layers, Database, CreditCard, MessageSquare, Paintbrush, Server } from "lucide-react";
 
 /* ─── Types ─── */
 interface RoadmapItem {
@@ -470,6 +470,163 @@ function SummaryStats() {
   );
 }
 
+/* ─── Tech Stack Section ─── */
+interface TechItem {
+  name: string;
+  desc: string;
+  version?: string;
+}
+
+interface TechCategory {
+  icon: React.ElementType;
+  title: string;
+  items: TechItem[];
+}
+
+const TECH_STACK: TechCategory[] = [
+  {
+    icon: Layers,
+    title: "Frontend Framework",
+    items: [
+      { name: "React", version: "18.3", desc: "Component-based UI library" },
+      { name: "TypeScript", desc: "Type-safe JavaScript superset" },
+      { name: "Vite", desc: "Lightning-fast build tool & dev server" },
+      { name: "React Router", version: "6.30", desc: "Client-side routing with lazy loading" },
+    ],
+  },
+  {
+    icon: Paintbrush,
+    title: "Styling & UI",
+    items: [
+      { name: "Tailwind CSS", desc: "Utility-first CSS with custom design tokens" },
+      { name: "shadcn/ui", desc: "Radix-based accessible component library" },
+      { name: "Framer Motion", version: "12.x", desc: "Declarative animations & transitions" },
+      { name: "Lucide React", desc: "Modern icon set (~460 icons)" },
+      { name: "Recharts", version: "2.15", desc: "Composable chart library for analytics" },
+      { name: "Embla Carousel", desc: "Lightweight carousel/slider engine" },
+    ],
+  },
+  {
+    icon: Database,
+    title: "Backend & Database",
+    items: [
+      { name: "Lovable Cloud (Supabase)", desc: "Postgres DB, Auth, Edge Functions, Storage" },
+      { name: "Row-Level Security", desc: "Per-user data isolation on 12+ tables" },
+      { name: "Edge Functions (Deno)", desc: "Serverless functions: checkout, AI chat, SMS, short-link redirect" },
+      { name: "Realtime Subscriptions", desc: "Live data sync for portal activity feed" },
+      { name: "Database Functions", desc: "confirm_blessing, increment_click_count, get_total_meals_donated, has_role" },
+      { name: "Database Triggers", desc: "Auto-compute delegation_score, update timestamps" },
+    ],
+  },
+  {
+    icon: CreditCard,
+    title: "Payments & Commerce",
+    items: [
+      { name: "Stripe Checkout", desc: "Hosted payment pages for all tiers ($22–$4,444)" },
+      { name: "Stripe Subscriptions", desc: "$11/mo recurring membership" },
+      { name: "Order Tracking", desc: "orders table with status, tier, stripe_session_id" },
+    ],
+  },
+  {
+    icon: MessageSquare,
+    title: "Communications",
+    items: [
+      { name: "Twilio SMS", desc: "Scheduled gratitude messages, delivery tracking, status webhooks" },
+      { name: "SMS Delivery Tracking", desc: "sms_deliveries table with twilio_sid, status, error logging" },
+      { name: "Gift SMS Dialog", desc: "In-app SMS sending with recipient name/phone" },
+    ],
+  },
+  {
+    icon: Server,
+    title: "Data & State Management",
+    items: [
+      { name: "TanStack React Query", version: "5.83", desc: "Server state caching, auto-refetch, optimistic updates" },
+      { name: "React Hook Form", version: "7.61", desc: "Performant form handling with Zod validation" },
+      { name: "Zod", version: "3.25", desc: "Schema validation for forms and API payloads" },
+      { name: "Custom Hooks (15+)", desc: "useAuth, useBcWallet, useLinkAnalytics, useCountdown, useSpinLogic, etc." },
+    ],
+  },
+  {
+    icon: Globe,
+    title: "Infrastructure & Integrations",
+    items: [
+      { name: "Custom Link Shortener", desc: "iamblessedaf.com/go/ — Bitly-style with UTM pass-through & deduplication" },
+      { name: "CSV Export Engine", desc: "Client-side click & link data export with full attribution" },
+      { name: "Kanban Board (13 columns)", desc: "Six Sigma pipeline with decision matrix scoring" },
+      { name: "BC Coin Economy", desc: "Wallet system, store, transactions, daily login streaks" },
+      { name: "Hello Pangea DnD", desc: "Drag-and-drop for Kanban board cards" },
+      { name: "Canvas Confetti", desc: "Celebration animations on achievements & purchases" },
+    ],
+  },
+];
+
+function TechStackSection() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="border border-border/50 rounded-xl bg-card overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-secondary/30 transition-colors"
+      >
+        <Layers className="w-5 h-5 text-primary shrink-0" />
+        <div className="flex-1">
+          <h2 className="text-sm font-bold text-foreground">Tech Stack & Integrations</h2>
+          <p className="text-[11px] text-muted-foreground">
+            {TECH_STACK.reduce((sum, c) => sum + c.items.length, 0)} technologies across {TECH_STACK.length} categories
+          </p>
+        </div>
+        <span className="text-[9px] px-1.5 py-0.5 rounded-full border bg-primary/10 text-primary border-primary/30 font-semibold">
+          Full Stack
+        </span>
+        {open ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+      </button>
+      {open && (
+        <div className="border-t border-border/30 animate-in fade-in slide-in-from-top-1 duration-150">
+          {TECH_STACK.map((cat) => (
+            <TechCategoryRow key={cat.title} category={cat} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TechCategoryRow({ category }: { category: TechCategory }) {
+  const [open, setOpen] = useState(false);
+  const Icon = category.icon;
+
+  return (
+    <div className="border-b border-border/20 last:border-0">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-3 px-5 py-3 text-left hover:bg-secondary/20 transition-colors"
+      >
+        <Icon className="w-4 h-4 text-primary/70 shrink-0" />
+        <span className="text-xs font-semibold text-foreground flex-1">{category.title}</span>
+        <span className="text-[9px] text-muted-foreground font-mono">{category.items.length} items</span>
+        {open ? <ChevronDown className="w-3 h-3 text-muted-foreground" /> : <ChevronRight className="w-3 h-3 text-muted-foreground" />}
+      </button>
+      {open && (
+        <div className="px-5 pb-3 space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-100">
+          {category.items.map((item) => (
+            <div key={item.name} className="flex items-center gap-2 pl-7">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary/40 shrink-0" />
+              <span className="text-[11px] font-semibold text-foreground">{item.name}</span>
+              {item.version && (
+                <span className="text-[9px] px-1 py-0.5 rounded bg-secondary text-muted-foreground font-mono">
+                  v{item.version}
+                </span>
+              )}
+              <span className="text-[10px] text-muted-foreground">— {item.desc}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── Main Page ─── */
 export default function Roadmap() {
   return (
@@ -495,6 +652,7 @@ export default function Roadmap() {
         {/* Architecture Legends */}
         <MatrixLegend />
         <PipelineLegend />
+        <TechStackSection />
 
         {/* Phase Sections */}
         <div className="space-y-3">
