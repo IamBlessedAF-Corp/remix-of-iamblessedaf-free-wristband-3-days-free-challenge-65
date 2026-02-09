@@ -38,7 +38,7 @@ const Offer111Grok = () => {
           >
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold font-mono">
               <Lock className="w-4 h-4" />
-              ⚡ Protocol Unlocked → Precision Gratitude System
+              ✅ Challenge Complete → Your Gratitude Pack Is Ready
             </div>
           </motion.div>
 
@@ -53,11 +53,11 @@ const Offer111Grok = () => {
             transition={{ duration: 0.5, delay: 0.12 }}
           >
             <p className="text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight">
-              Deploy the Gratitude Trigger:{" "}
-              <span className="text-primary">Custom Shirt → mPFC Activation</span> in Your Target
+              Send Your Friend a Shirt With{" "}
+              <span className="text-primary">Your Words on It</span> → They Read It → You Both Get Happier
             </p>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto font-mono">
-              They read your message → mPFC fires → they text you back → YOUR 27× dopamine cascade activates. Bilateral rewire complete.
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              When they read your message, their brain releases serotonin. When they text you back "thank you" — YOUR brain does the same. That's the 27× effect.
             </p>
           </motion.div>
 
@@ -85,9 +85,9 @@ const Offer111Grok = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             <p className="text-2xl md:text-3xl font-bold text-foreground mb-1 leading-tight">
-              Identity Encoding: <span className="text-primary">IamBlessedAF</span> leverages the most powerful neural trigger
+              Why <span className="text-primary">"I Am Blessed"</span> Works Better Than Any Affirmation
             </p>
-            <p className="text-4xl md:text-5xl font-black text-primary mb-2 font-mono">
+            <p className="text-4xl md:text-5xl font-black text-primary mb-2">
               "I AM"
             </p>
             <div className="overflow-hidden -my-6">
@@ -97,8 +97,8 @@ const Offer111Grok = () => {
                 className="w-full max-w-sm h-auto object-contain mx-auto"
               />
             </div>
-            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-4 leading-relaxed font-mono">
-              Co-developed with PhD neuroscientist. 7+ years calibrating conversation triggers for maximum mPFC activation and identity encoding.
+            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-4 leading-relaxed">
+              Tony Robbins: "Whatever you attach to 'I am' with strong emotion — you become." When you wear "I Am Blessed AF," you're not describing a feeling. You're programming your brain to feel it. Every. Single. Day.
             </p>
           </motion.div>
 
@@ -106,8 +106,8 @@ const Offer111Grok = () => {
           <GrokQuotesSection delay={0.45} />
 
           {/* ─── 8. Product Sections ─── */}
-          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4 font-mono">
-            PRECISION PACK CONTENTS
+          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">
+            WHAT'S IN YOUR PACK
           </p>
           <ProductSections
             afterWristband={
@@ -165,8 +165,8 @@ const Offer111Grok = () => {
           />
 
           {/* ─── 12. Backed by Science ─── */}
-          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4 mt-4 font-mono">
-            Clinical Evidence Base
+          <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4 mt-4">
+            The Science Is Clear
           </p>
           <ResearchList delay={0.8} />
 

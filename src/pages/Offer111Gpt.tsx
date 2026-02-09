@@ -50,7 +50,7 @@ const Offer111Gpt = () => {
           >
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
               <Sparkles className="w-4 h-4" />
-              You did something beautiful → Now make it last ✨
+              ✅ Challenge Complete → Something Beautiful Awaits ✨
             </div>
           </motion.div>
 
@@ -66,10 +66,10 @@ const Offer111Gpt = () => {
           >
             <p className="text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight">
               Write Something That'll Make Them{" "}
-              <span className="text-primary">Ugly Cry</span> (Happy Tears Only 💛)
+              <span className="text-primary">Cry Happy Tears</span> 💛
             </p>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              Your words, printed on a custom shirt, delivered to their door. This is the most personal gift you'll ever give.
+              Your words. Their shirt. Delivered to their door. When they read it, both your brains release the same happiness chemicals as a warm hug.
             </p>
           </motion.div>
 
@@ -97,8 +97,8 @@ const Offer111Gpt = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             <p className="text-2xl md:text-3xl font-bold text-foreground mb-1 leading-tight">
-              The most powerful words you can say to yourself start with{" "}
-              <span className="text-primary">IamBlessedAF</span>
+              The Most Powerful Words You'll Ever Say Start With{" "}
+              <span className="text-primary">"I Am"</span>
             </p>
             <p className="text-4xl md:text-5xl font-black text-primary mb-2">
               "I AM"
@@ -111,7 +111,7 @@ const Offer111Gpt = () => {
               />
             </div>
             <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-4 leading-relaxed">
-              When you say "I am blessed" — you're not describing a feeling. You're <em>becoming</em> it. Co-created with love and 7+ years of neuroscience research.
+              Tony Robbins says: "Whatever you attach to 'I am' — you become." When you wear "I Am Blessed AF," you're not just wearing a shirt. You're telling your brain who you are. And your brain listens.
             </p>
           </motion.div>
 

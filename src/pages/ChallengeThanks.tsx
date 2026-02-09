@@ -221,8 +221,8 @@ const ChallengeThanks = () => {
             "Your Gift is Ready! 🎁"
           ) : (
             <>
-              Can't Feel Grateful Today?{" "}
-              <span className="text-primary">Feed 11 People</span> &amp; Unlock Your Gratitude Identity.
+              You're In! Now Turn Your Gratitude Into{" "}
+              <span className="text-primary">Something Real.</span>
             </>
           )}
         </motion.h1>
@@ -236,7 +236,7 @@ const ChallengeThanks = () => {
         >
           {isReferred
             ? "Your FREE wristband is reserved. Complete shipping below to claim it!"
-            : "Your challenge starts tomorrow. Right now, you can change 11 lives with one tap."}
+            : "Your challenge starts tomorrow. While you wait — one tap feeds 11 hungry people and earns you the Gratitude Identity."}
         </motion.p>
 
         {/* Primary CTA — above the fold */}
@@ -252,7 +252,7 @@ const ChallengeThanks = () => {
               className="w-full sm:w-auto px-8 h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all"
               onClick={() => navigate("/offer/22")}
             >
-              🍽️ Start Feeding People Now
+              🍽️ Feed 11 People & Claim My Gratitude Pack
             </Button>
             <p className="text-xs text-muted-foreground mt-2">
               100% goes to meals · You earn <span className="font-semibold text-primary">+75 XP</span> &amp; <span className="font-semibold text-primary">50 BC</span>

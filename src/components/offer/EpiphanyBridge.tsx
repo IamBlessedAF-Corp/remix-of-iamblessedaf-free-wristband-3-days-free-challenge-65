@@ -23,11 +23,11 @@ const EpiphanyBridge = () => {
           transition={{ delay: 0.1 }}
         >
           <p className="text-xs uppercase tracking-[0.2em] text-primary font-bold mb-3 text-center">
-            Picture this...
+            Be honest...
           </p>
           <p className="text-base md:text-lg text-foreground leading-relaxed font-serif italic">
-            You're scrolling through your phone at midnight. Hundreds of messages, notifications, likes — 
-            yet something feels <span className="font-bold text-primary not-italic">hollow</span>.
+            You have 500 friends online. But when's the last time someone looked you in the eye and said{" "}
+            <span className="font-bold text-primary not-italic">"You changed my life"</span>?
           </p>
         </motion.div>
 
@@ -39,9 +39,9 @@ const EpiphanyBridge = () => {
           transition={{ delay: 0.3 }}
         >
           <p className="text-base md:text-lg text-foreground leading-relaxed font-serif italic">
-            Then one morning, your best friend opens a package. Inside is a shirt with 
-            <span className="font-bold text-primary not-italic"> your words </span> on it — a real message, 
-            from you, about a moment that <span className="not-italic font-bold">actually mattered</span>.
+            Now picture this: your best friend opens a package. Inside is a shirt with{" "}
+            <span className="font-bold text-primary not-italic">YOUR words</span> on it.
+            A real message about a real moment between you two.
           </p>
         </motion.div>
 
@@ -54,14 +54,14 @@ const EpiphanyBridge = () => {
           transition={{ delay: 0.5 }}
         >
           <p className="text-base md:text-lg text-foreground leading-relaxed font-serif italic">
-            They read it. Their eyes water. They text you:{" "}
+            They read it. Eyes water. They call you:{" "}
             <span className="font-bold text-primary not-italic">"I can't believe you remembered that."</span>
           </p>
           <p className="text-base md:text-lg text-foreground leading-relaxed font-serif italic mt-3">
-            That shift — from digital noise to <span className="not-italic font-bold">real human connection</span> — 
-            that's the moment your brain floods with dopamine and serotonin. Not from an app. From a{" "}
-            <span className="font-bold text-primary not-italic">real person</span> receiving{" "}
-            <span className="font-bold text-primary not-italic">real gratitude</span>.
+            THAT feeling — not a like, not a heart emoji — a{" "}
+            <span className="not-italic font-bold">real human being</span> feeling grateful for{" "}
+            <span className="font-bold text-primary not-italic">you</span>. That's when your brain floods with
+            dopamine and serotonin. The Harvard Grant Study calls it the #1 predictor of lifelong happiness.
           </p>
         </motion.div>
 
@@ -74,10 +74,10 @@ const EpiphanyBridge = () => {
           transition={{ delay: 0.7 }}
         >
           <p className="text-lg md:text-xl font-bold text-foreground">
-            That's what this pack does.
+            This pack makes that moment happen.
           </p>
           <p className="text-sm text-muted-foreground mt-2">
-            A physical pattern interrupt that triggers the most powerful neurochemical cocktail nature designed.
+            A real gift. A real message. A real relationship — deepened forever.
           </p>
         </motion.div>
       </div>
