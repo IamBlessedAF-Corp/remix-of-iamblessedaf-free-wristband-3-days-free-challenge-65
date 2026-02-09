@@ -24,8 +24,9 @@ serve(async (req) => {
   const twilioSid = Deno.env.get("TWILIO_ACCOUNT_SID");
   const twilioAuth = Deno.env.get("TWILIO_AUTH_TOKEN");
   const twilioPhone = Deno.env.get("TWILIO_PHONE_NUMBER");
+  const msgServiceSid = Deno.env.get("TWILIO_MESSAGING_SERVICE_SID");
 
-  if (!twilioSid || !twilioAuth || !twilioPhone) {
+  if (!twilioSid || !twilioAuth || (!twilioPhone && !msgServiceSid)) {
     return new Response(
       JSON.stringify({ error: "Twilio not configured" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -66,7 +67,7 @@ serve(async (req) => {
         ? `🙏 Hey! Tomorrow is Day ${r.day_number} of your Gratitude Challenge.\n\nYour 11:11 message to ${r.friend_name} is ready! ✅\n\nWant to edit it? Just reply with a new memory.\n\n— Blessed AF`
         : `🙏 Hey! Tomorrow is Day ${r.day_number} of your Gratitude Challenge.\n\nYour 11:11 message goes to ${r.friend_name}.\n\nWhat moment are you grateful for? Reply with your memory and we'll format your message!\n\n— Blessed AF`;
 
-      const res = await sendTwilio(twilioSid, twilioAuth, twilioPhone, participant.phone, reminderBody);
+      const res = await sendTwilio(twilioSid, twilioAuth, twilioPhone, participant.phone, reminderBody, msgServiceSid);
 
       if (res.ok) {
         const data = await res.json();
@@ -115,7 +116,7 @@ serve(async (req) => {
       // Send to PARTICIPANT with their pre-written message to forward
       const msgBody = `It's 11:11! 🙏 Time to send your gratitude to ${m.friend_name}.\n\nHere's your message:\n\n"${m.message_body}"\n\nCopy and send it now! Reply DONE when sent. 🧠\n\n— Blessed AF`;
 
-      const res = await sendTwilio(twilioSid, twilioAuth, twilioPhone, participant.phone, msgBody);
+      const res = await sendTwilio(twilioSid, twilioAuth, twilioPhone, participant.phone, msgBody, msgServiceSid);
 
       if (res.ok) {
         const data = await res.json();
@@ -152,18 +153,23 @@ serve(async (req) => {
   }
 });
 
-/** Send SMS via Twilio REST API */
+/** Send SMS via Twilio REST API — prefers Messaging Service if available */
 async function sendTwilio(
   accountSid: string,
   authToken: string,
   from: string,
   to: string,
-  body: string
+  body: string,
+  messagingServiceSid?: string | null
 ): Promise<Response> {
   const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
   const formData = new URLSearchParams();
   formData.append("To", to);
-  formData.append("From", from);
+  if (messagingServiceSid) {
+    formData.append("MessagingServiceSid", messagingServiceSid);
+  } else {
+    formData.append("From", from);
+  }
   formData.append("Body", body);
 
   return fetch(url, {
