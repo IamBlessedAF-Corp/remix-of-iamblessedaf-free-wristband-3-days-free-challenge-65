@@ -1,7 +1,9 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Crown, Zap, Trophy, Share2, Target, ShoppingBag, ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import confetti from "canvas-confetti";
 import logoImg from "@/assets/logo.png";
 
 const PERKS = [
@@ -13,6 +15,17 @@ const PERKS = [
 
 export default function PortalUnlockStep() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Initial burst
+    confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+    // Side cannons after a short delay
+    const timer = setTimeout(() => {
+      confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 } });
+      confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 } });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <motion.div
