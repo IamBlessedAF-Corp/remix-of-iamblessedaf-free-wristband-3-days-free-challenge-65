@@ -1,22 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Share2, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
+import { useShortLinks } from "@/hooks/useShortLinks";
 
 /**
  * Viral Share Nudge — footer-level component encouraging UGC sharing.
- * Placed above the page footer on all offer & confirm pages.
- * Tracks shares for the Achievement system.
+ * All links are shortened via iamblessed.com/go/XXXXX with tracking.
  */
 const ViralShareNudge = () => {
   const [copied, setCopied] = useState(false);
-  const shareUrl = window.location.origin;
+  const { getShareUrl } = useShortLinks();
+  const [shortUrl, setShortUrl] = useState<string>("");
   const shareText = "I just started my gratitude journey with #IamBlessedAF — feeling 27× happier already! 🙏✨";
   const hashtag = "#IamBlessedAF";
 
+  // Generate short link on mount
+  useEffect(() => {
+    getShareUrl("https://iamblessed.com/challenge", "viral-share-nudge").then(setShortUrl);
+  }, [getShareUrl]);
+
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(`${hashtag} ${shareUrl}`);
+      const url = shortUrl || "https://iamblessed.com/challenge";
+      await navigator.clipboard.writeText(`${hashtag} ${url}`);
       setCopied(true);
       toast.success("Copied to clipboard! 📋");
 
@@ -31,15 +38,17 @@ const ViralShareNudge = () => {
   };
 
   const handleShareTwitter = () => {
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&hashtags=IamBlessedAF&url=${encodeURIComponent(shareUrl)}`;
-    window.open(url, "_blank", "noopener,noreferrer");
+    const url = shortUrl || "https://iamblessed.com/challenge";
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&hashtags=IamBlessedAF&url=${encodeURIComponent(url)}`;
+    window.open(twitterUrl, "_blank", "noopener,noreferrer");
     trackShare();
   };
 
   const handleShareNative = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: "IamBlessedAF", text: shareText, url: shareUrl });
+        const url = shortUrl || "https://iamblessed.com/challenge";
+        await navigator.share({ title: "IamBlessedAF", text: shareText, url });
         trackShare();
       } catch {}
     }
