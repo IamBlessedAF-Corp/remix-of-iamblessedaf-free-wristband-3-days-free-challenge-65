@@ -34,8 +34,16 @@ const GoRedirect = () => {
         utm_campaign: searchParams.get("utm_campaign") || "",
       });
 
-      // Redirect to destination
-      window.location.replace(result.destination_url);
+      // Build destination URL with UTM passthrough
+      const destUrl = new URL(result.destination_url);
+      for (const [key, value] of searchParams.entries()) {
+        if (!destUrl.searchParams.has(key)) {
+          destUrl.searchParams.set(key, value);
+        }
+      }
+
+      // Redirect to destination with preserved params
+      window.location.replace(destUrl.toString());
     };
 
     resolve();
