@@ -67,7 +67,7 @@ const ClipCtaInfo = () => {
             >
               @IamBlessedAF
             </a>{" "}
-            Instagram account every Friday 🔴
+            Instagram account 🔴
           </p>
         </div>
       </div>
