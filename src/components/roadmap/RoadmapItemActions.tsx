@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Cpu, Send, Loader2, Check, ChevronDown } from "lucide-react";
+import { Cpu, Send, Loader2, Check, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -12,7 +12,6 @@ interface RoadmapItemActionsProps {
   phaseName: string;
 }
 
-// Helper to cast table names for new tables not yet in generated types
 const from = (table: string) => supabase.from(table as any);
 
 function generateMasterPrompt(title: string, detail: string, phaseName: string): string {
@@ -57,44 +56,45 @@ Execute with conviction. Ship fast, ship right.`;
 
 export default function RoadmapItemActions({ title, detail, phaseName }: RoadmapItemActionsProps) {
   const [showPrompt, setShowPrompt] = useState(false);
-  const [showSendMenu, setShowSendMenu] = useState(false);
+  const [editablePrompt, setEditablePrompt] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const prompt = generateMasterPrompt(title, detail || "", phaseName);
+  const openPromptModal = () => {
+    setEditablePrompt(generateMasterPrompt(title, detail || "", phaseName));
+    setSent(null);
+    setShowPrompt(true);
+  };
 
   const handleCopyPrompt = async () => {
     try {
-      await navigator.clipboard.writeText(prompt);
+      await navigator.clipboard.writeText(editablePrompt);
       setCopied(true);
-      toast.success("Master prompt copied to clipboard!");
+      toast.success("Master prompt copied!");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Failed to copy — try selecting manually");
+      toast.error("Failed to copy");
     }
   };
 
   const handleSendToBoard = async (columnId: string, columnName: string) => {
     setSending(true);
-    setShowSendMenu(false);
     try {
       const { error } = await (from("board_cards") as any).insert({
         column_id: columnId,
         title: title.length > 100 ? title.slice(0, 97) + "..." : title,
         description: detail || null,
-        master_prompt: prompt,
+        master_prompt: editablePrompt,
         priority: "medium",
         position: 999,
         labels: ["roadmap-generated"],
       });
-
       if (error) throw error;
-
       setSent(columnName);
       toast.success(`✅ Sent to ${columnName}!`);
     } catch (err: any) {
-      toast.error(`Failed to send: ${err.message}`);
+      toast.error(`Failed: ${err.message}`);
     } finally {
       setSending(false);
     }
@@ -102,9 +102,8 @@ export default function RoadmapItemActions({ title, detail, phaseName }: Roadmap
 
   return (
     <div className="flex items-center gap-1.5 mt-1.5">
-      {/* Generate Master Prompt Button */}
       <button
-        onClick={(e) => { e.stopPropagation(); setShowPrompt(!showPrompt); }}
+        onClick={(e) => { e.stopPropagation(); openPromptModal(); }}
         className="inline-flex items-center gap-1 px-2 py-1 text-[9px] font-semibold rounded-md bg-purple-500/15 text-purple-400 border border-purple-500/30 hover:bg-purple-500/25 transition-colors"
         title="Generate Ethereum Developer Master Prompt"
       >
@@ -112,59 +111,17 @@ export default function RoadmapItemActions({ title, detail, phaseName }: Roadmap
         Generate Master Prompt
       </button>
 
-      {/* Send to Board Button */}
-      <div className="relative">
-        {sent ? (
-          <span className="inline-flex items-center gap-1 px-2 py-1 text-[9px] font-semibold rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-            <Check className="w-3 h-3" />
-            Sent to {sent}
-          </span>
-        ) : (
-          <button
-            onClick={(e) => { e.stopPropagation(); setShowSendMenu(!showSendMenu); }}
-            disabled={sending}
-            className="inline-flex items-center gap-1 px-2 py-1 text-[9px] font-semibold rounded-md bg-blue-500/15 text-blue-400 border border-blue-500/30 hover:bg-blue-500/25 transition-colors disabled:opacity-50"
-            title="Send to board column"
-          >
-            {sending ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
-            ) : (
-              <Send className="w-3 h-3" />
-            )}
-            Send to Board
-            <ChevronDown className="w-2.5 h-2.5" />
-          </button>
-        )}
-
-        {/* Dropdown */}
-        {showSendMenu && (
-          <div className="absolute left-0 top-full mt-1 z-30 bg-card border border-border rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1 duration-100">
-            <button
-              onClick={(e) => { e.stopPropagation(); handleSendToBoard(IDEAS_COL_ID, "💡 Ideas"); }}
-              className="w-full flex items-center gap-2 px-3 py-2 text-[11px] text-foreground hover:bg-secondary/50 transition-colors whitespace-nowrap"
-            >
-              💡 Send to Ideas
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); handleSendToBoard(BACKLOG_COL_ID, "📦 Backlog"); }}
-              className="w-full flex items-center gap-2 px-3 py-2 text-[11px] text-foreground hover:bg-secondary/50 transition-colors whitespace-nowrap border-t border-border/30"
-            >
-              📦 Send to Backlog
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Master Prompt Expanded */}
+      {/* Master Prompt Modal */}
       {showPrompt && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           onClick={() => setShowPrompt(false)}
         >
           <div
-            className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col animate-in fade-in zoom-in-95 duration-150"
+            className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col animate-in fade-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Header */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-border/50">
               <div className="flex items-center gap-2">
                 <Cpu className="w-4 h-4 text-purple-400" />
@@ -178,15 +135,53 @@ export default function RoadmapItemActions({ title, detail, phaseName }: Roadmap
                     : "bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20"
                 }`}
               >
-                {copied ? "✓ Copied!" : "📋 Copy Prompt"}
+                {copied ? (
+                  <span className="flex items-center gap-1"><Check className="w-3 h-3" /> Copied!</span>
+                ) : (
+                  <span className="flex items-center gap-1"><Copy className="w-3 h-3" /> Copy</span>
+                )}
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-5">
-              <pre className="text-[11px] text-muted-foreground whitespace-pre-wrap font-mono leading-relaxed">
-                {prompt}
-              </pre>
+
+            {/* Editable prompt area */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <textarea
+                value={editablePrompt}
+                onChange={(e) => setEditablePrompt(e.target.value)}
+                className="w-full h-full min-h-[340px] text-[11px] text-foreground bg-secondary/30 border border-border/50 rounded-lg p-4 font-mono leading-relaxed resize-y focus:outline-none focus:ring-1 focus:ring-primary/40"
+                spellCheck={false}
+              />
             </div>
-            <div className="px-5 py-3 border-t border-border/50 flex justify-end">
+
+            {/* Footer with board send buttons */}
+            <div className="px-5 py-3 border-t border-border/50 flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                {sent ? (
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-semibold rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                    <Check className="w-3 h-3" />
+                    Sent to {sent}
+                  </span>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleSendToBoard(IDEAS_COL_ID, "💡 Ideas")}
+                      disabled={sending}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold rounded-md bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors disabled:opacity-50"
+                    >
+                      {sending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+                      💡 Send to Ideas
+                    </button>
+                    <button
+                      onClick={() => handleSendToBoard(BACKLOG_COL_ID, "📦 Backlog")}
+                      disabled={sending}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold rounded-md bg-blue-500/15 text-blue-400 border border-blue-500/30 hover:bg-blue-500/25 transition-colors disabled:opacity-50"
+                    >
+                      {sending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+                      📦 Send to Backlog
+                    </button>
+                  </>
+                )}
+              </div>
               <button
                 onClick={() => setShowPrompt(false)}
                 className="px-4 py-1.5 text-xs font-medium rounded-md bg-secondary text-foreground hover:bg-secondary/80 transition-colors"
