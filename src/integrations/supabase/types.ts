@@ -404,6 +404,33 @@ export type Database = {
         }
         Relationships: []
       }
+      portal_activity: {
+        Row: {
+          created_at: string
+          display_text: string
+          event_type: string
+          icon_name: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          display_text: string
+          event_type: string
+          icon_name?: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          display_text?: string
+          event_type?: string
+          icon_name?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       scheduled_gratitude_messages: {
         Row: {
           created_at: string | null
@@ -557,6 +584,15 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      log_portal_activity: {
+        Args: {
+          p_display_text: string
+          p_event_type: string
+          p_icon_name?: string
+          p_user_id?: string
+        }
+        Returns: undefined
       }
     }
     Enums: {
