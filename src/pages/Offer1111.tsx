@@ -15,6 +15,9 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
 import StickyCtaBar from "@/components/offer/StickyCtaBar";
+import EpiphanyBridge from "@/components/offer/EpiphanyBridge";
+import ImpactCounter from "@/components/offer/ImpactCounter";
+import ViralShareNudge from "@/components/offer/ViralShareNudge";
 
 const Offer1111 = () => {
   const { startCheckout, loading } = useStripeCheckout();
@@ -38,6 +41,9 @@ const Offer1111 = () => {
               </motion.div>
 
               <Grok1111HeroSection />
+
+              {/* Epiphany Bridge — Brunson storytelling */}
+              <EpiphanyBridge />
 
               <motion.div className="text-center mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.12 }}>
                 <p className="text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight">
@@ -126,6 +132,13 @@ const Offer1111 = () => {
               <ResearchList delay={0.8} />
 
               <Grok1111CtaBlock onCheckout={handleCheckout} delay={0.85} loading={loading} />
+
+              {/* Live Impact Counter */}
+              <ImpactCounter />
+
+              {/* Viral Share Nudge */}
+              <ViralShareNudge />
+
               <GrokViralFooter delay={0.9} />
              </>
         </div>
