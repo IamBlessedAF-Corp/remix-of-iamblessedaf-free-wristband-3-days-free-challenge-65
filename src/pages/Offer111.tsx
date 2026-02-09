@@ -14,9 +14,15 @@ import UrgencyBanner from "@/components/offer/UrgencyBanner";
 import SocialProofSection from "@/components/offer/SocialProofSection";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import EpiphanyBridge from "@/components/offer/EpiphanyBridge";
+import ImpactCounter from "@/components/offer/ImpactCounter";
+import ViralShareNudge from "@/components/offer/ViralShareNudge";
+import AchievementUnlockToast from "@/components/gamification/AchievementUnlockToast";
+import { useAchievements } from "@/hooks/useAchievements";
 
 const Offer111 = () => {
   const { startCheckout, loading } = useStripeCheckout();
+  const { newlyUnlocked, dismissNewlyUnlocked } = useAchievements();
 
   const handleCheckout = () => {
     startCheckout("pack-111");
@@ -43,6 +49,9 @@ const Offer111 = () => {
 
               {/* Gratitude Intro Section */}
               <GratitudeIntro />
+
+              {/* Epiphany Bridge — Brunson storytelling */}
+              <EpiphanyBridge />
 
               {/* Logo + Gratitude Pack + Discount */}
               <motion.div
@@ -182,6 +191,9 @@ const Offer111 = () => {
                 <RiskReversalGuarantee />
               </motion.div>
 
+              {/* Live Impact Counter */}
+              <ImpactCounter />
+
               {/* Trust Disclaimer */}
               <motion.div className="mb-8 mt-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.65 }}>
                 <div className="border border-border/50 rounded-xl p-5 space-y-3 bg-card">
@@ -198,6 +210,9 @@ const Offer111 = () => {
                 </div>
               </motion.div>
 
+              {/* Viral Share Nudge */}
+              <ViralShareNudge />
+
               {/* Skip Link */}
               <motion.div className="text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.7 }}>
                 <a href="/challenge/thanks" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -205,6 +220,9 @@ const Offer111 = () => {
                 </a>
               </motion.div>
             </>
+
+        {/* Achievement Unlock Toast */}
+        <AchievementUnlockToast achievement={newlyUnlocked} onDismiss={dismissNewlyUnlocked} />
         </div>
       </div>
     </div>

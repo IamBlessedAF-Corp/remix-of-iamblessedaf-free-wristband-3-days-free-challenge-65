@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Flame, Heart, Globe, Users } from "lucide-react";
 import { useGamificationStats } from "@/hooks/useGamificationStats";
 import BcCoinButton from "@/components/gamification/BcCoinButton";
+import TrophyCase from "@/components/gamification/TrophyCase";
 import FunnelProgressBar from "@/components/funnel/FunnelProgressBar";
 
 /** Animated rolling number */
@@ -55,6 +56,9 @@ const GamificationHeader = () => {
           <div className="flex items-center justify-between h-10 gap-2 text-xs font-medium">
             {/* Blessed Coins — clickable to open wallet */}
             <BcCoinButton balance={stats.blessedCoins} />
+
+            {/* Trophy Case */}
+            <TrophyCase />
 
             {/* Hearts (Impact Score) */}
             <div className="flex items-center gap-1 shrink-0">
