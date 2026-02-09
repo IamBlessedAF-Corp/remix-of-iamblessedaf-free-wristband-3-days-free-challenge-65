@@ -23,6 +23,7 @@ export const FUNNEL_STEPS: FunnelStep[] = [
   { id: "offer-444",   label: "Habit Lock Pack",       shortLabel: "$444",      path: "/offer/444",        xp: 300, emoji: "🔒" },
   { id: "offer-1111",  label: "Kingdom Pack",          shortLabel: "$1,111",    path: "/offer/1111",       xp: 750, emoji: "👑" },
   { id: "offer-4444",  label: "Ambassador",            shortLabel: "$4,444",    path: "/offer/4444",       xp: 1500, emoji: "💎" },
+  { id: "portal",      label: "Ambassador Portal",     shortLabel: "Portal",    path: "/portal",           xp: 2000, emoji: "🏛️" },
 ];
 
 const STORAGE_KEY = "funnel-progress";
