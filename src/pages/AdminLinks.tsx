@@ -10,6 +10,7 @@ import DailyClicksChart from "@/components/admin/DailyClicksChart";
 import CampaignTable from "@/components/admin/CampaignTable";
 import TopLinksTable from "@/components/admin/TopLinksTable";
 import UtmBuilder from "@/components/admin/UtmBuilder";
+import RecentBuilderLinks from "@/components/admin/RecentBuilderLinks";
 import BoardLoginForm from "@/components/board/BoardLoginForm";
 
 const PERIOD_OPTIONS = [
@@ -153,6 +154,8 @@ export default function AdminLinks() {
             </div>
 
             <UtmBuilder />
+
+            <RecentBuilderLinks />
 
             <TopLinksTable links={stats.topLinks} />
           </>
