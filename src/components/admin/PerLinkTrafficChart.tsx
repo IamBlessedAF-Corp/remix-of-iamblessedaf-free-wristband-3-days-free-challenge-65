@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { TrendingUp, X, Globe, Tag, Link2 } from "lucide-react";
+import { TrendingUp, X, Globe, Tag, Link2, CalendarDays } from "lucide-react";
 import type { LinkSummary, ClickRow } from "@/hooks/useLinkAnalytics";
 
 interface Props {
@@ -18,6 +18,17 @@ const COLORS = [
   "hsl(340 65% 50%)",
   "hsl(160 60% 45%)",
 ];
+
+const QUICK_RANGES = [
+  { label: "All", days: 0 },
+  { label: "7d", days: 7 },
+  { label: "14d", days: 14 },
+  { label: "30d", days: 30 },
+] as const;
+
+function toDateStr(d: Date) {
+  return d.toISOString().substring(0, 10);
+}
 
 /** Named links = links with a human-readable short_code (no random chars) */
 function isNamedLink(code: string) {
@@ -63,6 +74,34 @@ function BreakdownMiniChart({ label, icon: Icon, data }: { label: string; icon: 
 export default function PerLinkTrafficChart({ links, clicks }: Props) {
   const [view, setView] = useState<"bar" | "daily">("bar");
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [activeQuick, setActiveQuick] = useState<number>(0); // 0 = All
+
+  const handleQuickRange = (days: number) => {
+    setActiveQuick(days);
+    if (days === 0) {
+      setDateFrom("");
+      setDateTo("");
+    } else {
+      const now = new Date();
+      setDateTo(toDateStr(now));
+      const from = new Date();
+      from.setDate(from.getDate() - days);
+      setDateFrom(toDateStr(from));
+    }
+  };
+
+  // Filter clicks by date range
+  const filteredClicks = useMemo(() => {
+    if (!dateFrom && !dateTo) return clicks;
+    return clicks.filter((c) => {
+      const day = c.clicked_at.substring(0, 10);
+      if (dateFrom && day < dateFrom) return false;
+      if (dateTo && day > dateTo) return false;
+      return true;
+    });
+  }, [clicks, dateFrom, dateTo]);
 
   // Named links with clicks
   const namedLinks = useMemo(
@@ -70,25 +109,37 @@ export default function PerLinkTrafficChart({ links, clicks }: Props) {
     [links]
   );
 
-  // Bar chart data — total clicks per named link
+  // Build click counts from filtered clicks (not from link.click_count which is all-time)
+  const filteredClickCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const c of filteredClicks) {
+      counts[c.link_id] = (counts[c.link_id] || 0) + 1;
+    }
+    return counts;
+  }, [filteredClicks]);
+
+  const isFiltered = dateFrom !== "" || dateTo !== "";
+
+  // Bar chart data — clicks per named link (filtered or all-time)
   const barData = useMemo(() => {
     return namedLinks
       .map((l) => ({
         code: l.short_code,
-        clicks: l.click_count,
+        clicks: isFiltered ? (filteredClickCounts[l.id] || 0) : l.click_count,
         destination: l.destination_url.replace(/https?:\/\/[^/]+/, ""),
         campaign: l.campaign || "",
       }))
+      .filter((d) => d.clicks > 0 || !isFiltered)
       .sort((a, b) => b.clicks - a.clicks)
       .slice(0, 12);
-  }, [namedLinks]);
+  }, [namedLinks, filteredClickCounts, isFiltered]);
 
   // Daily breakdown per link
   const dailyData = useMemo(() => {
     const linkMap = new Map(namedLinks.map((l) => [l.id, l.short_code]));
     const dayLink: Record<string, Record<string, number>> = {};
 
-    for (const c of clicks) {
+    for (const c of filteredClicks) {
       const code = linkMap.get(c.link_id);
       if (!code) continue;
       const day = c.clicked_at.substring(0, 10);
@@ -99,7 +150,7 @@ export default function PerLinkTrafficChart({ links, clicks }: Props) {
     return Object.entries(dayLink)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([date, codes]) => ({ date: date.substring(5), ...codes }));
-  }, [clicks, namedLinks]);
+  }, [filteredClicks, namedLinks]);
 
   const activeCodes = useMemo(() => {
     const codes = new Set<string>();
@@ -116,7 +167,7 @@ export default function PerLinkTrafficChart({ links, clicks }: Props) {
     const link = namedLinks.find((l) => l.short_code === selectedCode);
     if (!link) return null;
 
-    const linkClicks = clicks.filter((c) => c.link_id === link.id);
+    const linkClicks = filteredClicks.filter((c) => c.link_id === link.id);
 
     const utmSource: Record<string, number> = {};
     const utmMedium: Record<string, number> = {};
@@ -145,7 +196,7 @@ export default function PerLinkTrafficChart({ links, clicks }: Props) {
       utmCampaign: breakdownToSorted(utmCampaign),
       referrers: breakdownToSorted(referrers),
     };
-  }, [selectedCode, namedLinks, clicks]);
+  }, [selectedCode, namedLinks, filteredClicks]);
 
   const handleBarClick = (data: any) => {
     if (data?.activePayload?.[0]?.payload?.code) {
@@ -154,11 +205,12 @@ export default function PerLinkTrafficChart({ links, clicks }: Props) {
     }
   };
 
-  if (barData.length === 0) return null;
+  if (barData.length === 0 && !isFiltered) return null;
 
   return (
     <div className="bg-card border border-border/50 rounded-xl p-5">
-      <div className="flex items-center justify-between mb-4">
+      {/* Header row */}
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-primary" />
           <h3 className="text-sm font-bold text-foreground">Traffic by Link</h3>
@@ -183,49 +235,101 @@ export default function PerLinkTrafficChart({ links, clicks }: Props) {
         </div>
       </div>
 
+      {/* Date range filter */}
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" />
+        <div className="flex bg-secondary rounded-lg p-0.5">
+          {QUICK_RANGES.map((r) => (
+            <button
+              key={r.days}
+              onClick={() => handleQuickRange(r.days)}
+              className={`px-2.5 py-1 text-[10px] font-semibold rounded-md transition-colors ${
+                activeQuick === r.days && !((r.days === 0) !== (!dateFrom && !dateTo))
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-1.5 ml-1">
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => { setDateFrom(e.target.value); setActiveQuick(-1); }}
+            className="h-7 px-2 text-[10px] bg-secondary border border-border/50 rounded-md text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+          <span className="text-[10px] text-muted-foreground">→</span>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => { setDateTo(e.target.value); setActiveQuick(-1); }}
+            className="h-7 px-2 text-[10px] bg-secondary border border-border/50 rounded-md text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+        </div>
+        {isFiltered && (
+          <button
+            onClick={() => handleQuickRange(0)}
+            className="text-[10px] text-muted-foreground hover:text-foreground underline transition-colors"
+          >
+            Clear
+          </button>
+        )}
+        {isFiltered && (
+          <span className="text-[10px] text-primary font-semibold ml-auto">
+            {filteredClicks.length} click{filteredClicks.length !== 1 ? "s" : ""} in range
+          </span>
+        )}
+      </div>
+
       {view === "bar" ? (
         <>
           <p className="text-[10px] text-muted-foreground mb-2">Click a bar to see UTM &amp; referrer details</p>
-          <ResponsiveContainer width="100%" height={Math.max(200, barData.length * 36)}>
-            <BarChart
-              data={barData}
-              layout="vertical"
-              margin={{ left: 70, right: 16, top: 4, bottom: 4 }}
-              onClick={handleBarClick}
-              style={{ cursor: "pointer" }}
-            >
-              <XAxis type="number" tick={{ fontSize: 10 }} allowDecimals={false} />
-              <YAxis
-                type="category"
-                dataKey="code"
-                tick={{ fontSize: 11, fontWeight: 600 }}
-                width={65}
-              />
-              <Tooltip
-                contentStyle={{
-                  background: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: 8,
-                  fontSize: 11,
-                }}
-                formatter={(value: number, _name: string, props: any) => [
-                  `${value} clicks`,
-                  props.payload.destination,
-                ]}
-              />
-              <Bar dataKey="clicks" radius={[0, 4, 4, 0]} barSize={20}>
-                {barData.map((entry, i) => (
-                  <Cell
-                    key={i}
-                    fill={COLORS[i % COLORS.length]}
-                    opacity={selectedCode && selectedCode !== entry.code ? 0.35 : 1}
-                    stroke={selectedCode === entry.code ? "hsl(var(--foreground))" : "none"}
-                    strokeWidth={selectedCode === entry.code ? 2 : 0}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          {barData.length === 0 ? (
+            <p className="text-xs text-muted-foreground text-center py-8">No clicks in this date range</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={Math.max(200, barData.length * 36)}>
+              <BarChart
+                data={barData}
+                layout="vertical"
+                margin={{ left: 70, right: 16, top: 4, bottom: 4 }}
+                onClick={handleBarClick}
+                style={{ cursor: "pointer" }}
+              >
+                <XAxis type="number" tick={{ fontSize: 10 }} allowDecimals={false} />
+                <YAxis
+                  type="category"
+                  dataKey="code"
+                  tick={{ fontSize: 11, fontWeight: 600 }}
+                  width={65}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: 8,
+                    fontSize: 11,
+                  }}
+                  formatter={(value: number, _name: string, props: any) => [
+                    `${value} clicks`,
+                    props.payload.destination,
+                  ]}
+                />
+                <Bar dataKey="clicks" radius={[0, 4, 4, 0]} barSize={20}>
+                  {barData.map((entry, i) => (
+                    <Cell
+                      key={i}
+                      fill={COLORS[i % COLORS.length]}
+                      opacity={selectedCode && selectedCode !== entry.code ? 0.35 : 1}
+                      stroke={selectedCode === entry.code ? "hsl(var(--foreground))" : "none"}
+                      strokeWidth={selectedCode === entry.code ? 2 : 0}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
 
           {/* Expanded detail panel */}
           {selectedDetail && (
@@ -245,7 +349,7 @@ export default function PerLinkTrafficChart({ links, clicks }: Props) {
               </div>
 
               <p className="text-[10px] text-muted-foreground mb-3">
-                {selectedDetail.totalClicks} tracked click{selectedDetail.totalClicks !== 1 ? "s" : ""} in period
+                {selectedDetail.totalClicks} tracked click{selectedDetail.totalClicks !== 1 ? "s" : ""} in {isFiltered ? "selected range" : "period"}
                 {selectedDetail.link.campaign && (
                   <span className="ml-2 px-1.5 py-0.5 bg-primary/10 text-primary rounded text-[9px] font-semibold">
                     {selectedDetail.link.campaign}
@@ -269,7 +373,7 @@ export default function PerLinkTrafficChart({ links, clicks }: Props) {
       ) : (
         <>
           {dailyData.length === 0 ? (
-            <p className="text-xs text-muted-foreground text-center py-8">No daily click data yet</p>
+            <p className="text-xs text-muted-foreground text-center py-8">No daily click data {isFiltered ? "in this range" : "yet"}</p>
           ) : (
             <>
               <ResponsiveContainer width="100%" height={260}>
