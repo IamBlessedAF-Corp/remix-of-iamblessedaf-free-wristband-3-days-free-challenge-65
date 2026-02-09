@@ -23,6 +23,7 @@ import Board from "./pages/Board";
 import Portal from "./pages/Portal";
 import AdminLinks from "./pages/AdminLinks";
 import Impact from "./pages/Impact";
+import Roadmap from "./pages/Roadmap";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +55,7 @@ const App = () => (
           <Route path="/portal" element={<Portal />} />
           <Route path="/admin/links" element={<AdminLinks />} />
           <Route path="/impact" element={<Impact />} />
+          <Route path="/roadmap" element={<Roadmap />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
