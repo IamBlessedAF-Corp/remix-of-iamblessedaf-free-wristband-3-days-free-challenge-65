@@ -41,8 +41,17 @@ const GamificationHeader = () => {
   const { totalXp, xpJustEarned } = useFunnelProgress();
   const [tickerIndex, setTickerIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
+  const [hasEverExpanded, setHasEverExpanded] = useState(() => {
+    try { return sessionStorage.getItem("header-expanded") === "1"; } catch { return false; }
+  });
 
-  const toggle = useCallback(() => setExpanded((e) => !e), []);
+  const toggle = useCallback(() => {
+    setExpanded((e) => !e);
+    if (!hasEverExpanded) {
+      setHasEverExpanded(true);
+      try { sessionStorage.setItem("header-expanded", "1"); } catch {}
+    }
+  }, [hasEverExpanded]);
 
   // Rotate ticker messages every 4s
   useEffect(() => {
@@ -92,17 +101,23 @@ const GamificationHeader = () => {
               </span>
 
               {/* Expand/collapse */}
-              <button
+              <motion.button
                 onClick={toggle}
-                className="p-0.5 rounded hover:bg-background/10 transition-colors"
+                className="p-0.5 rounded hover:bg-background/10 transition-colors relative"
                 aria-label={expanded ? "Collapse stats" : "Expand stats"}
+                animate={!hasEverExpanded && !expanded ? { y: [0, -2, 0] } : {}}
+                transition={!hasEverExpanded && !expanded ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" } : {}}
               >
-                {expanded ? (
-                  <ChevronUp className="w-3.5 h-3.5 opacity-60" />
-                ) : (
-                  <ChevronDown className="w-3.5 h-3.5 opacity-60" />
+                {/* Glow ring hint for first-time users */}
+                {!hasEverExpanded && !expanded && (
+                  <span className="absolute -inset-1 rounded-full bg-primary/25 animate-ping" />
                 )}
-              </button>
+                {expanded ? (
+                  <ChevronUp className="w-3.5 h-3.5 opacity-60 relative z-10" />
+                ) : (
+                  <ChevronDown className={`w-3.5 h-3.5 relative z-10 ${!hasEverExpanded ? "opacity-100" : "opacity-60"}`} />
+                )}
+              </motion.button>
             </div>
           </div>
         </div>
