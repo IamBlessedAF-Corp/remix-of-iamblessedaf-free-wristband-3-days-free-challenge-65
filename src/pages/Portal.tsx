@@ -166,6 +166,7 @@ const Portal = () => {
                   profile={portalData.profile}
                   wallet={portalData.wallet}
                   blessings={portalData.blessings}
+                  userId={user.id}
                   onClaimDaily={portalData.claimDailyBonus}
                 />
                 <PortalActivityFeed />
