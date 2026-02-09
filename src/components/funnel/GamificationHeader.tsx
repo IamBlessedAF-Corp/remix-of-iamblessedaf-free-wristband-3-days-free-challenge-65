@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame, Heart, Globe, Users } from "lucide-react";
+import { Flame, Heart, Globe, Users, Utensils, Target } from "lucide-react";
 import { useGamificationStats } from "@/hooks/useGamificationStats";
+import { useGlobalMeals } from "@/hooks/useGlobalMeals";
 import BcCoinButton from "@/components/gamification/BcCoinButton";
 import TrophyCase from "@/components/gamification/TrophyCase";
 import FunnelProgressBar from "@/components/funnel/FunnelProgressBar";
+
+const MEAL_GOAL = 1_111_111;
 
 /** Animated rolling number */
 function RollingNumber({ value, className = "" }: { value: number; className?: string }) {
@@ -38,7 +41,9 @@ const tickerMessages = [
 
 const GamificationHeader = () => {
   const { stats } = useGamificationStats();
+  const { meals } = useGlobalMeals();
   const [tickerIndex, setTickerIndex] = useState(0);
+  const mealProgress = Math.min((meals / MEAL_GOAL) * 100, 100);
 
   // Rotate ticker messages every 4s
   useEffect(() => {
@@ -118,6 +123,42 @@ const GamificationHeader = () => {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* 🍽️ Global Meal Counter — MrBeast-style progress bar */}
+      {meals > 0 && (
+        <div className="bg-card/95 backdrop-blur-sm border-b border-border/30">
+          <div className="container mx-auto px-3 py-1.5">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 shrink-0">
+                <Utensils className="w-3 h-3 text-primary" />
+                <span className="text-[11px] font-bold text-foreground tabular-nums">
+                  <RollingNumber value={meals} />
+                </span>
+                <span className="text-[10px] text-muted-foreground hidden sm:inline">
+                  / {MEAL_GOAL.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden relative">
+                <motion.div
+                  className="absolute inset-y-0 left-0 bg-primary rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.max(mealProgress, 0.5)}%` }}
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                />
+                <div className="absolute inset-0 overflow-hidden rounded-full">
+                  <div className="w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+                </div>
+              </div>
+              <div className="flex items-center gap-1 shrink-0">
+                <Target className="w-3 h-3 text-primary" />
+                <span className="text-[10px] text-muted-foreground font-medium">
+                  {mealProgress.toFixed(1)}%
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Cross-funnel progress bar */}
       <FunnelProgressBar />

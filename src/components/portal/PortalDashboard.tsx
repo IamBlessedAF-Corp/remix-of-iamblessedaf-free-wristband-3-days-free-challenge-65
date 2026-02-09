@@ -5,6 +5,7 @@ import UserLinkStats from "./UserLinkStats";
 import PortalQuickActions from "./PortalQuickActions";
 import PortalEarnOverview from "./PortalEarnOverview";
 import PortalSocialShare from "./PortalSocialShare";
+import GlobalMealCounter from "@/components/GlobalMealCounter";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import type { PortalProfile, PortalWallet, BlessingRow } from "@/hooks/usePortalData";
@@ -136,6 +137,8 @@ export default function PortalDashboard({ profile, wallet, blessings, userId, on
         <StatCard icon={Utensils} label="Meals" value={profile.blessings_confirmed * 11} accent="bg-secondary text-secondary-foreground" />
         <StatCard icon={Trophy} label="Rank" value={0} prefix="#" accent="bg-primary/10 text-primary" />
       </div>
+      {/* 🍽️ Global Meal Counter — MrBeast-style */}
+      <GlobalMealCounter variant="banner" />
 
       {/* 🔥 AGGRESSIVE: Quick Actions — FREE earning opportunities */}
       <PortalQuickActions
