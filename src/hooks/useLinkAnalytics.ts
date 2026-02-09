@@ -13,6 +13,7 @@ export interface LinkSummary {
 }
 
 export interface ClickRow {
+  link_id: string;
   clicked_at: string;
   device_type: string | null;
   browser: string | null;
@@ -112,7 +113,7 @@ export function useLinkAnalytics(days = 30) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("link_clicks")
-        .select("clicked_at, device_type, browser, os, utm_source, utm_medium, utm_campaign, referrer")
+        .select("link_id, clicked_at, device_type, browser, os, utm_source, utm_medium, utm_campaign, referrer")
         .gte("clicked_at", since.toISOString())
         .order("clicked_at", { ascending: false })
         .limit(1000);
