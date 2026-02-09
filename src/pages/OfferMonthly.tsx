@@ -2,18 +2,14 @@ import { motion } from "framer-motion";
 import { Repeat, MessageCircle, Gift, Users, ArrowRight, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
-import { useGamificationStats } from "@/hooks/useGamificationStats";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import logo from "@/assets/logo.png";
 
 const OfferMonthly = () => {
-  const { rewardCheckout } = useGamificationStats();
+  const { startCheckout, loading } = useStripeCheckout();
 
   const handleCheckout = () => {
-    rewardCheckout("monthly-11");
-    // Placeholder for Stripe subscription checkout
-    if (import.meta.env.DEV) {
-      console.log("Redirecting to Stripe subscription for $11/mo");
-    }
+    startCheckout("monthly-11");
   };
 
   const benefits = [
