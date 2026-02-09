@@ -725,6 +725,7 @@ export type Database = {
       generate_referral_code: { Args: never; Returns: string }
       generate_short_code: { Args: never; Returns: string }
       get_global_blessing_count: { Args: never; Returns: number }
+      get_total_meals_donated: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
