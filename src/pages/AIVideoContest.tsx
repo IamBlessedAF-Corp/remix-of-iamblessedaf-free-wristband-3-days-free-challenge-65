@@ -49,6 +49,10 @@ const AIVideoContest = () => {
           <p className="text-xl text-muted-foreground mb-2">
             + $15K/Month Remote Growth Hacker Role
           </p>
+          <div className="inline-flex items-center gap-2 bg-primary/15 border border-primary/30 rounded-full px-5 py-2 mb-3">
+            <span className="text-primary font-bold text-lg">💰 $2 per valid entry</span>
+            <span className="text-muted-foreground text-sm">— every clipper gets paid</span>
+          </div>
           <p className="text-lg text-primary font-semibold">
             Kevin Hart AI Video Contest – Ignite Gratitude Virality! 🚀
           </p>
@@ -123,6 +127,11 @@ const AIVideoContest = () => {
           viewport={{ once: true }}
         >
           {[
+            {
+              bcs: "Every Valid Entry",
+              reward: "$2 Per Submission",
+              details: "Every clipper with a valid entry gets paid $2 — no minimum BCs required",
+            },
             {
               bcs: "250 BCs",
               reward: "$2,500 Grand Prize",
