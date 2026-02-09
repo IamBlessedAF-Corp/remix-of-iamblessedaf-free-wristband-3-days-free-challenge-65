@@ -29,12 +29,12 @@ const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
   const [friendName, setFriendName] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
-  const [shortUrl, setShortUrl] = useState("https://iamblessed.com/offer/111/grok");
+  const [shortUrl, setShortUrl] = useState("https://iamblessedaf.com/offer/111/grok");
 
   // Generate tracked short link on mount
   useEffect(() => {
     getShareUrl(
-      "https://iamblessed.com/offer/111/grok",
+      "https://iamblessedaf.com/offer/111/grok",
       "grok-viral-footer",
       "/offer/111/grok"
     ).then(setShortUrl);

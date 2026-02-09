@@ -18,7 +18,7 @@ export default function PortalReferralHub({ profile, blessings }: Props) {
   const { getShareUrl } = useShortLinks();
   const [shortReferralUrl, setShortReferralUrl] = useState("");
 
-  const rawReferralUrl = `https://iamblessed.com/r/${profile.referral_code}`;
+  const rawReferralUrl = `https://iamblessedaf.com/r/${profile.referral_code}`;
 
   // Generate tracked short link for referral
   useEffect(() => {

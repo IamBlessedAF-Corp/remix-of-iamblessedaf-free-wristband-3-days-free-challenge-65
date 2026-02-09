@@ -37,11 +37,11 @@ const GptViralShare = ({ referralLink }: GptViralShareProps) => {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [sharedCount, setSharedCount] = useState(0);
   const { getShareUrl } = useShortLinks();
-  const [shortUrl, setShortUrl] = useState("https://iamblessed.com/offer/22");
-  const [refShortUrl, setRefShortUrl] = useState(referralLink || "https://iamblessed.com/challenge");
+  const [shortUrl, setShortUrl] = useState("https://iamblessedaf.com/offer/22");
+  const [refShortUrl, setRefShortUrl] = useState(referralLink || "https://iamblessedaf.com/challenge");
 
   useEffect(() => {
-    getShareUrl("https://iamblessed.com/offer/22", "gpt-viral-share", "/offer/111/gpt").then(setShortUrl);
+    getShareUrl("https://iamblessedaf.com/offer/22", "gpt-viral-share", "/offer/111/gpt").then(setShortUrl);
     if (referralLink) {
       getShareUrl(referralLink, "gpt-referral", "/offer/111/gpt").then(setRefShortUrl);
     }
