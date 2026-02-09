@@ -404,6 +404,42 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          customer_email: string | null
+          id: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_session_id: string
+          tier: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          id?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_session_id: string
+          tier: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          id?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_session_id?: string
+          tier?: string
+        }
+        Relationships: []
+      }
       portal_activity: {
         Row: {
           created_at: string
