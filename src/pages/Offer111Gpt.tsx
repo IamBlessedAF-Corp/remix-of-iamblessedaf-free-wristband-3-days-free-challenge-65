@@ -10,7 +10,7 @@ import SocialProofSection from "@/components/offer/SocialProofSection";
 import GptQuotesSection from "@/components/offer/gpt/GptQuotesSection";
 import GptRiskReversal from "@/components/offer/gpt/GptRiskReversal";
 import GptMessageModule from "@/components/offer/gpt/GptMessageModule";
-import GptStickyBar from "@/components/offer/gpt/GptStickyBar";
+import StickyCtaBar from "@/components/offer/StickyCtaBar";
 import DiscountBanner from "@/components/offer/DiscountBanner";
 import ResearchList from "@/components/offer/ResearchList";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
@@ -205,7 +205,14 @@ const Offer111Gpt = () => {
       </div>
 
       {/* ─── Sticky Bottom Bar ─── */}
-      <GptStickyBar onCheckout={handleCheckout} loading={loading} />
+      <StickyCtaBar
+        onCheckout={handleCheckout}
+        loading={loading}
+        price="$111"
+        discount="67% OFF"
+        label="Add to My Order"
+        trackingSource="offer_111_gpt"
+      />
     </div>
   );
 };
