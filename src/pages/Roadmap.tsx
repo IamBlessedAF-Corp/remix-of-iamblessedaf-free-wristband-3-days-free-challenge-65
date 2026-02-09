@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Map, ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Zap, Target, Shield, TrendingUp, Users, Gift, Star, Rocket, Crown, Lock, Globe, Sparkles, BarChart3, Megaphone, Cpu, ArrowLeft, Layers, Database, CreditCard, MessageSquare, Paintbrush, Server } from "lucide-react";
+import { Map, ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Zap, Target, Shield, TrendingUp, Users, Gift, Star, Rocket, Crown, Lock, Globe, Sparkles, BarChart3, Megaphone, Cpu, ArrowLeft, Layers, Database, CreditCard, MessageSquare, Paintbrush, Server, FlaskConical } from "lucide-react";
+import { PHASE_NEXT_STEPS } from "@/data/roadmapNextSteps";
+import RoadmapItemActions from "@/components/roadmap/RoadmapItemActions";
 
 /* ─── Types ─── */
 interface RoadmapItem {
@@ -8,6 +10,7 @@ interface RoadmapItem {
   priority?: "critical" | "high" | "medium" | "low";
   labels?: string[];
   detail?: string;
+  isNextStep?: boolean;
 }
 
 interface RoadmapPhase {
@@ -221,9 +224,20 @@ const PHASES: RoadmapPhase[] = [
 /* ─── Collapsible Section Component ─── */
 function PhaseSection({ phase }: { phase: RoadmapPhase }) {
   const [open, setOpen] = useState(phase.status === "active" || phase.status === "blocked");
+  const [showNextSteps, setShowNextSteps] = useState(false);
   const Icon = phase.icon;
   const doneCount = phase.items.filter((i) => i.status === "done").length;
   const pct = Math.round((doneCount / phase.items.length) * 100);
+
+  // Build next-step items from data file
+  const nextStepItems: RoadmapItem[] = (PHASE_NEXT_STEPS[phase.id] || []).map((ns) => ({
+    title: ns.title,
+    detail: ns.detail,
+    status: "planned" as const,
+    priority: ns.priority,
+    labels: ["next-optimization"],
+    isNextStep: true,
+  }));
 
   return (
     <div className="border border-border/50 rounded-xl overflow-hidden bg-card">
@@ -277,26 +291,59 @@ function PhaseSection({ phase }: { phase: RoadmapPhase }) {
 
       {/* Expanded Items */}
       {open && (
-        <div className="border-t border-border/30 divide-y divide-border/20">
-          {phase.items.map((item, idx) => (
-            <RoadmapItemRow key={idx} item={item} />
-          ))}
+        <div className="border-t border-border/30">
+          <div className="divide-y divide-border/20">
+            {phase.items.map((item, idx) => (
+              <RoadmapItemRow key={idx} item={item} phaseName={phase.title} />
+            ))}
+          </div>
+
+          {/* Next Steps Toggle */}
+          {nextStepItems.length > 0 && (
+            <div className="border-t border-dashed border-border/40">
+              <button
+                onClick={() => setShowNextSteps(!showNextSteps)}
+                className="w-full flex items-center gap-2 px-5 py-2.5 text-left hover:bg-secondary/20 transition-colors"
+              >
+                <FlaskConical className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                <span className="text-[11px] font-bold text-purple-400">
+                  {showNextSteps ? "▾" : "▸"} Next 11 Optimizations
+                </span>
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30 font-semibold">
+                  {nextStepItems.length} items
+                </span>
+              </button>
+              {showNextSteps && (
+                <div className="divide-y divide-border/20 bg-purple-500/[0.02] animate-in fade-in slide-in-from-top-1 duration-150">
+                  {nextStepItems.map((item, idx) => (
+                    <RoadmapItemRow key={`next-${idx}`} item={item} phaseName={phase.title} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-function RoadmapItemRow({ item }: { item: RoadmapItem }) {
+function RoadmapItemRow({ item, phaseName }: { item: RoadmapItem; phaseName: string }) {
   const [expanded, setExpanded] = useState(false);
   const Icon = STATUS_ICON[item.status];
+  const isIncomplete = item.status !== "done";
 
   return (
-    <div className="px-5 py-2.5 hover:bg-secondary/20 transition-colors">
+    <div className={`px-5 py-2.5 hover:bg-secondary/20 transition-colors ${item.isNextStep ? "pl-8" : ""}`}>
       <button onClick={() => setExpanded(!expanded)} className="w-full flex items-start gap-2.5 text-left">
         <Icon className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${STATUS_COLOR[item.status]}`} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
+            {item.isNextStep && (
+              <span className="text-[8px] px-1 py-0.5 rounded bg-purple-500/15 text-purple-400 border border-purple-500/30 font-bold">
+                NEW
+              </span>
+            )}
             <span className={`text-xs font-medium ${item.status === "done" ? "text-muted-foreground line-through" : "text-foreground"}`}>
               {item.title}
             </span>
@@ -305,7 +352,7 @@ function RoadmapItemRow({ item }: { item: RoadmapItem }) {
                 {item.priority}
               </span>
             )}
-            {item.labels?.map((l) => (
+            {item.labels?.filter(l => l !== "next-optimization").map((l) => (
               <span key={l} className="text-[9px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground font-medium">
                 {l}
               </span>
@@ -315,6 +362,10 @@ function RoadmapItemRow({ item }: { item: RoadmapItem }) {
             <p className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed animate-in fade-in slide-in-from-top-1 duration-150">
               {item.detail}
             </p>
+          )}
+          {/* Action buttons for incomplete items */}
+          {isIncomplete && (
+            <RoadmapItemActions title={item.title} detail={item.detail} phaseName={phaseName} />
           )}
         </div>
         {item.detail && (
