@@ -65,7 +65,7 @@ function ExportCsvDropdown({
         onClick={() => setOpen(!open)}
       >
         <Download className="w-3.5 h-3.5" />
-        Export CSV
+        Export CSV ({PERIOD_OPTIONS.find(o => o.days === days)?.label})
         <ChevronDown className="w-3 h-3 ml-0.5" />
       </Button>
       {open && (
