@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Link2, RefreshCw, ArrowLeft, Shield } from "lucide-react";
+import { Link2, RefreshCw, ArrowLeft, Shield, Download } from "lucide-react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useLinkAnalytics } from "@/hooks/useLinkAnalytics";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { exportClicksCsv, exportLinksCsv, downloadCsv } from "@/utils/csvExport";
 import LinkStatsCards from "@/components/admin/LinkStatsCards";
 import LinkPieCharts from "@/components/admin/LinkPieCharts";
 import DailyClicksChart from "@/components/admin/DailyClicksChart";
@@ -77,6 +78,23 @@ export default function AdminLinks() {
                 </button>
               ))}
             </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => {
+                const date = new Date().toISOString().substring(0, 10);
+                const clicksCsv = exportClicksCsv(clicks, links);
+                downloadCsv(clicksCsv, `clicks-export-${date}.csv`);
+                const linksCsv = exportLinksCsv(links);
+                downloadCsv(linksCsv, `links-export-${date}.csv`);
+              }}
+              disabled={!stats}
+            >
+              <Download className="w-3.5 h-3.5" />
+              Export CSV
+            </Button>
 
             <Button variant="outline" size="sm" onClick={refetch} className="gap-1.5">
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
