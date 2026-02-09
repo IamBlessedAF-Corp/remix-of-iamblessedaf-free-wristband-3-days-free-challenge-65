@@ -21,7 +21,7 @@ interface GrokViralFooterProps {
 }
 
 const DEFAULT_MESSAGE =
-  "🎁 Someone thinks you're blessed! You've been gifted a FREE 'I Am Blessed AF' Wristband — just cover $9.95 shipping. Claim yours: https://iamblessedaf.com/offer/111-grok";
+  "🎁 Someone thinks you're blessed! You've been gifted a FREE 'I Am Blessed AF' Wristband. Claim yours: https://iamblessedaf.com/offer/111-grok";
 
 const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
   const { rewardShare } = useGamificationStats();
@@ -104,12 +104,9 @@ const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
               🎁 Gift a FREE Wristband (Valued at $11)
             </p>
           </div>
-          <p className="text-sm text-muted-foreground mb-1">
+          <p className="text-sm text-muted-foreground mb-3">
             Someone you're grateful for gets a <span className="font-bold text-primary">FREE 'I Am Blessed AF' Wristband</span> — 
-            just <span className="font-bold text-foreground">$9.95 shipping</span>.
-          </p>
-          <p className="text-xs text-muted-foreground mb-3">
-            Or upgrade: all 3 colors for <span className="font-bold text-foreground">$22 with FREE shipping</span> 🇺🇸
+            spread the gratitude 🙏
           </p>
           <div className="flex items-center justify-center gap-3">
             <button
