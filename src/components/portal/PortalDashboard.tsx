@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Coins, Heart, Flame, Users, Utensils, Gift, Trophy, Zap, ChevronRight } from "lucide-react";
+import UserLinkStats from "./UserLinkStats";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import type { PortalProfile, PortalWallet, BlessingRow } from "@/hooks/usePortalData";
@@ -10,6 +11,7 @@ interface Props {
   profile: PortalProfile;
   wallet: PortalWallet | null;
   blessings: BlessingRow[];
+  userId: string;
   onClaimDaily: () => Promise<any>;
 }
 
@@ -50,7 +52,7 @@ const StatCard = ({ icon: Icon, label, value, prefix, accent }: {
   </motion.div>
 );
 
-export default function PortalDashboard({ profile, wallet, blessings, onClaimDaily }: Props) {
+export default function PortalDashboard({ profile, wallet, blessings, userId, onClaimDaily }: Props) {
   const [dailyClaimed, setDailyClaimed] = useState(false);
   const [dailyBonus, setDailyBonus] = useState<number | null>(null);
   const [claiming, setClaiming] = useState(false);
@@ -193,6 +195,9 @@ export default function PortalDashboard({ profile, wallet, blessings, onClaimDai
           </div>
         )}
       </div>
+
+      {/* Link Analytics */}
+      <UserLinkStats userId={userId} />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 const SHORT_LINK_BASE = "https://iamblessedaf.com/go";
 
@@ -24,6 +25,7 @@ interface ShortLinkResult {
  */
 export function useShortLinks() {
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   /** Create a single short link */
   const createShortLink = useCallback(
@@ -31,7 +33,7 @@ export function useShortLinks() {
       setLoading(true);
       try {
         const { data, error } = await supabase.functions.invoke("short-link", {
-          body: { action: "create", ...options },
+          body: { action: "create", ...options, created_by: user?.id || null },
         });
 
         if (error) throw error;
