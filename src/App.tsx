@@ -21,6 +21,7 @@ import OfferSuccess from "./pages/OfferSuccess";
 import AIVideoContest from "./pages/AIVideoContest";
 import Board from "./pages/Board";
 import Portal from "./pages/Portal";
+import AdminLinks from "./pages/AdminLinks";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/make-2500-with-1-ai-clip" element={<AIVideoContest />} />
           <Route path="/board" element={<Board />} />
           <Route path="/portal" element={<Portal />} />
+          <Route path="/admin/links" element={<AdminLinks />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
