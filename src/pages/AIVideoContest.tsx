@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 import { CreatorNextSteps } from "@/components/contest/CreatorNextSteps";
+import ClipperCalculator from "@/components/contest/ClipperCalculator";
 
 const AIVideoContest = () => {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
@@ -57,6 +58,9 @@ const AIVideoContest = () => {
             Kevin Hart AI Video Contest – Ignite Gratitude Virality! 🚀
           </p>
         </motion.div>
+
+        {/* Clipper Calculator */}
+        <ClipperCalculator />
 
         {/* Key Stats */}
         <motion.div
