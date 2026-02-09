@@ -5,7 +5,7 @@ import { useShortLinks } from "@/hooks/useShortLinks";
 
 /**
  * /go/:code — resolves a short link, tracks the click, and redirects.
- * All iamblessed.com/go/XXXXXXX links land here.
+ * All iamblessedaf.com/go/XXXXXXX links land here.
  */
 const GoRedirect = () => {
   const { code } = useParams<{ code: string }>();

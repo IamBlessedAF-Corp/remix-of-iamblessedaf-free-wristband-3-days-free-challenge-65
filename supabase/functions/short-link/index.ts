@@ -127,7 +127,7 @@ Deno.serve(async (req: Request) => {
       return new Response(
         JSON.stringify({
           short_code: data.short_code,
-          short_url: `https://iamblessed.com/go/${data.short_code}`,
+          short_url: `https://iamblessedaf.com/go/${data.short_code}`,
           id: data.id,
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -330,7 +330,7 @@ Deno.serve(async (req: Request) => {
         if (data) {
           results.push({
             ...data,
-            short_url: `https://iamblessed.com/go/${data.short_code}`,
+            short_url: `https://iamblessedaf.com/go/${data.short_code}`,
             original: link.destination_url,
           });
         }

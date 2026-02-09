@@ -6,7 +6,7 @@ import { useShortLinks } from "@/hooks/useShortLinks";
 
 /**
  * Viral Share Nudge — footer-level component encouraging UGC sharing.
- * All links are shortened via iamblessed.com/go/XXXXX with tracking.
+ * All links are shortened via iamblessedaf.com/go/XXXXX with tracking.
  */
 const ViralShareNudge = () => {
   const [copied, setCopied] = useState(false);
@@ -17,12 +17,12 @@ const ViralShareNudge = () => {
 
   // Generate short link on mount
   useEffect(() => {
-    getShareUrl("https://iamblessed.com/challenge", "viral-share-nudge").then(setShortUrl);
+    getShareUrl("https://iamblessedaf.com/challenge", "viral-share-nudge").then(setShortUrl);
   }, [getShareUrl]);
 
   const handleCopy = async () => {
     try {
-      const url = shortUrl || "https://iamblessed.com/challenge";
+      const url = shortUrl || "https://iamblessedaf.com/challenge";
       await navigator.clipboard.writeText(`${hashtag} ${url}`);
       setCopied(true);
       toast.success("Copied to clipboard! 📋");
@@ -38,7 +38,7 @@ const ViralShareNudge = () => {
   };
 
   const handleShareTwitter = () => {
-    const url = shortUrl || "https://iamblessed.com/challenge";
+    const url = shortUrl || "https://iamblessedaf.com/challenge";
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&hashtags=IamBlessedAF&url=${encodeURIComponent(url)}`;
     window.open(twitterUrl, "_blank", "noopener,noreferrer");
     trackShare();
@@ -47,7 +47,7 @@ const ViralShareNudge = () => {
   const handleShareNative = async () => {
     if (navigator.share) {
       try {
-        const url = shortUrl || "https://iamblessed.com/challenge";
+        const url = shortUrl || "https://iamblessedaf.com/challenge";
         await navigator.share({ title: "IamBlessedAF", text: shareText, url });
         trackShare();
       } catch {}

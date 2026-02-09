@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const SHORT_LINK_BASE = "https://iamblessed.com/go";
+const SHORT_LINK_BASE = "https://iamblessedaf.com/go";
 
 interface ShortLinkOptions {
   destination_url: string;
@@ -20,7 +20,7 @@ interface ShortLinkResult {
 
 /**
  * Hook to create and manage short links (Bitly-style).
- * All links use the iamblessed.com domain.
+ * All links use the iamblessedaf.com domain.
  */
 export function useShortLinks() {
   const [loading, setLoading] = useState(false);
