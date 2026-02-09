@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Coins, Heart, Flame, Users, Utensils, Gift, Trophy, Zap, ChevronRight } from "lucide-react";
+import { Coins, Heart, Flame, Users, Utensils, Gift, Trophy, Zap } from "lucide-react";
 import UserLinkStats from "./UserLinkStats";
+import PortalQuickActions from "./PortalQuickActions";
+import PortalEarnOverview from "./PortalEarnOverview";
+import PortalSocialShare from "./PortalSocialShare";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import type { PortalProfile, PortalWallet, BlessingRow } from "@/hooks/usePortalData";
@@ -56,15 +59,14 @@ export default function PortalDashboard({ profile, wallet, blessings, userId, on
   const [dailyClaimed, setDailyClaimed] = useState(false);
   const [dailyBonus, setDailyBonus] = useState<number | null>(null);
   const [claiming, setClaiming] = useState(false);
+  const [socialOpen, setSocialOpen] = useState(false);
 
   const balance = wallet?.balance ?? 0;
   const lifetime = wallet?.lifetime_earned ?? 0;
   const streak = wallet?.streak_days ?? 0;
   const tier = getTier(lifetime);
   const confirmed = blessings.filter((b) => b.confirmed_at).length;
-  const pending = blessings.filter((b) => !b.confirmed_at).length;
 
-  // Check if today's bonus was already claimed
   useEffect(() => {
     if (wallet?.last_login_bonus_at) {
       const today = new Date().toISOString().split("T")[0];
@@ -135,6 +137,12 @@ export default function PortalDashboard({ profile, wallet, blessings, userId, on
         <StatCard icon={Trophy} label="Rank" value={0} prefix="#" accent="bg-primary/10 text-primary" />
       </div>
 
+      {/* 🔥 AGGRESSIVE: Quick Actions — FREE earning opportunities */}
+      <PortalQuickActions
+        referralCode={profile.referral_code}
+        onOpenSocial={() => setSocialOpen(true)}
+      />
+
       {/* Tier Progress */}
       <div className="bg-card border border-border/60 rounded-xl p-5">
         <div className="flex items-center justify-between mb-3">
@@ -146,7 +154,6 @@ export default function PortalDashboard({ profile, wallet, blessings, userId, on
           </span>
         </div>
 
-        {/* Tier badges */}
         <div className="flex items-center justify-between mb-3">
           {TIERS.map((t, i) => (
             <div key={t.name} className="flex flex-col items-center gap-1">
@@ -170,7 +177,10 @@ export default function PortalDashboard({ profile, wallet, blessings, userId, on
         )}
       </div>
 
-      {/* Recent Activity */}
+      {/* All ways to earn BC */}
+      <PortalEarnOverview />
+
+      {/* Recent Blessings */}
       <div className="bg-card border border-border/60 rounded-xl p-5">
         <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-3">
           Recent Blessings
@@ -198,6 +208,14 @@ export default function PortalDashboard({ profile, wallet, blessings, userId, on
 
       {/* Link Analytics */}
       <UserLinkStats userId={userId} />
+
+      {/* Social Share Fullscreen Overlay */}
+      <PortalSocialShare
+        referralCode={profile.referral_code}
+        displayName={profile.display_name}
+        open={socialOpen}
+        onClose={() => setSocialOpen(false)}
+      />
     </div>
   );
 }
