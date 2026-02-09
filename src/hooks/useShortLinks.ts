@@ -88,13 +88,32 @@ export function useShortLinks() {
     []
   );
 
-  /** Generate a short URL string for sharing (creates link on-demand) */
+  /** Generate a short URL string for sharing — reuses existing link if one matches */
   const getShareUrl = useCallback(
     async (
       destination: string,
       campaign: string,
       sourcePage?: string
     ): Promise<string> => {
+      // Try to find an existing link for this campaign+destination first
+      try {
+        const { data: existing } = await supabase
+          .from("short_links")
+          .select("short_code")
+          .eq("destination_url", destination)
+          .eq("campaign", campaign)
+          .eq("is_active", true)
+          .order("click_count", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (existing?.short_code) {
+          return `${SHORT_LINK_BASE}/${existing.short_code}`;
+        }
+      } catch {
+        // Fall through to create
+      }
+
       const result = await createShortLink({
         destination_url: destination,
         campaign,
