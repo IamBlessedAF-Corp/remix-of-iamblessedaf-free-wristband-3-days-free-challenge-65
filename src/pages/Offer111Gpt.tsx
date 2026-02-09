@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { FriendShirtSection } from "@/components/offer/ProductSections";
@@ -11,63 +11,29 @@ import GptQuotesSection from "@/components/offer/gpt/GptQuotesSection";
 import GptRiskReversal from "@/components/offer/gpt/GptRiskReversal";
 import GptMessageModule from "@/components/offer/gpt/GptMessageModule";
 import GptStickyBar from "@/components/offer/gpt/GptStickyBar";
-import GptViralShare from "@/components/offer/gpt/GptViralShare";
 import DiscountBanner from "@/components/offer/DiscountBanner";
 import ResearchList from "@/components/offer/ResearchList";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
-import { useGamificationStats } from "@/hooks/useGamificationStats";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
 
 const Offer111Gpt = () => {
-  const [purchased, setPurchased] = useState(false);
-  const { rewardCheckout } = useGamificationStats();
+  const { startCheckout, loading } = useStripeCheckout();
 
   useEffect(() => {
     window.dispatchEvent(new CustomEvent("track", { detail: { event: "upsell2_view" } }));
   }, []);
 
   const handleCheckout = () => {
-    rewardCheckout("pack-111");
-    if (import.meta.env.DEV) {
-      console.log("1-click add to order: $111 Gratitude Pack (GPT variant)");
-    }
     window.dispatchEvent(new CustomEvent("track", { detail: { event: "upsell2_accept" } }));
-    setPurchased(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    startCheckout("pack-111");
   };
 
   const handleDecline = () => {
     window.dispatchEvent(new CustomEvent("track", { detail: { event: "upsell2_decline" } }));
     window.location.href = "/challenge/thanks";
   };
-
-  // ─── Post-purchase: Viral Share Module ───
-  if (purchased) {
-    return (
-      <div className="min-h-screen bg-background">
-        <GamificationHeader />
-        <div className="container mx-auto px-4 py-8 md:py-16">
-          <div className="max-w-2xl mx-auto">
-            <GptViralShare />
-            <motion.div
-              className="text-center mt-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              <a
-                href="/challenge/thanks"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Continue to dashboard →
-              </a>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background pb-20">

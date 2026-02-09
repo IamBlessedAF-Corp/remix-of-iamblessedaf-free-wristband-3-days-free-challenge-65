@@ -15,7 +15,11 @@ const PRICE_MAP: Record<string, string> = {
   "pack-444": "price_1SyiijK7ifE56qrACsRIy82b",
   "pack-1111": "price_1SyiikK7ifE56qrAO0C5eQIT",
   "pack-4444": "price_1SyiilK7ifE56qrApkieQ2bM",
+  "monthly-11": "price_1SyjC7K7ifE56qrAEmDjOCEL",
 };
+
+/** Tiers that use subscription mode */
+const SUBSCRIPTION_TIERS = new Set(["monthly-11"]);
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -33,10 +37,11 @@ serve(async (req) => {
     });
 
     const origin = req.headers.get("origin") || "https://funnel-architect-ai-30.lovable.app";
+    const isSubscription = SUBSCRIPTION_TIERS.has(tier);
 
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: PRICE_MAP[tier], quantity: 1 }],
-      mode: "payment",
+      mode: isSubscription ? "subscription" : "payment",
       success_url: `${origin}/offer/success?tier=${tier}`,
       cancel_url: `${origin}/offer/22`,
       metadata: { tier },

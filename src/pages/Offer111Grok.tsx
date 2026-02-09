@@ -12,18 +12,15 @@ import ProductSections from "@/components/offer/ProductSections";
 import DiscountBanner from "@/components/offer/DiscountBanner";
 import ResearchList from "@/components/offer/ResearchList";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
-import { useGamificationStats } from "@/hooks/useGamificationStats";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
 
 const Offer111Grok = () => {
-  const { rewardCheckout } = useGamificationStats();
+  const { startCheckout, loading } = useStripeCheckout();
 
   const handleCheckout = () => {
-    rewardCheckout("pack-111");
-    if (import.meta.env.DEV) {
-      console.log("Redirecting to Stripe checkout for $111 pack (Grok variant)");
-    }
+    startCheckout("pack-111");
   };
 
   return (
