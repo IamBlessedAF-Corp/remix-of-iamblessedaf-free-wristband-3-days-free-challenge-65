@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 import { CreatorNextSteps } from "@/components/contest/CreatorNextSteps";
 import ClipperCalculator from "@/components/contest/ClipperCalculator";
+import ClipCtaInfo from "@/components/contest/ClipCtaInfo";
 
 const AIVideoContest = () => {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
@@ -61,6 +62,9 @@ const AIVideoContest = () => {
 
         {/* Clipper Calculator */}
         <ClipperCalculator />
+
+        {/* Clip CTA Info */}
+        <ClipCtaInfo />
 
         {/* Key Stats */}
         <motion.div
