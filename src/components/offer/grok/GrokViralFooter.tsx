@@ -1,20 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Share2, MessageCircle, Loader2, Check } from "lucide-react";
+import { Share2, MessageCircle, Loader2, Check, Globe } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useGamificationStats } from "@/hooks/useGamificationStats";
 import { useShortLinks } from "@/hooks/useShortLinks";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import GiftSmsDialog from "@/components/offer/GiftSmsDialog";
 
 interface GrokViralFooterProps {
   delay?: number;
@@ -25,13 +16,8 @@ const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
   const { rewardShare } = useGamificationStats();
   const { getShareUrl } = useShortLinks();
   const [smsOpen, setSmsOpen] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [friendName, setFriendName] = useState("");
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
   const [shortUrl, setShortUrl] = useState("https://iamblessedaf.com/offer/111/grok");
 
-  // Generate tracked short link on mount
   useEffect(() => {
     getShareUrl(
       "https://iamblessedaf.com/offer/111/grok",
@@ -39,48 +25,6 @@ const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
       "/offer/111/grok"
     ).then(setShortUrl);
   }, [getShareUrl]);
-
-  const handleSendSms = async () => {
-    if (!phone.trim()) {
-      toast.error("Please enter a phone number");
-      return;
-    }
-
-    setSending(true);
-    try {
-      const defaultMsg = `🎁 Someone thinks you're blessed! You've been gifted a FREE 'I Am Blessed AF' Wristband. Claim yours: ${shortUrl}`;
-      const personalizedMessage = friendName.trim()
-        ? `Hey ${friendName}! ${defaultMsg}`
-        : defaultMsg;
-
-      const { data, error } = await supabase.functions.invoke("send-sms", {
-        body: {
-          to: phone.trim(),
-          message: personalizedMessage,
-          recipientName: friendName.trim() || null,
-          sourcePage: "/offer/111/grok",
-        },
-      });
-
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
-      setSent(true);
-      toast.success("🎉 Gift SMS sent! +15 BC 🪙");
-      rewardShare("sms");
-      setTimeout(() => {
-        setSmsOpen(false);
-        setSent(false);
-        setPhone("");
-        setFriendName("");
-      }, 2000);
-    } catch (err: any) {
-      console.error("SMS send error:", err);
-      toast.error(err?.message || "Failed to send SMS. Please try again.");
-    } finally {
-      setSending(false);
-    }
-  };
 
   const handleShareLink = async () => {
     const shareText = "🎁 I'm gifting you a FREE 'I Am Blessed AF' Wristband — just cover shipping!";
@@ -123,7 +67,7 @@ const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
               className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-semibold px-4 py-2 rounded-full hover:bg-primary/20 transition-colors"
             >
               <MessageCircle className="w-3.5 h-3.5" />
-              Send FREE Gift via SMS
+              Send FREE Gift
             </button>
             <button
               onClick={handleShareLink}
@@ -144,69 +88,13 @@ const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
         </a>
       </motion.div>
 
-      {/* SMS Dialog */}
-      <Dialog open={smsOpen} onOpenChange={setSmsOpen}>
-        <DialogContent className="sm:max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5 text-primary" />
-              Send a FREE Gift via SMS
-            </DialogTitle>
-            <DialogDescription>
-              Your friend will receive a text with a link to claim their free wristband.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 pt-2">
-            <div>
-              <Label htmlFor="friendName">Friend's Name (optional)</Label>
-              <Input
-                id="friendName"
-                placeholder="e.g. Sarah"
-                value={friendName}
-                onChange={(e) => setFriendName(e.target.value)}
-                className="mt-1"
-                disabled={sending || sent}
-              />
-            </div>
-            <div>
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="+1 (555) 123-4567"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="mt-1"
-                disabled={sending || sent}
-              />
-              <p className="text-[11px] text-muted-foreground mt-1">
-                US numbers only. Include country code (+1).
-              </p>
-            </div>
-
-            <Button
-              onClick={handleSendSms}
-              disabled={sending || sent || !phone.trim()}
-              className="w-full"
-            >
-              {sent ? (
-                <>
-                  <Check className="w-4 h-4 mr-1.5" /> Sent!
-                </>
-              ) : sending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> Sending…
-                </>
-              ) : (
-                <>
-                  <MessageCircle className="w-4 h-4 mr-1.5" /> Send Gift SMS
-                </>
-              )}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <GiftSmsDialog
+        open={smsOpen}
+        onOpenChange={setSmsOpen}
+        shortUrl={shortUrl}
+        sourcePage="/offer/111/grok"
+        onSuccess={() => rewardShare("sms")}
+      />
     </>
   );
 };
