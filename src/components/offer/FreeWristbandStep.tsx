@@ -98,9 +98,7 @@ const FreeWristbandStep = ({ onCheckout, onSkip }: FreeWristbandStepProps) => {
 
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground pt-1">
               <Truck className="w-3.5 h-3.5 text-primary" />
-              <span>
-                🇺🇸 US Shipping: <span className="font-bold text-foreground">$9.95</span> · International: $14.95
-              </span>
+              <span>Ships worldwide 🌍 · Waterproof silicone · NFC enabled</span>
             </div>
           </div>
         </div>
