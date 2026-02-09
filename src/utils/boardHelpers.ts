@@ -43,8 +43,13 @@ export function getNextAction(
   const currentIdx = sorted.findIndex((c) => c.id === currentCol.id);
   const nextCol = currentIdx < sorted.length - 1 ? sorted[currentIdx + 1] : null;
 
-  // Don't show action for the Done column
-  if (currentCol.name.includes("✅ Done")) return null;
+  // Don't show action for Done, 3 Outcomes, Ideas, or Review columns (manual moves only)
+  if (
+    currentCol.name.includes("✅ Done") ||
+    currentCol.name.includes("3 Outcomes") ||
+    currentCol.name.includes("Ideas") ||
+    currentCol.name.includes("👀 Review")
+  ) return null;
 
   const nextColumnId = nextCol?.id ?? null;
   const name = currentCol.name;
