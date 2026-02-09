@@ -26,27 +26,32 @@ function ExportCsvDropdown({
   clicks,
   links,
   disabled,
+  days,
 }: {
   clicks: ClickRow[];
   links: LinkSummary[];
   disabled: boolean;
+  days: number;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const date = new Date().toISOString().substring(0, 10);
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+  const rangeLabel = `${since.toISOString().substring(0, 10)}_to_${date}`;
 
   const exportClicks = () => {
-    downloadCsv(exportClicksCsv(clicks, links), `clicks-export-${date}.csv`);
+    downloadCsv(exportClicksCsv(clicks, links), `clicks-${rangeLabel}.csv`);
     setOpen(false);
   };
   const exportLinks = () => {
-    downloadCsv(exportLinksCsv(links), `links-export-${date}.csv`);
+    downloadCsv(exportLinksCsv(links), `links-${rangeLabel}.csv`);
     setOpen(false);
   };
   const exportBoth = () => {
-    downloadCsv(exportClicksCsv(clicks, links), `clicks-export-${date}.csv`);
-    downloadCsv(exportLinksCsv(links), `links-export-${date}.csv`);
+    downloadCsv(exportClicksCsv(clicks, links), `clicks-${rangeLabel}.csv`);
+    downloadCsv(exportLinksCsv(links), `links-${rangeLabel}.csv`);
     setOpen(false);
   };
 
@@ -151,7 +156,7 @@ export default function AdminLinks() {
               ))}
             </div>
 
-            <ExportCsvDropdown clicks={clicks} links={links} disabled={!stats} />
+            <ExportCsvDropdown clicks={clicks} links={links} disabled={!stats} days={days} />
 
             <Button variant="outline" size="sm" onClick={refetch} className="gap-1.5">
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
