@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link2, RefreshCw, ArrowLeft, Shield, Download } from "lucide-react";
+import { useState, useRef } from "react";
+import { Link2, RefreshCw, ArrowLeft, Shield, Download, ChevronDown } from "lucide-react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useLinkAnalytics } from "@/hooks/useLinkAnalytics";
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,84 @@ import UtmBuilder from "@/components/admin/UtmBuilder";
 import RecentBuilderLinks from "@/components/admin/RecentBuilderLinks";
 import PerLinkTrafficChart from "@/components/admin/PerLinkTrafficChart";
 import BoardLoginForm from "@/components/board/BoardLoginForm";
+import type { LinkSummary, ClickRow } from "@/hooks/useLinkAnalytics";
 
 const PERIOD_OPTIONS = [
   { label: "7d", days: 7 },
   { label: "30d", days: 30 },
   { label: "90d", days: 90 },
 ];
+
+function ExportCsvDropdown({
+  clicks,
+  links,
+  disabled,
+}: {
+  clicks: ClickRow[];
+  links: LinkSummary[];
+  disabled: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const date = new Date().toISOString().substring(0, 10);
+
+  const exportClicks = () => {
+    downloadCsv(exportClicksCsv(clicks, links), `clicks-export-${date}.csv`);
+    setOpen(false);
+  };
+  const exportLinks = () => {
+    downloadCsv(exportLinksCsv(links), `links-export-${date}.csv`);
+    setOpen(false);
+  };
+  const exportBoth = () => {
+    downloadCsv(exportClicksCsv(clicks, links), `clicks-export-${date}.csv`);
+    downloadCsv(exportLinksCsv(links), `links-export-${date}.csv`);
+    setOpen(false);
+  };
+
+  return (
+    <div className="relative" ref={ref}>
+      <Button
+        variant="outline"
+        size="sm"
+        className="gap-1.5"
+        disabled={disabled}
+        onClick={() => setOpen(!open)}
+      >
+        <Download className="w-3.5 h-3.5" />
+        Export CSV
+        <ChevronDown className="w-3 h-3 ml-0.5" />
+      </Button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-full mt-1 z-50 w-44 bg-popover border border-border rounded-lg shadow-lg py-1">
+            <button
+              onClick={exportClicks}
+              className="w-full text-left px-3 py-2 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
+            >
+              Clicks only
+            </button>
+            <button
+              onClick={exportLinks}
+              className="w-full text-left px-3 py-2 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
+            >
+              Links only
+            </button>
+            <div className="border-t border-border/50 my-0.5" />
+            <button
+              onClick={exportBoth}
+              className="w-full text-left px-3 py-2 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
+            >
+              Both (2 files)
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function AdminLinks() {
   const { isAdmin, loading: authLoading, signInWithEmail, signOut, user } = useAdminAuth();
@@ -79,22 +151,7 @@ export default function AdminLinks() {
               ))}
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              onClick={() => {
-                const date = new Date().toISOString().substring(0, 10);
-                const clicksCsv = exportClicksCsv(clicks, links);
-                downloadCsv(clicksCsv, `clicks-export-${date}.csv`);
-                const linksCsv = exportLinksCsv(links);
-                downloadCsv(linksCsv, `links-export-${date}.csv`);
-              }}
-              disabled={!stats}
-            >
-              <Download className="w-3.5 h-3.5" />
-              Export CSV
-            </Button>
+            <ExportCsvDropdown clicks={clicks} links={links} disabled={!stats} />
 
             <Button variant="outline" size="sm" onClick={refetch} className="gap-1.5">
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
