@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Crown, ArrowRight } from "lucide-react";
+import { Crown, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OfferTimer from "@/components/offer/OfferTimer";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
@@ -8,12 +8,14 @@ interface GrokCtaBlockProps {
   onCheckout: () => void;
   delay?: number;
   showScarcity?: boolean;
+  loading?: boolean;
 }
 
 const GrokCtaBlock = ({
   onCheckout,
   delay = 0,
   showScarcity = false,
+  loading = false,
 }: GrokCtaBlockProps) => {
   return (
     <motion.div
@@ -50,11 +52,12 @@ const GrokCtaBlock = ({
 
       <Button
         onClick={onCheckout}
-        className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
+        disabled={loading}
+        className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none"
       >
-        <Crown className="w-5 h-5 mr-2" />
-        ACTIVATE: Deploy 11 Meals + Lock In My Protocol
-        <ArrowRight className="w-5 h-5 ml-2" />
+        {loading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
+        {loading ? "Creating checkout…" : "ACTIVATE: Deploy 11 Meals + Lock In My Protocol"}
+        {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
       </Button>
 
       <p className="text-center text-xs text-muted-foreground mt-3 font-mono">

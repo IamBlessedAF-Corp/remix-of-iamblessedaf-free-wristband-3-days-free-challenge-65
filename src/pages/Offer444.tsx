@@ -71,7 +71,7 @@ const Offer444 = () => {
               <FriendShirtSection delay={0.14} />
               <Grok444ValueStack />
 
-              <Grok444CtaBlock onCheckout={handleCheckout} delay={0.35} showScarcity />
+              <Grok444CtaBlock onCheckout={handleCheckout} delay={0.35} showScarcity loading={loading} />
               <SocialProofSection variant="data" delay={0.35} />
 
               <motion.div className="text-center mb-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}>
@@ -122,7 +122,7 @@ const Offer444 = () => {
                 afterWristband={
                   <>
                     <div className="text-center mb-6"><DiscountBanner /></div>
-                    <Grok444CtaBlock onCheckout={handleCheckout} delay={0.5} />
+                    <Grok444CtaBlock onCheckout={handleCheckout} delay={0.5} loading={loading} />
                   </>
                 }
               />
@@ -143,12 +143,12 @@ const Offer444 = () => {
               </motion.div>
 
               <GrokRiskReversal delay={0.7} />
-              <Grok444CtaBlock onCheckout={handleCheckout} delay={0.75} showScarcity />
+              <Grok444CtaBlock onCheckout={handleCheckout} delay={0.75} showScarcity loading={loading} />
 
               <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4 mt-4">Backed by Science</p>
               <ResearchList delay={0.8} />
 
-              <Grok444CtaBlock onCheckout={handleCheckout} delay={0.85} />
+              <Grok444CtaBlock onCheckout={handleCheckout} delay={0.85} loading={loading} />
               <GrokViralFooter delay={0.9} onSkip={handleSkip} />
 
               <DownsellModal

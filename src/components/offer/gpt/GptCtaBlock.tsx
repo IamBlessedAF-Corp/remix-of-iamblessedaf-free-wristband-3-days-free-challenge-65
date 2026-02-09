@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Heart, ArrowRight } from "lucide-react";
+import { Heart, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OfferTimer from "@/components/offer/OfferTimer";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
@@ -8,12 +8,14 @@ interface GptCtaBlockProps {
   onCheckout: () => void;
   delay?: number;
   showScarcity?: boolean;
+  loading?: boolean;
 }
 
 const GptCtaBlock = ({
   onCheckout,
   delay = 0,
   showScarcity = false,
+  loading = false,
 }: GptCtaBlockProps) => {
   return (
     <motion.div
@@ -50,11 +52,12 @@ const GptCtaBlock = ({
 
       <Button
         onClick={onCheckout}
-        className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl"
+        disabled={loading}
+        className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none"
       >
-        <Heart className="w-5 h-5 mr-2" />
-        YES! Send Love to My Best Friend 💌
-        <ArrowRight className="w-5 h-5 ml-2" />
+        {loading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Heart className="w-5 h-5 mr-2" />}
+        {loading ? "Creating checkout…" : "YES! Send Love to My Best Friend 💌"}
+        {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
       </Button>
 
       <p className="text-center text-xs text-muted-foreground mt-3">

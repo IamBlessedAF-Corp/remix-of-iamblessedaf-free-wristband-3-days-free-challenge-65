@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Crown, ArrowRight, Sparkles, Heart } from "lucide-react";
+import { Crown, ArrowRight, Sparkles, Heart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import WristbandProductCard from "./WristbandProductCard";
 import RiskReversalGuarantee from "./RiskReversalGuarantee";
@@ -10,9 +10,10 @@ import UrgencyBanner from "./UrgencyBanner";
 interface UpsellWristbandStepProps {
   onCheckout: () => void;
   onSkip: () => void;
+  loading?: boolean;
 }
 
-const UpsellWristbandStep = ({ onCheckout, onSkip }: UpsellWristbandStepProps) => {
+const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWristbandStepProps) => {
   return (
     <>
       {/* Upsell badge */}
@@ -99,11 +100,12 @@ const UpsellWristbandStep = ({ onCheckout, onSkip }: UpsellWristbandStepProps) =
         <UrgencyBanner variant="wristbands" />
         <Button
           onClick={onCheckout}
-          className="w-full h-16 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl px-4"
+          disabled={loading}
+          className="w-full h-16 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl px-4 disabled:opacity-70 disabled:animate-none"
         >
-          <Crown className="w-5 h-5 mr-2 flex-shrink-0" />
-          <span>Upgrade to 3 Wristbands — $22</span>
-          <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
+          {loading ? <Loader2 className="w-5 h-5 mr-2 flex-shrink-0 animate-spin" /> : <Crown className="w-5 h-5 mr-2 flex-shrink-0" />}
+          <span>{loading ? "Creating checkout…" : "Upgrade to 3 Wristbands — $22"}</span>
+          {!loading && <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />}
         </Button>
         <p className="text-center text-xs text-muted-foreground mt-4">
           🔒 Secure checkout • Free US Shipping • 22 meals donated instantly
@@ -163,11 +165,12 @@ const UpsellWristbandStep = ({ onCheckout, onSkip }: UpsellWristbandStepProps) =
       >
         <Button
           onClick={onCheckout}
-          className="w-full h-16 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl px-4"
+          disabled={loading}
+          className="w-full h-16 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl px-4 disabled:opacity-70 disabled:animate-none"
         >
-          <Crown className="w-5 h-5 mr-2 flex-shrink-0" />
-          <span>Upgrade to 3 Wristbands — $22</span>
-          <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
+          {loading ? <Loader2 className="w-5 h-5 mr-2 flex-shrink-0 animate-spin" /> : <Crown className="w-5 h-5 mr-2 flex-shrink-0" />}
+          <span>{loading ? "Creating checkout…" : "Upgrade to 3 Wristbands — $22"}</span>
+          {!loading && <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />}
         </Button>
         <p className="text-center text-xs text-muted-foreground mt-4">
           🔒 Secure checkout • Free US Shipping
@@ -187,11 +190,12 @@ const UpsellWristbandStep = ({ onCheckout, onSkip }: UpsellWristbandStepProps) =
       >
         <Button
           onClick={onCheckout}
-          className="w-full h-16 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl px-4"
+          disabled={loading}
+          className="w-full h-16 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl px-4 disabled:opacity-70 disabled:animate-none"
         >
-          <Crown className="w-5 h-5 mr-2 flex-shrink-0" />
-          <span>Upgrade to 3 Wristbands — $22</span>
-          <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
+          {loading ? <Loader2 className="w-5 h-5 mr-2 flex-shrink-0 animate-spin" /> : <Crown className="w-5 h-5 mr-2 flex-shrink-0" />}
+          <span>{loading ? "Creating checkout…" : "Upgrade to 3 Wristbands — $22"}</span>
+          {!loading && <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />}
         </Button>
         <p className="text-center text-xs text-muted-foreground mt-4">
           🔒 Secure checkout • Free US Shipping

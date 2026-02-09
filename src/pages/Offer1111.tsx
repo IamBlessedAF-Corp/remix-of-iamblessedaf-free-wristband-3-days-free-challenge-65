@@ -50,7 +50,7 @@ const Offer1111 = () => {
               <FriendShirtSection delay={0.14} />
               <Grok1111ValueStack />
 
-              <Grok1111CtaBlock onCheckout={handleCheckout} delay={0.35} showScarcity />
+              <Grok1111CtaBlock onCheckout={handleCheckout} delay={0.35} showScarcity loading={loading} />
               <SocialProofSection variant="data" delay={0.35} />
 
               <motion.div className="text-center mb-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}>
@@ -99,7 +99,7 @@ const Offer1111 = () => {
 
               <ProductSections
                 afterWristband={
-                  <Grok1111CtaBlock onCheckout={handleCheckout} delay={0.5} />
+                  <Grok1111CtaBlock onCheckout={handleCheckout} delay={0.5} loading={loading} />
                 }
               />
 
@@ -119,12 +119,12 @@ const Offer1111 = () => {
               </motion.div>
 
               <GrokRiskReversal delay={0.7} />
-              <Grok1111CtaBlock onCheckout={handleCheckout} delay={0.75} showScarcity />
+              <Grok1111CtaBlock onCheckout={handleCheckout} delay={0.75} showScarcity loading={loading} />
 
               <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4 mt-4">Backed by Science</p>
               <ResearchList delay={0.8} />
 
-              <Grok1111CtaBlock onCheckout={handleCheckout} delay={0.85} />
+              <Grok1111CtaBlock onCheckout={handleCheckout} delay={0.85} loading={loading} />
               <GrokViralFooter delay={0.9} />
             </>
         </div>
