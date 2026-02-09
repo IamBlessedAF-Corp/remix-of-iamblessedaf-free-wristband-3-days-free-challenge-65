@@ -1,9 +1,10 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Copy, Check, Share2, MessageCircle, Link2, Users, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useShortLinks } from "@/hooks/useShortLinks";
 import type { PortalProfile, BlessingRow } from "@/hooks/usePortalData";
 
 interface Props {
@@ -14,8 +15,17 @@ interface Props {
 export default function PortalReferralHub({ profile, blessings }: Props) {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
+  const { getShareUrl } = useShortLinks();
+  const [shortReferralUrl, setShortReferralUrl] = useState("");
 
-  const referralUrl = `${window.location.origin}/r/${profile.referral_code}`;
+  const rawReferralUrl = `https://iamblessed.com/r/${profile.referral_code}`;
+
+  // Generate tracked short link for referral
+  useEffect(() => {
+    getShareUrl(rawReferralUrl, "portal-referral", "/portal").then(setShortReferralUrl);
+  }, [rawReferralUrl, getShareUrl]);
+
+  const referralUrl = shortReferralUrl || rawReferralUrl;
   const confirmed = blessings.filter((b) => b.confirmed_at).length;
   const pending = blessings.filter((b) => !b.confirmed_at).length;
   const conversionRate = blessings.length > 0 ? Math.round((confirmed / blessings.length) * 100) : 0;

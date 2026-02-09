@@ -404,6 +404,68 @@ export type Database = {
         }
         Relationships: []
       }
+      link_clicks: {
+        Row: {
+          browser: string | null
+          city: string | null
+          clicked_at: string
+          country: string | null
+          device_type: string | null
+          id: string
+          ip_hash: string | null
+          link_id: string
+          metadata: Json | null
+          os: string | null
+          referrer: string | null
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          clicked_at?: string
+          country?: string | null
+          device_type?: string | null
+          id?: string
+          ip_hash?: string | null
+          link_id: string
+          metadata?: Json | null
+          os?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          clicked_at?: string
+          country?: string | null
+          device_type?: string | null
+          id?: string
+          ip_hash?: string | null
+          link_id?: string
+          metadata?: Json | null
+          os?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "link_clicks_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "short_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           amount_cents: number
@@ -523,6 +585,54 @@ export type Database = {
           },
         ]
       }
+      short_links: {
+        Row: {
+          campaign: string | null
+          click_count: number
+          created_at: string
+          created_by: string | null
+          destination_url: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          metadata: Json | null
+          short_code: string
+          source_page: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          campaign?: string | null
+          click_count?: number
+          created_at?: string
+          created_by?: string | null
+          destination_url: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json | null
+          short_code: string
+          source_page?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          campaign?: string | null
+          click_count?: number
+          created_at?: string
+          created_by?: string | null
+          destination_url?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json | null
+          short_code?: string
+          source_page?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       sms_deliveries: {
         Row: {
           created_at: string
@@ -613,6 +723,7 @@ export type Database = {
     Functions: {
       confirm_blessing: { Args: { token: string }; Returns: Json }
       generate_referral_code: { Args: never; Returns: string }
+      generate_short_code: { Args: never; Returns: string }
       get_global_blessing_count: { Args: never; Returns: number }
       has_role: {
         Args: {
@@ -621,6 +732,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_click_count: { Args: { p_link_id: string }; Returns: undefined }
       log_portal_activity: {
         Args: {
           p_display_text: string

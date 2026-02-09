@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Share2, MessageCircle, Loader2, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useGamificationStats } from "@/hooks/useGamificationStats";
+import { useShortLinks } from "@/hooks/useShortLinks";
 import {
   Dialog,
   DialogContent,
@@ -20,16 +21,24 @@ interface GrokViralFooterProps {
   onSkip?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
-const DEFAULT_MESSAGE =
-  "🎁 Someone thinks you're blessed! You've been gifted a FREE 'I Am Blessed AF' Wristband. Claim yours: https://iamblessedaf.com/offer/111-grok";
-
 const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
   const { rewardShare } = useGamificationStats();
+  const { getShareUrl } = useShortLinks();
   const [smsOpen, setSmsOpen] = useState(false);
   const [phone, setPhone] = useState("");
   const [friendName, setFriendName] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [shortUrl, setShortUrl] = useState("https://iamblessed.com/offer/111/grok");
+
+  // Generate tracked short link on mount
+  useEffect(() => {
+    getShareUrl(
+      "https://iamblessed.com/offer/111/grok",
+      "grok-viral-footer",
+      "/offer/111/grok"
+    ).then(setShortUrl);
+  }, [getShareUrl]);
 
   const handleSendSms = async () => {
     if (!phone.trim()) {
@@ -39,9 +48,10 @@ const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
 
     setSending(true);
     try {
+      const defaultMsg = `🎁 Someone thinks you're blessed! You've been gifted a FREE 'I Am Blessed AF' Wristband. Claim yours: ${shortUrl}`;
       const personalizedMessage = friendName.trim()
-        ? `Hey ${friendName}! ${DEFAULT_MESSAGE}`
-        : DEFAULT_MESSAGE;
+        ? `Hey ${friendName}! ${defaultMsg}`
+        : defaultMsg;
 
       const { data, error } = await supabase.functions.invoke("send-sms", {
         body: {
@@ -73,17 +83,16 @@ const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
   };
 
   const handleShareLink = async () => {
-    const shareUrl = "https://iamblessedaf.com/offer/111-grok";
     const shareText = "🎁 I'm gifting you a FREE 'I Am Blessed AF' Wristband — just cover shipping!";
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Free Gift for You!", text: shareText, url: shareUrl });
+        await navigator.share({ title: "Free Gift for You!", text: shareText, url: shortUrl });
       } catch {
         // User cancelled share
       }
     } else {
-      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+      await navigator.clipboard.writeText(`${shareText} ${shortUrl}`);
       toast.success("Link copied! +5 BC 🪙");
       rewardShare("link");
     }
