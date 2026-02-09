@@ -16,22 +16,16 @@ import ResearchList from "@/components/offer/ResearchList";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
-import { useGamificationStats } from "@/hooks/useGamificationStats";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import DownsellModal from "@/components/offer/DownsellModal";
-import PortalUnlockStep from "@/components/offer/PortalUnlockStep";
-
-type Step = "offer" | "portal-unlock";
 
 const Offer444 = () => {
-  const [step, setStep] = useState<Step>("offer");
   const [showDownsell, setShowDownsell] = useState(false);
   const navigate = useNavigate();
-  const { rewardCheckout } = useGamificationStats();
+  const { startCheckout, loading } = useStripeCheckout();
 
   const handleCheckout = () => {
-    rewardCheckout("pack-444");
-    setStep("portal-unlock");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    startCheckout("pack-444");
   };
 
   const handleDownsellAccept = () => {
@@ -46,8 +40,7 @@ const Offer444 = () => {
 
   const handleFinalDecline = () => {
     setShowDownsell(false);
-    setStep("portal-unlock");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    navigate("/challenge/thanks");
   };
 
   return (
@@ -55,9 +48,6 @@ const Offer444 = () => {
       <GamificationHeader />
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-2xl mx-auto">
-          {step === "portal-unlock" ? (
-            <PortalUnlockStep />
-          ) : (
             <>
               {/* ─── 1. Unlock Badge ─── */}
               <motion.div className="text-center mb-6" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}>
@@ -168,7 +158,6 @@ const Offer444 = () => {
                 onDecline={handleFinalDecline}
               />
             </>
-          )}
         </div>
       </div>
     </div>

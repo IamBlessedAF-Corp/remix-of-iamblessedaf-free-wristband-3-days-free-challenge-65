@@ -3,14 +3,13 @@ import FreeWristbandStep from "@/components/offer/FreeWristbandStep";
 import UpsellWristbandStep from "@/components/offer/UpsellWristbandStep";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
 import GratitudeSetupFlow from "@/components/challenge/GratitudeSetupFlow";
-import PortalUnlockStep from "@/components/offer/PortalUnlockStep";
-import { useGamificationStats } from "@/hooks/useGamificationStats";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 
-type Step = "free-wristband" | "gratitude-setup" | "upsell-22" | "portal-unlock";
+type Step = "free-wristband" | "gratitude-setup" | "upsell-22";
 
 const Offer22 = () => {
   const [step, setStep] = useState<Step>("free-wristband");
-  const { rewardCheckout } = useGamificationStats();
+  const { startCheckout, loading } = useStripeCheckout();
 
   const handleFreeWristbandCheckout = () => {
     setStep("gratitude-setup");
@@ -28,9 +27,7 @@ const Offer22 = () => {
   };
 
   const handleUpsellCheckout = () => {
-    rewardCheckout("wristband-22");
-    setStep("portal-unlock");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    startCheckout("wristband-22");
   };
 
   const handleSkipFree = () => {
@@ -38,9 +35,7 @@ const Offer22 = () => {
   };
 
   const handleSkipUpsell = () => {
-    rewardCheckout("free-wristband");
-    setStep("portal-unlock");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    startCheckout("free-wristband");
   };
 
   return (
@@ -65,9 +60,6 @@ const Offer22 = () => {
               onCheckout={handleUpsellCheckout}
               onSkip={handleSkipUpsell}
             />
-          )}
-          {step === "portal-unlock" && (
-            <PortalUnlockStep />
           )}
         </div>
       </div>
