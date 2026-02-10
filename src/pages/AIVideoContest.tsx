@@ -8,6 +8,7 @@ import ClipperCalculator from "@/components/contest/ClipperCalculator";
 import ContestGuarantees from "@/components/contest/ContestGuarantees";
 import BonusLadder from "@/components/contest/BonusLadder";
 import TrustSignals from "@/components/contest/TrustSignals";
+import InspirationGallery from "@/components/contest/InspirationGallery";
 import ProcessCta from "@/components/contest/ProcessCta";
 import ClipperFaq from "@/components/contest/ClipperFaq";
 
@@ -37,8 +38,11 @@ const AIVideoContest = () => {
       {/* FAQ */}
       <ClipperFaq />
 
-      {/* 5. Trust & anti-scam — transparency signals */}
+      {/* 5. Trust & anti-scam — transparency signals + live stats */}
       <TrustSignals />
+
+      {/* Content Vault — clips to remix */}
+      <InspirationGallery />
 
       {/* 6. CTA — process framing, not urgency */}
       {loading ? (
