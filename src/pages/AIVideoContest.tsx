@@ -13,6 +13,7 @@ import ContestOfferStack from "@/components/contest/ContestOfferStack";
 import ContestSocialProof from "@/components/contest/ContestSocialProof";
 import ContestGuarantees from "@/components/contest/ContestGuarantees";
 import ContestHowItWorks from "@/components/contest/ContestHowItWorks";
+import InspirationGallery from "@/components/contest/InspirationGallery";
 
 const AIVideoContest = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
@@ -50,6 +51,9 @@ const AIVideoContest = () => {
       {/* How It Works */}
       <ContestHowItWorks />
 
+      {/* Inspiration Gallery */}
+      <InspirationGallery />
+
       {/* CTA Section */}
       <section className="px-4 py-16 max-w-4xl mx-auto">
         {loading ? (
@@ -67,11 +71,11 @@ const AIVideoContest = () => {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              The Math Doesn't Lie. Claim Your Spot.
+              The Math Doesn't Lie. <span className="text-primary">Claim Your Spot.</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto">
               $2 floor. $0.22/1k views. $22 cap. Limited to $1,111 total payout pool.<br />
-              When it's gone, it's gone.
+              Remix gratitude clips. Rewire brains. Get paid.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">

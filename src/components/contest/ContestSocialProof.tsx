@@ -35,11 +35,11 @@ const ContestSocialProof = () => (
 
         <div className="bg-card rounded-xl p-6 border border-border/50">
           <p className="text-lg text-muted-foreground text-center">
-            "I was posting hoops clips for free. Now the same clips with a 5-second gratitude hook pay me <strong className="text-foreground">$4–$12 each</strong>.
-            Plus my audience loves the wristband giveaway—engagement went up 30%."
+            "I was posting gratitude clips for free. Now the same clips with a 5-second wristband hook pay me <strong className="text-foreground">$4–$12 each</strong>.
+            Plus my audience loves the brain-rewire angle—engagement went up 30%."
           </p>
           <p className="text-center text-sm text-primary font-semibold mt-3">
-            — @HoopDreamsJay, 45k avg views
+            — @MindfulClipperKay, 45k avg views
           </p>
         </div>
       </motion.div>

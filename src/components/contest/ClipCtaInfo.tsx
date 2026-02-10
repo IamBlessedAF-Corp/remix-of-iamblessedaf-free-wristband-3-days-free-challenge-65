@@ -3,8 +3,8 @@ import { Gift, Instagram, Calendar } from "lucide-react";
 
 const getNextFriday = () => {
   const now = new Date();
-  const day = now.getDay(); // 0=Sun, 5=Fri
-  const daysUntilFriday = (5 - day + 7) % 7 || 7; // if today is Friday, show next Friday
+  const day = now.getDay();
+  const daysUntilFriday = (5 - day + 7) % 7 || 7;
   const nextFri = new Date(now);
   nextFri.setDate(now.getDate() + daysUntilFriday);
   return nextFri;
@@ -41,7 +41,7 @@ const ClipCtaInfo = () => {
             <span className="text-foreground font-semibold">
               "Get this DOPE FREE Wristband
             </span>{" "}
-            and get a chance to…"
+            — rewire your brain for gratitude — and get a chance to…"
           </p>
         </div>
 

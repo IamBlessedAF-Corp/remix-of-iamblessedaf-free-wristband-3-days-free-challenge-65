@@ -4,13 +4,13 @@ import { Film, Share2, DollarSign, Trophy } from "lucide-react";
 const steps = [
   {
     icon: Film,
-    title: "1. Make a Hoops × Gratitude Clip",
-    desc: "Dribble footage + 5-sec gratitude hook. \"Free wristband + win $1,111 this Friday.\" Use any style—dunks, streetball, training montage. Your creativity, your way.",
+    title: "1. Remix a Gratitude × Neuroscience Clip",
+    desc: "Pick from our Inspiration Gallery below. Add a 5-sec gratitude hook: \"Free wristband + win $1,111 this Friday.\" Your creativity, your style—brain hacks, dopamine science, rewire clips.",
   },
   {
     icon: Share2,
     title: "2. Post With Your Link",
-    desc: "Upload to TikTok, IG Reels, YouTube Shorts. Include your unique referral link in bio/caption. Tag @IamBlessedAF + use #BlessedChallenge.",
+    desc: "Upload to TikTok, IG Reels, YouTube Shorts. Include your unique referral link in bio/caption. Tag @IamBlessedAF + use #GratitudeChallenge #BrainHack.",
   },
   {
     icon: DollarSign,
@@ -61,7 +61,7 @@ const ContestHowItWorks = () => (
         <div className="mt-8 bg-primary/10 border border-primary/20 rounded-xl p-6">
           <p className="text-foreground font-semibold mb-2">💡 The Real Talk</p>
           <p className="text-muted-foreground">
-            We don't care about production value. A shaky phone clip of you shooting free throws with "claim your free wristband" in the caption
+            We don't care about production value. A remix of an inspiring clip with "claim your free wristband" in the caption
             works just as well as a cinematic edit. <strong className="text-foreground">Views = money. That's it.</strong>
           </p>
         </div>
