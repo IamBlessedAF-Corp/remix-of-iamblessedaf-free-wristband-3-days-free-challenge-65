@@ -10,6 +10,7 @@ import ClipperBonusLadder from "@/components/clipper/ClipperBonusLadder";
 import ClipperMomentum from "@/components/clipper/ClipperMomentum";
 import ClipperNextAction from "@/components/clipper/ClipperNextAction";
 import ClipperLeaderboard from "@/components/clipper/ClipperLeaderboard";
+import ClipperPayoutHistory from "@/components/clipper/ClipperPayoutHistory";
 import ClipSubmitModal from "@/components/clipper/ClipSubmitModal";
 import { useClipperLeaderboard } from "@/hooks/useClipperLeaderboard";
 import logoImg from "@/assets/logo.png";
@@ -116,7 +117,10 @@ const ClipperDashboard = () => {
             loading={lb.loading}
           />
 
-          {/* 6. Next Action */}
+          {/* 6. Payout History */}
+          <ClipperPayoutHistory userId={user.id} />
+
+          {/* 7. Next Action */}
           <ClipperNextAction
             clipsThisWeek={dashboard.clipsThisWeek}
             onSubmitClip={handleSubmitClip}
