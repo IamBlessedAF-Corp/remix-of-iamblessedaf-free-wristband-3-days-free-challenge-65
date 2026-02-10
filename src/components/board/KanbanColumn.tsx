@@ -2,8 +2,9 @@ import { Droppable } from "@hello-pangea/dnd";
 import type { BoardColumn, BoardCard } from "@/hooks/useBoard";
 import KanbanCard from "./KanbanCard";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Hand } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface KanbanColumnProps {
   column: BoardColumn;
@@ -21,6 +22,7 @@ interface KanbanColumnProps {
 
 const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit, wipLimit, blockingCardIds, warningCardIds, allColumns, onAdvanceCard, onScreenshotAdded }: KanbanColumnProps) => {
   const isAtLimit = wipLimit !== undefined && cards.length >= wipLimit;
+  const isManualOnly = column.name.includes("3 Outcomes") || column.name.includes("Ideas") || column.name.includes("👀 Review");
 
   return (
     <div className="flex-shrink-0 w-[280px] sm:w-72 bg-muted/30 rounded-xl flex flex-col max-h-[calc(100vh-140px)] sm:max-h-[calc(100vh-120px)] snap-center">
@@ -38,6 +40,21 @@ const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit, wipLimit
           }`}>
             {cards.length}{wipLimit !== undefined ? `/${wipLimit}` : ""}
           </span>
+          {isManualOnly && (
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="flex items-center gap-0.5 rounded-full px-1.5 py-0.5 bg-amber-500/15 border border-amber-500/30 text-amber-500">
+                    <Hand className="w-3 h-3" />
+                    <span className="text-[9px] font-semibold uppercase tracking-wide">Manual</span>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="text-xs">
+                  Drag & drop only — no auto-advance
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
         {canEdit && onAddCard && (
           <Button
