@@ -1,8 +1,9 @@
-import { Trophy, Lock, CheckCircle } from "lucide-react";
+import { Trophy, Lock, CheckCircle, Calendar } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface Props {
   totalViews: number;
+  avgViewsPerWeek: number;
 }
 
 const TIERS = [
@@ -11,12 +12,17 @@ const TIERS = [
   { views: 1_000_000, bonus: 1111, label: "Super Clipper" },
 ];
 
-const ClipperBonusLadder = ({ totalViews }: Props) => {
-  // Find the next uncompleted tier
+const ClipperBonusLadder = ({ totalViews, avgViewsPerWeek }: Props) => {
   const nextTierIdx = TIERS.findIndex((t) => totalViews < t.views);
   const nextTier = nextTierIdx >= 0 ? TIERS[nextTierIdx] : null;
   const remaining = nextTier ? Math.max(0, nextTier.views - totalViews) : 0;
   const pct = nextTier ? Math.min(100, (totalViews / nextTier.views) * 100) : 100;
+
+  // ETA calculation
+  const etaWeeks = nextTier && avgViewsPerWeek > 0 ? Math.ceil(remaining / avgViewsPerWeek) : null;
+  const etaLabel = etaWeeks !== null
+    ? etaWeeks <= 1 ? "~this week" : etaWeeks <= 4 ? `~${etaWeeks} weeks` : `~${Math.round(etaWeeks / 4)} months`
+    : null;
 
   return (
     <div className="bg-card border border-border/50 rounded-2xl p-5">
@@ -36,6 +42,12 @@ const ClipperBonusLadder = ({ totalViews }: Props) => {
           <p className="text-xs text-primary font-semibold mt-2">
             {remaining.toLocaleString()} views to unlock ${nextTier.bonus}
           </p>
+          {etaLabel && (
+            <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
+              <Calendar className="w-3 h-3" />
+              At your pace: {etaLabel}
+            </p>
+          )}
         </div>
       )}
 

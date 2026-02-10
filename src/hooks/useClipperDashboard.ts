@@ -11,6 +11,7 @@ interface ClipperStats {
   clipsLastWeek: number;
   streakDays: number;
   lastPayoutDate: string | null;
+  avgViewsPerClipPerWeek: number;
   loading: boolean;
 }
 
@@ -36,6 +37,7 @@ export function useClipperDashboard(userId: string | undefined) {
     clipsLastWeek: 0,
     streakDays: 0,
     lastPayoutDate: null,
+    avgViewsPerClipPerWeek: 0,
     loading: true,
   });
 
@@ -88,6 +90,12 @@ export function useClipperDashboard(userId: string | undefined) {
         }
       }
 
+      // Calculate average views per clip per week (based on last 2 weeks)
+      const recentClips = [...thisWeekClips, ...lastWeekClips];
+      const avgViewsPerClipPerWeek = recentClips.length > 0
+        ? recentClips.reduce((s, c) => s + (c.view_count || 0), 0) / Math.max(1, recentClips.length) * 10
+        : 0;
+
       setStats({
         totalViews,
         totalClips: allClips.length,
@@ -97,7 +105,8 @@ export function useClipperDashboard(userId: string | undefined) {
         earningsThisWeekCents: thisWeekClips.reduce((s, c) => s + (c.earnings_cents || 0), 0),
         clipsLastWeek: lastWeekClips.length,
         streakDays,
-        lastPayoutDate: null, // No payout table yet
+        lastPayoutDate: null,
+        avgViewsPerClipPerWeek,
         loading: false,
       });
     } catch {
