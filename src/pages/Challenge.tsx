@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -64,9 +65,14 @@ const Challenge = () => {
     if (import.meta.env.DEV) {
       console.log("Form submitted:", data, "ref:", referralCode);
     }
+
+    // Send welcome email (fire-and-forget)
+    supabase.functions.invoke("send-welcome-email", {
+      body: { email: data.email, name: data.name },
+    }).catch((err) => console.error("Welcome email error:", err));
+
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSubmitting(false);
-    // Pass referral code to thanks page so it can be used for checkout
     const thanksUrl = referralCode
       ? `/challenge/thanks?ref=${referralCode}`
       : "/challenge/thanks";
