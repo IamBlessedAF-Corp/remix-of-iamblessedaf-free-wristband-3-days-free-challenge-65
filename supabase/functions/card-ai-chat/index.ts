@@ -18,7 +18,7 @@ serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    const { card_id, message, action, step_index } = await req.json();
+    const { card_id, message, action, step_index, images } = await req.json();
 
     if (!card_id) throw new Error("card_id is required");
 
@@ -81,11 +81,23 @@ ${projectContext.slice(0, 3000)}
       userMessage = `Execute ALL of these steps sequentially for the card. Process each one carefully:\n\n${message}\n\nFor each step:\n1. Provide implementation details\n2. If blocked (missing key/credential/manual validation needed), mark it as BLOCKED with what's needed and continue to the next step\n3. Summarize what was completed and what needs manual attention\n\nIMPORTANT: Continue processing remaining steps even if one is blocked.`;
     }
 
+    // Build user content — multimodal if images attached
+    let userContent: any = userMessage;
+    if (images && Array.isArray(images) && images.length > 0) {
+      userContent = [
+        { type: "text", text: userMessage || "Please analyze the attached image(s)." },
+        ...images.map((img: { data_url: string; name: string }) => ({
+          type: "image_url",
+          image_url: { url: img.data_url },
+        })),
+      ];
+    }
+
     const body: any = {
       model: "google/gemini-3-flash-preview",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: userMessage },
+        { role: "user", content: userContent },
       ],
     };
 
