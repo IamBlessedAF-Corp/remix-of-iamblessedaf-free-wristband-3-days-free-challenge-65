@@ -2,12 +2,22 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { Bot, Send, Sparkles, Play, Loader2 } from "lucide-react";
+import { Bot, Send, Sparkles, Play, Loader2, Zap, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
+import { toast } from "sonner";
 
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+}
+
+interface SuggestedStep {
+  title: string;
+  description: string;
+  can_auto_execute: boolean;
+  blocker_reason?: string;
+  priority: "high" | "medium" | "low";
 }
 
 interface CardAIChatProps {
@@ -21,6 +31,11 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [suggestedSteps, setSuggestedSteps] = useState<SuggestedStep[]>([]);
+  const [executingStepIdx, setExecutingStepIdx] = useState<number | null>(null);
+  const [executedSteps, setExecutedSteps] = useState<Set<number>>(new Set());
+  const [executingAll, setExecutingAll] = useState(false);
+  const [stepsExpanded, setStepsExpanded] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,7 +47,19 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
   const sendMessage = async (message: string, action?: string) => {
     if (loading) return;
 
-    const userMsg: ChatMessage = { role: "user", content: action === "suggest_next" ? "💡 Suggest next steps" : action === "execute" ? `🚀 Execute: ${message || "Run master prompt"}` : message };
+    const userMsg: ChatMessage = {
+      role: "user",
+      content:
+        action === "suggest_next"
+          ? "💡 Suggest next steps"
+          : action === "execute"
+          ? `🚀 Execute: ${message || "Run master prompt"}`
+          : action === "execute_step"
+          ? `⚡ Executing step: ${message}`
+          : action === "execute_all_steps"
+          ? "🔥 Executing all steps..."
+          : message,
+    };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setLoading(true);
@@ -45,18 +72,120 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
+      // Handle structured steps response
+      if (data?.type === "structured_steps" && data.structured_steps) {
+        setSuggestedSteps(data.structured_steps);
+        setExecutedSteps(new Set());
+        setStepsExpanded(true);
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: data.reply || "Here are the suggested next steps:" },
+        ]);
+      } else {
+        setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
+      }
     } catch (err: any) {
-      setMessages((prev) => [...prev, { role: "assistant", content: `❌ Error: ${err.message || "Failed to get response"}` }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: `❌ Error: ${err.message || "Failed to get response"}` },
+      ]);
     }
 
     setLoading(false);
+  };
+
+  const executeStep = async (step: SuggestedStep, index: number) => {
+    if (executingStepIdx !== null || loading) return;
+    setExecutingStepIdx(index);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("card-ai-chat", {
+        body: {
+          card_id: cardId,
+          message: `Step: ${step.title}\n\n${step.description}`,
+          action: "execute_step",
+          step_index: index,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      setMessages((prev) => [
+        ...prev,
+        { role: "user", content: `⚡ Execute: ${step.title}` },
+        { role: "assistant", content: data.reply },
+      ]);
+      setExecutedSteps((prev) => new Set([...prev, index]));
+
+      if (data.reply?.toLowerCase().includes("blocked")) {
+        toast.warning(`Step "${step.title}" hit a blocker — notification sent to you.`);
+      } else {
+        toast.success(`Step "${step.title}" completed`);
+      }
+    } catch (err: any) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: `❌ Step failed: ${err.message}` },
+      ]);
+      toast.error(`Step "${step.title}" failed`);
+    }
+
+    setExecutingStepIdx(null);
+  };
+
+  const executeAllSteps = async () => {
+    if (executingAll || loading || suggestedSteps.length === 0) return;
+    setExecutingAll(true);
+
+    // Build combined prompt
+    const stepsText = suggestedSteps
+      .map((s, i) => `${i + 1}. [${s.priority.toUpperCase()}] ${s.title}: ${s.description}`)
+      .join("\n\n");
+
+    setMessages((prev) => [...prev, { role: "user", content: "🔥 Execute ALL steps sequentially" }]);
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("card-ai-chat", {
+        body: {
+          card_id: cardId,
+          message: stepsText,
+          action: "execute_all_steps",
+        },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
+      setExecutedSteps(new Set(suggestedSteps.map((_, i) => i)));
+
+      if (data.reply?.toLowerCase().includes("blocked")) {
+        toast.warning("Some steps hit blockers — notification sent to you via email & WhatsApp.");
+      } else {
+        toast.success("All steps executed successfully!");
+      }
+    } catch (err: any) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: `❌ Batch execution failed: ${err.message}` },
+      ]);
+    }
+
+    setLoading(false);
+    setExecutingAll(false);
   };
 
   const handleSend = () => {
     if (!input.trim()) return;
     sendMessage(input.trim());
   };
+
+  const priorityColor = (p: string) =>
+    p === "high" ? "text-red-400 border-red-500/30 bg-red-500/10" :
+    p === "medium" ? "text-amber-400 border-amber-500/30 bg-amber-500/10" :
+    "text-muted-foreground border-border bg-muted/30";
 
   if (!isOpen) {
     return (
@@ -92,6 +221,7 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
           type="button"
           className="inline-flex items-center cursor-pointer hover:bg-primary/10 whitespace-nowrap text-[10px] flex-shrink-0 border border-border rounded-full px-2 py-0.5 text-foreground transition-colors"
           onClick={() => sendMessage("", "suggest_next")}
+          disabled={loading}
         >
           <Sparkles className="w-3 h-3 mr-1" />
           Suggest Next Steps
@@ -100,11 +230,109 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
           type="button"
           className="inline-flex items-center cursor-pointer hover:bg-primary/10 whitespace-nowrap text-[10px] flex-shrink-0 border border-border rounded-full px-2 py-0.5 text-foreground transition-colors"
           onClick={() => sendMessage("", "execute")}
+          disabled={loading}
         >
           <Play className="w-3 h-3 mr-1" />
           Execute Task
         </button>
       </div>
+
+      {/* Structured Steps Panel */}
+      {suggestedSteps.length > 0 && (
+        <div className="border-b border-border bg-card/50">
+          <button
+            onClick={() => setStepsExpanded(!stepsExpanded)}
+            className="w-full flex items-center justify-between px-3 py-2 hover:bg-muted/30 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <Zap className="w-3.5 h-3.5 text-primary" />
+              <span className="text-xs font-semibold text-foreground">
+                Next Steps ({executedSteps.size}/{suggestedSteps.length} done)
+              </span>
+            </div>
+            {stepsExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </button>
+
+          {stepsExpanded && (
+            <div className="px-3 pb-3 space-y-2">
+              {suggestedSteps.map((step, i) => {
+                const isDone = executedSteps.has(i);
+                const isRunning = executingStepIdx === i;
+
+                return (
+                  <div
+                    key={i}
+                    className={`rounded-lg border p-2.5 transition-all ${
+                      isDone
+                        ? "border-emerald-500/30 bg-emerald-500/5"
+                        : "border-border bg-background"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          {isDone ? (
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                          ) : !step.can_auto_execute ? (
+                            <AlertTriangle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                          ) : (
+                            <Zap className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                          )}
+                          <span className="text-xs font-semibold text-foreground truncate">{step.title}</span>
+                          <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${priorityColor(step.priority)}`}>
+                            {step.priority}
+                          </Badge>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground leading-relaxed ml-5">
+                          {step.description}
+                        </p>
+                        {!step.can_auto_execute && step.blocker_reason && (
+                          <p className="text-[10px] text-amber-400 ml-5 mt-1 italic">
+                            ⚠️ {step.blocker_reason}
+                          </p>
+                        )}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={`h-7 text-[10px] flex-shrink-0 gap-1 ${
+                          isDone ? "border-emerald-500/30 text-emerald-400" : ""
+                        }`}
+                        onClick={() => executeStep(step, i)}
+                        disabled={isDone || isRunning || executingAll || loading}
+                      >
+                        {isRunning ? (
+                          <><Loader2 className="w-3 h-3 animate-spin" /> Running</>
+                        ) : isDone ? (
+                          <><CheckCircle2 className="w-3 h-3" /> Done</>
+                        ) : (
+                          <><Play className="w-3 h-3" /> Execute</>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Execute All Button */}
+              <Button
+                onClick={executeAllSteps}
+                disabled={executingAll || loading || executedSteps.size === suggestedSteps.length}
+                className="w-full gap-2 mt-1"
+                size="sm"
+              >
+                {executingAll ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Executing All Steps...</>
+                ) : executedSteps.size === suggestedSteps.length ? (
+                  <><CheckCircle2 className="w-4 h-4" /> All Steps Complete</>
+                ) : (
+                  <><Zap className="w-4 h-4" /> Execute All Steps ({suggestedSteps.length})</>
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Messages */}
       <ScrollArea className="h-[200px]">
@@ -116,11 +344,13 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
           )}
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[85%] rounded-lg px-3 py-2 text-xs whitespace-pre-wrap ${
-                msg.role === "user"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-foreground"
-              }`}>
+              <div
+                className={`max-w-[85%] rounded-lg px-3 py-2 text-xs whitespace-pre-wrap ${
+                  msg.role === "user"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-foreground"
+                }`}
+              >
                 {msg.content}
               </div>
             </div>
