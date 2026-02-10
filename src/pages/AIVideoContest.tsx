@@ -2,7 +2,6 @@ import { useState } from "react";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
-import { CreatorNextSteps } from "@/components/contest/CreatorNextSteps";
 import ContestHero from "@/components/contest/ContestHero";
 import ClipperCalculator from "@/components/contest/ClipperCalculator";
 import ContestGuarantees from "@/components/contest/ContestGuarantees";
@@ -43,8 +42,14 @@ const AIVideoContest = () => {
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
         </div>
       ) : user ? (
-        <section className="px-4 py-14 max-w-3xl mx-auto">
-          <CreatorNextSteps />
+        <section className="px-4 py-14 max-w-3xl mx-auto text-center space-y-4">
+          <p className="text-lg font-bold text-foreground">You're signed in ✅</p>
+          <a
+            href="/clipper-dashboard"
+            className="inline-flex items-center justify-center h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl transition-colors btn-glow"
+          >
+            Open Your Clipper Dashboard →
+          </a>
         </section>
       ) : (
         <ProcessCta onJoin={openSignup} />
