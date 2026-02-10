@@ -19,6 +19,8 @@ const ClipperCalculator = () => {
   const perClip = views > 0 ? calcEarnings(views) : 0;
   const weeklyEarnings = parseFloat((perClip * clips).toFixed(2));
   const monthlyEarnings = parseFloat((weeklyEarnings * 4).toFixed(2));
+  const weeklyViews = views * clips;
+  const weeksTo1M = weeklyViews > 0 ? Math.ceil(1_000_000 / weeklyViews) : 0;
   const hasInput = views > 0 && clips > 0;
 
   const effectiveRpm = views > 0 ? parseFloat(((perClip / views) * 1000).toFixed(2)) : 0;
@@ -143,6 +145,20 @@ const ClipperCalculator = () => {
                 <p className="text-xs text-muted-foreground mt-1">4 weeks × ${weeklyEarnings}</p>
               </div>
             </div>
+
+            {weeksTo1M > 0 && (
+              <div className="mt-4 bg-primary/10 border border-primary/20 rounded-xl p-4 text-center">
+                <p className="text-xs text-primary uppercase tracking-wide font-semibold mb-1">🏆 $1,111 Super Payout Milestone</p>
+                <p className="text-lg font-bold text-foreground">
+                  {weeksTo1M <= 52 
+                    ? `~${weeksTo1M} weeks to 1M views → $1,111 bonus`
+                    : `${Math.ceil(weeksTo1M / 4)} months to 1M views → $1,111 bonus`}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {weeklyViews.toLocaleString()} views/week × {weeksTo1M} weeks = 1,000,000+ total views
+                </p>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

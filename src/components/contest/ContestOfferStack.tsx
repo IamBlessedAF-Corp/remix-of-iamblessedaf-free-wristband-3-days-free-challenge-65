@@ -32,6 +32,11 @@ const stack = [
     value: "EXPOSURE",
     detail: "Top clips get posted to 14k + 320k combined followers. Build your portfolio while getting paid. Double incentive = compound K-factor.",
   },
+  {
+    item: "$1,111 Super Payout at 1M Combined Views",
+    value: "$1,111",
+    detail: "Hit 1,000,000 total views across all your clips → unlock a $1,111 bonus. At 10 clips/week averaging 10k views, that's ~10 weeks. Stack clips, stack views, cash out.",
+  },
 ];
 
 const ContestOfferStack = () => (
@@ -76,7 +81,7 @@ const ContestOfferStack = () => (
         <p className="text-muted-foreground mb-1">10 clips/week at 10k avg views:</p>
         <p className="text-3xl font-bold text-primary">$22/week → $88.80/month + $1,111 drawing</p>
         <p className="text-sm text-muted-foreground mt-2">
-          Your cost: $0. Content supply: unlimited (vault). Friction: zero (brief → remix → submit → paid).
+          Hit 1M combined views (~10 weeks at that pace) → unlock the <strong className="text-foreground">$1,111 Super Payout</strong> on top of everything else.
         </p>
       </div>
     </motion.div>
