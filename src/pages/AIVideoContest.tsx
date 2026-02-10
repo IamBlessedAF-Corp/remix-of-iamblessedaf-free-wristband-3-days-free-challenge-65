@@ -74,7 +74,7 @@ const AIVideoContest = () => {
               The Math Doesn't Lie. <span className="text-primary">Claim Your Spot.</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto">
-              $2 floor. $0.22/1k views. $22 cap. Limited to $1,111 total payout pool.<br />
+              $2.22 guaranteed per clip. $0.22/1k views. $1,111 payout pool.<br />
               Remix gratitude clips. Rewire brains. Get paid.
             </p>
 

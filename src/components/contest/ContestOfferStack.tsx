@@ -3,29 +3,24 @@ import { CheckCircle } from "lucide-react";
 
 const stack = [
   {
-    item: "$2 Floor Payment Per Clip",
-    value: "$2+",
-    detail: "Every valid clip gets paid. 5k views or 50k—you start at $2 minimum.",
+    item: "$2.22 Guaranteed Per Clip",
+    value: "$2.22+",
+    detail: "Every valid clip gets paid — even at 1,000 views. No minimum follower count. No approval committee.",
   },
   {
     item: "$0.22 RPM (per 1k views)",
     value: "$0.22/1k",
-    detail: "7x higher than TikTok Creator Fund. Real RPM on real views.",
-  },
-  {
-    item: "$22 Cap Per Clip",
-    value: "Up to $22",
-    detail: "100k+ views clip? You earn $22. Clean, transparent, no hidden math.",
+    detail: "7x higher than TikTok Creator Fund. Real RPM on real views. Post 10 clips/week → stack it up.",
   },
   {
     item: "FREE Wristband For Your Audience",
     value: "FREE",
-    detail: "Every viewer who claims = 1 meal donated. Your content feeds people.",
+    detail: "Every viewer who claims = 1 meal donated through Feeding America. Your content literally feeds people.",
   },
   {
     item: "$1,111 Grand Prize Drawing",
     value: "BONUS",
-    detail: "Every clipper with a valid entry is entered into a $1,111 live drawing on @IamBlessedAF IG.",
+    detail: "Every clipper with a valid entry is entered into a $1,111 live drawing on @IamBlessedAF IG every Friday at 7PM EST.",
   },
   {
     item: "Feature on @IamBlessedAF + @DaVincyGang",
@@ -74,7 +69,7 @@ const ContestOfferStack = () => (
 
       <div className="mt-8 bg-secondary/40 rounded-xl p-6 border border-border/50 text-center">
         <p className="text-muted-foreground mb-1">Total value per active clipper:</p>
-        <p className="text-3xl font-bold text-primary">$2–$22/clip + $1,111 drawing + exposure</p>
+        <p className="text-3xl font-bold text-primary">$2.22–$22/clip + $1,111 drawing + exposure</p>
         <p className="text-sm text-muted-foreground mt-2">
           Your cost: $0. Your time: Clips you'd make anyway, with a gratitude twist.
         </p>

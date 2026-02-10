@@ -15,7 +15,7 @@ const steps = [
   {
     icon: DollarSign,
     title: "3. Get Paid Per Clip",
-    desc: "$2 floor (any view count) → $0.22/1k views → $22 cap. Payouts processed weekly. See earnings live in your creator dashboard.",
+    desc: "$2.22 floor (even at 1,000 views) → $0.22/1k views. Payouts processed weekly. See earnings live in your creator dashboard.",
   },
   {
     icon: Trophy,
