@@ -1,14 +1,8 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, Settings2, Sparkles, ChevronRight, Trophy, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Settings2, Sparkles, ChevronRight, Trophy, ArrowRight, CheckCircle2, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import HeroQuestionnaire from "@/components/experts/HeroQuestionnaire";
 import FrameworkCard from "@/components/experts/FrameworkCard";
 import ScriptGeneratorModal from "@/components/experts/ScriptGeneratorModal";
@@ -20,12 +14,12 @@ const Experts = () => {
   const [activeFramework, setActiveFramework] = useState<Framework | null>(null);
   const [outputs, setOutputs] = useState<Record<string, string>>({});
   const [editingProfile, setEditingProfile] = useState(false);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
   const handleOutputGenerated = useCallback((frameworkId: string, output: string) => {
     setOutputs((prev) => ({ ...prev, [frameworkId]: output }));
   }, []);
 
-  // Show questionnaire first
   if (!heroProfile || editingProfile) {
     return (
       <HeroQuestionnaire
@@ -43,102 +37,102 @@ const Experts = () => {
   const progressPct = Math.round((completedCount / totalFrameworks) * 100);
   const allDone = completedCount === totalFrameworks;
 
-  // Find the first incomplete framework for "next step" nudge
   const nextFramework = FRAMEWORKS.find((f) => !outputs[f.id]);
   const nextSection = nextFramework
     ? FRAMEWORK_SECTIONS.find((s) => s.id === nextFramework.section)
     : null;
 
-  // Section completion stats
   const sectionStats = FRAMEWORK_SECTIONS.map((section) => {
     const sectionFrameworks = FRAMEWORKS.filter((f) => f.section === section.id);
     const done = sectionFrameworks.filter((f) => outputs[f.id]).length;
     return { ...section, total: sectionFrameworks.length, done, allDone: done === sectionFrameworks.length };
   });
 
-  // Default open section = first incomplete section
-  const defaultOpenSection = sectionStats.find((s) => !s.allDone)?.id || sectionStats[0]?.id;
+  // First incomplete section is open by default
+  const firstIncomplete = sectionStats.find((s) => !s.allDone)?.id;
+
+  const isSectionOpen = (id: string) => {
+    if (id in openSections) return openSections[id];
+    return id === firstIncomplete;
+  };
+
+  const toggleSection = (id: string) => {
+    setOpenSections((prev) => ({ ...prev, [id]: !isSectionOpen(id) }));
+  };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border/40">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={logoImg} alt="Logo" className="h-7" />
-            <div className="hidden sm:block">
-              <span className="text-sm font-bold text-foreground">Expert Secrets</span>
-              <span className="text-xs text-muted-foreground ml-1.5">AI Script Lab</span>
-            </div>
+      {/* Sticky header — slim */}
+      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/30">
+        <div className="max-w-2xl mx-auto px-4 py-2.5 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <img src={logoImg} alt="Logo" className="h-6" />
+            <span className="text-xs font-bold text-foreground">Script Lab</span>
           </div>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={() => setEditingProfile(true)}
-            className="gap-1.5 rounded-xl text-xs"
+            className="text-xs h-8 px-2.5 gap-1"
           >
             <Settings2 className="w-3.5 h-3.5" />
-            Edit Profile
+            Profile
           </Button>
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-4 pt-6 pb-12">
-        {/* Progress Hero */}
+      <div className="max-w-2xl mx-auto px-4 pt-4 pb-16">
+        {/* Progress card — compact */}
         <motion.div
-          className="bg-card border border-border/50 rounded-2xl p-5 mb-6"
-          initial={{ opacity: 0, y: 10 }}
+          className="rounded-2xl p-4 mb-4 bg-card border border-border/40"
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              {allDone ? (
-                <Trophy className="w-5 h-5 text-yellow-500" />
-              ) : (
-                <Sparkles className="w-4 h-4 text-primary" />
-              )}
-              <span className="text-sm font-bold text-foreground">
-                {allDone
-                  ? "🏆 All Scripts Generated — You're a Funnel Master!"
-                  : `${completedCount} of ${totalFrameworks} scripts generated`}
-              </span>
-            </div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-foreground">
+              {allDone ? "🏆 All done!" : `${completedCount}/${totalFrameworks} scripts`}
+            </span>
             <span className="text-xs font-bold text-primary">{progressPct}%</span>
           </div>
-          <Progress value={progressPct} className="h-2 mb-4" />
-
-          {/* Hero Profile Summary — compact */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
-            <div><span className="text-muted-foreground block">Expert</span><span className="font-bold text-foreground truncate">{heroProfile.name}</span></div>
-            <div><span className="text-muted-foreground block">Brand</span><span className="font-bold text-foreground truncate">{heroProfile.brand}</span></div>
-            <div><span className="text-muted-foreground block">Niche</span><span className="font-bold text-foreground truncate">{heroProfile.niche}</span></div>
-            <div className="hidden sm:block"><span className="text-muted-foreground block">Audience</span><span className="font-bold text-foreground truncate">{heroProfile.audience}</span></div>
-            <div className="hidden sm:block"><span className="text-muted-foreground block">Promise</span><span className="font-bold text-foreground truncate">{heroProfile.bigPromise}</span></div>
+          <Progress value={progressPct} className="h-1.5 mb-3" />
+          {/* Compact profile chips */}
+          <div className="flex flex-wrap gap-1.5">
+            {[
+              { label: heroProfile.name },
+              { label: heroProfile.brand },
+              { label: heroProfile.niche },
+            ].map((chip, i) => (
+              <span
+                key={i}
+                className="text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full truncate max-w-[140px]"
+              >
+                {chip.label}
+              </span>
+            ))}
           </div>
         </motion.div>
 
-        {/* Next Step Nudge */}
+        {/* Next step CTA */}
         {nextFramework && !allDone && (
           <motion.button
-            className="w-full mb-6 bg-primary/5 hover:bg-primary/10 border border-primary/20 rounded-2xl p-4 flex items-center gap-4 text-left transition-colors"
+            className="w-full mb-4 bg-primary/5 hover:bg-primary/10 border border-primary/20 rounded-xl p-3 flex items-center gap-3 text-left transition-colors"
             onClick={() => setActiveFramework(nextFramework)}
-            initial={{ opacity: 0, y: 6 }}
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
+            transition={{ delay: 0.1 }}
           >
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <ArrowRight className="w-5 h-5 text-primary" />
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <ArrowRight className="w-4 h-4 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
-                Recommended Next Step
+              <span className="text-[9px] font-bold uppercase tracking-wider text-primary">
+                Next step
               </span>
-              <p className="text-sm font-bold text-foreground truncate">
+              <p className="text-xs font-semibold text-foreground truncate">
                 {nextFramework.secret}: {nextFramework.name}
               </p>
-              <p className="text-xs text-muted-foreground truncate">{nextSection?.title}</p>
             </div>
-            <ChevronRight className="w-5 h-5 text-primary shrink-0" />
+            <ChevronRight className="w-4 h-4 text-primary shrink-0" />
           </motion.button>
         )}
 
@@ -146,63 +140,82 @@ const Experts = () => {
         <AnimatePresence>
           {allDone && (
             <motion.div
-              className="mb-6 bg-yellow-500/5 border border-yellow-500/20 rounded-2xl p-6 text-center"
+              className="mb-4 bg-accent border border-primary/10 rounded-2xl p-5 text-center"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
             >
-              <Trophy className="w-10 h-10 text-yellow-500 mx-auto mb-3" />
-              <h3 className="text-lg font-bold text-foreground mb-1">
-                You've Generated Every Framework!
-              </h3>
-              <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                Your entire Expert Secrets copy library is ready. Go deploy these scripts across your funnels, webinars, emails, and ads.
+              <Trophy className="w-8 h-8 text-primary mx-auto mb-2" />
+              <h3 className="text-sm font-bold text-foreground mb-1">Funnel Master 🎉</h3>
+              <p className="text-xs text-muted-foreground">
+                All scripts generated. Deploy across your funnels!
               </p>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Collapsible Sections */}
-        <Accordion type="single" collapsible defaultValue={defaultOpenSection} className="space-y-3">
+        {/* Sections — custom collapsible, not full accordion */}
+        <div className="space-y-2">
           {sectionStats.map((section) => {
             const sectionFrameworks = FRAMEWORKS.filter((f) => f.section === section.id);
+            const isOpen = isSectionOpen(section.id);
+
             return (
-              <AccordionItem
+              <div
                 key={section.id}
-                value={section.id}
-                className="border border-border/50 rounded-2xl overflow-hidden bg-card data-[state=open]:shadow-sm"
+                className="rounded-xl border border-border/40 bg-card overflow-hidden"
               >
-                <AccordionTrigger className="px-5 py-4 hover:no-underline gap-3">
-                  <div className="flex items-center gap-3 flex-1 text-left">
-                    {section.allDone ? (
-                      <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-                    ) : (
-                      <BookOpen className="w-4 h-4 text-primary shrink-0" />
-                    )}
-                    <div className="min-w-0">
-                      <h2 className="text-sm font-bold text-foreground leading-tight">{section.title}</h2>
-                      <p className="text-xs text-muted-foreground">{section.subtitle}</p>
-                    </div>
+                {/* Section header — tappable */}
+                <button
+                  className="w-full px-4 py-3 flex items-center gap-2.5 text-left hover:bg-accent/50 transition-colors"
+                  onClick={() => toggleSection(section.id)}
+                >
+                  {section.allDone ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                  ) : (
+                    <div className="w-4 h-4 rounded-full border-2 border-border shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-xs font-bold text-foreground leading-tight truncate">
+                      {section.title}
+                    </h2>
                   </div>
-                  <span className="text-xs font-bold text-muted-foreground shrink-0 mr-2">
+                  <span className="text-[10px] font-bold text-muted-foreground shrink-0">
                     {section.done}/{section.total}
                   </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-5 pb-5">
-                  <div className="grid md:grid-cols-2 gap-3 pt-1">
-                    {sectionFrameworks.map((fw) => (
-                      <FrameworkCard
-                        key={fw.id}
-                        framework={fw}
-                        onGenerate={setActiveFramework}
-                        hasOutput={!!outputs[fw.id]}
-                      />
-                    ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform duration-200 ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* Section content */}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-3 pb-3 space-y-1.5">
+                        {sectionFrameworks.map((fw) => (
+                          <FrameworkCard
+                            key={fw.id}
+                            framework={fw}
+                            onGenerate={setActiveFramework}
+                            hasOutput={!!outputs[fw.id]}
+                          />
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             );
           })}
-        </Accordion>
+        </div>
       </div>
 
       {/* Generator Modal */}
