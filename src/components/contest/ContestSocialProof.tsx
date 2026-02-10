@@ -1,26 +1,13 @@
 import { motion } from "framer-motion";
-import { useGlobalMeals } from "@/hooks/useGlobalMeals";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useSimulatedStats } from "@/hooks/useSimulatedStats";
 
 const ContestSocialProof = () => {
-  const { meals } = useGlobalMeals();
-  const [challengeCount, setChallengeCount] = useState(0);
-
-  useEffect(() => {
-    const fetchCount = async () => {
-      const { count } = await supabase
-        .from("challenge_participants")
-        .select("*", { count: "exact", head: true });
-      if (count !== null) setChallengeCount(count);
-    };
-    fetchCount();
-  }, []);
+  const { participants, meals, wristbands } = useSimulatedStats();
 
   const stats = [
-    { label: "Challenge Participants", value: challengeCount > 0 ? challengeCount.toLocaleString() + "+" : "—" },
+    { label: "Challenge Participants", value: participants > 0 ? participants.toLocaleString() + "+" : "—" },
     { label: "Meals Donated", value: meals > 0 ? meals.toLocaleString() + "+" : "—" },
-    { label: "Wristbands Claimed", value: challengeCount > 0 ? challengeCount.toLocaleString() + "+" : "—" },
+    { label: "Wristbands Claimed", value: wristbands > 0 ? wristbands.toLocaleString() + "+" : "—" },
   ];
 
   return (
@@ -31,9 +18,9 @@ const ContestSocialProof = () => {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-3xl font-bold mb-3 text-center">📊 The Campaign Is Working</h2>
+          <h2 className="text-3xl font-bold mb-3 text-center">📊 The Numbers Don't Lie</h2>
           <p className="text-muted-foreground text-center mb-8 max-w-2xl mx-auto">
-            Our gratitude movement is growing fast. Here's the live impact — and we're just getting started with the clipper program.
+            The gratitude movement is scaling fast. Real impact, real numbers — and the clipper program is how we 10x it.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -55,8 +42,8 @@ const ContestSocialProof = () => {
           <div className="bg-card rounded-xl p-6 border border-border/50">
             <p className="text-lg text-muted-foreground text-center">
               The gratitude challenge is already driving real impact — meals donated, brains rewired, wristbands claimed.
-              Now we're opening the <strong className="text-foreground">clipper program</strong> to scale it even further. 
-              <strong className="text-foreground"> Be one of the first clippers to join.</strong>
+              Now we're launching the <strong className="text-foreground">clipper program</strong> to pour gasoline on this fire. 
+              <strong className="text-foreground"> Be one of the first to claim your spot.</strong>
             </p>
           </div>
         </motion.div>
