@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Calculator, TrendingUp, Trophy, Target, Star, Share2 } from "lucide-react";
+import { Calculator, TrendingUp, Trophy, Target, Star, Share2, Link } from "lucide-react";
 import { toast } from "sonner";
 import { Slider } from "@/components/ui/slider";
 
@@ -180,22 +180,34 @@ const EarningsSliderCalculator = () => {
           </p>
         </div>
 
-        {/* Share button */}
-        <button
-          onClick={() => {
-            const text = `🎬 My Clipper Earnings Plan:\n${clipsPerWeek} clips/wk × ${viewsLabel} avg views\n💰 $${stats.monthly.toFixed(2)}/mo in clip pay\n🏆 6-month projection: $${stats.sixMonthTotal.toLocaleString()}\n\nStart clipping → iamblessedaf.com/2us-Clippers-Campaign`;
-            if (navigator.share) {
-              navigator.share({ title: "My Clipper Earnings Plan", text }).catch(() => {});
-            } else {
-              navigator.clipboard.writeText(text);
-              toast.success("Earnings plan copied to clipboard!");
-            }
-          }}
-          className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 bg-primary/10 hover:bg-primary/15 text-primary font-bold text-sm rounded-lg transition-colors"
-        >
-          <Share2 className="w-4 h-4" />
-          Share My Earnings Plan
-        </button>
+        {/* Share + Copy Link buttons */}
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <button
+            onClick={() => {
+              const text = `🎬 My Clipper Earnings Plan:\n${clipsPerWeek} clips/wk × ${viewsLabel} avg views\n💰 $${stats.monthly.toFixed(2)}/mo in clip pay\n🏆 6-month projection: $${stats.sixMonthTotal.toLocaleString()}\n\nStart clipping → iamblessedaf.com/2us-Clippers-Campaign`;
+              if (navigator.share) {
+                navigator.share({ title: "My Clipper Earnings Plan", text }).catch(() => {});
+              } else {
+                navigator.clipboard.writeText(text);
+                toast.success("Earnings plan copied to clipboard!");
+              }
+            }}
+            className="flex items-center justify-center gap-2 py-2.5 bg-primary/10 hover:bg-primary/15 text-primary font-bold text-sm rounded-lg transition-colors"
+          >
+            <Share2 className="w-4 h-4" />
+            Share Plan
+          </button>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText("https://iamblessedaf.com/2us-Clippers-Campaign");
+              toast.success("Campaign link copied!");
+            }}
+            className="flex items-center justify-center gap-2 py-2.5 bg-secondary hover:bg-secondary/80 text-foreground font-bold text-sm rounded-lg transition-colors"
+          >
+            <Link className="w-4 h-4" />
+            Copy Link
+          </button>
+        </div>
 
         <p className="mt-3 text-[10px] text-muted-foreground/60 text-center leading-relaxed">
           Projections based on current payout rates. Actual results depend on content performance. Bonuses are cumulative milestones.

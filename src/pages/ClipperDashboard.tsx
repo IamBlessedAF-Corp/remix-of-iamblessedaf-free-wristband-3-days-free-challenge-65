@@ -11,6 +11,7 @@ import ClipperMomentum from "@/components/clipper/ClipperMomentum";
 import ClipperNextAction from "@/components/clipper/ClipperNextAction";
 import ClipperLeaderboard from "@/components/clipper/ClipperLeaderboard";
 import ClipperPayoutHistory from "@/components/clipper/ClipperPayoutHistory";
+import ClipperMyClips from "@/components/clipper/ClipperMyClips";
 import ClipSubmitModal from "@/components/clipper/ClipSubmitModal";
 import { useClipperLeaderboard } from "@/hooks/useClipperLeaderboard";
 import logoImg from "@/assets/logo.png";
@@ -110,14 +111,17 @@ const ClipperDashboard = () => {
             totalClips={dashboard.totalClips}
           />
 
-          {/* 5. Leaderboard */}
+          {/* 5. My Clips with video preview */}
+          <ClipperMyClips userId={user.id} />
+
+          {/* 6. Leaderboard */}
           <ClipperLeaderboard
             leaderboard={lb.leaderboard}
             isLive={lb.isLive}
             loading={lb.loading}
           />
 
-          {/* 6. Payout History */}
+          {/* 7. Payout History */}
           <ClipperPayoutHistory userId={user.id} />
 
           {/* 7. Next Action */}
