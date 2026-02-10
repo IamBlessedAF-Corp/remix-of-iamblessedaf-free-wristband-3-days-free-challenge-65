@@ -162,9 +162,15 @@ Deno.serve(async (req: Request) => {
         source_page: sourcePage || null,
       });
 
+      // Provide user-friendly error for invalid numbers
+      const userMessage =
+        twilioResult.data.code === 21211
+          ? `Invalid phone number: ${formattedTo}. Please check the country code and number are correct (e.g. +1 for US, +44 for UK, +52 for Mexico).`
+          : twilioResult.data.message || "Failed to send message";
+
       return new Response(
         JSON.stringify({
-          error: twilioResult.data.message || "Failed to send message",
+          error: userMessage,
           code: twilioResult.data.code,
           channel,
         }),
