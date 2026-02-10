@@ -92,7 +92,7 @@ const KanbanCard = ({ card, index, onClick, canEdit, isBlocking, isWarning, colu
           {...provided.dragHandleProps}
           onClick={() => onClick(card)}
           className={cn(
-            "bg-card border border-border rounded-lg p-3 mb-2 cursor-pointer transition-all hover:shadow-md",
+            "bg-card border border-border rounded-lg p-3 mb-2 cursor-pointer transition-all hover:shadow-md select-text",
             snapshot.isDragging && "shadow-lg ring-2 ring-primary/30 rotate-2",
             isCredentialBlocked && "credential-blocked-blink border-red-600 bg-red-600/15 ring-2 ring-red-500/50",
             !isCredentialBlocked && isCriticalBlocking && "animate-pulse border-destructive bg-destructive/10 ring-1 ring-destructive/30",
