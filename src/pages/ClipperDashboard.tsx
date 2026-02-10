@@ -4,26 +4,21 @@ import { Loader2, LogOut, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useClipperDashboard } from "@/hooks/useClipperDashboard";
-import { useToast } from "@/hooks/use-toast";
 import ClipperStatusHeader from "@/components/clipper/ClipperStatusHeader";
 import ClipperWeeklySnapshot from "@/components/clipper/ClipperWeeklySnapshot";
 import ClipperBonusLadder from "@/components/clipper/ClipperBonusLadder";
 import ClipperMomentum from "@/components/clipper/ClipperMomentum";
 import ClipperNextAction from "@/components/clipper/ClipperNextAction";
+import ClipSubmitModal from "@/components/clipper/ClipSubmitModal";
 import logoImg from "@/assets/logo.png";
 
 const ClipperDashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const dashboard = useClipperDashboard(user?.id);
-  const { toast } = useToast();
-  const [showSubmitInfo, setShowSubmitInfo] = useState(false);
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   const handleSubmitClip = () => {
-    setShowSubmitInfo(true);
-    toast({
-      title: "Submit your clip",
-      description: "DM your clip link to @JoeDaVincy on Instagram — we'll verify and add it within 24h.",
-    });
+    setShowSubmitModal(true);
   };
 
   if (authLoading || dashboard.loading) {
@@ -118,6 +113,13 @@ const ClipperDashboard = () => {
           />
         </motion.div>
       </main>
+
+      <ClipSubmitModal
+        open={showSubmitModal}
+        onOpenChange={setShowSubmitModal}
+        userId={user.id}
+        onSubmitted={dashboard.refresh}
+      />
     </div>
   );
 };
