@@ -4,23 +4,23 @@ import { Film, Share2, DollarSign, Trophy } from "lucide-react";
 const steps = [
   {
     icon: Film,
-    title: "1. Remix a Gratitude × Neuroscience Clip",
-    desc: "Pick from our Inspiration Gallery below. Add a 5-sec gratitude hook: \"Free wristband + win $1,111 this Friday.\" Your creativity, your style—brain hacks, dopamine science, rewire clips.",
+    title: "1. Pick From the Content Vault",
+    desc: "24+ curated gratitude × neuroscience clips ready to remix. No originals needed. Add a 5-sec hook: \"Free wristband + win $1,111 this Friday.\" Your creativity, your style.",
   },
   {
     icon: Share2,
-    title: "2. Post With Your Link",
-    desc: "Upload to TikTok, IG Reels, YouTube Shorts. Include your unique referral link in bio/caption. Tag @IamBlessedAF + use #GratitudeChallenge #BrainHack.",
+    title: "2. Submit in a Click",
+    desc: "Post to TikTok, IG Reels, YouTube Shorts with your unique link in bio/caption. Tag @IamBlessedAF + #GratitudeChallenge #BrainHack. Brief → remix → upload → done.",
   },
   {
     icon: DollarSign,
     title: "3. Get Paid Per Clip",
-    desc: "$2.22 floor (even at 1,000 views) → $0.22/1k views. Payouts processed weekly. See earnings live in your creator dashboard.",
+    desc: "$2.22 floor (even at 1,000 views). $0.22/1k RPM scales from there. 10 clips/week at 10k avg = $22/week = $88.80/month. Views verified via platform analytics.",
   },
   {
     icon: Trophy,
-    title: "4. Enter the $1,111 Drawing",
-    desc: "Every valid entry = 1 ticket to the $1,111 grand prize drawing, held LIVE on @IamBlessedAF IG every Friday at 7PM EST.",
+    title: "4. Win $1,111 Every Friday",
+    desc: "Every valid entry = 1 ticket to the $1,111 grand prize drawing, held LIVE on @IamBlessedAF IG every Friday at 7PM EST. More clips = more tickets.",
   },
 ];
 
@@ -32,7 +32,10 @@ const ContestHowItWorks = () => (
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-3xl font-bold mb-8">⚡ How It Works (60 Seconds)</h2>
+        <h2 className="text-3xl font-bold mb-2">⚡ How It Works (60 Seconds)</h2>
+        <p className="text-muted-foreground mb-8">
+          Vault → Remix → Submit → Paid. The same low-friction loop that powers Vyro's marketplace and GoPro's Million Dollar Challenge.
+        </p>
 
         <div className="space-y-6">
           {steps.map((step, i) => {
@@ -59,10 +62,11 @@ const ContestHowItWorks = () => (
         </div>
 
         <div className="mt-8 bg-primary/10 border border-primary/20 rounded-xl p-6">
-          <p className="text-foreground font-semibold mb-2">💡 The Real Talk</p>
+          <p className="text-foreground font-semibold mb-2">💡 Why This Works (First Principles)</p>
           <p className="text-muted-foreground">
-            We don't care about production value. A remix of an inspiring clip with "claim your free wristband" in the caption
-            works just as well as a cinematic edit. <strong className="text-foreground">Views = money. That's it.</strong>
+            Production value doesn't matter. <strong className="text-foreground">Views = money. That's it.</strong> A remix with
+            "claim your free wristband" in the caption works just as well as a cinematic edit. 
+            The math is simple: views verified → payout processed → trust manufactured → you post more → loop compounds.
           </p>
         </div>
       </motion.div>

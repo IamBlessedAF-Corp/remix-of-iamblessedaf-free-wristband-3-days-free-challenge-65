@@ -95,12 +95,12 @@ const InspirationGallery = () => {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-primary/15 border border-primary/30 rounded-full px-4 py-1.5 mb-3">
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-primary font-semibold text-sm">Remix These → Get Paid</span>
+            <span className="text-primary font-semibold text-sm">Content Vault → Remix → Get Paid</span>
           </div>
-          <h2 className="text-3xl font-bold mb-2">🎬 Inspiration Gallery</h2>
+          <h2 className="text-3xl font-bold mb-2">🎬 Content Vault</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Tap any clip to watch it right here. Remix with your style + a gratitude hook + "claim your free wristband" CTA.
-            No copyright issues — just creative remixes that <strong className="text-foreground">pay you $2.22–$22 each</strong>.
+            Your supply is unlimited. Tap any clip → watch it here → remix with your style + gratitude hook.
+            No original content required. No copyright issues. <strong className="text-foreground">Submit in a click. Get paid on views.</strong>
           </p>
         </div>
 
@@ -131,7 +131,7 @@ const InspirationGallery = () => {
         </div>
 
         {/* Clips grid */}
-        <h3 className="text-lg font-bold mb-4">📱 Source Clips to Remix ({inspirationClips.length} available)</h3>
+        <h3 className="text-lg font-bold mb-4">📱 Campaign Drop: {inspirationClips.length} Clips Ready to Remix</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {inspirationClips.map((clip, i) => (
             <motion.div
@@ -165,10 +165,10 @@ const InspirationGallery = () => {
         </div>
 
         <div className="mt-6 bg-primary/10 border border-primary/20 rounded-xl p-5 text-center">
-          <p className="text-foreground font-semibold mb-1">🎯 Remix Formula</p>
+          <p className="text-foreground font-semibold mb-1">⚡ Zero Friction Formula</p>
           <p className="text-muted-foreground text-sm">
-            Pick a clip → Add your voiceover or text overlay → Include "Claim your FREE wristband + win $1,111" →
-            Tag @IamBlessedAF + #GratitudeChallenge → Post → Get paid.
+            Pick from vault → Remix (voiceover, text, your style) → Add "Claim FREE wristband + win $1,111" →
+            Submit with your link → <strong className="text-foreground">Views verified → Payout processed</strong>.
           </p>
         </div>
       </motion.div>

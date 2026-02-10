@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,6 +13,8 @@ import ContestOfferStack from "@/components/contest/ContestOfferStack";
 import ContestSocialProof from "@/components/contest/ContestSocialProof";
 import ContestGuarantees from "@/components/contest/ContestGuarantees";
 import ContestHowItWorks from "@/components/contest/ContestHowItWorks";
+import ContestGrowthLoop from "@/components/contest/ContestGrowthLoop";
+import ContestTrustPhases from "@/components/contest/ContestTrustPhases";
 import InspirationGallery from "@/components/contest/InspirationGallery";
 
 const AIVideoContest = () => {
@@ -39,8 +41,14 @@ const AIVideoContest = () => {
       {/* Problem + False Beliefs + Epiphany */}
       <ContestProblem />
 
+      {/* Growth Loop (not a funnel) */}
+      <ContestGrowthLoop />
+
       {/* Offer Stack */}
       <ContestOfferStack />
+
+      {/* Trust Manufacturing Phases */}
+      <ContestTrustPhases />
 
       {/* Social Proof */}
       <ContestSocialProof />
@@ -51,7 +59,7 @@ const AIVideoContest = () => {
       {/* How It Works */}
       <ContestHowItWorks />
 
-      {/* Inspiration Gallery */}
+      {/* Content Vault (Inspiration Gallery) */}
       <InspirationGallery />
 
       {/* CTA Section */}
@@ -74,7 +82,7 @@ const AIVideoContest = () => {
               The Math Doesn't Lie. <span className="text-primary">Claim Your Spot.</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto">
-              $2.22 guaranteed per clip. $0.22/1k views. $1,111 payout pool.<br />
+              $2.22 guaranteed per clip. $0.22/1k RPM. Content vault ready. $1,111 every Friday.<br />
               Remix gratitude clips. Rewire brains. Get paid.
             </p>
 

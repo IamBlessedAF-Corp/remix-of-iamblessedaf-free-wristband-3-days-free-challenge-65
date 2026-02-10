@@ -3,29 +3,34 @@ import { CheckCircle } from "lucide-react";
 
 const stack = [
   {
-    item: "$2.22 Guaranteed Per Clip",
+    item: "$2.22 Guaranteed Floor — Even at 1,000 Views",
     value: "$2.22+",
-    detail: "Every valid clip gets paid — even at 1,000 views. No minimum follower count. No approval committee.",
+    detail: "Your clip gets 1,000 views? You pocket $2.22. Not promises, not 'potential' — guaranteed cash. No minimum followers, no approval committee, no gatekeepers.",
   },
   {
-    item: "$0.22 RPM (per 1k views)",
-    value: "$0.22/1k",
-    detail: "7x higher than TikTok Creator Fund. Real RPM on real views. Post 10 clips/week → stack it up.",
+    item: "$0.22 RPM — 7x TikTok Creator Fund",
+    value: "7x RPM",
+    detail: "TikTok pays $0.02–$0.04 per 1k. We pay $0.22. That's 7x. Post 10 clips/week at 10k avg = $88.80/month from content you'd remix anyway.",
   },
   {
-    item: "FREE Wristband For Your Audience",
-    value: "FREE",
-    detail: "Every viewer who claims = 1 meal donated through Feeding America. Your content literally feeds people.",
+    item: "Content Vault — No Original Content Required",
+    value: "VAULT",
+    detail: "Pick from 24+ curated gratitude × neuroscience clips. Remix with your style. Brief + vault + submit in a click. Zero creative friction.",
   },
   {
-    item: "$1,111 Grand Prize Drawing",
-    value: "BONUS",
-    detail: "Every clipper with a valid entry is entered into a $1,111 live drawing on @IamBlessedAF IG every Friday at 7PM EST.",
+    item: "FREE Wristband + 1 Meal Per Claim",
+    value: "IMPACT",
+    detail: "Every viewer who claims a wristband = 1 meal donated via Feeding America. Your clips literally feed people. That's K-factor fuel.",
+  },
+  {
+    item: "$1,111 Grand Prize Drawing (Every Friday)",
+    value: "$1,111",
+    detail: "Every valid clip = 1 ticket. Drawing LIVE on @IamBlessedAF IG every Friday at 7PM EST. More clips = more tickets = more chances.",
   },
   {
     item: "Feature on @IamBlessedAF + @DaVincyGang",
     value: "EXPOSURE",
-    detail: "Top clips get posted to 14k + 320k combined followers. Portfolio rocket fuel.",
+    detail: "Top clips get posted to 14k + 320k combined followers. Build your portfolio while getting paid. Double incentive = compound K-factor.",
   },
 ];
 
@@ -68,10 +73,10 @@ const ContestOfferStack = () => (
       </div>
 
       <div className="mt-8 bg-secondary/40 rounded-xl p-6 border border-border/50 text-center">
-        <p className="text-muted-foreground mb-1">Total value per active clipper:</p>
-        <p className="text-3xl font-bold text-primary">$2.22–$22/clip + $1,111 drawing + exposure</p>
+        <p className="text-muted-foreground mb-1">10 clips/week at 10k avg views:</p>
+        <p className="text-3xl font-bold text-primary">$22/week → $88.80/month + $1,111 drawing</p>
         <p className="text-sm text-muted-foreground mt-2">
-          Your cost: $0. Your time: Clips you'd make anyway, with a gratitude twist.
+          Your cost: $0. Content supply: unlimited (vault). Friction: zero (brief → remix → submit → paid).
         </p>
       </div>
     </motion.div>

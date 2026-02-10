@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Shield, Eye, DollarSign } from "lucide-react";
+import { Shield, Eye, DollarSign, Zap, Clock } from "lucide-react";
 
 const ContestGuarantees = () => (
   <section className="px-4 py-12 max-w-4xl mx-auto">
@@ -8,24 +8,32 @@ const ContestGuarantees = () => (
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
     >
-      <h2 className="text-3xl font-bold mb-8">🛡️ Zero-Risk Guarantees</h2>
+      <h2 className="text-3xl font-bold mb-3">🛡️ Zero-Risk Guarantees</h2>
+      <p className="text-muted-foreground mb-8">
+        The system that kills clipper programs: broken verification + slow payouts. Here's why ours won't break.
+      </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {[
           {
             icon: DollarSign,
-            title: "Paid On Views",
-            desc: "Not promises, not 'potential.' Your clip gets views → you get paid. We verify via platform analytics.",
+            title: "Paid On Views. Period.",
+            desc: "Not promises, not 'potential.' Platform analytics verified. $2.22 floor at 1,000 views — no minimum threshold BS.",
+          },
+          {
+            icon: Clock,
+            title: "Payout Velocity",
+            desc: "Fast payouts = retention. The top 1% (Vyro, HighLevel) know this. We process weekly — not monthly, not 'when we feel like it.'",
           },
           {
             icon: Shield,
             title: "No Fluff, No Catches",
-            desc: "No minimum follower count. No approval committee. Valid clip + views = money. That's the whole deal.",
+            desc: "No minimum follower count. No approval committee. Valid clip + views = money. Standardized rules, not subjective vibes.",
           },
           {
             icon: Eye,
-            title: "Full Transparency",
-            desc: "Creator dashboard shows your clips, views, earnings in real time. You see exactly what you're owed.",
+            title: "Full Transparency Dashboard",
+            desc: "See your clips, views, earnings, and payout status in real time. The same infra the top programs use — tracking + verification + anti-fraud.",
           },
         ].map((g, i) => {
           const Icon = g.icon;
@@ -44,6 +52,15 @@ const ContestGuarantees = () => (
             </motion.div>
           );
         })}
+      </div>
+
+      <div className="mt-6 bg-secondary/40 rounded-xl p-5 border border-border/50">
+        <p className="text-foreground font-semibold mb-1">⚠️ What Would Kill This System</p>
+        <p className="text-muted-foreground text-sm">
+          Fraud and slow payments. That's what kills every clipper program. Our stack: 
+          <strong className="text-foreground"> content vault → submission + compliance → view tracking → fast payout → campaign ops</strong>. 
+          The same backend blueprint used by Vyro and HighLevel. Built for scale, not for show.
+        </p>
       </div>
     </motion.div>
   </section>
