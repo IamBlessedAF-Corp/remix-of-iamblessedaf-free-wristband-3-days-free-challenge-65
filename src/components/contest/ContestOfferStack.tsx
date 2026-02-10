@@ -43,7 +43,7 @@ const ContestOfferStack = () => (
     >
       <h2 className="text-3xl font-bold mb-2">📦 The Offer Stack</h2>
       <p className="text-muted-foreground mb-8">
-        Here's everything you get for making hoops × gratitude clips:
+        Here's everything you get for making gratitude × neuroscience clips:
       </p>
 
       <div className="space-y-4">

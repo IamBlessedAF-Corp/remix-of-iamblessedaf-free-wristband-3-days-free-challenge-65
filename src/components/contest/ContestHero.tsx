@@ -21,16 +21,16 @@ const ContestHero = ({ logo, onJoin }: ContestHeroProps) => (
       />
 
       <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-        Hoops Clippers: Get Paid<br />$2–$22 Per Clip. Period.
+        Gratitude Clippers: Get Paid<br />$2–$22 Per Clip. Period.
       </h1>
 
       <p className="text-xl text-muted-foreground mb-3 max-w-2xl mx-auto">
-        $2 floor (even at 5k views) → $0.22/1k RPM → $22 cap at 100k.<br />
+        Remix gratitude & neuroscience clips → $2 floor → $0.22/1k RPM → $22 cap.<br />
         That's <strong>4x TikTok Creator Fund</strong>. No gatekeeping.
       </p>
 
       <div className="inline-flex items-center gap-2 bg-primary/15 border border-primary/30 rounded-full px-5 py-2 mb-4">
-        <span className="text-primary font-bold text-lg">🏀 Hoops × Gratitude = Cash</span>
+        <span className="text-primary font-bold text-lg">🧠 Gratitude × Neuroscience = Cash</span>
       </div>
 
       <p className="text-muted-foreground mb-6">

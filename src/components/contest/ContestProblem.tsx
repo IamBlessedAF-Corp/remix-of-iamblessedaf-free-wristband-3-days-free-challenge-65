@@ -14,7 +14,8 @@ const ContestProblem = () => (
         <div>
           <h2 className="text-3xl font-bold mb-4">🚨 The Problem Nobody Talks About</h2>
           <p className="text-lg text-muted-foreground">
-            You're grinding out hoops content—crossovers, dunks, ankle-breakers. Getting 10k, 20k, 50k views.
+            You're creating gratitude, mindset, and neuroscience content—brain rewire clips, Huberman breakdowns, dopamine hacks.
+            Getting 10k, 20k, 50k views.
             And TikTok pays you… <strong className="text-foreground">$0.02–$0.04 per 1,000 views</strong>. That's $0.40 for a 20k video.
             You'd need <strong>2.5 million views</strong> just to hit $100. The math is broken.
           </p>
@@ -41,7 +42,7 @@ const ContestProblem = () => (
             <p>• $22 cap — a 100k clip maxes out at $22. One viral clip = one day's food budget.</p>
           </div>
           <p className="text-lg text-muted-foreground mt-4">
-            <strong className="text-primary">Translation:</strong> A mid clipper posting 5 clips/week at 20k avg views = <strong>$22/week = $88/month</strong>. From hoops content you're already making.
+            <strong className="text-primary">Translation:</strong> A mid clipper posting 5 clips/week at 20k avg views = <strong>$22/week = $88/month</strong>. From gratitude content you're already making.
           </p>
         </div>
       </motion.div>
