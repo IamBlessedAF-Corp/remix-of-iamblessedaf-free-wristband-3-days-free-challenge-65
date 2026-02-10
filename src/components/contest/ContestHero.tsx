@@ -21,7 +21,7 @@ const ContestHero = ({ logo, onJoin }: ContestHeroProps) => (
       />
 
       <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-        Gratitude Clippers: Get Paid<br />$2.22–$22 Per Clip. Period.
+        Gratitude Clippers: Get Paid<br /><span className="text-primary">$2.22–$1,111</span> Per Clip. Period.
       </h1>
 
       <p className="text-xl text-muted-foreground mb-3 max-w-2xl mx-auto">

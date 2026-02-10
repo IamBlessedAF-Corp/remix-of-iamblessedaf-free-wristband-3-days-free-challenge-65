@@ -23,8 +23,15 @@ interface CreatorProfile {
   instagram_handle: string | null;
 }
 
+interface ClipStats {
+  totalViews: number;
+  totalClips: number;
+  totalEarningsCents: number;
+}
+
 export function CreatorNextSteps() {
   const [profile, setProfile] = useState<CreatorProfile | null>(null);
+  const [clipStats, setClipStats] = useState<ClipStats>({ totalViews: 0, totalClips: 0, totalEarningsCents: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const { user, signOut } = useAuth();
   const { toast } = useToast();
@@ -32,8 +39,30 @@ export function CreatorNextSteps() {
   useEffect(() => {
     if (user) {
       fetchOrCreateProfile();
+      fetchClipStats();
     }
   }, [user]);
+
+  const fetchClipStats = async () => {
+    if (!user) return;
+    try {
+      const supabase = await getSupabase();
+      const { data } = await supabase
+        .from("clip_submissions")
+        .select("view_count, earnings_cents")
+        .eq("user_id", user.id);
+
+      if (data && data.length > 0) {
+        setClipStats({
+          totalViews: data.reduce((sum: number, c: any) => sum + (c.view_count || 0), 0),
+          totalClips: data.length,
+          totalEarningsCents: data.reduce((sum: number, c: any) => sum + (c.earnings_cents || 0), 0),
+        });
+      }
+    } catch (e) {
+      // silent
+    }
+  };
 
   const fetchOrCreateProfile = async () => {
     if (!user) return;
@@ -197,12 +226,13 @@ export function CreatorNextSteps() {
         </div>
 
         {(() => {
-          // Simulated view count for now — replace with real tracking later
-          const totalViews = (profile?.blessings_confirmed || 0) * 2500; // rough proxy
+          const totalViews = clipStats.totalViews;
           const target = 1_000_000;
           const pct = Math.min(100, (totalViews / target) * 100);
           const remaining = Math.max(0, target - totalViews);
-          const weeksLeft = remaining > 0 ? Math.ceil(remaining / (15000 * 10)) : 0; // assumes 15k avg × 10 clips/wk
+          const avgViewsPerClip = clipStats.totalClips > 0 ? Math.round(totalViews / clipStats.totalClips) : 15000;
+          const weeklyViewsEst = avgViewsPerClip * 10;
+          const weeksLeft = weeklyViewsEst > 0 && remaining > 0 ? Math.ceil(remaining / weeklyViewsEst) : 0;
 
           return (
             <div className="space-y-4">
@@ -223,26 +253,36 @@ export function CreatorNextSteps() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 text-center">
+              <div className="grid grid-cols-4 gap-3 text-center">
                 <div className="bg-secondary/50 rounded-lg p-3">
-                  <p className="text-xs text-muted-foreground">Current</p>
+                  <p className="text-xs text-muted-foreground">Clips</p>
+                  <p className="text-lg font-bold text-foreground">{clipStats.totalClips}</p>
+                </div>
+                <div className="bg-secondary/50 rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground">Views</p>
                   <p className="text-lg font-bold text-foreground">{totalViews.toLocaleString()}</p>
                 </div>
                 <div className="bg-secondary/50 rounded-lg p-3">
-                  <p className="text-xs text-muted-foreground">Remaining</p>
-                  <p className="text-lg font-bold text-foreground">{remaining.toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground">Earned</p>
+                  <p className="text-lg font-bold text-foreground">${(clipStats.totalEarningsCents / 100).toFixed(2)}</p>
                 </div>
                 <div className="bg-primary/10 rounded-lg p-3 border border-primary/20">
                   <p className="text-xs text-primary">Est. Unlock</p>
                   <p className="text-lg font-bold text-primary">
-                    {weeksLeft > 0 ? `~${weeksLeft}wk` : "🎉 NOW!"}
+                    {pct >= 100 ? "🎉 NOW!" : weeksLeft > 0 ? `~${weeksLeft}wk` : "—"}
                   </p>
                 </div>
               </div>
 
-              {pct < 100 && (
+              {pct < 100 && clipStats.totalClips === 0 && (
                 <p className="text-xs text-muted-foreground text-center">
-                  At 10 clips/week averaging 15k views → ~{weeksLeft} weeks to unlock your <strong className="text-primary">$1,111 bonus</strong>
+                  Submit your first clip to start tracking progress toward your <strong className="text-primary">$1,111 Super Payout</strong>
+                </p>
+              )}
+
+              {pct < 100 && clipStats.totalClips > 0 && (
+                <p className="text-xs text-muted-foreground text-center">
+                  At your current pace (~{avgViewsPerClip.toLocaleString()} views/clip × 10/week) → ~{weeksLeft} weeks to unlock <strong className="text-primary">$1,111</strong>
                 </p>
               )}
 

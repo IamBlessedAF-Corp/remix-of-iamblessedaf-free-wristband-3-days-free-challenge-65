@@ -362,6 +362,48 @@ export type Database = {
         }
         Relationships: []
       }
+      clip_submissions: {
+        Row: {
+          clip_url: string
+          created_at: string
+          earnings_cents: number
+          id: string
+          platform: string
+          status: string
+          submitted_at: string
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+          view_count: number
+        }
+        Insert: {
+          clip_url: string
+          created_at?: string
+          earnings_cents?: number
+          id?: string
+          platform?: string
+          status?: string
+          submitted_at?: string
+          updated_at?: string
+          user_id: string
+          verified_at?: string | null
+          view_count?: number
+        }
+        Update: {
+          clip_url?: string
+          created_at?: string
+          earnings_cents?: number
+          id?: string
+          platform?: string
+          status?: string
+          submitted_at?: string
+          updated_at?: string
+          user_id?: string
+          verified_at?: string | null
+          view_count?: number
+        }
+        Relationships: []
+      }
       creator_profiles: {
         Row: {
           blessings_confirmed: number
