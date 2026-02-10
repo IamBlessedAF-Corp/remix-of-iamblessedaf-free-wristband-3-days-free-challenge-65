@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle, Copy, ExternalLink, Instagram, Video, Share2, LogOut } from "lucide-react";
+import { CheckCircle, Copy, ExternalLink, Instagram, Video, Share2, LogOut, Trophy, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -181,6 +182,79 @@ export function CreatorNextSteps() {
             </p>
           </div>
         )}
+      </div>
+
+      {/* $1,111 Super Payout Milestone Tracker */}
+      <div className="bg-card rounded-2xl border border-primary/30 p-6 mb-6 shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="bg-primary/15 p-2 rounded-lg">
+            <Trophy className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold">$1,111 Super Payout Tracker</h3>
+            <p className="text-xs text-muted-foreground">Hit 1,000,000 combined views → unlock $1,111 bonus</p>
+          </div>
+        </div>
+
+        {(() => {
+          // Simulated view count for now — replace with real tracking later
+          const totalViews = (profile?.blessings_confirmed || 0) * 2500; // rough proxy
+          const target = 1_000_000;
+          const pct = Math.min(100, (totalViews / target) * 100);
+          const remaining = Math.max(0, target - totalViews);
+          const weeksLeft = remaining > 0 ? Math.ceil(remaining / (15000 * 10)) : 0; // assumes 15k avg × 10 clips/wk
+
+          return (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <Eye className="w-4 h-4" />
+                  {totalViews.toLocaleString()} views
+                </span>
+                <span className="font-bold text-foreground">1,000,000</span>
+              </div>
+
+              <div className="relative">
+                <Progress value={pct} className="h-4 bg-secondary" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-[10px] font-bold text-primary-foreground drop-shadow-sm">
+                    {pct.toFixed(1)}%
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="bg-secondary/50 rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground">Current</p>
+                  <p className="text-lg font-bold text-foreground">{totalViews.toLocaleString()}</p>
+                </div>
+                <div className="bg-secondary/50 rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground">Remaining</p>
+                  <p className="text-lg font-bold text-foreground">{remaining.toLocaleString()}</p>
+                </div>
+                <div className="bg-primary/10 rounded-lg p-3 border border-primary/20">
+                  <p className="text-xs text-primary">Est. Unlock</p>
+                  <p className="text-lg font-bold text-primary">
+                    {weeksLeft > 0 ? `~${weeksLeft}wk` : "🎉 NOW!"}
+                  </p>
+                </div>
+              </div>
+
+              {pct < 100 && (
+                <p className="text-xs text-muted-foreground text-center">
+                  At 10 clips/week averaging 15k views → ~{weeksLeft} weeks to unlock your <strong className="text-primary">$1,111 bonus</strong>
+                </p>
+              )}
+
+              {pct >= 100 && (
+                <div className="bg-primary/15 border border-primary/30 rounded-lg p-4 text-center">
+                  <p className="text-lg font-bold text-primary">🏆 You've unlocked the $1,111 Super Payout!</p>
+                  <p className="text-sm text-muted-foreground mt-1">DM @JoeDaVincy to claim your bonus.</p>
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Next Steps */}
