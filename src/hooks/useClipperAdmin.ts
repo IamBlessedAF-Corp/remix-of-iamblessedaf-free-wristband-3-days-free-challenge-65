@@ -164,10 +164,21 @@ export function useClipperAdmin() {
         .update(updates)
         .eq("id", clipId);
 
-      if (!error) await fetchAll();
+      if (!error) {
+        // Send notification + award BC for approved clips
+        if (newStatus === "verified") {
+          const clip = clips.find((c) => c.id === clipId);
+          if (clip) {
+            supabase.functions.invoke("clip-approved-notification", {
+              body: { clip_id: clipId, user_id: clip.user_id, action: "approved" },
+            }).catch((e) => console.error("Notification error:", e));
+          }
+        }
+        await fetchAll();
+      }
       return error;
     },
-    [fetchAll]
+    [fetchAll, clips]
   );
 
   const bulkApprove = useCallback(
@@ -177,10 +188,18 @@ export function useClipperAdmin() {
           .from("clip_submissions")
           .update({ status: "verified", verified_at: new Date().toISOString() })
           .eq("id", id);
+
+        // Send notification for each approved clip
+        const clip = clips.find((c) => c.id === id);
+        if (clip) {
+          supabase.functions.invoke("clip-approved-notification", {
+            body: { clip_id: id, user_id: clip.user_id, action: "approved" },
+          }).catch((e) => console.error("Notification error:", e));
+        }
       }
       await fetchAll();
     },
-    [fetchAll]
+    [fetchAll, clips]
   );
 
   const deleteClip = useCallback(

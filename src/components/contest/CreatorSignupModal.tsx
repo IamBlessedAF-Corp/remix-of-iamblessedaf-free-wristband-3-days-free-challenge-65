@@ -112,6 +112,15 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
           title: "Check your email!",
           description: "We sent you a confirmation link to verify your account.",
         });
+        // Send welcome email
+        try {
+          const { supabase } = await import("@/integrations/supabase/client");
+          await supabase.functions.invoke("send-welcome-email", {
+            body: { email, name: email.split("@")[0] },
+          });
+        } catch (e) {
+          console.error("Welcome email error:", e);
+        }
         onSuccess();
       }
     } else {
