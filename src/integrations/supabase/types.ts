@@ -446,6 +446,36 @@ export type Database = {
         }
         Relationships: []
       }
+      expert_scripts: {
+        Row: {
+          created_at: string
+          framework_id: string
+          hero_profile: Json
+          id: string
+          output: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          framework_id: string
+          hero_profile?: Json
+          id?: string
+          output: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          framework_id?: string
+          hero_profile?: Json
+          id?: string
+          output?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       link_clicks: {
         Row: {
           browser: string | null
