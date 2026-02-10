@@ -9,12 +9,15 @@ import ClipperWeeklySnapshot from "@/components/clipper/ClipperWeeklySnapshot";
 import ClipperBonusLadder from "@/components/clipper/ClipperBonusLadder";
 import ClipperMomentum from "@/components/clipper/ClipperMomentum";
 import ClipperNextAction from "@/components/clipper/ClipperNextAction";
+import ClipperLeaderboard from "@/components/clipper/ClipperLeaderboard";
 import ClipSubmitModal from "@/components/clipper/ClipSubmitModal";
+import { useClipperLeaderboard } from "@/hooks/useClipperLeaderboard";
 import logoImg from "@/assets/logo.png";
 
 const ClipperDashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const dashboard = useClipperDashboard(user?.id);
+  const lb = useClipperLeaderboard(user?.id);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   const handleSubmitClip = () => {
@@ -106,7 +109,14 @@ const ClipperDashboard = () => {
             totalClips={dashboard.totalClips}
           />
 
-          {/* 5. Next Action */}
+          {/* 5. Leaderboard */}
+          <ClipperLeaderboard
+            leaderboard={lb.leaderboard}
+            isLive={lb.isLive}
+            loading={lb.loading}
+          />
+
+          {/* 6. Next Action */}
           <ClipperNextAction
             clipsThisWeek={dashboard.clipsThisWeek}
             onSubmitClip={handleSubmitClip}
