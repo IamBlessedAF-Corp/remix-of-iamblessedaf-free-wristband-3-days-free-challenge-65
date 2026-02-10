@@ -4,14 +4,28 @@ import UpsellWristbandStep from "@/components/offer/UpsellWristbandStep";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
 import GratitudeSetupFlow from "@/components/challenge/GratitudeSetupFlow";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { useAuth } from "@/hooks/useAuth";
+import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 
 type Step = "free-wristband" | "gratitude-setup" | "upsell-22";
 
 const Offer22 = () => {
   const [step, setStep] = useState<Step>("free-wristband");
+  const [showAuth, setShowAuth] = useState(false);
   const { startCheckout, loading } = useStripeCheckout();
+  const { user } = useAuth();
 
   const handleFreeWristbandCheckout = () => {
+    if (!user) {
+      setShowAuth(true);
+      return;
+    }
+    setStep("gratitude-setup");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleAuthSuccess = () => {
+    setShowAuth(false);
     setStep("gratitude-setup");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -41,6 +55,13 @@ const Offer22 = () => {
   return (
     <div className="min-h-screen bg-background">
       <GamificationHeader />
+
+      <CreatorSignupModal
+        isOpen={showAuth}
+        onClose={() => setShowAuth(false)}
+        onSuccess={handleAuthSuccess}
+      />
+
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-2xl mx-auto">
           {step === "free-wristband" && (
