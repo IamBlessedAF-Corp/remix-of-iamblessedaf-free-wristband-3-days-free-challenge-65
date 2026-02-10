@@ -25,6 +25,7 @@ import Impact from "./pages/Impact";
 import Roadmap from "./pages/Roadmap";
 import ClipperDashboard from "./pages/ClipperDashboard";
 import ClipperAdmin from "./pages/ClipperAdmin";
+import Experts from "./pages/Experts";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,7 @@ const App = () => (
           <Route path="/roadmap" element={<Roadmap />} />
           <Route path="/clipper-dashboard" element={<ClipperDashboard />} />
           <Route path="/admin/clippers" element={<ClipperAdmin />} />
+          <Route path="/experts" element={<Experts />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
