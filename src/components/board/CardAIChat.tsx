@@ -4,12 +4,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { Bot, Send, Sparkles, Play, Loader2, Zap, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
+import { Bot, Send, Sparkles, Play, Loader2, Zap, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp, Paperclip, X, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+
+interface ChatAttachment {
+  name: string;
+  type: string;
+  dataUrl: string; // base64 data URL
+  preview?: string; // thumbnail preview URL
+}
 
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+  attachments?: ChatAttachment[];
 }
 
 interface SuggestedStep {
@@ -36,7 +44,9 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
   const [executedSteps, setExecutedSteps] = useState<Set<number>>(new Set());
   const [executingAll, setExecutingAll] = useState(false);
   const [stepsExpanded, setStepsExpanded] = useState(true);
+  const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -44,8 +54,43 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
     }
   }, [messages]);
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    Array.from(files).forEach((file) => {
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error(`File "${file.name}" is too large (max 10MB)`);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result as string;
+        setAttachments((prev) => [
+          ...prev,
+          {
+            name: file.name,
+            type: file.type,
+            dataUrl,
+            preview: file.type.startsWith("image/") ? dataUrl : undefined,
+          },
+        ]);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Reset input so the same file can be re-selected
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const sendMessage = async (message: string, action?: string) => {
     if (loading) return;
+
+    const currentAttachments = [...attachments];
 
     const userMsg: ChatMessage = {
       role: "user",
@@ -59,14 +104,20 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
           : action === "execute_all_steps"
           ? "🔥 Executing all steps..."
           : message,
+      attachments: currentAttachments.length > 0 ? currentAttachments : undefined,
     };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
+    setAttachments([]);
     setLoading(true);
 
     try {
+      const imageAttachments = currentAttachments
+        .filter((a) => a.type.startsWith("image/"))
+        .map((a) => ({ data_url: a.dataUrl, name: a.name }));
+
       const { data, error } = await supabase.functions.invoke("card-ai-chat", {
-        body: { card_id: cardId, message, action },
+        body: { card_id: cardId, message, action, images: imageAttachments.length > 0 ? imageAttachments : undefined },
       });
 
       if (error) throw error;
@@ -178,7 +229,7 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
   };
 
   const handleSend = () => {
-    if (!input.trim()) return;
+    if (!input.trim() && attachments.length === 0) return;
     sendMessage(input.trim());
   };
 
@@ -351,6 +402,20 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
                     : "bg-muted text-foreground"
                 }`}
               >
+                {msg.attachments && msg.attachments.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-1.5">
+                    {msg.attachments.map((att, ai) =>
+                      att.preview ? (
+                        <img key={ai} src={att.preview} alt={att.name} className="w-16 h-16 rounded object-cover border border-border/30" />
+                      ) : (
+                        <div key={ai} className="flex items-center gap-1 bg-background/20 rounded px-1.5 py-0.5 text-[10px]">
+                          <Paperclip className="w-2.5 h-2.5" />
+                          <span className="truncate max-w-[80px]">{att.name}</span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
                 {msg.content}
               </div>
             </div>
@@ -366,8 +431,49 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
         </div>
       </ScrollArea>
 
+      {/* Attachment previews */}
+      {attachments.length > 0 && (
+        <div className="flex gap-1.5 px-2 pt-2 flex-wrap">
+          {attachments.map((att, i) => (
+            <div key={i} className="relative group">
+              {att.preview ? (
+                <img src={att.preview} alt={att.name} className="w-12 h-12 rounded object-cover border border-border" />
+              ) : (
+                <div className="w-12 h-12 rounded border border-border bg-muted flex items-center justify-center">
+                  <Paperclip className="w-4 h-4 text-muted-foreground" />
+                </div>
+              )}
+              <button
+                onClick={() => removeAttachment(i)}
+                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <X className="w-2.5 h-2.5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Input */}
-      <div className="flex gap-2 p-2 border-t border-border">
+      <div className="flex items-end gap-1.5 p-2 border-t border-border">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*,.pdf,.txt,.md,.csv"
+          multiple
+          className="hidden"
+          onChange={handleFileSelect}
+        />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 flex-shrink-0"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={loading || disabled}
+          title="Attach files or images"
+        >
+          <Paperclip className="w-3.5 h-3.5" />
+        </Button>
         <Textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -386,7 +492,7 @@ export default function CardAIChat({ cardId, cardTitle, disabled }: CardAIChatPr
           size="icon"
           className="h-8 w-8 flex-shrink-0"
           onClick={handleSend}
-          disabled={!input.trim() || loading || disabled}
+          disabled={(!input.trim() && attachments.length === 0) || loading || disabled}
         >
           <Send className="w-3 h-3" />
         </Button>
