@@ -31,6 +31,10 @@ const faqs = [
     q: "What's the $22 cap per clip?",
     a: "Each individual clip pays $0.22 per 1,000 views up to a maximum of $22 per clip (roughly 100k views). This keeps the system sustainable while rewarding consistent posting over single viral hits. Bonus milestones reward your total volume on top of per-clip pay.",
   },
+  {
+    q: "How does payout verification work?",
+    a: "Every clip goes through a lightweight verification step to ensure fair payouts for all creators. We check the public view count on your platform and confirm the clip meets our content guidelines. Most clips are approved within 24 hours. If a clip needs extra review, we'll let you know — no surprises, no penalties for honest work.",
+  },
 ];
 
 const ClipperFaq = () => (
