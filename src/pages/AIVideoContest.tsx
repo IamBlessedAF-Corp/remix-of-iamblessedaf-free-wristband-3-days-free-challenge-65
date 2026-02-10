@@ -5,6 +5,7 @@ import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 import ContestHero from "@/components/contest/ContestHero";
 import DegenHookBlock from "@/components/contest/DegenHookBlock";
 import ClipperCalculator from "@/components/contest/ClipperCalculator";
+import EarningsSliderCalculator from "@/components/contest/EarningsSliderCalculator";
 import ContestGuarantees from "@/components/contest/ContestGuarantees";
 import BonusLadder from "@/components/contest/BonusLadder";
 import TrustSignals from "@/components/contest/TrustSignals";
@@ -28,6 +29,9 @@ const AIVideoContest = () => {
 
       {/* 2b. Earnings snapshot — Stable/Degen toggle */}
       <ClipperCalculator />
+
+      {/* 2c. Interactive slider calculator */}
+      <EarningsSliderCalculator />
 
       {/* 3. Risk reversal / guarantees — reduce fear */}
       <ContestGuarantees />
