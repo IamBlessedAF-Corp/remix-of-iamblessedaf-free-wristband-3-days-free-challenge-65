@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 import { DollarSign, Zap, Shield } from "lucide-react";
 
 const STABLE_ROWS = [
-  { views: "1k–5k", perClip: "$2.22", weekly: "$22.20", monthly: "$88.80", highlight: false },
-  { views: "10k", perClip: "$2.22", weekly: "$22.20", monthly: "$88.80", highlight: false },
-  { views: "20k", perClip: "$4.40", weekly: "$44.00", monthly: "$176", highlight: true },
-  { views: "50k", perClip: "$11.00", weekly: "$110.00", monthly: "$440", highlight: false },
+  { views: "1k–5k", perClip: "$2.22", weekly: "$22.20", monthly: "$88.80", bonusNote: "$111 in ~20 wks", highlight: false },
+  { views: "10k", perClip: "$2.22", weekly: "$22.20", monthly: "$88.80", bonusNote: "$111 in ~10 wks", highlight: false },
+  { views: "20k", perClip: "$4.40", weekly: "$44.00", monthly: "$176", bonusNote: "$444 in ~25 wks", highlight: true },
+  { views: "50k", perClip: "$11.00", weekly: "$110.00", monthly: "$440", bonusNote: "$1,111 in ~20 wks", highlight: false },
 ];
 
 const DEGEN_ROWS = [
@@ -87,8 +87,8 @@ const ClipperCalculator = () => {
                   <tr className="bg-secondary/50 text-foreground">
                     <th className="text-left px-4 py-2.5 font-semibold">Avg Views</th>
                     <th className="text-left px-4 py-2.5 font-semibold">Per Clip</th>
-                    <th className="text-left px-4 py-2.5 font-semibold">Weekly</th>
                     <th className="text-left px-4 py-2.5 font-semibold">Monthly</th>
+                    <th className="text-left px-4 py-2.5 font-semibold">+ Bonus</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -99,8 +99,8 @@ const ClipperCalculator = () => {
                     >
                       <td className="px-4 py-2.5 font-medium text-foreground">{row.views}</td>
                       <td className="px-4 py-2.5 text-primary font-bold">{row.perClip}</td>
-                      <td className="px-4 py-2.5 text-muted-foreground">{row.weekly}/wk</td>
                       <td className="px-4 py-2.5 font-bold text-foreground">{row.monthly}/mo</td>
+                      <td className="px-4 py-2.5 text-xs font-semibold text-primary">{row.bonusNote}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -109,8 +109,8 @@ const ClipperCalculator = () => {
 
             <div className="mt-4 bg-secondary/40 rounded-lg p-3.5 text-center">
               <p className="text-sm text-foreground">
-                At 1,000 views you still pocket <strong className="text-primary">$2.22 per clip</strong>.
-                Post 10 clips/week → <strong className="text-primary">$88.80/month</strong> before bonuses.
+                10 clips/week at 10k avg = <strong className="text-primary">$88.80/mo</strong> in clip pay
+                + hit your <strong className="text-primary">$111 bonus in just 10 weeks</strong>.
               </p>
             </div>
           </motion.div>

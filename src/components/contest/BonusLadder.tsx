@@ -6,8 +6,8 @@ const tiers = [
     icon: Target,
     views: "100,000",
     bonus: "$111",
-    label: "First Milestone",
-    note: "10 clips/wk at 5k avg ≈ 20 weeks. Most clippers hit this in their first 4–5 months.",
+    label: "Your First Payday",
+    note: "Post 10 clips/week at 10k avg → you unlock this in just 10 weeks. Most clippers get here before month 3.",
     color: "text-primary",
     active: true,
   },
@@ -15,8 +15,8 @@ const tiers = [
     icon: Star,
     views: "500,000",
     bonus: "$444",
-    label: "Growth Clipper",
-    note: "You're building momentum. One or two clips break 50k and this comes fast.",
+    label: "Momentum Builder",
+    note: "Keep posting consistently — one clip breaking 50k+ can accelerate this dramatically.",
     color: "text-primary",
     active: false,
   },
@@ -24,8 +24,8 @@ const tiers = [
     icon: Trophy,
     views: "1,000,000",
     bonus: "$1,111",
-    label: "Super Clipper",
-    note: "Cumulative across all your clips. No single video needs to go viral.",
+    label: "Super Payout",
+    note: "Cumulative across ALL clips. No single video needs to go viral — just keep stacking views.",
     color: "text-primary",
     active: false,
   },
@@ -78,7 +78,7 @@ const BonusLadder = () => (
               <p className="text-xs text-muted-foreground">{tier.note}</p>
               {tier.active && (
                 <p className="text-xs text-primary font-semibold mt-2">
-                  ← Most clippers start here
+                  🔥 You're closer than you think
                 </p>
               )}
             </div>
