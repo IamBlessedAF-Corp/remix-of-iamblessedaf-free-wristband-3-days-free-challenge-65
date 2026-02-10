@@ -21,12 +21,12 @@ const ContestHero = ({ logo, onJoin }: ContestHeroProps) => (
       />
 
       <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-        Gratitude Clippers: Get Paid<br />$2–$22 Per Clip. Period.
+        Gratitude Clippers: Get Paid<br />$2.22–$22 Per Clip. Period.
       </h1>
 
       <p className="text-xl text-muted-foreground mb-3 max-w-2xl mx-auto">
-        Remix gratitude & neuroscience clips → $2 floor → $0.22/1k RPM → $22 cap.<br />
-        That's <strong>4x TikTok Creator Fund</strong>. No gatekeeping.
+        Remix gratitude & neuroscience clips → <strong>$2.22 guaranteed per clip</strong> (even at 1,000 views) → $0.22/1k RPM → $22 cap.<br />
+        That's <strong>7x TikTok Creator Fund</strong>. No gatekeeping.
       </p>
 
       <div className="inline-flex items-center gap-2 bg-primary/15 border border-primary/30 rounded-full px-5 py-2 mb-4">
@@ -34,7 +34,7 @@ const ContestHero = ({ logo, onJoin }: ContestHeroProps) => (
       </div>
 
       <p className="text-muted-foreground mb-6">
-        Limited $1,111 payout pool • + Bonus $1,111 grand prize drawing
+        $1,111 payout pool • + Bonus $1,111 grand prize drawing every Friday
       </p>
 
       <Button

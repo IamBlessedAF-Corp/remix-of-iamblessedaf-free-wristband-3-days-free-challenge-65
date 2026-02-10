@@ -5,14 +5,14 @@ import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
 
 const calcEarnings = (views: number) => {
-  // $0.22 per 1,000 views, $2 floor, $22 cap
+  // $0.22 per 1,000 views, $2.22 floor, $22 cap
   const raw = (views / 1000) * 0.22;
-  return Math.min(22, Math.max(2, raw));
+  return Math.min(22, Math.max(2.22, raw));
 };
 
 const ClipperCalculator = () => {
-  const [avgViews, setAvgViews] = useState<string>("");
-  const [clipsPerWeek, setClipsPerWeek] = useState<string>("");
+  const [avgViews, setAvgViews] = useState<string>("15000");
+  const [clipsPerWeek, setClipsPerWeek] = useState<string>("10");
 
   const views = parseInt(avgViews) || 0;
   const clips = parseInt(clipsPerWeek) || 0;
@@ -21,7 +21,6 @@ const ClipperCalculator = () => {
   const monthlyEarnings = parseFloat((weeklyEarnings * 4).toFixed(2));
   const hasInput = views > 0 && clips > 0;
 
-  // RPM = earnings per 1k views
   const effectiveRpm = views > 0 ? parseFloat(((perClip / views) * 1000).toFixed(2)) : 0;
 
   return (
@@ -36,8 +35,8 @@ const ClipperCalculator = () => {
           <Calculator className="w-6 h-6 text-primary" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold">💰 Exact Earnings Math</h2>
-          <p className="text-muted-foreground text-sm">$2 floor + $0.22/1k views + $22 cap — plug your numbers</p>
+          <h2 className="text-2xl font-bold">💰 Your Earnings Math</h2>
+          <p className="text-muted-foreground text-sm">$2.22 guaranteed per clip — even at just 1,000 views</p>
         </div>
       </div>
 
@@ -47,33 +46,40 @@ const ClipperCalculator = () => {
           <thead>
             <tr className="bg-secondary/60 text-foreground">
               <th className="text-left px-4 py-2.5 font-semibold">Views</th>
-              <th className="text-left px-4 py-2.5 font-semibold">Raw Calc</th>
               <th className="text-left px-4 py-2.5 font-semibold">You Get</th>
-              <th className="text-left px-4 py-2.5 font-semibold">Eff. RPM</th>
+              <th className="text-left px-4 py-2.5 font-semibold">10 clips/wk</th>
+              <th className="text-left px-4 py-2.5 font-semibold">Monthly</th>
             </tr>
           </thead>
           <tbody className="text-muted-foreground">
             {[
+              { v: 1000, label: "1k" },
               { v: 5000, label: "5k" },
-              { v: 9091, label: "~9k" },
+              { v: 10000, label: "10k" },
               { v: 20000, label: "20k" },
               { v: 50000, label: "50k" },
-              { v: 100000, label: "100k" },
             ].map((row) => {
-              const raw = (row.v / 1000) * 0.22;
               const paid = calcEarnings(row.v);
-              const rpm = ((paid / row.v) * 1000).toFixed(2);
+              const weekly = paid * 10;
+              const monthly = weekly * 4;
               return (
                 <tr key={row.v} className="border-t border-border/30">
                   <td className="px-4 py-2 font-medium text-foreground">{row.label}</td>
-                  <td className="px-4 py-2">${raw.toFixed(2)}</td>
                   <td className="px-4 py-2 font-bold text-primary">${paid.toFixed(2)}</td>
-                  <td className="px-4 py-2">${rpm}</td>
+                  <td className="px-4 py-2">${weekly.toFixed(2)}/wk</td>
+                  <td className="px-4 py-2 font-bold text-foreground">${monthly.toFixed(0)}/mo</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+      </div>
+
+      <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-6 text-center">
+        <p className="text-foreground font-semibold">
+          ☝️ Even at 1,000 views you pocket <span className="text-primary">$2.22</span>. 
+          Post 10 clips/week at 5k avg = <span className="text-primary font-bold">$88.80/month</span> from content you'd make anyway.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
@@ -86,7 +92,7 @@ const ClipperCalculator = () => {
             id="avg-views"
             type="number"
             min="0"
-            placeholder="e.g. 20000"
+            placeholder="e.g. 15000"
             value={avgViews}
             onChange={(e) => setAvgViews(e.target.value)}
             className="h-12 text-lg bg-background border-border/60 focus:border-primary"
@@ -101,7 +107,7 @@ const ClipperCalculator = () => {
             id="clips-week"
             type="number"
             min="0"
-            placeholder="e.g. 5"
+            placeholder="e.g. 10"
             value={clipsPerWeek}
             onChange={(e) => setClipsPerWeek(e.target.value)}
             className="h-12 text-lg bg-background border-border/60 focus:border-primary"
@@ -137,16 +143,6 @@ const ClipperCalculator = () => {
                 <p className="text-xs text-muted-foreground mt-1">4 weeks × ${weeklyEarnings}</p>
               </div>
             </div>
-
-            {monthlyEarnings >= 50 && (
-              <motion.p
-                className="text-center text-sm text-primary font-semibold mt-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                🔥 That's {((perClip / 0.003) / 100).toFixed(0)}x better than standard TikTok Creator Fund RPM
-              </motion.p>
-            )}
           </motion.div>
         )}
       </AnimatePresence>
