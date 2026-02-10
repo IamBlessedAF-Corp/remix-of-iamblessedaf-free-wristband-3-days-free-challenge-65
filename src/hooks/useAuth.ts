@@ -41,8 +41,29 @@ export function useAuth() {
     };
   }, []);
 
+  const isCustomDomain = () => {
+    const host = window.location.hostname;
+    return !host.includes("lovable.app") && !host.includes("lovableproject.com") && host !== "localhost";
+  };
+
   const signInWithGoogle = async () => {
     try {
+      if (isCustomDomain()) {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo: window.location.href,
+            skipBrowserRedirect: true,
+          },
+        });
+        if (error) return { error };
+        if (data?.url) {
+          window.location.href = data.url;
+          return { error: null };
+        }
+        return { error: new Error("No OAuth URL returned") };
+      }
       const { lovable } = await import("@/integrations/lovable/index");
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: window.location.origin,
@@ -55,6 +76,22 @@ export function useAuth() {
 
   const signInWithApple = async () => {
     try {
+      if (isCustomDomain()) {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: "apple",
+          options: {
+            redirectTo: window.location.href,
+            skipBrowserRedirect: true,
+          },
+        });
+        if (error) return { error };
+        if (data?.url) {
+          window.location.href = data.url;
+          return { error: null };
+        }
+        return { error: new Error("No OAuth URL returned") };
+      }
       const { lovable } = await import("@/integrations/lovable/index");
       const result = await lovable.auth.signInWithOAuth("apple", {
         redirect_uri: window.location.origin,
