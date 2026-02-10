@@ -164,6 +164,14 @@ ${projectContext.slice(0, 3000)}
       if (toolCall?.function?.arguments) {
         try {
           const structured = JSON.parse(toolCall.function.arguments);
+
+          // Log structured steps to card
+          const stepsLog = structured.steps?.map((s: any, i: number) => `  ${i + 1}. [${s.priority}] ${s.title}`).join("\n") || "";
+          const logTs = new Date().toISOString();
+          const logEntry = `[${logTs}] AI CHAT — SUGGEST NEXT STEPS:\n${stepsLog}`;
+          const updatedLogs = (card.logs || "") ? `${card.logs || ""}\n\n${logEntry}` : logEntry;
+          supabase.from("board_cards").update({ logs: updatedLogs.slice(0, 10000) }).eq("id", card_id).then(() => {});
+
           return new Response(JSON.stringify({ 
             reply: structured.summary || "Here are the suggested next steps:",
             structured_steps: structured.steps,
@@ -181,9 +189,23 @@ ${projectContext.slice(0, 3000)}
 
     const reply = aiData.choices?.[0]?.message?.content || "No response from AI";
 
+    // Append action log to the card's logs field
+    const actionLabel = action === "suggest_next" ? "SUGGEST NEXT STEPS"
+      : action === "execute" ? "EXECUTE TASK"
+      : action === "execute_step" ? "EXECUTE STEP"
+      : action === "execute_all_steps" ? "EXECUTE ALL STEPS"
+      : "CHAT";
+    const logTimestamp = new Date().toISOString();
+    const hasImages = images && Array.isArray(images) && images.length > 0;
+    const logEntry = `[${logTimestamp}] AI CHAT — ${actionLabel}${hasImages ? ` (${images.length} image(s) attached)` : ""}:\nUser: ${(message || "(quick action)").slice(0, 200)}\nAI: ${reply.slice(0, 300)}${reply.length > 300 ? "..." : ""}`;
+    const existingLogs = card.logs || "";
+    const updatedLogs = existingLogs ? `${existingLogs}\n\n${logEntry}` : logEntry;
+
+    // Update card logs (fire-and-forget)
+    supabase.from("board_cards").update({ logs: updatedLogs.slice(0, 10000) }).eq("id", card_id).then(() => {});
+
     // Check for blockers in execute actions — notify owner
     if ((action === "execute_step" || action === "execute_all_steps" || action === "execute") && reply.toLowerCase().includes("blocked")) {
-      // Fire-and-forget notification
       try {
         const SUPABASE_URL_BASE = SUPABASE_URL.replace(/\/$/, "");
         await fetch(`${SUPABASE_URL_BASE}/functions/v1/card-blocker-notify`, {
