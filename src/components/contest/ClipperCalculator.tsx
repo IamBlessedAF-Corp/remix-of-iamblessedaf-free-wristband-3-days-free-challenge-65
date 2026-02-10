@@ -156,6 +156,10 @@ const ClipperCalculator = () => {
                 A 35-clip sprint at 10k avg = <strong className="text-primary">$188.70 in one week</strong>.
               </p>
             </div>
+
+            <p className="mt-3 text-[10px] text-muted-foreground/60 text-center leading-relaxed">
+              Scenarios assume consistent daily posting and average view performance. Bonuses are volume-based milestones, not guaranteed outcomes.
+            </p>
           </motion.div>
         )}
       </div>
