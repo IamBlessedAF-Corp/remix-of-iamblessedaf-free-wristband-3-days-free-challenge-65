@@ -9,6 +9,7 @@ import ContestGuarantees from "@/components/contest/ContestGuarantees";
 import BonusLadder from "@/components/contest/BonusLadder";
 import TrustSignals from "@/components/contest/TrustSignals";
 import ProcessCta from "@/components/contest/ProcessCta";
+import ClipperFaq from "@/components/contest/ClipperFaq";
 
 const AIVideoContest = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
@@ -29,6 +30,9 @@ const AIVideoContest = () => {
 
       {/* 4. Bonus ladder — visible progression */}
       <BonusLadder />
+
+      {/* FAQ */}
+      <ClipperFaq />
 
       {/* 5. Trust & anti-scam — transparency signals */}
       <TrustSignals />
