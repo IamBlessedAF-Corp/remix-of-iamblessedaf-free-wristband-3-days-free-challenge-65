@@ -67,14 +67,24 @@ const ClipperDashboard = () => {
             <img src={logoImg} alt="Logo" className="h-6" />
             <span className="text-sm font-bold text-foreground">Clipper Dashboard</span>
           </div>
-          <Button
-            onClick={() => signOut()}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <LogOut className="w-4 h-4" />
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs gap-1 text-primary border-primary/30"
+              onClick={() => (window.location.href = "/portal")}
+            >
+              🪙 Portal & Store
+            </Button>
+            <Button
+              onClick={() => signOut()}
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <LogOut className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </header>
 
