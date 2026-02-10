@@ -66,6 +66,20 @@ const DegenHookBlock = () => (
             Every view counts. Bonuses never expire.
           </p>
         </div>
+
+        {/* Next Milestones teaser */}
+        <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
+          <span>Next milestones:</span>
+          <span className="font-semibold text-foreground">$444 <span className="font-normal text-muted-foreground">at 500k views</span></span>
+          <span className="text-border">|</span>
+          <span className="font-semibold text-foreground">$1,111 <span className="font-normal text-muted-foreground">at 1M views</span></span>
+        </div>
+
+        {/* Disclaimer */}
+        <p className="mt-3 text-[10px] leading-relaxed text-muted-foreground/60">
+          This example illustrates potential earnings at specific view volumes. Actual results depend on content performance.
+          Lower-view clips still earn the $2.22 minimum. Bonuses are cumulative and volume-based — not guaranteed.
+        </p>
       </div>
     </div>
   </motion.section>
