@@ -3,13 +3,12 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import Offer22 from "./pages/Offer22";
 import Challenge from "./pages/Challenge";
 import ChallengeThanks from "./pages/ChallengeThanks";
 import ReferralRedirect from "./pages/ReferralRedirect";
 import GoRedirect from "./pages/GoRedirect";
 import Confirm from "./pages/Confirm";
-import Offer22 from "./pages/Offer22";
 import Offer111 from "./pages/Offer111";
 import Offer111Grok from "./pages/Offer111Grok";
 import Offer111Gpt from "./pages/Offer111Gpt";
@@ -35,13 +34,12 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<Offer22 />} />
           <Route path="/challenge" element={<Challenge />} />
           <Route path="/challenge/thanks" element={<ChallengeThanks />} />
           <Route path="/r/:code" element={<ReferralRedirect />} />
           <Route path="/go/:code" element={<GoRedirect />} />
           <Route path="/confirm/:token" element={<Confirm />} />
-          <Route path="/offer/22" element={<Offer22 />} />
           <Route path="/offer/111" element={<Offer111 />} />
           <Route path="/offer/111/grok" element={<Offer111Grok />} />
           <Route path="/offer/111/gpt" element={<Offer111Gpt />} />
