@@ -96,7 +96,7 @@ const ClipperDashboard = () => {
           />
 
           {/* 3. Bonus Ladder */}
-          <ClipperBonusLadder totalViews={dashboard.totalViews} />
+          <ClipperBonusLadder totalViews={dashboard.totalViews} avgViewsPerWeek={dashboard.avgViewsPerClipPerWeek} />
 
           {/* 4. Momentum */}
           <ClipperMomentum
