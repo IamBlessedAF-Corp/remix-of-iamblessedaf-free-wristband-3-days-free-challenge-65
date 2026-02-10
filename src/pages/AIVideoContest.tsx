@@ -3,6 +3,7 @@ import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 import ContestHero from "@/components/contest/ContestHero";
+import DegenHookBlock from "@/components/contest/DegenHookBlock";
 import ClipperCalculator from "@/components/contest/ClipperCalculator";
 import ContestGuarantees from "@/components/contest/ContestGuarantees";
 import BonusLadder from "@/components/contest/BonusLadder";
@@ -21,7 +22,10 @@ const AIVideoContest = () => {
       {/* 1. Hero — immediate clarity */}
       <ContestHero logo={logo} onJoin={openSignup} />
 
-      {/* 2. Earnings snapshot — remove all math thinking */}
+      {/* 2a. Degen Hook — high-output path */}
+      <DegenHookBlock />
+
+      {/* 2b. Earnings snapshot — Stable/Degen toggle */}
       <ClipperCalculator />
 
       {/* 3. Risk reversal / guarantees — reduce fear */}
