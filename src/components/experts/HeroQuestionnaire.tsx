@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, BookOpen } from "lucide-react";
+import { ArrowRight, Sparkles, BookOpen, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { HeroProfile, HERO_QUESTIONS } from "@/data/expertFrameworks";
 import logoImg from "@/assets/logo.png";
 
@@ -22,6 +23,14 @@ const EMPTY_PROFILE: HeroProfile = {
 const HeroQuestionnaire = ({ onComplete, existingProfile }: HeroQuestionnaireProps) => {
   const [step, setStep] = useState(0);
   const [profile, setProfile] = useState<HeroProfile>(existingProfile || EMPTY_PROFILE);
+  // For multi-select, track selected chips separately
+  const [multiSelections, setMultiSelections] = useState<Record<string, string[]>>(() => {
+    // Initialize from existing profile if niche has data
+    if (existingProfile?.niche) {
+      return { niche: [] }; // text already in profile
+    }
+    return {};
+  });
 
   const currentQ = HERO_QUESTIONS[step];
   const isLast = step === HERO_QUESTIONS.length - 1;
@@ -33,6 +42,55 @@ const HeroQuestionnaire = ({ onComplete, existingProfile }: HeroQuestionnairePro
     } else {
       setStep((s) => s + 1);
     }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    if (currentQ.isMultiSelect) {
+      const key = currentQ.key;
+      const current = multiSelections[key] || [];
+      let updated: string[];
+      if (current.includes(suggestion)) {
+        updated = current.filter((s) => s !== suggestion);
+      } else {
+        updated = [...current, suggestion];
+      }
+      setMultiSelections({ ...multiSelections, [key]: updated });
+      // Build combined value: chips + custom text
+      const customText = profile[key]
+        .split(" | ")
+        .filter((part) => !(currentQ.suggestions || []).includes(part.trim()))
+        .join(" | ")
+        .trim();
+      const combined = [...updated, customText].filter(Boolean).join(" | ");
+      setProfile({ ...profile, [key]: combined });
+    } else {
+      // Single-select: populate the input/textarea with the suggestion
+      if (currentQ.isTextarea) {
+        const current = profile[currentQ.key];
+        const newVal = current ? `${current} ${suggestion}` : suggestion;
+        setProfile({ ...profile, [currentQ.key]: newVal });
+      } else {
+        setProfile({ ...profile, [currentQ.key]: suggestion });
+      }
+    }
+  };
+
+  const handleTextChange = (value: string) => {
+    if (currentQ.isMultiSelect) {
+      const selected = multiSelections[currentQ.key] || [];
+      const combined = [...selected, value].filter(Boolean).join(" | ");
+      setProfile({ ...profile, [currentQ.key]: combined });
+    } else {
+      setProfile({ ...profile, [currentQ.key]: value });
+    }
+  };
+
+  // For multi-select, extract the "other" text (non-chip portion)
+  const getCustomText = () => {
+    if (!currentQ.isMultiSelect) return profile[currentQ.key];
+    const selected = multiSelections[currentQ.key] || [];
+    const parts = profile[currentQ.key].split(" | ").filter((p) => !selected.includes(p.trim()));
+    return parts.join(" | ").trim();
   };
 
   return (
@@ -60,7 +118,7 @@ const HeroQuestionnaire = ({ onComplete, existingProfile }: HeroQuestionnairePro
         </div>
 
         {/* Progress */}
-        <div className="flex gap-1 mb-8">
+        <div className="flex gap-1 mb-2">
           {HERO_QUESTIONS.map((_, i) => (
             <div
               key={i}
@@ -70,6 +128,9 @@ const HeroQuestionnaire = ({ onComplete, existingProfile }: HeroQuestionnairePro
             />
           ))}
         </div>
+        <p className="text-xs text-muted-foreground text-right mb-6">
+          {step + 1} of {HERO_QUESTIONS.length}
+        </p>
 
         {/* Current Question */}
         <motion.div
@@ -82,13 +143,62 @@ const HeroQuestionnaire = ({ onComplete, existingProfile }: HeroQuestionnairePro
           <Label className="text-base font-semibold text-foreground mb-1 block">
             {step + 1}. {currentQ.label}
           </Label>
+          {currentQ.subtitle && (
+            <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+              💡 {currentQ.subtitle}
+            </p>
+          )}
 
-          {currentQ.isTextarea ? (
+          {/* Suggestions */}
+          {currentQ.suggestions && currentQ.suggestions.length > 0 && (
+            <div className="mb-3">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground block mb-2">
+                {currentQ.isMultiSelect ? "Select all that apply ↓" : "Quick-fill suggestions ↓"}
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {currentQ.suggestions.map((s) => {
+                  const isSelected = currentQ.isMultiSelect
+                    ? (multiSelections[currentQ.key] || []).includes(s)
+                    : profile[currentQ.key] === s;
+                  return (
+                    <Badge
+                      key={s}
+                      variant={isSelected ? "default" : "outline"}
+                      className={`cursor-pointer text-xs py-1 px-2.5 transition-all hover:scale-[1.02] ${
+                        isSelected
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-accent hover:text-accent-foreground"
+                      }`}
+                      onClick={() => handleSuggestionClick(s)}
+                    >
+                      {isSelected && <Check className="w-3 h-3 mr-1" />}
+                      {s}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Input */}
+          {currentQ.isMultiSelect ? (
+            <div>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">
+                Other / specify your niche ↓
+              </span>
+              <Input
+                value={getCustomText()}
+                onChange={(e) => handleTextChange(e.target.value)}
+                placeholder={currentQ.placeholder}
+                className="mt-1"
+              />
+            </div>
+          ) : currentQ.isTextarea ? (
             <Textarea
               value={profile[currentQ.key]}
               onChange={(e) => setProfile({ ...profile, [currentQ.key]: e.target.value })}
               placeholder={currentQ.placeholder}
-              className="mt-3 min-h-[100px]"
+              className="mt-1 min-h-[100px]"
               autoFocus
             />
           ) : (
@@ -96,7 +206,7 @@ const HeroQuestionnaire = ({ onComplete, existingProfile }: HeroQuestionnairePro
               value={profile[currentQ.key]}
               onChange={(e) => setProfile({ ...profile, [currentQ.key]: e.target.value })}
               placeholder={currentQ.placeholder}
-              className="mt-3"
+              className="mt-1"
               autoFocus
               onKeyDown={(e) => e.key === "Enter" && canProceed && handleNext()}
             />

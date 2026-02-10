@@ -405,15 +405,139 @@ export interface HeroProfile {
   proof: string;
 }
 
-export const HERO_QUESTIONS: { key: keyof HeroProfile; label: string; placeholder: string; isTextarea?: boolean }[] = [
-  { key: "name", label: "Your Name (the Expert / Charismatic Leader)", placeholder: "e.g. Russell Brunson" },
-  { key: "brand", label: "Brand / Company Name", placeholder: "e.g. I am Blessed AF" },
-  { key: "niche", label: "Your Niche / Market (Core Market → Submarket → Niche)", placeholder: "e.g. Relationships → Personal growth → Gratitude & neuroscience-backed transformation" },
-  { key: "audience", label: "Who is your dream customer?", placeholder: "e.g. Millennials who feel stuck and want deeper relationships" },
-  { key: "originStory", label: "Your Origin Story (2-3 sentences — the Epiphany Bridge)", placeholder: "e.g. I was burned out, anxious, and disconnected until I started a 3-day gratitude challenge that rewired my brain...", isTextarea: true },
-  { key: "transformation", label: "The Core Transformation You Deliver (External + Internal)", placeholder: "e.g. External: From disconnected → deep relationships. Internal: From self-doubt → unshakeable self-worth" },
-  { key: "mechanism", label: "Your Unique Mechanism / Vehicle of Change", placeholder: "e.g. The 3-Day Gratitude Challenge using NFC wristbands + daily SMS prompts" },
-  { key: "enemy", label: "The Enemy / Broken System You Fight (Us vs. Them)", placeholder: "e.g. Surface-level self-help that never creates lasting change" },
-  { key: "bigPromise", label: "Your Big Promise (The Future-Based Cause)", placeholder: "e.g. Rewire your brain for gratitude in 72 hours — backed by Harvard research" },
-  { key: "proof", label: "Your Best Proof / Results (The 4-Minute Mile)", placeholder: "e.g. 2,400+ participants, 11 meals donated per signup, 94% completion rate" },
+export interface HeroQuestion {
+  key: keyof HeroProfile;
+  label: string;
+  subtitle?: string;
+  placeholder: string;
+  isTextarea?: boolean;
+  isMultiSelect?: boolean;
+  suggestions?: string[];
+}
+
+export const HERO_QUESTIONS: HeroQuestion[] = [
+  {
+    key: "name",
+    label: "Your Name (the Expert / Charismatic Leader)",
+    subtitle: "This is the name your audience will know you by — your personal brand identity.",
+    placeholder: "e.g. Russell Brunson",
+    suggestions: ["Use your real name", "Use a stage name / pen name"],
+  },
+  {
+    key: "brand",
+    label: "Brand / Company Name",
+    subtitle: "The brand that houses your movement. It should feel aspirational.",
+    placeholder: "e.g. ClickFunnels, I am Blessed AF",
+    suggestions: ["I am Blessed AF", "FunnelHacker", "MindShift Academy", "The Freedom Project"],
+  },
+  {
+    key: "niche",
+    label: "Your Niche / Market",
+    subtitle: "Russell's framework: Health, Wealth, or Relationships → Submarket → Your Niche. Pick your core market(s), then specify in the 'Other' box.",
+    placeholder: "e.g. Relationships → Personal growth → Gratitude & neuroscience",
+    isMultiSelect: true,
+    suggestions: [
+      "Health & Biohacking",
+      "Wealth & Business",
+      "Relationships & Dating",
+      "Mindset & Personal Development",
+      "Spirituality & Faith",
+      "Fitness & Nutrition",
+      "E-commerce & DTC",
+      "Coaching & Consulting",
+      "Real Estate",
+      "SaaS & Tech",
+    ],
+  },
+  {
+    key: "audience",
+    label: "Who is your dream customer?",
+    subtitle: "Be specific: age, mindset, pain point, aspiration. Russell says: 'If you're talking to everybody, you're talking to nobody.'",
+    placeholder: "Describe your ideal avatar in 1-2 sentences",
+    suggestions: [
+      "Burned-out professionals (30-45) seeking purpose beyond their 9-5",
+      "First-time entrepreneurs who don't know where to start",
+      "Health-conscious millennials tired of conflicting advice",
+      "Coaches/consultants stuck under $10K/month",
+      "Parents who want deeper connection with their kids",
+    ],
+  },
+  {
+    key: "originStory",
+    label: "Your Origin Story (The Epiphany Bridge)",
+    subtitle: "Russell teaches: 'Facts tell, stories sell.' Share the backstory → struggle → aha moment → transformation. Be vulnerable.",
+    placeholder: "I was [situation], struggling with [pain], until I discovered [breakthrough] and everything changed...",
+    isTextarea: true,
+    suggestions: [
+      "I hit rock bottom when…",
+      "I was $___K in debt and about to give up when…",
+      "Everyone told me it was impossible, but then I discovered…",
+      "After years of trying every solution out there, I finally found…",
+    ],
+  },
+  {
+    key: "transformation",
+    label: "The Core Transformation You Deliver",
+    subtitle: "Russell says every transformation has TWO journeys: External (achievement) + Internal (identity). Describe both.",
+    placeholder: "External: From ___ → ___. Internal: From ___ → ___",
+    suggestions: [
+      "External: Broke → $10K/mo. Internal: Imposter → Confident leader",
+      "External: Overweight → Fit. Internal: Self-hate → Self-love",
+      "External: Disconnected → Deep relationships. Internal: Self-doubt → Self-worth",
+      "External: Unknown → Authority. Internal: Hiding → Visible & magnetic",
+    ],
+  },
+  {
+    key: "mechanism",
+    label: "Your Unique Mechanism / Vehicle of Change",
+    subtitle: "This is your NEW OPPORTUNITY — the specific method, system, or framework only YOU offer. NOT an improvement — something NEW.",
+    placeholder: "e.g. The 3-Day Gratitude Challenge using NFC wristbands + daily SMS",
+    suggestions: [
+      "A 5-step framework / system",
+      "A challenge (3-day, 5-day, 30-day)",
+      "A proprietary method or process",
+      "A software/tool + coaching hybrid",
+      "A done-for-you service with a unique twist",
+    ],
+  },
+  {
+    key: "enemy",
+    label: "The Enemy / Broken System You Fight",
+    subtitle: "Every movement has a villain. Russell says: 'Us vs. Them' creates the bond. What broken system are you fighting AGAINST?",
+    placeholder: "e.g. Surface-level self-help gurus who sell motivation but no real results",
+    suggestions: [
+      "The traditional education system that creates employees, not entrepreneurs",
+      "Big pharma / sick-care industry that profits from keeping people unwell",
+      "Fake gurus who sell dreams but have no real results",
+      "The 'hustle culture' that burns people out",
+      "Corporate America's golden handcuffs",
+    ],
+  },
+  {
+    key: "bigPromise",
+    label: "Your Big Promise (The Future-Based Cause)",
+    subtitle: "Russell says: 'A cause is future-based — it's what your movement is building toward.' Make it bold, specific, and time-bound if possible.",
+    placeholder: "e.g. Rewire your brain for gratitude in 72 hours — backed by Harvard research",
+    suggestions: [
+      "From zero to $10K/month in 90 days without paid ads",
+      "Lose 20 lbs in 8 weeks without restrictive diets",
+      "Build a 6-figure coaching business in 12 months",
+      "Transform your closest relationships in just 3 days",
+      "Launch your first digital product in 30 days flat",
+    ],
+  },
+  {
+    key: "proof",
+    label: "Your Best Proof / Results (The 4-Minute Mile)",
+    subtitle: "Russell teaches: 'Once Roger Bannister ran the 4-minute mile, everyone believed it was possible.' What's YOUR proof that it works?",
+    placeholder: "e.g. 2,400+ participants, 11 meals donated per signup, 94% completion rate",
+    isTextarea: true,
+    suggestions: [
+      "X students have achieved [result]",
+      "Generated $X in revenue for clients",
+      "Featured in [media/publication]",
+      "X% completion/success rate",
+      "Personally went from [before] to [after] in [timeframe]",
+    ],
+  },
 ];
