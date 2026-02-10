@@ -1,24 +1,34 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Settings2, Sparkles, ChevronRight, Trophy, ArrowRight, CheckCircle2, ChevronDown } from "lucide-react";
+import { Settings2, Sparkles, ChevronRight, Trophy, ArrowRight, CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import HeroQuestionnaire from "@/components/experts/HeroQuestionnaire";
 import FrameworkCard from "@/components/experts/FrameworkCard";
 import ScriptGeneratorModal from "@/components/experts/ScriptGeneratorModal";
 import { FRAMEWORK_SECTIONS, FRAMEWORKS, HeroProfile, Framework } from "@/data/expertFrameworks";
+import { useExpertScripts } from "@/hooks/useExpertScripts";
 import logoImg from "@/assets/logo.png";
 
 const Experts = () => {
-  const [heroProfile, setHeroProfile] = useState<HeroProfile | null>(null);
+  const { outputs, heroProfile, setHeroProfile, saveOutput, isLoading } = useExpertScripts();
   const [activeFramework, setActiveFramework] = useState<Framework | null>(null);
-  const [outputs, setOutputs] = useState<Record<string, string>>({});
   const [editingProfile, setEditingProfile] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
   const handleOutputGenerated = useCallback((frameworkId: string, output: string) => {
-    setOutputs((prev) => ({ ...prev, [frameworkId]: output }));
-  }, []);
+    if (heroProfile) {
+      saveOutput(frameworkId, output, heroProfile);
+    }
+  }, [heroProfile, saveOutput]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!heroProfile || editingProfile) {
     return (
