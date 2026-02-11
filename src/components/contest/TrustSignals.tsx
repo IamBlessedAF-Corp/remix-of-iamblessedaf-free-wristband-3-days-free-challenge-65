@@ -1,87 +1,71 @@
 import { motion } from "framer-motion";
-import { Eye, Clock, FileCheck, Activity, Users, Video, TrendingUp, DollarSign } from "lucide-react";
-import { useClipperSocialProof } from "@/hooks/useClipperSocialProof";
+import { DollarSign, Shield, Ban, CheckCircle, Clock, Eye } from "lucide-react";
 
 const signals = [
   {
-    icon: FileCheck,
-    title: "Clear Payout Rules",
-    desc: "Submit a valid clip → views get counted from platform analytics → you get paid. No subjective review. No approval committee.",
+    icon: DollarSign,
+    title: "$2.22 Floor Per Clip",
+    desc: "Even at 1k views, you pocket $2.22. No promises — actual pay.",
+  },
+  {
+    icon: Shield,
+    title: "No Followers Needed",
+    desc: "Zero gatekeeping. Valid clip + views = money. Period.",
+  },
+  {
+    icon: Ban,
+    title: "No Fees, No Catches",
+    desc: "Free to join. No credit card. We pay you — not the other way.",
+  },
+  {
+    icon: Eye,
+    title: "Verified View Counts",
+    desc: "We use your platform's public analytics. No inflated numbers.",
   },
   {
     icon: Clock,
     title: "Weekly Payouts",
-    desc: "Earnings are processed every week. Not monthly, not 'eventually.' You see your balance and payout status in real time.",
+    desc: "Processed every week. Dashboard shows every clip, view count & status.",
   },
   {
-    icon: Eye,
-    title: "Full Transparency",
-    desc: "Your dashboard shows every clip, view count, earnings, and payout status. Nothing is hidden. You always know where you stand.",
-  },
-  {
-    icon: Activity,
-    title: "This Program Is Live",
-    desc: "Clippers are submitting and getting paid right now. This isn't a waitlist or a coming-soon page — the system is active today.",
+    icon: CheckCircle,
+    title: "Program Is Live Now",
+    desc: "Clippers are submitting and getting paid today. Not a waitlist.",
   },
 ];
 
-const TrustSignals = () => {
-  const proof = useClipperSocialProof();
+const TrustSignals = () => (
+  <motion.section
+    className="px-4 py-10 max-w-3xl mx-auto"
+    initial={{ opacity: 0 }}
+    whileInView={{ opacity: 1 }}
+    viewport={{ once: true }}
+  >
+    <h2 className="text-2xl font-bold mb-1">What's Guaranteed</h2>
+    <p className="text-sm text-muted-foreground mb-6">
+      No fine print. No approval committee. Here's what you get.
+    </p>
 
-  return (
-    <motion.section
-      className="px-4 py-10 max-w-3xl mx-auto"
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-    >
-      {/* Live stats bar */}
-      {!proof.loading && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-          {[
-            { icon: Users, label: "Active Clippers", value: proof.totalClippers },
-            { icon: Video, label: "Clips Submitted", value: proof.totalClips },
-            { icon: TrendingUp, label: "Total Views", value: proof.totalViews },
-            { icon: DollarSign, label: "Paid Out", value: proof.totalPaidOut },
-          ].map((stat, i) => {
-            const Icon = stat.icon;
-            return (
-              <div key={i} className="bg-card rounded-xl p-3.5 border border-border/50 text-center">
-                <Icon className="w-4 h-4 text-primary mx-auto mb-1" />
-                <p className="text-lg font-black text-foreground">{stat.value}</p>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{stat.label}</p>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      <h2 className="text-2xl font-bold mb-1">How We're Different From Every Other Clipper Program</h2>
-      <p className="text-sm text-muted-foreground mb-6">
-        Most clipper programs die from broken verification and slow payouts. Here's why this one won't.
-      </p>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {signals.map((s, i) => {
-          const Icon = s.icon;
-          return (
-            <motion.div
-              key={i}
-              className="bg-card rounded-xl p-5 border border-border/50"
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-            >
-              <Icon className="w-6 h-6 text-primary mb-2.5" />
-              <h3 className="font-bold text-foreground mb-1">{s.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
-            </motion.div>
-          );
-        })}
-      </div>
-    </motion.section>
-  );
-};
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      {signals.map((s, i) => {
+        const Icon = s.icon;
+        return (
+          <motion.div
+            key={i}
+            className="bg-card rounded-xl p-4 border border-border/50"
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.05 }}
+          >
+            <Icon className="w-5 h-5 text-primary mb-2" />
+            <h3 className="font-bold text-sm text-foreground mb-0.5">{s.title}</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">{s.desc}</p>
+          </motion.div>
+        );
+      })}
+    </div>
+  </motion.section>
+);
 
 export default TrustSignals;

@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Link2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import confetti from "canvas-confetti";
 
 interface StickyClipperBarProps {
   onJoin: () => void;
@@ -13,6 +14,7 @@ const StickyClipperBar = ({ onJoin }: StickyClipperBarProps) => {
   const [visible, setVisible] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const { user } = useAuth();
+  const hasCopiedBefore = useRef(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,7 +37,13 @@ const StickyClipperBar = ({ onJoin }: StickyClipperBarProps) => {
       if (data?.referral_code) {
         await navigator.clipboard.writeText(`${referralBase}${data.referral_code}`);
         setLinkCopied(true);
-        toast.success("Referral link copied! Paste it in your bio.");
+        if (!hasCopiedBefore.current) {
+          hasCopiedBefore.current = true;
+          confetti({ particleCount: 80, spread: 60, origin: { y: 0.9 } });
+          toast.success("🎉 Referral link copied! Paste it in your TikTok/IG bio → viewers click → you earn!");
+        } else {
+          toast.success("Referral link copied!");
+        }
         setTimeout(() => setLinkCopied(false), 3000);
         return;
       }
