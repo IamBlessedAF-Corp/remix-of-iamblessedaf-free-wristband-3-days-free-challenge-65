@@ -13,6 +13,7 @@ import InspirationGallery from "@/components/contest/InspirationGallery";
 import ProcessCta from "@/components/contest/ProcessCta";
 import ClipperFaq from "@/components/contest/ClipperFaq";
 import First25kAccelerator from "@/components/contest/First25kAccelerator";
+import GratitudeClippersHero from "@/components/contest/GratitudeClippersHero";
 
 const GratitudeClippers = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
@@ -22,8 +23,8 @@ const GratitudeClippers = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* 1. Hero — immediate clarity */}
-      <ContestHero logo={logo} onJoin={openSignup} />
+      {/* 1. Hero — A/B variant: gratitude-first framing */}
+      <GratitudeClippersHero logo={logo} onJoin={openSignup} />
 
       {/* 2a. Degen Hook — high-output path */}
       <DegenHookBlock />
