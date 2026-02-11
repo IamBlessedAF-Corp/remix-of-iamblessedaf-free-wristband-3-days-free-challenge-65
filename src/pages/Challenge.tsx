@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
@@ -40,6 +41,17 @@ const Challenge = () => {
   const { signInWithGoogle, user } = useAuth();
   const spinLogic = useSpinLogic();
   const [senderName, setSenderName] = useState<string | null>(null);
+
+  usePageMeta({
+    title: senderName
+      ? `${senderName} Sent You a FREE Gratitude Wristband 🎁`
+      : "3-Day Gratitude Challenge | Win $1,111 | I am Blessed AF",
+    description: senderName
+      ? `${senderName} wants to share gratitude with you. Claim your FREE wristband and join the 3-Day Gratitude Challenge.`
+      : "Join the 3-Day Gratitude Challenge. Rewire your brain for joy, earn rewards, and win $1,111. Backed by neuroscience.",
+    image: "/og-image.png",
+    url: "https://iamblessedaf.com/challenge",
+  });
 
   const referralCode = searchParams.get("ref");
   const isReferred = !!referralCode;

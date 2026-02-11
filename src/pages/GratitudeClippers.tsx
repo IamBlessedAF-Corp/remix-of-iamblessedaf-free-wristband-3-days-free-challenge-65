@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
@@ -17,6 +18,13 @@ import First25kAccelerator from "@/components/contest/First25kAccelerator";
 const GratitudeClippers = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const { user, loading } = useAuth();
+
+  usePageMeta({
+    title: "Clip Gratitude Viral Content. Get Paid $2.22–$1,111 Per Clip",
+    description: "Join the #IamBlessedAF Clipper Campaign. Remix viral gratitude content, post on TikTok/Reels/Shorts, and earn $2.22–$1,111 per clip.",
+    image: "/og-image.png",
+    url: "https://iamblessedaf.com/Gratitude-Clippers",
+  });
 
   const openSignup = () => setShowSignupModal(true);
 
