@@ -322,11 +322,13 @@ export type Database = {
           challenge_start_date: string | null
           challenge_status: string | null
           created_at: string | null
+          current_streak: number | null
           display_name: string | null
           friend_1_name: string
           friend_2_name: string | null
           friend_3_name: string | null
           id: string
+          longest_streak: number | null
           opted_in_sms: boolean | null
           phone: string
           updated_at: string | null
@@ -336,11 +338,13 @@ export type Database = {
           challenge_start_date?: string | null
           challenge_status?: string | null
           created_at?: string | null
+          current_streak?: number | null
           display_name?: string | null
           friend_1_name: string
           friend_2_name?: string | null
           friend_3_name?: string | null
           id?: string
+          longest_streak?: number | null
           opted_in_sms?: boolean | null
           phone: string
           updated_at?: string | null
@@ -350,11 +354,13 @@ export type Database = {
           challenge_start_date?: string | null
           challenge_status?: string | null
           created_at?: string | null
+          current_streak?: number | null
           display_name?: string | null
           friend_1_name?: string
           friend_2_name?: string | null
           friend_3_name?: string | null
           id?: string
+          longest_streak?: number | null
           opted_in_sms?: boolean | null
           phone?: string
           updated_at?: string | null

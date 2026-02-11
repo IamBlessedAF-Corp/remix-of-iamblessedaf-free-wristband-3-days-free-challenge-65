@@ -128,6 +128,19 @@ async function handleInboundMessage(
         .update({ status: "completed" })
         .eq("id", sentMsg.id);
 
+      // Increment streak
+      const newStreak = (participant.current_streak || 0) + 1;
+      const newLongest = Math.max(newStreak, participant.longest_streak || 0);
+      
+      await supabase
+        .from("challenge_participants")
+        .update({ 
+          current_streak: newStreak,
+          longest_streak: newLongest,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", participant.id);
+
       // Check how many days completed
       const { count } = await supabase
         .from("scheduled_gratitude_messages")
@@ -142,19 +155,17 @@ async function handleInboundMessage(
       let replyMsg: string;
       if (completed >= totalDays) {
         // Challenge complete!
-        replyMsg = `🏆 CHALLENGE COMPLETE! You sent gratitude to ${completed} people!\n\nYour brain has literally rewired its gratitude circuits. 🧠\n\n🎁 Share the challenge with a friend:\nhttps://funnel-architect-ai-30.lovable.app/challenge\n\n— Blessed AF`;
+        replyMsg = `🏆 CHALLENGE COMPLETE! You sent gratitude to ${completed} people!\n\nYour brain has literally rewired its gratitude circuits. 🧠\n\n🔥 Longest Streak: ${newLongest} days!\n\n🎁 Share the challenge with a friend:\nhttps://funnel-architect-ai-30.lovable.app/challenge\n\n— Blessed AF`;
 
         await supabase
           .from("challenge_participants")
           .update({ challenge_status: "completed" })
           .eq("id", participant.id);
       } else {
-        replyMsg = `🎉 Amazing! Day ${sentMsg.day_number}/3 complete!\n\nYou sent gratitude to ${sentMsg.friend_name}. 🙏\n\n🔥 Streak: ${completed}/${totalDays} days!\n\n${completed < totalDays ? "Tomorrow's 11:11 is coming. Your brain is rewiring! 🧠" : ""}\n\n— Blessed AF`;
+        replyMsg = `🎉 Amazing! Day ${sentMsg.day_number}/3 complete!\n\nYou sent gratitude to ${sentMsg.friend_name}. 🙏\n\n🔥 Streak: ${newStreak}/${totalDays} days! 🎯\n\n${completed < totalDays ? "Tomorrow's 11:11 is coming. Your brain is rewiring! 🧠" : ""}\n\n— Blessed AF`;
       }
 
-      // Award XP: store in participant metadata or via BC wallet
-      // For now, log it
-      console.log(`Day ${sentMsg.day_number} completed by participant ${participant.id}`);
+      console.log(`Day ${sentMsg.day_number} completed by participant ${participant.id} | Streak: ${newStreak}`);
 
       await sendReply(from, replyMsg);
     }
