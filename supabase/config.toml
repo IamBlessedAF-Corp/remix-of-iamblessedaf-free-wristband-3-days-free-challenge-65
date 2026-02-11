@@ -53,3 +53,6 @@ verify_jwt = false
 
 [functions.upload-board-screenshot]
 verify_jwt = false
+
+[functions.sms-router]
+verify_jwt = false
