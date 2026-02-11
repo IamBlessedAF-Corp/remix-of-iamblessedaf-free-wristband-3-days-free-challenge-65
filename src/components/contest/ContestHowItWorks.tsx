@@ -1,26 +1,26 @@
 import { motion } from "framer-motion";
-import { Film, Share2, DollarSign, Trophy } from "lucide-react";
+import { Film, Download, Share2, DollarSign } from "lucide-react";
 
 const steps = [
   {
     icon: Film,
-    title: "1. Pick From the Content Vault",
-    desc: "24+ curated gratitude × neuroscience clips ready to remix. No originals needed. Add a 5-sec hook: \"Free wristband + win $1,111 this Friday.\" Your creativity, your style.",
+    title: "1. Pick a Clip From Our Vault",
+    desc: "We curate 24+ viral gratitude & neuroscience videos (Tony Robbins, Huberman, Dispenza). Pick any clip — these are pre-approved for remixing. No copyright issues.",
+  },
+  {
+    icon: Download,
+    title: "2. Download & Add Our CTA End-Screen",
+    desc: "Download our ready-made CTA overlays below. Add one to the last 3–5 seconds of your clip. CTAs include: \"Claim your FREE wristband\" or \"Join the 3-Day Gratitude Challenge.\" This is what drives viewers to your referral link.",
   },
   {
     icon: Share2,
-    title: "2. Submit in a Click",
-    desc: "Post to TikTok, IG Reels, YouTube Shorts with your unique link in bio/caption. Tag @IamBlessedAF + #GratitudeChallenge #BrainHack. Brief → remix → upload → done.",
+    title: "3. Post With Your Referral Link",
+    desc: "Upload to TikTok, IG Reels, or YouTube Shorts. Put your unique referral link in your bio or caption. Tag @IamBlessedAF + #GratitudeChallenge #IamBlessedAF. That's it — you're live.",
   },
   {
     icon: DollarSign,
-    title: "3. Get Paid Per Clip",
-    desc: "$2.22 floor (even at 1,000 views). $0.22/1k RPM scales from there. 10 clips/week at 10k avg = $22/week = $88.80/month. Views verified via platform analytics.",
-  },
-  {
-    icon: Trophy,
-    title: "4. Win $1,111 Every Friday",
-    desc: "Every valid entry = 1 ticket to the $1,111 grand prize drawing, held LIVE on @IamBlessedAF IG every Friday at 7PM EST. More clips = more tickets.",
+    title: "4. Views = Money. Period.",
+    desc: "$2.22 guaranteed floor per clip (even at 1k views). $0.22/1k RPM scales from there. Views verified via platform analytics. Payouts weekly. Stack bonuses up to $1,111.",
   },
 ];
 
@@ -32,9 +32,9 @@ const ContestHowItWorks = () => (
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-3xl font-bold mb-2">⚡ How It Works (60 Seconds)</h2>
-        <p className="text-muted-foreground mb-8">
-          Vault → Remix → Submit → Paid. The same low-friction loop that powers Vyro's marketplace and GoPro's Million Dollar Challenge.
+        <h2 className="text-3xl font-bold mb-2">⚡ What Exactly Do I Clip?</h2>
+        <p className="text-muted-foreground mb-8 max-w-2xl">
+          You're <strong className="text-foreground">remixing viral gratitude content</strong> and adding a CTA that sends viewers to claim a free wristband or join the gratitude challenge. That's it. Here's the step-by-step:
         </p>
 
         <div className="space-y-6">
@@ -61,12 +61,11 @@ const ContestHowItWorks = () => (
           })}
         </div>
 
-        <div className="mt-8 bg-primary/10 border border-primary/20 rounded-xl p-6">
-          <p className="text-foreground font-semibold mb-2">💡 Why This Works (First Principles)</p>
+        <div className="mt-8 bg-card border border-border/50 rounded-xl p-5">
+          <p className="text-foreground font-semibold mb-2">🎯 TL;DR — The Formula</p>
           <p className="text-muted-foreground">
-            Production value doesn't matter. <strong className="text-foreground">Views = money. That's it.</strong> A remix with
-            "claim your free wristband" in the caption works just as well as a cinematic edit. 
-            The math is simple: views verified → payout processed → trust manufactured → you post more → loop compounds.
+            <strong className="text-foreground">Vault clip</strong> + <strong className="text-foreground">your remix style</strong> + <strong className="text-foreground">our CTA end-screen</strong> + <strong className="text-foreground">your referral link</strong> = <strong className="text-primary">paid per view</strong>.
+            No filming. No scripting. Just remix, plug the CTA, and post.
           </p>
         </div>
       </motion.div>

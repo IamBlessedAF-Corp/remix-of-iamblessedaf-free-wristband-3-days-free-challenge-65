@@ -95,12 +95,14 @@ const InspirationGallery = () => {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-primary/15 border border-primary/30 rounded-full px-4 py-1.5 mb-3">
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-primary font-semibold text-sm">Content Vault → Remix → Get Paid</span>
+            <span className="text-primary font-semibold text-sm">Step 1 → Pick a Clip to Remix</span>
           </div>
           <h2 className="text-3xl font-bold mb-2">🎬 Content Vault</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Your supply is unlimited. Tap any clip → watch it here → remix with your style + gratitude hook.
-            No original content required. No copyright issues. <strong className="text-foreground">Submit in a click. Get paid on views.</strong>
+            These are <strong className="text-foreground">viral gratitude & neuroscience clips</strong> from Tony Robbins, Huberman, Dispenza & more.
+            Tap any clip → watch → <strong className="text-foreground">remix it with your style</strong> →
+            add our CTA end-screen (from the section above) → post with your referral link.
+            <strong className="text-foreground"> No original content needed.</strong>
           </p>
         </div>
 
@@ -165,10 +167,11 @@ const InspirationGallery = () => {
         </div>
 
         <div className="mt-6 bg-primary/10 border border-primary/20 rounded-xl p-5 text-center">
-          <p className="text-foreground font-semibold mb-1">⚡ Zero Friction Formula</p>
+          <p className="text-foreground font-semibold mb-1">⚡ Next Step: Add Your CTA</p>
           <p className="text-muted-foreground text-sm">
-            Pick from vault → Remix (voiceover, text, your style) → Add "Claim FREE wristband + win $1,111" →
-            Submit with your link → <strong className="text-foreground">Views verified → Payout processed</strong>.
+            Picked a clip? Now scroll up to the <strong className="text-foreground">CTA End-Screens</strong> section,
+            grab a ready-made CTA overlay, add it to the last 3–5 seconds of your remix, and post with your referral link.
+            <strong className="text-foreground"> Views = Money.</strong>
           </p>
         </div>
       </motion.div>

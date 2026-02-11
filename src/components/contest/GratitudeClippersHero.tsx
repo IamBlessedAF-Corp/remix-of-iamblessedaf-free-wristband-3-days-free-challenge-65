@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Scissors } from "lucide-react";
 
 interface Props {
   logo: string;
@@ -22,20 +22,41 @@ const GratitudeClippersHero = ({ logo, onJoin }: Props) => (
       />
 
       <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight tracking-tight">
-        Clip Gratitude Viral Content.<br />
-        Get Paid <span className="text-primary">$2.22 – $1,111</span> Per Clip.
+        Remix Viral Gratitude Clips.<br />
+        Add Our CTA. <span className="text-primary">Get Paid $2.22 – $1,111.</span>
       </h1>
 
-      <p className="text-lg text-muted-foreground mb-6 max-w-xl mx-auto leading-relaxed">
-        Clip 60-second gratitude & neuroscience videos. Earn $0.22 RPM with a
-        $2.22 guaranteed floor — even your first clip pays.
+      <p className="text-lg text-muted-foreground mb-4 max-w-xl mx-auto leading-relaxed">
+        We give you <strong className="text-foreground">viral gratitude videos</strong> from Tony Robbins, Huberman, Joe Dispenza & more.
+        You <strong className="text-foreground">clip 60 seconds</strong>, add our free CTA end-screen
+        (e.g. "Claim your FREE wristband"), and post it on TikTok / Reels / Shorts with your referral link.
       </p>
+
+      {/* Crystal-clear 3-step */}
+      <div className="bg-card border border-border/50 rounded-xl p-4 max-w-md mx-auto mb-6">
+        <p className="text-xs text-primary font-bold uppercase tracking-wider mb-3 flex items-center justify-center gap-1.5">
+          <Scissors className="w-3.5 h-3.5" />
+          What You Actually Do
+        </p>
+        <div className="flex flex-col gap-2.5 text-left">
+          {[
+            "Pick a clip from our Content Vault (Tony Robbins, Huberman, etc.)",
+            "Add our CTA end-screen: \"Claim your FREE wristband\" or \"Join the 3-Day Gratitude Challenge\"",
+            "Post on TikTok/Reels/Shorts with #IamBlessedAF + your referral link in bio",
+          ].map((line, i) => (
+            <div key={i} className="flex items-start gap-2.5 text-sm text-foreground">
+              <span className="text-primary font-bold text-xs mt-0.5 shrink-0">{i + 1}.</span>
+              <span>{line}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div className="flex flex-col gap-2 max-w-sm mx-auto mb-6 text-left">
         {[
-          "No audience needed — works at 1k views",
-          "$2.22 minimum per clip, paid weekly",
-          "Stack bonuses up to $1,111 as you grow",
+          "No original content needed — we provide the clips",
+          "$2.22 minimum per clip, even at 1k views",
+          "Download ready-made CTA overlays below 👇",
         ].map((line) => (
           <div key={line} className="flex items-start gap-2.5 text-sm text-foreground">
             <CheckCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -53,7 +74,7 @@ const GratitudeClippersHero = ({ logo, onJoin }: Props) => (
       </Button>
 
       <p className="text-xs text-muted-foreground mt-3">
-        100% free · No followers required · Submit your first clip in minutes
+        100% free · No followers required · We give you everything you need
       </p>
     </motion.div>
   </section>
