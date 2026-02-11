@@ -125,6 +125,45 @@ serve(async (req) => {
       .insert(messages);
     if (mErr) throw mErr;
 
+    // ── Create follow-up sequences to collect Friend 2 & 3 ──
+    // Only if friend2/friend3 were not provided at signup
+    if (!friends.friend2 || !friends.friend3) {
+      const followups = [];
+      const baseDate = new Date();
+
+      if (!friends.friend2) {
+        // Ask for friend 2 on Day 2 at 10 AM
+        const schedAt = new Date(baseDate);
+        schedAt.setDate(schedAt.getDate() + 2);
+        schedAt.setHours(10, 0, 0, 0);
+        followups.push({
+          participant_id: participant.id,
+          sequence_type: "friend_collection",
+          step_number: 1,
+          scheduled_at: schedAt.toISOString(),
+          channel: "sms",
+        });
+      }
+
+      if (!friends.friend3) {
+        // Ask for friend 3 on Day 3 at 10 AM
+        const schedAt = new Date(baseDate);
+        schedAt.setDate(schedAt.getDate() + 3);
+        schedAt.setHours(10, 0, 0, 0);
+        followups.push({
+          participant_id: participant.id,
+          sequence_type: "friend_collection",
+          step_number: 2,
+          scheduled_at: schedAt.toISOString(),
+          channel: "sms",
+        });
+      }
+
+      if (followups.length > 0) {
+        await supabase.from("followup_sequences").insert(followups);
+      }
+    }
+
     // ── Twilio setup ──
     const twilioSid = Deno.env.get("TWILIO_ACCOUNT_SID");
     const twilioAuth = Deno.env.get("TWILIO_AUTH_TOKEN");

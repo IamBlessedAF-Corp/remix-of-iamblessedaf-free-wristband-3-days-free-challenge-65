@@ -43,14 +43,15 @@ async function sendWhatsApp(
   return { ok: res.ok, data };
 }
 
-/** Send a regular SMS via Twilio */
+/** Send a regular SMS (or MMS with media) via Twilio */
 async function sendSMS(
   accountSid: string,
   authToken: string,
   fromNumber: string,
   to: string,
   message: string,
-  statusCallbackUrl: string
+  statusCallbackUrl: string,
+  mediaUrl?: string
 ): Promise<{ ok: boolean; data: any; status: number }> {
   const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
   const credentials = btoa(`${accountSid}:${authToken}`);
@@ -61,6 +62,11 @@ async function sendSMS(
     Body: message,
     StatusCallback: statusCallbackUrl,
   });
+
+  // Attach media for MMS if provided
+  if (mediaUrl) {
+    body.append("MediaUrl", mediaUrl);
+  }
 
   const res = await fetch(twilioUrl, {
     method: "POST",
@@ -85,7 +91,7 @@ Deno.serve(async (req: Request) => {
   const supabase = createClient(supabaseUrl, serviceRoleKey);
 
   try {
-    const { to, message, recipientName, sourcePage, preferWhatsApp } = await req.json();
+    const { to, message, recipientName, sourcePage, preferWhatsApp, mediaUrl } = await req.json();
 
     if (!to || !message) {
       return new Response(
@@ -140,13 +146,13 @@ Deno.serve(async (req: Request) => {
       } else {
         console.log(`WhatsApp failed (${waResult.data?.code || "unknown"}), falling back to SMS`);
         twilioResult = await sendSMS(
-          accountSid, authToken, fromNumber, formattedTo, message, statusCallbackUrl
+          accountSid, authToken, fromNumber, formattedTo, message, statusCallbackUrl, mediaUrl
         );
         channel = "sms";
       }
     } else {
       twilioResult = await sendSMS(
-        accountSid, authToken, fromNumber, formattedTo, message, statusCallbackUrl
+        accountSid, authToken, fromNumber, formattedTo, message, statusCallbackUrl, mediaUrl
       );
     }
 
