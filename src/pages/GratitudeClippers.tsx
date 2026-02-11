@@ -30,6 +30,12 @@ const GratitudeClippers = () => {
 
   const openSignup = () => setShowSignupModal(true);
 
+  const handleSignupSuccess = () => {
+    setShowSignupModal(false);
+    // Redirect to clipper dashboard after signup so they submit their first clip
+    window.location.href = "/clipper-dashboard";
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* 1. Hero — crystal clear: what you clip + what CTA to add */}
@@ -90,7 +96,7 @@ const GratitudeClippers = () => {
       <CreatorSignupModal
         isOpen={showSignupModal}
         onClose={() => setShowSignupModal(false)}
-        onSuccess={() => setShowSignupModal(false)}
+        onSuccess={handleSignupSuccess}
       />
     </div>
   );
