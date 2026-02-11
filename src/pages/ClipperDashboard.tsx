@@ -8,18 +8,16 @@ import ClipperStatusHeader from "@/components/clipper/ClipperStatusHeader";
 import ClipperWeeklySnapshot from "@/components/clipper/ClipperWeeklySnapshot";
 import ClipperBonusLadder from "@/components/clipper/ClipperBonusLadder";
 import ClipperMomentum from "@/components/clipper/ClipperMomentum";
+import ClipperActivationTrigger from "@/components/clipper/ClipperActivationTrigger";
 import ClipperNextAction from "@/components/clipper/ClipperNextAction";
-import ClipperLeaderboard from "@/components/clipper/ClipperLeaderboard";
 import ClipperPayoutHistory from "@/components/clipper/ClipperPayoutHistory";
 import ClipperMyClips from "@/components/clipper/ClipperMyClips";
 import ClipSubmitModal from "@/components/clipper/ClipSubmitModal";
-import { useClipperLeaderboard } from "@/hooks/useClipperLeaderboard";
 import logoImg from "@/assets/logo.png";
 
 const ClipperDashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const dashboard = useClipperDashboard(user?.id);
-  const lb = useClipperLeaderboard(user?.id);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   const handleSubmitClip = () => {
@@ -49,6 +47,8 @@ const ClipperDashboard = () => {
       </div>
     );
   }
+
+  const isActivated = dashboard.totalClips >= 2 || dashboard.clipsToday >= 3;
 
   return (
     <div className="min-h-screen bg-background">
@@ -88,7 +88,7 @@ const ClipperDashboard = () => {
         </div>
       </header>
 
-      {/* Dashboard sections */}
+      {/* Dashboard sections — behavioral flow */}
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -96,21 +96,28 @@ const ClipperDashboard = () => {
           transition={{ duration: 0.3 }}
           className="space-y-4"
         >
-          {/* 1. Status & Trust */}
+          {/* 1. Status & Trust — identity anchor */}
           <ClipperStatusHeader
             totalViews={dashboard.totalViews}
             totalEarningsCents={dashboard.totalEarningsCents}
             lastPayoutDate={dashboard.lastPayoutDate}
           />
 
-          {/* 2. This Week */}
+          {/* 2. Activation Trigger — first-clip dopamine / urgency */}
+          <ClipperActivationTrigger
+            totalClips={dashboard.totalClips}
+            clipsToday={dashboard.clipsToday}
+            onSubmitClip={handleSubmitClip}
+          />
+
+          {/* 3. Weekly Snapshot — momentum loop */}
           <ClipperWeeklySnapshot
             clipsThisWeek={dashboard.clipsThisWeek}
             viewsThisWeek={dashboard.viewsThisWeek}
             earningsThisWeekCents={dashboard.earningsThisWeekCents}
           />
 
-          {/* 3. Bonus Ladder */}
+          {/* 4. Sprint Segmentation + Perceived Acceleration */}
           <ClipperBonusLadder
             totalViews={dashboard.totalViews}
             avgViewsPerWeek={dashboard.avgViewsPerClipPerWeek}
@@ -118,7 +125,7 @@ const ClipperDashboard = () => {
             viewsThisWeek={dashboard.viewsThisWeek}
           />
 
-          {/* 4. Momentum */}
+          {/* 5. Momentum Signals — positive reinforcement only */}
           <ClipperMomentum
             clipsThisWeek={dashboard.clipsThisWeek}
             clipsLastWeek={dashboard.clipsLastWeek}
@@ -126,24 +133,19 @@ const ClipperDashboard = () => {
             totalClips={dashboard.totalClips}
           />
 
-          {/* 5. My Clips with video preview */}
+          {/* 6. My Clips — progress evidence */}
           <ClipperMyClips userId={user.id} />
 
-          {/* 6. Leaderboard */}
-          <ClipperLeaderboard
-            leaderboard={lb.leaderboard}
-            isLive={lb.isLive}
-            loading={lb.loading}
-          />
-
-          {/* 7. Payout History */}
+          {/* 7. Payout History — trust builder */}
           <ClipperPayoutHistory userId={user.id} />
 
-          {/* 7. Next Action */}
-          <ClipperNextAction
-            clipsThisWeek={dashboard.clipsThisWeek}
-            onSubmitClip={handleSubmitClip}
-          />
+          {/* 8. Next Action — only if activated */}
+          {isActivated && (
+            <ClipperNextAction
+              clipsThisWeek={dashboard.clipsThisWeek}
+              onSubmitClip={handleSubmitClip}
+            />
+          )}
         </motion.div>
       </main>
 
