@@ -22,7 +22,7 @@ const GratitudeClippers = () => {
   usePageMeta({
     title: "Clip Gratitude Viral Content. Get Paid $2.22–$1,111 Per Clip",
     description: "Join the #IamBlessedAF Clipper Campaign. Remix viral gratitude content, post on TikTok/Reels/Shorts, and earn $2.22–$1,111 per clip.",
-    image: "/og-image.png",
+    image: "/og-clippers.png",
     url: "https://iamblessedaf.com/Gratitude-Clippers",
   });
 
