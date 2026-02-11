@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Download, Eye, X, Check, Smartphone, Monitor, Play, Copy, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import clipperTutorial from "@/assets/clipper-tutorial.mov";
+import confetti from "canvas-confetti";
 
 /* ── Downloadable overlay images (in public/) ── */
 const overlayAssets = [
@@ -90,6 +91,7 @@ const ClipperCtaAssets = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
   const { user } = useAuth();
+  const hasCopiedBefore = useRef(false);
 
   const handleCopyReferralLink = async () => {
     // Build referral link from user metadata or fallback
@@ -107,7 +109,13 @@ const ClipperCtaAssets = () => {
       if (data?.referral_code) {
         await navigator.clipboard.writeText(`${referralBase}${data.referral_code}`);
         setLinkCopied(true);
-        toast.success("Referral link copied! Paste it in your bio.");
+        if (!hasCopiedBefore.current) {
+          hasCopiedBefore.current = true;
+          confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } });
+          toast.success("🎉 Referral link copied! Paste it in your TikTok/IG bio → viewers click → you earn!");
+        } else {
+          toast.success("Referral link copied!");
+        }
         setTimeout(() => setLinkCopied(false), 3000);
         return;
       }
