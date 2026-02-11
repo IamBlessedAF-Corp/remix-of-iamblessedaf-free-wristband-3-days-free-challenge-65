@@ -13,6 +13,8 @@ import ClipperNextAction from "@/components/clipper/ClipperNextAction";
 import ClipperPayoutHistory from "@/components/clipper/ClipperPayoutHistory";
 import ClipperMyClips from "@/components/clipper/ClipperMyClips";
 import ClipSubmitModal from "@/components/clipper/ClipSubmitModal";
+import ClipperPersonalAnalytics from "@/components/clipper/ClipperPersonalAnalytics";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import logoImg from "@/assets/logo.png";
 
 const ClipperDashboard = () => {
@@ -88,65 +90,84 @@ const ClipperDashboard = () => {
         </div>
       </header>
 
-      {/* Dashboard sections — behavioral flow */}
+      {/* Dashboard sections */}
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="space-y-4"
-        >
-          {/* 1. Status & Trust — identity anchor */}
-          <ClipperStatusHeader
-            totalViews={dashboard.totalViews}
-            totalEarningsCents={dashboard.totalEarningsCents}
-            lastPayoutDate={dashboard.lastPayoutDate}
-          />
+        <Tabs defaultValue="dashboard" className="space-y-4">
+          <TabsList className="w-full bg-secondary/50">
+            <TabsTrigger value="dashboard" className="flex-1">Dashboard</TabsTrigger>
+            <TabsTrigger value="analytics" className="flex-1">📊 Analytics</TabsTrigger>
+          </TabsList>
 
-          {/* 2. Activation Trigger — first-clip dopamine / urgency */}
-          <ClipperActivationTrigger
-            totalClips={dashboard.totalClips}
-            clipsToday={dashboard.clipsToday}
-            onSubmitClip={handleSubmitClip}
-          />
+          <TabsContent value="dashboard">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-4"
+            >
+              {/* 1. Status & Trust — identity anchor */}
+              <ClipperStatusHeader
+                totalViews={dashboard.totalViews}
+                totalEarningsCents={dashboard.totalEarningsCents}
+                lastPayoutDate={dashboard.lastPayoutDate}
+              />
 
-          {/* 3. Weekly Snapshot — momentum loop */}
-          <ClipperWeeklySnapshot
-            clipsThisWeek={dashboard.clipsThisWeek}
-            viewsThisWeek={dashboard.viewsThisWeek}
-            earningsThisWeekCents={dashboard.earningsThisWeekCents}
-          />
+              {/* 2. Activation Trigger — first-clip dopamine / urgency */}
+              <ClipperActivationTrigger
+                totalClips={dashboard.totalClips}
+                clipsToday={dashboard.clipsToday}
+                onSubmitClip={handleSubmitClip}
+              />
 
-          {/* 4. Sprint Segmentation + Perceived Acceleration */}
-          <ClipperBonusLadder
-            totalViews={dashboard.totalViews}
-            avgViewsPerWeek={dashboard.avgViewsPerClipPerWeek}
-            clipsThisWeek={dashboard.clipsThisWeek}
-            viewsThisWeek={dashboard.viewsThisWeek}
-          />
+              {/* 3. Weekly Snapshot — momentum loop */}
+              <ClipperWeeklySnapshot
+                clipsThisWeek={dashboard.clipsThisWeek}
+                viewsThisWeek={dashboard.viewsThisWeek}
+                earningsThisWeekCents={dashboard.earningsThisWeekCents}
+              />
 
-          {/* 5. Momentum Signals — positive reinforcement only */}
-          <ClipperMomentum
-            clipsThisWeek={dashboard.clipsThisWeek}
-            clipsLastWeek={dashboard.clipsLastWeek}
-            streakDays={dashboard.streakDays}
-            totalClips={dashboard.totalClips}
-          />
+              {/* 4. Sprint Segmentation + Perceived Acceleration */}
+              <ClipperBonusLadder
+                totalViews={dashboard.totalViews}
+                avgViewsPerWeek={dashboard.avgViewsPerClipPerWeek}
+                clipsThisWeek={dashboard.clipsThisWeek}
+                viewsThisWeek={dashboard.viewsThisWeek}
+              />
 
-          {/* 6. My Clips — progress evidence */}
-          <ClipperMyClips userId={user.id} />
+              {/* 5. Momentum Signals — positive reinforcement only */}
+              <ClipperMomentum
+                clipsThisWeek={dashboard.clipsThisWeek}
+                clipsLastWeek={dashboard.clipsLastWeek}
+                streakDays={dashboard.streakDays}
+                totalClips={dashboard.totalClips}
+              />
 
-          {/* 7. Payout History — trust builder */}
-          <ClipperPayoutHistory userId={user.id} />
+              {/* 6. My Clips — progress evidence */}
+              <ClipperMyClips userId={user.id} />
 
-          {/* 8. Next Action — only if activated */}
-          {isActivated && (
-            <ClipperNextAction
-              clipsThisWeek={dashboard.clipsThisWeek}
-              onSubmitClip={handleSubmitClip}
-            />
-          )}
-        </motion.div>
+              {/* 7. Payout History — trust builder */}
+              <ClipperPayoutHistory userId={user.id} />
+
+              {/* 8. Next Action — only if activated */}
+              {isActivated && (
+                <ClipperNextAction
+                  clipsThisWeek={dashboard.clipsThisWeek}
+                  onSubmitClip={handleSubmitClip}
+                />
+              )}
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ClipperPersonalAnalytics userId={user.id} />
+            </motion.div>
+          </TabsContent>
+        </Tabs>
       </main>
 
       <ClipSubmitModal

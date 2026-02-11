@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Shield, RefreshCw, ArrowLeft, Users, Film, Eye, DollarSign,
+  Shield, RefreshCw, ArrowLeft, Film, Eye,
   CheckCircle, Clock, AlertTriangle, Trash2, ExternalLink, TrendingUp,
-  Trophy, Lightbulb, BarChart3, Play,
+  Lightbulb, BarChart3, Play,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,20 +12,7 @@ import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useClipperAdmin, type ClipRow } from "@/hooks/useClipperAdmin";
 import BoardLoginForm from "@/components/board/BoardLoginForm";
 import { toast } from "sonner";
-
-// ---------- Stat Card ----------
-const StatCard = ({ icon: Icon, label, value, sub, accent }: {
-  icon: any; label: string; value: string; sub?: string; accent?: string;
-}) => (
-  <div className="bg-card border border-border/50 rounded-xl p-4">
-    <div className="flex items-center gap-2 mb-1">
-      <Icon className={`w-4 h-4 ${accent || "text-primary"}`} />
-      <span className="text-[11px] text-muted-foreground">{label}</span>
-    </div>
-    <p className="text-xl font-bold text-foreground">{value}</p>
-    {sub && <p className="text-[11px] text-muted-foreground mt-0.5">{sub}</p>}
-  </div>
-);
+import AdminAnalyticsDashboard from "@/components/clipper/AdminAnalyticsDashboard";
 
 // ---------- Video Embed ----------
 const VideoEmbed = ({ url }: { url: string }) => {
@@ -233,13 +220,8 @@ export default function ClipperAdmin() {
           </div>
         ) : admin.stats ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <StatCard icon={Users} label="Total Clippers" value={String(admin.stats.totalClippers)} />
-              <StatCard icon={Film} label="Total Clips" value={String(admin.stats.totalClips)} sub={`${admin.stats.clipsThisWeek} this week`} />
-              <StatCard icon={Eye} label="Total Views" value={admin.stats.totalViews >= 1000 ? `${(admin.stats.totalViews / 1000).toFixed(1)}k` : String(admin.stats.totalViews)} sub={`Avg ${admin.stats.avgViewsPerClip.toLocaleString()}/clip`} />
-              <StatCard icon={DollarSign} label="Total Paid" value={`$${(admin.stats.totalPaidCents / 100).toFixed(2)}`} sub={`${admin.stats.pendingReviewCount} pending review`} accent="text-emerald-400" />
-            </div>
+            {/* YouTube Studio-style Analytics Dashboard */}
+            <AdminAnalyticsDashboard stats={admin.stats} clips={admin.clips} clippers={admin.clippers} />
 
             {/* Tabs */}
             <Tabs defaultValue="clips" className="space-y-4">
