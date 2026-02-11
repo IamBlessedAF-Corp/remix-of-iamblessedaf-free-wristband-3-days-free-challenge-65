@@ -755,6 +755,45 @@ export type Database = {
         }
         Relationships: []
       }
+      sms_audit_log: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          messaging_service_sid: string
+          metadata: Json | null
+          recipient_phone: string
+          status: string
+          template_key: string
+          traffic_type: string
+          twilio_sid: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          messaging_service_sid: string
+          metadata?: Json | null
+          recipient_phone: string
+          status?: string
+          template_key: string
+          traffic_type: string
+          twilio_sid?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          messaging_service_sid?: string
+          metadata?: Json | null
+          recipient_phone?: string
+          status?: string
+          template_key?: string
+          traffic_type?: string
+          twilio_sid?: string | null
+        }
+        Relationships: []
+      }
       sms_deliveries: {
         Row: {
           created_at: string
