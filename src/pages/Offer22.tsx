@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import FreeWristbandStep from "@/components/offer/FreeWristbandStep";
 import UpsellWristbandStep from "@/components/offer/UpsellWristbandStep";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
@@ -16,6 +17,17 @@ const Offer22 = () => {
   const [senderName, setSenderName] = useState<string | null>(null);
   const { startCheckout, loading } = useStripeCheckout();
   const { user } = useAuth();
+
+  usePageMeta({
+    title: senderName
+      ? `${senderName} Sent You a FREE Gratitude Wristband 🎁`
+      : "Claim Your FREE Gratitude Wristband | I am Blessed AF",
+    description: senderName
+      ? `${senderName} wants to share gratitude with you. Claim your FREE NFC-enabled wristband — just cover $9.95 shipping.`
+      : "Get a FREE NFC-enabled Gratitude Wristband. Join the movement — 22 meals donated with every order.",
+    image: "/og-image.png",
+    url: "https://iamblessedaf.com",
+  });
 
   // Look up sender name from user metadata or referral
   useEffect(() => {
