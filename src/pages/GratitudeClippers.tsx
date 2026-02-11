@@ -2,8 +2,8 @@ import { useState } from "react";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
-import ContestHero from "@/components/contest/ContestHero";
-import DegenHookBlock from "@/components/contest/DegenHookBlock";
+import GratitudeClippersHero from "@/components/contest/GratitudeClippersHero";
+import GratitudeDegenBlock from "@/components/contest/GratitudeDegenBlock";
 import ClipperCalculator from "@/components/contest/ClipperCalculator";
 import EarningsSliderCalculator from "@/components/contest/EarningsSliderCalculator";
 import ContestGuarantees from "@/components/contest/ContestGuarantees";
@@ -13,7 +13,6 @@ import InspirationGallery from "@/components/contest/InspirationGallery";
 import ProcessCta from "@/components/contest/ProcessCta";
 import ClipperFaq from "@/components/contest/ClipperFaq";
 import First25kAccelerator from "@/components/contest/First25kAccelerator";
-import GratitudeClippersHero from "@/components/contest/GratitudeClippersHero";
 
 const GratitudeClippers = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
@@ -27,7 +26,7 @@ const GratitudeClippers = () => {
       <GratitudeClippersHero logo={logo} onJoin={openSignup} />
 
       {/* 2a. Degen Hook — high-output path */}
-      <DegenHookBlock />
+      <GratitudeDegenBlock />
 
       {/* 2b. Earnings snapshot — Stable/Degen toggle */}
       <ClipperCalculator />
