@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Loader2, LogOut, LayoutDashboard, Shield, Search, X } from "lucide-react";
 import SmsTrackingPanel from "@/components/board/SmsTrackingPanel";
+import SmsComplianceDashboard from "@/components/board/SmsComplianceDashboard";
 
 const Board = () => {
   const { user, isAdmin, loading, signInWithEmail, signOut } = useAdminAuth();
@@ -88,6 +89,7 @@ const Board = () => {
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <SmsTrackingPanel />
+            <SmsComplianceDashboard />
             <span className="text-[10px] sm:text-xs text-muted-foreground truncate max-w-[120px] sm:max-w-none">
               {user.email}
             </span>
