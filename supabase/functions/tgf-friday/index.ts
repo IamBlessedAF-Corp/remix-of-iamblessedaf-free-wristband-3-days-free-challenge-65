@@ -9,8 +9,7 @@ const corsHeaders = {
 /**
  * TGF Gratitude Fridays
  * Triggered every Friday at 7AM via pg_cron.
- * For each opted-in participant, picks a friend they haven't texted recently
- * and sends them a "Hey [Name] Thank You!" text with a wristband referral link.
+ * Routes through sms-router for A2P 10DLC compliance (transactional lane).
  */
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -21,22 +20,9 @@ Deno.serve(async (req: Request) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabase = createClient(supabaseUrl, serviceKey);
 
-  const twilioSid = Deno.env.get("TWILIO_ACCOUNT_SID");
-  const twilioAuth = Deno.env.get("TWILIO_AUTH_TOKEN");
-  const twilioPhone = Deno.env.get("TWILIO_PHONE_NUMBER");
-  const msgServiceSid = Deno.env.get("TWILIO_MESSAGING_SERVICE_SID");
-
-  if (!twilioSid || !twilioAuth || (!twilioPhone && !msgServiceSid)) {
-    return new Response(
-      JSON.stringify({ error: "Twilio not configured" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  }
-
   const results = { sent: 0, skipped: 0, errors: [] as string[] };
 
   try {
-    // Get all active participants who opted in to SMS
     const { data: participants, error: pErr } = await supabase
       .from("challenge_participants")
       .select("id, phone, display_name, friend_1_name, friend_2_name, friend_3_name, user_id")
@@ -52,7 +38,6 @@ Deno.serve(async (req: Request) => {
     }
 
     for (const p of participants || []) {
-      // Collect available friends
       const friends = [p.friend_1_name, p.friend_2_name, p.friend_3_name].filter(Boolean) as string[];
       if (friends.length === 0) {
         results.skipped++;
@@ -65,24 +50,21 @@ Deno.serve(async (req: Request) => {
         .select("friend_name, last_sent_at, send_count")
         .eq("user_id", p.user_id || p.id);
 
-      // Pick the friend least recently texted
       const contactMap = new Map(
         (existingContacts || []).map((c) => [c.friend_name, c])
       );
 
       let selectedFriend = friends[0];
       let lowestCount = Infinity;
-
       for (const f of friends) {
-        const contact = contactMap.get(f);
-        const count = contact?.send_count || 0;
+        const count = contactMap.get(f)?.send_count || 0;
         if (count < lowestCount) {
           lowestCount = count;
           selectedFriend = f;
         }
       }
 
-      // Get referral link if user has a creator profile
+      // Get referral link
       let referralLink = "https://iamblessedaf.com/challenge";
       if (p.user_id) {
         const { data: profile } = await supabase
@@ -90,44 +72,28 @@ Deno.serve(async (req: Request) => {
           .select("referral_code")
           .eq("user_id", p.user_id)
           .maybeSingle();
-
         if (profile?.referral_code) {
           referralLink = `https://iamblessedaf.com/r/${profile.referral_code}`;
         }
       }
 
-      // Build the TGF message
-      const senderName = p.display_name || "Friend";
-      const msgBody = `🙏 TGF — Thank God it's Friday!\n\nHey ${senderName}, it's Gratitude Friday!\n\nThis week's mission: Send a quick "Thank You" to ${selectedFriend}.\n\nHere's a message you can forward:\n\n"Hey ${selectedFriend} Thank You! 🙏\nGot you this wristband, get it shipped with your address here:\n${referralLink}"\n\nSpread the gratitude! 💛\n— Blessed AF`;
-
       // Wristband image for MMS
       const wristbandImageUrl = `${supabaseUrl}/storage/v1/object/public/board-screenshots/wristband-tgf.avif`;
 
-      // Send via Twilio
-      const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`;
-      const formData = new URLSearchParams();
-      formData.append("To", p.phone);
-      if (msgServiceSid) {
-        formData.append("MessagingServiceSid", msgServiceSid);
-      } else {
-        formData.append("From", twilioPhone!);
-      }
-      formData.append("Body", msgBody);
-      // Add wristband image as MMS
-      formData.append("MediaUrl", wristbandImageUrl);
-
-      const res = await fetch(twilioUrl, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${btoa(`${twilioSid}:${twilioAuth}`)}`,
-          "Content-Type": "application/x-www-form-urlencoded",
+      // Send via sms-router (transactional lane)
+      const routerRes = await callRouter(supabaseUrl, serviceKey, {
+        to: p.phone,
+        trafficType: "transactional",
+        templateKey: "tgf-friday",
+        variables: {
+          senderName: p.display_name || "Friend",
+          friendName: selectedFriend,
+          referralLink,
         },
-        body: formData,
+        mediaUrl: wristbandImageUrl,
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        
+      if (routerRes.success) {
         // Upsert TGF contact tracking
         const existingContact = contactMap.get(selectedFriend);
         if (existingContact) {
@@ -151,21 +117,10 @@ Deno.serve(async (req: Request) => {
               referral_link: referralLink,
             });
         }
-
-        // Log to sms_deliveries
-        await supabase.from("sms_deliveries").insert({
-          recipient_phone: p.phone,
-          message: msgBody.slice(0, 1000),
-          twilio_sid: data.sid,
-          status: "sent",
-          source_page: "tgf-friday",
-        });
-
         results.sent++;
       } else {
-        const errText = await res.text();
-        console.error(`TGF send failed for ${p.id}:`, errText);
-        results.errors.push(`${p.id}: ${errText.slice(0, 100)}`);
+        console.error(`TGF send failed for ${p.id}:`, routerRes.error);
+        results.errors.push(`${p.id}: ${routerRes.error}`);
       }
     }
 
@@ -181,3 +136,28 @@ Deno.serve(async (req: Request) => {
     );
   }
 });
+
+/** Call the centralized sms-router */
+async function callRouter(
+  supabaseUrl: string,
+  serviceKey: string,
+  payload: Record<string, unknown>
+): Promise<{ success: boolean; sid?: string; error?: string }> {
+  try {
+    const res = await fetch(`${supabaseUrl}/functions/v1/sms-router`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${serviceKey}`,
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      return { success: true, sid: data.sid };
+    }
+    return { success: false, error: data.error || "Router returned error" };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : "Router call failed" };
+  }
+}
