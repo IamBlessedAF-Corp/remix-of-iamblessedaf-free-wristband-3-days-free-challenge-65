@@ -4,12 +4,14 @@ import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 import GratitudeClippersHero from "@/components/contest/GratitudeClippersHero";
+import ContestHowItWorks from "@/components/contest/ContestHowItWorks";
 import GratitudeDegenBlock from "@/components/contest/GratitudeDegenBlock";
 import ClipperCalculator from "@/components/contest/ClipperCalculator";
 import EarningsSliderCalculator from "@/components/contest/EarningsSliderCalculator";
 import ContestGuarantees from "@/components/contest/ContestGuarantees";
 import BonusLadder from "@/components/contest/BonusLadder";
 import TrustSignals from "@/components/contest/TrustSignals";
+import ClipperCtaAssets from "@/components/contest/ClipperCtaAssets";
 import InspirationGallery from "@/components/contest/InspirationGallery";
 import ProcessCta from "@/components/contest/ProcessCta";
 import ClipperFaq from "@/components/contest/ClipperFaq";
@@ -21,7 +23,7 @@ const GratitudeClippers = () => {
 
   usePageMeta({
     title: "Clip Gratitude Viral Content. Get Paid $2.22–$1,111 Per Clip",
-    description: "Join the #IamBlessedAF Clipper Campaign. Remix viral gratitude content, post on TikTok/Reels/Shorts, and earn $2.22–$1,111 per clip.",
+    description: "Remix viral gratitude clips from Tony Robbins & Huberman. Add our free CTA end-screen. Post on TikTok/Reels/Shorts. Get paid $2.22–$1,111 per clip.",
     image: "/og-clippers.png",
     url: "https://iamblessedaf.com/Gratitude-Clippers",
   });
@@ -30,37 +32,43 @@ const GratitudeClippers = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* 1. Hero — A/B variant: gratitude-first framing */}
+      {/* 1. Hero — crystal clear: what you clip + what CTA to add */}
       <GratitudeClippersHero logo={logo} onJoin={openSignup} />
+
+      {/* 1b. How It Works — step-by-step process */}
+      <ContestHowItWorks />
 
       {/* 2a. Degen Hook — high-output path */}
       <GratitudeDegenBlock />
 
-      {/* 2b. Earnings snapshot — Stable/Degen toggle */}
+      {/* 2b. Earnings snapshot */}
       <ClipperCalculator />
 
       {/* 2c. Interactive slider calculator */}
       <EarningsSliderCalculator />
 
-      {/* 3. Risk reversal / guarantees — reduce fear */}
+      {/* 3. Risk reversal / guarantees */}
       <ContestGuarantees />
 
-      {/* 3b. First 25k Accelerator — early momentum */}
+      {/* 3b. First 25k Accelerator */}
       <First25kAccelerator />
 
-      {/* 4. Bonus ladder — visible progression */}
+      {/* 4. Bonus ladder */}
       <BonusLadder />
+
+      {/* 5. CTA Assets — downloadable end-screens & captions */}
+      <ClipperCtaAssets />
+
+      {/* 6. Content Vault — clips to remix */}
+      <InspirationGallery />
 
       {/* FAQ */}
       <ClipperFaq />
 
-      {/* 5. Trust & anti-scam — transparency signals + live stats */}
+      {/* 7. Trust signals */}
       <TrustSignals />
 
-      {/* Content Vault — clips to remix */}
-      <InspirationGallery />
-
-      {/* 6. CTA — process framing, not urgency */}
+      {/* 8. Final CTA */}
       {loading ? (
         <div className="text-center py-12">
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
