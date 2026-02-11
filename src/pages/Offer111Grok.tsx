@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
 import GrokHeroSection from "@/components/offer/grok/GrokHeroSection";
@@ -15,8 +17,11 @@ import GamificationHeader from "@/components/funnel/GamificationHeader";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
+import DownsellModal from "@/components/offer/DownsellModal";
 
 const Offer111Grok = () => {
+  const [showDownsell, setShowDownsell] = useState(false);
+  const navigate = useNavigate();
   const { startCheckout, loading } = useStripeCheckout();
 
   const handleCheckout = () => {
@@ -174,7 +179,17 @@ const Offer111Grok = () => {
           <GrokCtaBlock onCheckout={handleCheckout} delay={0.85} loading={loading} />
 
           {/* ─── 14. Viral Footer + Skip ─── */}
-          <GrokViralFooter delay={0.9} />
+          <GrokViralFooter
+            delay={0.9}
+            onSkip={(e) => { e.preventDefault(); setShowDownsell(true); }}
+          />
+
+          <DownsellModal
+            open={showDownsell}
+            onClose={() => setShowDownsell(false)}
+            onAccept={() => { setShowDownsell(false); navigate("/offer/11mo"); }}
+            onDecline={() => { setShowDownsell(false); navigate("/offer/444"); }}
+          />
 
         </div>
       </div>

@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Crown, ArrowRight, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,8 +21,11 @@ import ImpactCounter from "@/components/offer/ImpactCounter";
 import ViralShareNudge from "@/components/offer/ViralShareNudge";
 import AchievementUnlockToast from "@/components/gamification/AchievementUnlockToast";
 import { useAchievements } from "@/hooks/useAchievements";
+import DownsellModal from "@/components/offer/DownsellModal";
 
 const Offer111 = () => {
+  const [showDownsell, setShowDownsell] = useState(false);
+  const navigate = useNavigate();
   const { startCheckout, loading } = useStripeCheckout();
   const { newlyUnlocked, dismissNewlyUnlocked } = useAchievements();
 
@@ -215,10 +220,21 @@ const Offer111 = () => {
 
               {/* Skip Link */}
               <motion.div className="text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.7 }}>
-                <a href="/offer/444" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <a
+                  href="/offer/444"
+                  onClick={(e) => { e.preventDefault(); setShowDownsell(true); }}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Maybe later →
                 </a>
               </motion.div>
+
+              <DownsellModal
+                open={showDownsell}
+                onClose={() => setShowDownsell(false)}
+                onAccept={() => { setShowDownsell(false); navigate("/offer/11mo"); }}
+                onDecline={() => { setShowDownsell(false); navigate("/offer/444"); }}
+              />
             </>
 
         {/* Achievement Unlock Toast */}

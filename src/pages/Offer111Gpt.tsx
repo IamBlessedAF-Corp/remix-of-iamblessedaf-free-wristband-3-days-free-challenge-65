@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { FriendShirtSection } from "@/components/offer/ProductSections";
@@ -17,8 +18,11 @@ import GamificationHeader from "@/components/funnel/GamificationHeader";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
+import DownsellModal from "@/components/offer/DownsellModal";
 
 const Offer111Gpt = () => {
+  const [showDownsell, setShowDownsell] = useState(false);
+  const navigate = useNavigate();
   const { startCheckout, loading } = useStripeCheckout();
 
   useEffect(() => {
@@ -32,7 +36,7 @@ const Offer111Gpt = () => {
 
   const handleDecline = () => {
     window.dispatchEvent(new CustomEvent("track", { detail: { event: "upsell2_decline" } }));
-    window.location.href = "/challenge/thanks";
+    setShowDownsell(true);
   };
 
   return (
@@ -200,6 +204,13 @@ const Offer111Gpt = () => {
               Maybe later? → (We'll send a gentle reminder)
             </button>
           </motion.div>
+
+          <DownsellModal
+            open={showDownsell}
+            onClose={() => setShowDownsell(false)}
+            onAccept={() => { setShowDownsell(false); navigate("/offer/11mo"); }}
+            onDecline={() => { setShowDownsell(false); navigate("/offer/444"); }}
+          />
 
         </div>
       </div>
