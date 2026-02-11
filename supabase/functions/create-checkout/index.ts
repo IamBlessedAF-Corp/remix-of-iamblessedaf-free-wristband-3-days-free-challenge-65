@@ -27,7 +27,7 @@ serve(async (req) => {
   }
 
   try {
-    const { tier } = await req.json();
+    const { tier, coupon } = await req.json();
     if (!tier || !PRICE_MAP[tier]) {
       throw new Error(`Invalid tier: ${tier}`);
     }
@@ -39,13 +39,25 @@ serve(async (req) => {
     const origin = req.headers.get("origin") || "https://funnel-architect-ai-30.lovable.app";
     const isSubscription = SUBSCRIPTION_TIERS.has(tier);
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: any = {
       line_items: [{ price: PRICE_MAP[tier], quantity: 1 }],
       mode: isSubscription ? "subscription" : "payment",
       success_url: `${origin}/offer/success?tier=${tier}`,
       cancel_url: `${origin}/offer/22`,
       metadata: { tier },
-    });
+      allow_promotion_codes: true,
+    };
+
+    // Apply coupon directly if provided
+    if (coupon) {
+      if (isSubscription) {
+        sessionParams.subscription_data = { coupon };
+      } else {
+        sessionParams.discounts = [{ coupon }];
+      }
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
