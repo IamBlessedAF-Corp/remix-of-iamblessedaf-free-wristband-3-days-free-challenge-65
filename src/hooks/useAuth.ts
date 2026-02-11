@@ -65,14 +65,17 @@ export function useAuth() {
     }
   };
 
-  const signUpWithEmail = async (email: string, password: string) => {
+  const signUpWithEmail = async (email: string, password: string, firstName?: string) => {
     try {
       const { supabase } = await import("@/integrations/supabase/client");
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/make-2500-with-1-ai-clip`,
+          emailRedirectTo: `${window.location.origin}/challenge/thanks`,
+          data: {
+            first_name: firstName || email.split("@")[0],
+          },
         },
       });
       return { data, error };

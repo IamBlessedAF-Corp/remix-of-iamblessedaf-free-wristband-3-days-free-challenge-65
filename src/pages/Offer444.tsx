@@ -44,7 +44,7 @@ const Offer444 = () => {
 
   const handleFinalDecline = () => {
     setShowDownsell(false);
-    navigate("/challenge/thanks");
+    navigate("/offer/1111");
   };
 
   return (

@@ -91,6 +91,7 @@ export function CreatorNextSteps() {
           user_id: user.id,
           email: user.email || "",
           referral_code: referralCode,
+          display_name: user.user_metadata?.first_name || user.user_metadata?.full_name?.split(" ")[0] || user.user_metadata?.name?.split(" ")[0] || null,
         })
         .select("referral_code, blessings_confirmed, display_name, instagram_handle")
         .single();
@@ -105,6 +106,7 @@ export function CreatorNextSteps() {
               user_id: user.id,
               email: user.email || "",
               referral_code: retryCode,
+              display_name: user.user_metadata?.first_name || user.user_metadata?.full_name?.split(" ")[0] || user.user_metadata?.name?.split(" ")[0] || null,
             })
             .select("referral_code, blessings_confirmed, display_name, instagram_handle")
             .single();

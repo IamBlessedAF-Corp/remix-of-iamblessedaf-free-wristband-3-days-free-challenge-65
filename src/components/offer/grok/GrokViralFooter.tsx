@@ -10,9 +10,10 @@ import GiftSmsDialog from "@/components/offer/GiftSmsDialog";
 interface GrokViralFooterProps {
   delay?: number;
   onSkip?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  skipUrl?: string;
 }
 
-const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
+const GrokViralFooter = ({ delay = 0, onSkip, skipUrl = "/challenge/thanks" }: GrokViralFooterProps) => {
   const { rewardShare } = useGamificationStats();
   const { getShareUrl } = useShortLinks();
   const [smsOpen, setSmsOpen] = useState(false);
@@ -80,7 +81,7 @@ const GrokViralFooter = ({ delay = 0, onSkip }: GrokViralFooterProps) => {
         </div>
 
         <a
-          href="/challenge/thanks"
+          href={skipUrl}
           onClick={onSkip}
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
 import PortalUnlockStep from "@/components/offer/PortalUnlockStep";
 import { useGamificationStats, type OfferTier, TIER_REWARDS } from "@/hooks/useGamificationStats";
@@ -9,13 +9,29 @@ import { useAchievements } from "@/hooks/useAchievements";
 
 const VALID_TIERS = Object.keys(TIER_REWARDS) as OfferTier[];
 
+/**
+ * After each tier purchase, redirect to the next upsell.
+ * Final tier → show portal unlock.
+ */
+const NEXT_UPSELL: Record<string, string> = {
+  "free-wristband": "/offer/111",
+  "wristband-22": "/offer/111",
+  "pack-111": "/offer/444",
+  "pack-444": "/offer/1111",
+  "pack-1111": "/offer/4444",
+  "pack-4444": "", // terminal — show portal
+  "monthly-11": "/offer/111",
+};
+
 const OfferSuccess = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const tier = searchParams.get("tier") as OfferTier | null;
   const { rewardCheckout } = useGamificationStats();
   const { newlyUnlocked, dismissNewlyUnlocked, recordPurchase } = useAchievements();
   const rewarded = useRef(false);
   const [showMystery, setShowMystery] = useState(false);
+  const [showPortal, setShowPortal] = useState(false);
 
   useEffect(() => {
     if (tier && VALID_TIERS.includes(tier) && !rewarded.current) {
@@ -27,15 +43,43 @@ const OfferSuccess = () => {
     }
   }, [tier, rewardCheckout, recordPurchase]);
 
+  const handleMysteryClose = () => {
+    setShowMystery(false);
+    // Navigate to next upsell or show portal
+    const nextUrl = tier ? NEXT_UPSELL[tier] : "";
+    if (nextUrl) {
+      navigate(nextUrl);
+    } else {
+      setShowPortal(true);
+    }
+  };
+
+  // If no tier or not terminal, show a loading/celebration state before mystery box
+  if (showPortal || (tier && !NEXT_UPSELL[tier])) {
+    return (
+      <div className="min-h-screen bg-background">
+        <GamificationHeader />
+        <div className="container mx-auto px-4 py-8 md:py-16">
+          <div className="max-w-2xl mx-auto">
+            <PortalUnlockStep />
+          </div>
+        </div>
+        <AchievementUnlockToast achievement={newlyUnlocked} onDismiss={dismissNewlyUnlocked} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <GamificationHeader />
       <div className="container mx-auto px-4 py-8 md:py-16">
-        <div className="max-w-2xl mx-auto">
-          <PortalUnlockStep />
+        <div className="max-w-2xl mx-auto text-center space-y-6">
+          <div className="text-6xl animate-bounce">🎉</div>
+          <h1 className="text-3xl font-bold text-foreground">Payment Confirmed!</h1>
+          <p className="text-muted-foreground">Your order is being processed. Open your mystery reward!</p>
         </div>
       </div>
-      <MysteryBox show={showMystery} onClose={() => setShowMystery(false)} />
+      <MysteryBox show={showMystery} onClose={handleMysteryClose} />
       <AchievementUnlockToast achievement={newlyUnlocked} onDismiss={dismissNewlyUnlocked} />
     </div>
   );
