@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
 import Grok1111HeroSection from "@/components/offer/grok/Grok1111HeroSection";
@@ -18,8 +20,11 @@ import StickyCtaBar from "@/components/offer/StickyCtaBar";
 import EpiphanyBridge from "@/components/offer/EpiphanyBridge";
 import ImpactCounter from "@/components/offer/ImpactCounter";
 import ViralShareNudge from "@/components/offer/ViralShareNudge";
+import DownsellModal from "@/components/offer/DownsellModal";
 
 const Offer1111 = () => {
+  const [showDownsell, setShowDownsell] = useState(false);
+  const navigate = useNavigate();
   const { startCheckout, loading } = useStripeCheckout();
 
   const handleCheckout = () => {
@@ -139,7 +144,18 @@ const Offer1111 = () => {
               {/* Viral Share Nudge */}
               <ViralShareNudge />
 
-              <GrokViralFooter delay={0.9} skipUrl="/offer/4444" />
+              <GrokViralFooter
+                delay={0.9}
+                skipUrl="/offer/4444"
+                onSkip={(e) => { e.preventDefault(); setShowDownsell(true); }}
+              />
+
+              <DownsellModal
+                open={showDownsell}
+                onClose={() => setShowDownsell(false)}
+                onAccept={() => { setShowDownsell(false); navigate("/offer/11mo"); }}
+                onDecline={() => { setShowDownsell(false); navigate("/offer/4444"); }}
+              />
              </>
         </div>
       </div>

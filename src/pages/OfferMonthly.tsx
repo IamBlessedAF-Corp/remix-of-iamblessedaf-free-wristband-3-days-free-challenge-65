@@ -1,11 +1,16 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Repeat, MessageCircle, Gift, Users, ArrowRight, Check, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import logo from "@/assets/logo.png";
+import DownsellModal from "@/components/offer/DownsellModal";
 
 const OfferMonthly = () => {
+  const [showDownsell, setShowDownsell] = useState(false);
+  const navigate = useNavigate();
   const { startCheckout, loading } = useStripeCheckout();
 
   const handleCheckout = () => {
@@ -159,12 +164,20 @@ const OfferMonthly = () => {
             transition={{ delay: 0.8 }}
           >
             <a
-              href="/challenge/thanks"
+              href="/offer/111"
+              onClick={(e) => { e.preventDefault(); setShowDownsell(true); }}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Not right now →
             </a>
           </motion.div>
+
+          <DownsellModal
+            open={showDownsell}
+            onClose={() => setShowDownsell(false)}
+            onAccept={() => { setShowDownsell(false); navigate("/offer/11mo"); }}
+            onDecline={() => { setShowDownsell(false); navigate("/offer/111"); }}
+          />
         </div>
       </div>
     </div>
