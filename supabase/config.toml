@@ -38,3 +38,18 @@ verify_jwt = false
 
 [functions.expert-scripts]
 verify_jwt = false
+
+[functions.tgf-friday]
+verify_jwt = false
+
+[functions.send-followup-sequences]
+verify_jwt = false
+
+[functions.clip-approved-notification]
+verify_jwt = false
+
+[functions.portal-daily-login]
+verify_jwt = false
+
+[functions.upload-board-screenshot]
+verify_jwt = false

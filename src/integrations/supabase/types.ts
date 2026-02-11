@@ -476,6 +476,50 @@ export type Database = {
         }
         Relationships: []
       }
+      followup_sequences: {
+        Row: {
+          channel: string
+          created_at: string
+          id: string
+          participant_id: string
+          scheduled_at: string
+          sent_at: string | null
+          sequence_type: string
+          status: string
+          step_number: number
+        }
+        Insert: {
+          channel?: string
+          created_at?: string
+          id?: string
+          participant_id: string
+          scheduled_at: string
+          sent_at?: string | null
+          sequence_type?: string
+          status?: string
+          step_number?: number
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          id?: string
+          participant_id?: string
+          scheduled_at?: string
+          sent_at?: string | null
+          sequence_type?: string
+          status?: string
+          step_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "followup_sequences_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "challenge_participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       link_clicks: {
         Row: {
           browser: string | null
@@ -743,6 +787,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      tgf_friday_contacts: {
+        Row: {
+          created_at: string
+          friend_name: string
+          id: string
+          last_sent_at: string | null
+          participant_id: string | null
+          referral_link: string | null
+          send_count: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          friend_name: string
+          id?: string
+          last_sent_at?: string | null
+          participant_id?: string | null
+          referral_link?: string | null
+          send_count?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          friend_name?: string
+          id?: string
+          last_sent_at?: string | null
+          participant_id?: string | null
+          referral_link?: string | null
+          send_count?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tgf_friday_contacts_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "challenge_participants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
