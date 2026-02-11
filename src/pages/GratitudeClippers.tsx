@@ -12,6 +12,7 @@ import ProcessCta from "@/components/contest/ProcessCta";
 import ClipperFaq from "@/components/contest/ClipperFaq";
 import TrustSignals from "@/components/contest/TrustSignals";
 import StickyClipperBar from "@/components/contest/StickyClipperBar";
+import GratitudeDegenBlock from "@/components/contest/GratitudeDegenBlock";
 
 const GratitudeClippers = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
@@ -36,7 +37,10 @@ const GratitudeClippers = () => {
       {/* 1. Hero — what you do + what you earn */}
       <GratitudeClippersHero logo={logo} onJoin={openSignup} />
 
-      {/* 2. Interactive earnings calculator — the only math section */}
+      {/* 2. Degen scenarios — quick visual proof */}
+      <GratitudeDegenBlock />
+
+      {/* 3. Interactive earnings calculator */}
       <EarningsSliderCalculator />
 
       {/* 3. Bonus ladder + 25k accelerator */}
