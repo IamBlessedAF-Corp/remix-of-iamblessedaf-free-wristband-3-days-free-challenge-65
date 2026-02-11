@@ -22,8 +22,8 @@ const GratitudeClippersHero = ({ logo, onJoin }: Props) => (
       />
 
       <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight tracking-tight">
-        Turn Gratitude Into Income.<br />
-        Get Paid Every Time Someone Watches.
+        Clip Gratitude Viral Content.<br />
+        Get Paid <span className="text-primary">$2.22 – $1,111</span> Per Clip.
       </h1>
 
       <p className="text-lg text-muted-foreground mb-6 max-w-xl mx-auto leading-relaxed">
