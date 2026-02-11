@@ -27,7 +27,8 @@
   </head>
 
   <body>
-    <div id="google_translate_element" style="position:fixed;bottom:12px;left:12px;z-index:9999;opacity:0.8;font-size:12px;"></div>
+    <!-- Google Translate hidden engine (no visible widget) -->
+    <div id="google_translate_element" style="display:none;"></div>
     <script type="text/javascript">
       function googleTranslateElementInit() {
         new google.translate.TranslateElement({
@@ -38,6 +39,75 @@
       }
     </script>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Custom 1-click translation banner -->
+    <script>
+      (function() {
+        var LANG_NAMES = {
+          es: 'Español', pt: 'Português', fr: 'Français', de: 'Deutsch',
+          it: 'Italiano', ja: '日本語', ko: '한국어', zh: '中文',
+          ar: 'العربية', hi: 'हिन्दी', ru: 'Русский', nl: 'Nederlands',
+          tr: 'Türkçe', pl: 'Polski', sv: 'Svenska', th: 'ไทย',
+          vi: 'Tiếng Việt', id: 'Bahasa Indonesia', ms: 'Bahasa Melayu',
+          tl: 'Tagalog', uk: 'Українська', ro: 'Română', cs: 'Čeština',
+          el: 'Ελληνικά', he: 'עברית', da: 'Dansk', fi: 'Suomi',
+          no: 'Norsk', hu: 'Magyar', bg: 'Български', hr: 'Hrvatski',
+          sk: 'Slovenčina'
+        };
+
+        var browserLang = (navigator.language || navigator.userLanguage || 'en').split('-')[0].toLowerCase();
+        if (browserLang === 'en' || !LANG_NAMES[browserLang]) return;
+        if (localStorage.getItem('translate-dismissed') === browserLang) return;
+
+        // Wait for DOM
+        document.addEventListener('DOMContentLoaded', function() {
+          var banner = document.createElement('div');
+          banner.id = 'translate-banner';
+          banner.innerHTML =
+            '<div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">' +
+              '<span style="font-size:20px;">🌍</span>' +
+              '<span>This page is in English.</span>' +
+              '<button id="translate-yes" style="background:#e74c3c;color:#fff;border:none;padding:8px 20px;border-radius:20px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap;">' +
+                'Translate to ' + LANG_NAMES[browserLang] +
+              '</button>' +
+              '<button id="translate-no" style="background:none;border:none;color:#999;font-size:13px;cursor:pointer;text-decoration:underline;">No thanks</button>' +
+            '</div>';
+          banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1a1a1a;color:#fff;padding:12px 16px;font-family:system-ui,sans-serif;font-size:14px;box-shadow:0 -2px 20px rgba(0,0,0,0.3);transform:translateY(100%);transition:transform 0.4s ease;';
+          document.body.appendChild(banner);
+
+          // Slide in after a short delay
+          setTimeout(function() { banner.style.transform = 'translateY(0)'; }, 1500);
+
+          document.getElementById('translate-yes').onclick = function() {
+            // Trigger Google Translate
+            var select = document.querySelector('#google_translate_element select');
+            if (select) {
+              select.value = browserLang;
+              select.dispatchEvent(new Event('change'));
+            } else {
+              // Fallback: redirect through Google Translate
+              window.location.href = 'https://translate.google.com/translate?sl=en&tl=' + browserLang + '&u=' + encodeURIComponent(window.location.href);
+            }
+            banner.style.transform = 'translateY(100%)';
+            setTimeout(function() { banner.remove(); }, 500);
+          };
+
+          document.getElementById('translate-no').onclick = function() {
+            localStorage.setItem('translate-dismissed', browserLang);
+            banner.style.transform = 'translateY(100%)';
+            setTimeout(function() { banner.remove(); }, 500);
+          };
+        });
+      })();
+    </script>
+
+    <!-- Hide Google Translate bar and branding -->
+    <style>
+      .goog-te-banner-frame, .skiptranslate, #goog-gt-tt, .goog-te-balloon-frame { display: none !important; }
+      body { top: 0 !important; }
+      .goog-te-gadget { font-size: 0 !important; }
+    </style>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
