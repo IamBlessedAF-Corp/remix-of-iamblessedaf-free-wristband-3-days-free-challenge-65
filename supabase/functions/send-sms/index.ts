@@ -120,7 +120,20 @@ Deno.serve(async (req: Request) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-    const formattedTo = cleanTo.startsWith("+") ? cleanTo : `+${cleanTo}`;
+    // Auto-detect 10-digit US/Canada numbers and prepend +1
+    let formattedTo: string;
+    if (cleanTo.startsWith("+")) {
+      formattedTo = cleanTo;
+    } else if (cleanTo.length === 10) {
+      // 10-digit number without country code → assume US/Canada
+      formattedTo = `+1${cleanTo}`;
+      console.log(`Auto-prepended +1 for 10-digit number: ${formattedTo}`);
+    } else if (cleanTo.length === 11 && cleanTo.startsWith("1")) {
+      // 11-digit starting with 1 → US/Canada without +
+      formattedTo = `+${cleanTo}`;
+    } else {
+      formattedTo = `+${cleanTo}`;
+    }
 
     const statusCallbackUrl = `${supabaseUrl}/functions/v1/sms-status-webhook`;
     const isIntl = !isNorthAmerican(formattedTo);
