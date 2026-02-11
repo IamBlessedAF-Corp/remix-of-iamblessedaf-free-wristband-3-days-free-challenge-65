@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Download, Eye, X, Check, Smartphone, Monitor, Play } from "lucide-react";
+import { Download, Eye, X, Check, Smartphone, Monitor, Play, Copy, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 import clipperTutorial from "@/assets/clipper-tutorial.mov";
 
 /* ── Downloadable overlay images (in public/) ── */
@@ -87,6 +88,36 @@ const handleDownload = (file: string, label: string) => {
 const ClipperCtaAssets = () => {
   const [previewAsset, setPreviewAsset] = useState<typeof overlayAssets[0] | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const { user } = useAuth();
+
+  const handleCopyReferralLink = async () => {
+    // Build referral link from user metadata or fallback
+    const firstName = user?.user_metadata?.firstName || user?.user_metadata?.full_name?.split(" ")[0] || "";
+    const referralBase = "https://iamblessedaf.com/r/";
+    // Try to get referral code from creator profile
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase
+        .from("creator_profiles")
+        .select("referral_code")
+        .eq("user_id", user?.id || "")
+        .maybeSingle();
+      
+      if (data?.referral_code) {
+        await navigator.clipboard.writeText(`${referralBase}${data.referral_code}`);
+        setLinkCopied(true);
+        toast.success("Referral link copied! Paste it in your bio.");
+        setTimeout(() => setLinkCopied(false), 3000);
+        return;
+      }
+    } catch {}
+    // Fallback: copy the base challenge link
+    await navigator.clipboard.writeText("https://iamblessedaf.com/challenge");
+    setLinkCopied(true);
+    toast.success("Link copied! Sign up first to get your unique referral link.");
+    setTimeout(() => setLinkCopied(false), 3000);
+  };
 
   const handleCopyCaption = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -111,6 +142,25 @@ const ClipperCtaAssets = () => {
             They tell viewers to grab the free wristband or join the challenge via your link.
             <strong className="text-foreground"> Viewer clicks → you earn.</strong>
           </p>
+
+          {/* Copy Referral Link Button */}
+          {user && (
+            <div className="mt-4">
+              <Button
+                onClick={handleCopyReferralLink}
+                className="gap-2 h-12 px-6 bg-foreground text-background hover:bg-foreground/90 font-bold text-base rounded-xl"
+              >
+                {linkCopied ? (
+                  <><Check className="w-5 h-5" /> Link Copied!</>
+                ) : (
+                  <><Link2 className="w-5 h-5" /> Copy My Referral Link</>
+                )}
+              </Button>
+              <p className="text-xs text-muted-foreground mt-2">
+                Paste this in your TikTok / IG / YouTube bio → viewers click → you earn
+              </p>
+            </div>
+          )}
         </div>
 
         {/* 🎬 Video Tutorial */}
