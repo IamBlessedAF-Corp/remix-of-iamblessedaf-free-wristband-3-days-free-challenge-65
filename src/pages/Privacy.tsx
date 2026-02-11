@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Shield, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +14,29 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 const Privacy = () => {
   const navigate = useNavigate();
   const lastUpdated = "February 11, 2026";
+
+  useEffect(() => {
+    document.title = "Privacy Policy | I am Blessed AF";
+    const setMeta = (property: string, content: string) => {
+      let el = document.querySelector(`meta[property="${property}"]`) || document.querySelector(`meta[name="${property}"]`);
+      if (!el) {
+        el = document.createElement("meta");
+        if (property.startsWith("og:")) el.setAttribute("property", property);
+        else el.setAttribute("name", property);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", content);
+    };
+    setMeta("og:title", "Privacy Policy | I am Blessed AF");
+    setMeta("og:description", "How I am Blessed AF collects, uses, and protects your data. Full transparency on SMS, payments, analytics, and your rights.");
+    setMeta("og:image", "/og-image.png");
+    setMeta("og:type", "website");
+    setMeta("twitter:card", "summary_large_image");
+    setMeta("twitter:title", "Privacy Policy | I am Blessed AF");
+    setMeta("twitter:description", "How I am Blessed AF collects, uses, and protects your data.");
+    setMeta("twitter:image", "/og-image.png");
+    return () => { document.title = "I am Blessed AF | The Gratitude Engine™"; };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -39,7 +63,7 @@ const Privacy = () => {
 
           <Section title="1. Introduction">
             <p>
-              Blessed Collective ("we," "us," or "our") operates the Blessed Collective platform,
+              I am Blessed AF ("we," "us," or "our") operates the I am Blessed AF platform,
               including all associated websites, mobile experiences, ambassador portals, and
               related services (collectively, the "Service"). This Privacy Policy explains how we
               collect, use, disclose, and safeguard your information when you use our Service.
@@ -210,13 +234,13 @@ const Privacy = () => {
               please contact us:
             </p>
             <p className="font-semibold text-foreground">
-              Email: privacy@blessedcollective.com
+              Email: privacy@iamblessedaf.com
             </p>
           </Section>
 
           <div className="pt-6 border-t border-border/40 text-center">
             <p className="text-xs text-muted-foreground">
-              © {new Date().getFullYear()} Blessed Collective. All rights reserved.
+              © {new Date().getFullYear()} I am Blessed AF. All rights reserved.
             </p>
           </div>
         </motion.div>
