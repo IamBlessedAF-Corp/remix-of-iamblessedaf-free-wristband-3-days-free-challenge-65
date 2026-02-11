@@ -12,6 +12,7 @@ import TrustSignals from "@/components/contest/TrustSignals";
 import InspirationGallery from "@/components/contest/InspirationGallery";
 import ProcessCta from "@/components/contest/ProcessCta";
 import ClipperFaq from "@/components/contest/ClipperFaq";
+import First25kAccelerator from "@/components/contest/First25kAccelerator";
 
 const AIVideoContest = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
@@ -35,6 +36,9 @@ const AIVideoContest = () => {
 
       {/* 3. Risk reversal / guarantees — reduce fear */}
       <ContestGuarantees />
+
+      {/* 3b. First 25k Accelerator — early momentum */}
+      <First25kAccelerator />
 
       {/* 4. Bonus ladder — visible progression */}
       <BonusLadder />
