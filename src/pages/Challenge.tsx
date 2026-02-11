@@ -39,6 +39,7 @@ const Challenge = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const { signInWithGoogle, user } = useAuth();
   const spinLogic = useSpinLogic();
+  const [senderName, setSenderName] = useState<string | null>(null);
 
   const referralCode = searchParams.get("ref");
   const isReferred = !!referralCode;
@@ -50,6 +51,24 @@ const Challenge = () => {
       navigate("/challenge/thanks");
     }
   }, [user, navigate, isReferred]);
+
+  // Look up sender's name from referral code
+  useEffect(() => {
+    if (!referralCode) return;
+    const lookupSender = async () => {
+      try {
+        const { data } = await supabase
+          .from("creator_profiles_public")
+          .select("display_name")
+          .eq("referral_code", referralCode)
+          .maybeSingle();
+        if (data?.display_name) {
+          setSenderName(data.display_name.split(" ")[0]); // first name only
+        }
+      } catch {}
+    };
+    lookupSender();
+  }, [referralCode]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -142,7 +161,7 @@ const Challenge = () => {
                   transition={{ delay: 0.25 }}
                 >
                   <Gift className="w-4 h-4" />
-                  Someone is Grateful for YOU 🎁
+                  {senderName ? `${senderName} is Grateful for YOU 🎁` : "Someone is Grateful for YOU 🎁"}
                 </motion.div>
 
                 <motion.h1
@@ -151,7 +170,7 @@ const Challenge = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
                 >
-                  Someone Sent You a{" "}
+                  {senderName ? `${senderName} Sent You a ` : "Someone Sent You a "}
                   <span className="text-primary">FREE Wristband!</span>
                 </motion.h1>
 
@@ -175,7 +194,7 @@ const Challenge = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
-                  Someone who cares about you sent you a{" "}
+                  {senderName ? `${senderName}` : "Someone who cares about you"} sent you a{" "}
                   <span className="font-bold text-foreground">FREE "I Am Blessed AF" Wristband</span> as a 
                   gratitude gift. Sign up to claim yours!
                 </motion.p>

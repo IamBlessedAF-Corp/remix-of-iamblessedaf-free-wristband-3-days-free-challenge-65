@@ -139,7 +139,7 @@ const Offer1111 = () => {
               {/* Viral Share Nudge */}
               <ViralShareNudge />
 
-              <GrokViralFooter delay={0.9} />
+              <GrokViralFooter delay={0.9} skipUrl="/offer/4444" />
              </>
         </div>
       </div>

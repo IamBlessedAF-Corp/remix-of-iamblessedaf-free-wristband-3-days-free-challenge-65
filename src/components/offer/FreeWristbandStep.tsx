@@ -10,9 +10,10 @@ import UrgencyBanner from "./UrgencyBanner";
 interface FreeWristbandStepProps {
   onCheckout: () => void;
   onSkip: () => void;
+  senderName?: string | null;
 }
 
-const FreeWristbandStep = ({ onCheckout, onSkip }: FreeWristbandStepProps) => {
+const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStepProps) => {
   const [zoomed, setZoomed] = useState(false);
 
   return (
@@ -34,7 +35,7 @@ const FreeWristbandStep = ({ onCheckout, onSkip }: FreeWristbandStepProps) => {
       >
         <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
           <Gift className="w-4 h-4" />
-          Someone blessed you with a FREE Wristband 🎁
+          {senderName ? `${senderName} blessed you with a FREE Wristband 🎁` : "Someone blessed you with a FREE Wristband 🎁"}
         </div>
       </motion.div>
 

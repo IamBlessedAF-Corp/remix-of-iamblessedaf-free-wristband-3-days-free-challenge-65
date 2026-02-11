@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FreeWristbandStep from "@/components/offer/FreeWristbandStep";
 import UpsellWristbandStep from "@/components/offer/UpsellWristbandStep";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
@@ -6,14 +6,35 @@ import GratitudeSetupFlow from "@/components/challenge/GratitudeSetupFlow";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useAuth } from "@/hooks/useAuth";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
+import { supabase } from "@/integrations/supabase/client";
 
 type Step = "free-wristband" | "gratitude-setup" | "upsell-22";
 
 const Offer22 = () => {
   const [step, setStep] = useState<Step>("free-wristband");
   const [showAuth, setShowAuth] = useState(false);
+  const [senderName, setSenderName] = useState<string | null>(null);
   const { startCheckout, loading } = useStripeCheckout();
   const { user } = useAuth();
+
+  // Look up sender name from user metadata or referral
+  useEffect(() => {
+    const refCode = sessionStorage.getItem("referral_code");
+    if (!refCode) return;
+    const lookup = async () => {
+      try {
+        const { data } = await supabase
+          .from("creator_profiles_public")
+          .select("display_name")
+          .eq("referral_code", refCode)
+          .maybeSingle();
+        if (data?.display_name) {
+          setSenderName(data.display_name.split(" ")[0]);
+        }
+      } catch {}
+    };
+    lookup();
+  }, []);
 
   const handleFreeWristbandCheckout = () => {
     if (!user) {
@@ -68,6 +89,7 @@ const Offer22 = () => {
             <FreeWristbandStep
               onCheckout={handleFreeWristbandCheckout}
               onSkip={handleSkipFree}
+              senderName={senderName}
             />
           )}
           {step === "gratitude-setup" && (

@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 
 const signupSchema = z.object({
+  firstName: z.string().trim().min(1, "First name is required").max(50),
   email: z.string().trim().email("Please enter a valid email").max(255),
   password: z.string().min(6, "Password must be at least 6 characters").max(100),
 });
@@ -47,10 +48,11 @@ const AppleIcon = () => (
 
 export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignupModalProps) {
   const [mode, setMode] = useState<"signup" | "signin">("signup");
+  const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ firstName?: string; email?: string; password?: string }>({});
   
   const { signInWithGoogle, signInWithApple, signUpWithEmail, signInWithEmail } = useAuth();
   const { toast } = useToast();
@@ -86,10 +88,12 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
     setErrors({});
 
     // Validate input
-    const result = signupSchema.safeParse({ email, password });
+    const validateObj = mode === "signup" ? { firstName, email, password } : { firstName: "skip", email, password };
+    const result = signupSchema.safeParse(validateObj);
     if (!result.success) {
-      const fieldErrors: { email?: string; password?: string } = {};
+      const fieldErrors: { firstName?: string; email?: string; password?: string } = {};
       result.error.errors.forEach((err) => {
+        if (err.path[0] === "firstName") fieldErrors.firstName = err.message;
         if (err.path[0] === "email") fieldErrors.email = err.message;
         if (err.path[0] === "password") fieldErrors.password = err.message;
       });
@@ -100,7 +104,7 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
     setIsLoading(true);
 
     if (mode === "signup") {
-      const { error } = await signUpWithEmail(email, password);
+      const { error } = await signUpWithEmail(email, password, firstName);
       if (error) {
         toast({
           variant: "destructive",
@@ -116,7 +120,7 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
         try {
           const { supabase } = await import("@/integrations/supabase/client");
           await supabase.functions.invoke("send-welcome-email", {
-            body: { email, name: email.split("@")[0] },
+            body: { email, name: firstName },
           });
         } catch (e) {
           console.error("Welcome email error:", e);
@@ -197,6 +201,24 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
 
           {/* Email Form */}
           <form onSubmit={handleEmailSubmit} className="space-y-4">
+            {mode === "signup" && (
+              <div>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    placeholder="First name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="pl-10 h-12"
+                    disabled={isLoading}
+                  />
+                </div>
+                {errors.firstName && (
+                  <p className="text-sm text-destructive mt-1">{errors.firstName}</p>
+                )}
+              </div>
+            )}
+
             <div>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />

@@ -31,7 +31,7 @@ function pickPrize(): Prize {
   return PRIZES[0];
 }
 
-const STORAGE_KEY = "mystery-box-opened";
+const STORAGE_KEY = "mystery-box-last-tier";
 
 interface MysteryBoxProps {
   show: boolean;
@@ -42,7 +42,7 @@ export default function MysteryBox({ show, onClose }: MysteryBoxProps) {
   const [phase, setPhase] = useState<"closed" | "shaking" | "opened">("closed");
   const [prize, setPrize] = useState<Prize | null>(null);
 
-  const alreadyOpened = localStorage.getItem(STORAGE_KEY) === "true";
+  const alreadyOpened = false; // Allow mystery box on every purchase
 
   const handleTap = useCallback(() => {
     if (phase !== "closed") return;

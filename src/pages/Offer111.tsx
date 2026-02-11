@@ -215,7 +215,7 @@ const Offer111 = () => {
 
               {/* Skip Link */}
               <motion.div className="text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.7 }}>
-                <a href="/challenge/thanks" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <a href="/offer/444" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Maybe later →
                 </a>
               </motion.div>
