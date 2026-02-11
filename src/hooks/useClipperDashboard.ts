@@ -9,6 +9,7 @@ interface ClipperStats {
   viewsThisWeek: number;
   earningsThisWeekCents: number;
   clipsLastWeek: number;
+  clipsToday: number;
   streakDays: number;
   lastPayoutDate: string | null;
   avgViewsPerClipPerWeek: number;
@@ -35,6 +36,7 @@ export function useClipperDashboard(userId: string | undefined) {
     viewsThisWeek: 0,
     earningsThisWeekCents: 0,
     clipsLastWeek: 0,
+    clipsToday: 0,
     streakDays: 0,
     lastPayoutDate: null,
     avgViewsPerClipPerWeek: 0,
@@ -96,6 +98,12 @@ export function useClipperDashboard(userId: string | undefined) {
         ? recentClips.reduce((s, c) => s + (c.view_count || 0), 0) / Math.max(1, recentClips.length) * 10
         : 0;
 
+      // Clips today
+      const todayStart = new Date();
+      todayStart.setUTCHours(0, 0, 0, 0);
+      const todayISO = todayStart.toISOString();
+      const clipsToday = allClips.filter((c) => c.submitted_at >= todayISO).length;
+
       setStats({
         totalViews,
         totalClips: allClips.length,
@@ -104,6 +112,7 @@ export function useClipperDashboard(userId: string | undefined) {
         viewsThisWeek: thisWeekClips.reduce((s, c) => s + (c.view_count || 0), 0),
         earningsThisWeekCents: thisWeekClips.reduce((s, c) => s + (c.earnings_cents || 0), 0),
         clipsLastWeek: lastWeekClips.length,
+        clipsToday,
         streakDays,
         lastPayoutDate: null,
         avgViewsPerClipPerWeek,
