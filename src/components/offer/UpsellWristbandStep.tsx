@@ -41,13 +41,19 @@ const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWris
       >
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3 leading-tight">
           Keep One. <span className="text-primary">Gift Two.</span>{" "}
-          Watch <span className="text-primary">3 Lives Change.</span>
+          <span className="text-primary">Rekindle 2 Relationships.</span>
         </h2>
         <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-2 leading-relaxed">
-          Give a wristband to 2 people you love. When they wear it, they think of you.
+          Think of 2 people who changed your life. A friend who was there. A family member who believed in you.{" "}
+          <span className="font-bold text-foreground">Send them a wristband</span> — it's the simplest way to say
+          "I'm grateful for you."  When they wear it, they think of you.
           When they feel grateful,{" "}
           <span className="font-bold text-foreground">YOUR brain rewards you too</span>{" "}
           — that's the 27× serotonin boost Huberman found.
+        </p>
+        <p className="text-xs text-muted-foreground max-w-md mx-auto mt-3 italic">
+          💔 Don't let the people who matter most wonder if you care. One wristband can reopen a conversation,
+          heal a distance, and start a gratitude loop that changes both of you.
         </p>
         <div className="inline-flex items-center gap-2 bg-accent/50 text-foreground px-4 py-2 rounded-full text-sm font-semibold mt-2">
           <Heart className="w-4 h-4 text-primary" />
@@ -66,23 +72,29 @@ const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWris
         transition={{ duration: 0.5, delay: 0.25 }}
       >
         <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
-          {/* Original */}
-          <div className="bg-card border border-border/50 rounded-xl p-4 text-center opacity-60">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Your Current</p>
+          {/* Original — clickable */}
+          <button
+            onClick={onSkip}
+            className="bg-card border border-border/50 rounded-xl p-4 text-center hover:border-border transition-colors cursor-pointer"
+          >
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Just For Me</p>
             <p className="text-lg font-bold text-foreground">1 Wristband</p>
             <p className="text-sm text-muted-foreground mt-1">FREE + $9.95 ship</p>
             <p className="text-xs text-muted-foreground mt-2">0 meals donated</p>
-          </div>
+          </button>
           {/* Upgrade */}
-          <div className="bg-card border-2 border-primary rounded-xl p-4 text-center relative">
+          <button
+            onClick={onCheckout}
+            className="bg-card border-2 border-primary rounded-xl p-4 text-center relative hover:bg-primary/5 transition-colors cursor-pointer"
+          >
             <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
               Best Value
             </div>
-            <p className="text-xs text-primary uppercase tracking-wider mb-2 font-semibold">Upgrade</p>
+            <p className="text-xs text-primary uppercase tracking-wider mb-2 font-semibold">Pay It Forward</p>
             <p className="text-lg font-bold text-foreground">3 Wristbands</p>
             <p className="text-sm text-primary font-bold mt-1">$22 · FREE ship</p>
             <p className="text-xs text-primary font-semibold mt-2">🍽 22 meals donated</p>
-          </div>
+          </button>
         </div>
       </motion.div>
 
@@ -249,8 +261,11 @@ const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWris
           onClick={onSkip}
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          No thanks, I'll keep my 1 free wristband →
+          No thanks, I'll keep just mine →
         </button>
+        <p className="text-[11px] text-muted-foreground/60 mt-2 max-w-xs mx-auto">
+          You'll still get your FREE wristband. But your 2 friends won't know you thought of them today.
+        </p>
       </motion.div>
     </>
   );

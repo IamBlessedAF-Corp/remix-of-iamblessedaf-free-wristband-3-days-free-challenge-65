@@ -25,8 +25,8 @@ const Offer22 = () => {
     description: senderName
       ? `${senderName} wants to share gratitude with you. Claim your FREE NFC-enabled wristband — just cover $9.95 shipping.`
       : "Get a FREE NFC-enabled Gratitude Wristband. Join the movement — 22 meals donated with every order.",
-    image: "/og-image.png",
-    url: "https://iamblessedaf.com",
+    image: "/og-wristband.png",
+    url: "https://iamblessedaf.com/offer/22",
   });
 
   // Look up sender name from user metadata or referral

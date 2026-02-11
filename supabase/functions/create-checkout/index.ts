@@ -39,6 +39,25 @@ serve(async (req) => {
     const origin = req.headers.get("origin") || "https://funnel-architect-ai-30.lovable.app";
     const isSubscription = SUBSCRIPTION_TIERS.has(tier);
 
+    // Ensure promotion codes exist for our test coupons
+    const TEST_COUPONS: Record<string, string> = {
+      "HKTN04UP": "HKTn04up",
+      "TESTFUNNEL": "HKTn04up",
+    };
+
+    // Create promotion codes if they don't already exist
+    for (const [code, couponId] of Object.entries(TEST_COUPONS)) {
+      try {
+        const existing = await stripe.promotionCodes.list({ code, limit: 1 });
+        if (existing.data.length === 0) {
+          await stripe.promotionCodes.create({ coupon: couponId, code });
+          console.log(`[create-checkout] Created promo code: ${code}`);
+        }
+      } catch (e) {
+        console.log(`[create-checkout] Promo code ${code} setup skipped:`, e);
+      }
+    }
+
     const sessionParams: any = {
       line_items: [{ price: PRICE_MAP[tier], quantity: 1 }],
       mode: isSubscription ? "subscription" : "payment",
@@ -48,8 +67,10 @@ serve(async (req) => {
       allow_promotion_codes: true,
     };
 
-    // Apply coupon directly if provided
+    // Apply coupon directly if provided from frontend
     if (coupon) {
+      // Remove allow_promotion_codes when applying discount directly (they conflict)
+      delete sessionParams.allow_promotion_codes;
       if (isSubscription) {
         sessionParams.subscription_data = { coupon };
       } else {
