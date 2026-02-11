@@ -27,6 +27,7 @@ import ClipperDashboard from "./pages/ClipperDashboard";
 import ClipperAdmin from "./pages/ClipperAdmin";
 import Experts from "./pages/Experts";
 import GratitudeClippers from "./pages/GratitudeClippers";
+import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +64,7 @@ const App = () => (
           <Route path="/admin/clippers" element={<ClipperAdmin />} />
           <Route path="/experts" element={<Experts />} />
           <Route path="/Gratitude-Clippers" element={<GratitudeClippers />} />
+          <Route path="/privacy" element={<Privacy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
