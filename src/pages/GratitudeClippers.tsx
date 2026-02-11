@@ -16,6 +16,7 @@ import InspirationGallery from "@/components/contest/InspirationGallery";
 import ProcessCta from "@/components/contest/ProcessCta";
 import ClipperFaq from "@/components/contest/ClipperFaq";
 import First25kAccelerator from "@/components/contest/First25kAccelerator";
+import StickyClipperBar from "@/components/contest/StickyClipperBar";
 
 const GratitudeClippers = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
@@ -98,6 +99,8 @@ const GratitudeClippers = () => {
         onClose={() => setShowSignupModal(false)}
         onSuccess={handleSignupSuccess}
       />
+
+      <StickyClipperBar onJoin={openSignup} />
     </div>
   );
 };
