@@ -61,12 +61,13 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
         transition={{ duration: 0.5, delay: 0.1 }}
       >
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3 leading-tight">
-          Every Time You Look at Your Wrist, Your Brain Releases{" "}
-          <span className="text-primary">Happiness Chemicals</span> 🧠
+          Congratulations — You're About to Become a{" "}
+          <span className="text-primary">Neuro-Hacker</span> 🧠
         </h2>
         <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
-          This FREE wristband is a daily gratitude trigger. Neuroscience shows the more you're reminded to feel grateful, the{" "}
-          <span className="font-bold text-foreground">happier you become</span>.
+          From now on, every time you look at your wrist, your brain will release{" "}
+          <span className="font-bold text-foreground">happiness chemicals</span>.
+          This FREE wristband is your daily gratitude trigger — backed by neuroscience.
           Wear it. Feel it. Change.
         </p>
       </motion.div>
