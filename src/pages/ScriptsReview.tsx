@@ -514,15 +514,21 @@ const ScriptsReviewInner = () => {
             onClose={() => setVoiceSection(null)}
             agentId={ELEVENLABS_AGENT_ID}
             existingProfile={heroProfile}
+            hasExistingScripts={FRAMEWORKS.filter((f) => f.section === voiceSection.id).some((f) => !!outputs[f.id])}
             onTranscriptProcessed={(result) => {
               if (result.updatedFields.length > 0 && result.mergedProfile) {
                 setHeroProfile(result.mergedProfile);
-                // Auto-generate scripts for this section with the enriched profile
-                autoGenerateForSection(
-                  voiceSection.id,
-                  result.mergedProfile,
-                  outputs
-                );
+              }
+            }}
+            onRegenerateChoice={(choice) => {
+              if (choice === "regenerate" && voiceSection) {
+                const enrichedProfile = heroProfile;
+                if (enrichedProfile) {
+                  autoGenerateForSection(voiceSection.id, enrichedProfile, {});
+                }
+              } else if (voiceSection && heroProfile) {
+                // "keep" — still auto-gen for missing ones only
+                autoGenerateForSection(voiceSection.id, heroProfile, outputs);
               }
             }}
           />
