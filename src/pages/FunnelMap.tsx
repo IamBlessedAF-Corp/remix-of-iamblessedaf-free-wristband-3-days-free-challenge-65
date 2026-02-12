@@ -377,48 +377,49 @@ export default function FunnelMap() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* ─── Header with Logo ─── */}
-      <header className="border-b bg-card sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={logoImg} alt="IamBlessedAF" className="h-7" />
-            <div>
-              <h1 className="text-lg md:text-xl font-black text-foreground tracking-tight leading-tight">
-                🚀 Traffic → Conversion → Revenue Machine
-              </h1>
-              <p className="text-[10px] text-muted-foreground">Gratitude Engine™ · Dropbox × Ice Bucket Challenge × Supreme</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1 animate-pulse">🔴 Investor Deck</Badge>
+      {/* ─── Hero Header (Experts-style) ─── */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+        <div className="relative max-w-5xl mx-auto px-4 pt-8 pb-10 text-center">
+          <img src={logoImg} alt="IamBlessedAF" className="h-8 mx-auto mb-4" />
+          <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1 animate-pulse">
+            🔴 INVESTOR DECK · LIVE MODEL
+          </Badge>
+          <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
+            How We Turn <span className="text-primary">$3,000</span> Into a<br />
+            Self-Replicating <span className="text-primary">Revenue Engine</span>
+          </h1>
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-6 leading-relaxed">
+            <strong className="text-foreground">250 Clippers × 3,000 Views/Clip</strong> = 3M Impressions → <strong className="text-foreground">{base.visitors.toLocaleString()} Visitors</strong> → <strong className="text-primary">${base.totalRevenue.toLocaleString()} Revenue</strong> ({base.roi.toFixed(1)}x ROI)
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl mx-auto">
+            {[
+              { icon: TrendingUp, value: "27x", label: "HAPPINESS MULTIPLIER" },
+              { icon: Users, value: `K=${avgKFactor}`, label: "VIRAL K-FACTOR" },
+              { icon: DollarSign, value: `${base.roi.toFixed(1)}x`, label: "PROJECTED ROI" },
+              { icon: Heart, value: "84 yrs", label: "HARVARD STUDY" },
+            ].map((s, i) => (
+              <div key={i} className="bg-card border border-border/40 rounded-xl p-3 text-center">
+                <s.icon className="w-5 h-5 text-primary mx-auto mb-1" />
+                <p className="text-2xl font-black text-foreground">{s.value}</p>
+                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{s.label}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </header>
+      </section>
 
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* ═══ EXECUTIVE SUMMARY ═══ */}
+        {/* Growth Hacking Identity */}
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="border-primary/20 bg-gradient-to-br from-primary/[0.03] via-card to-card overflow-hidden">
+          <Card className="border-primary/20">
             <CardContent className="p-5 md:p-7">
-              <div className="mb-5">
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-foreground leading-tight tracking-tight">
-                  How We Turn $3,000 Into a <span className="text-primary">Self-Replicating Revenue Engine</span> That Feeds Millions
-                </h2>
-                <p className="text-sm md:text-base text-primary font-bold mt-2">
-                  250 Clippers × 3,000 Views/Clip = 3M Impressions → {base.visitors.toLocaleString()} Visitors → ${base.totalRevenue.toLocaleString()} Revenue ({base.roi.toFixed(1)}x ROI)
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Backed by Dr. Hawkins PhD (27x happiness multiplier) · Harvard Grant Study (84+ years) · Neuroscience-proven gratitude triggers
-                </p>
-              </div>
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                 <strong className="text-foreground">IamBlessedAF</strong> is a <strong className="text-foreground">pay-it-forward gratitude movement</strong> backed by 
                 top neuroscience PhDs. We help people feel up to <strong className="text-primary">27x happier</strong> (Dr. Hawkins PhD) by installing advanced neuro-hack triggers 
                 to spark gratitude conversations. Backed by <strong className="text-foreground">Harvard's Grant Study (84+ years)</strong>, we scale the quality of your relationships.
               </p>
-              
-              {/* Growth Hacking Identity */}
-              <div className="bg-foreground/5 border border-foreground/10 rounded-xl p-4 mb-4">
+              <div className="bg-foreground/5 border border-foreground/10 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Megaphone className="w-4 h-4 text-primary" />
                   <span className="text-xs font-black text-foreground uppercase tracking-wider">Growth Hacking Campaign</span>
@@ -427,21 +428,6 @@ export default function FunnelMap() {
                   Mixing <strong className="text-foreground">Dropbox's viral referral engine</strong> × <strong className="text-foreground">Ice Bucket Challenge's emotional virality</strong> × <strong className="text-foreground">Supreme's scarcity model</strong> — powered by the <strong className="text-primary">Andrew Tate Clippers Formula</strong>. 
                   Pay creators per clip, each clip drives traffic, each visitor enters a conversion funnel with built-in K-factor loops.
                 </p>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                {[
-                  { label: "Hawkins Scale", value: "27x", sub: "Happiness multiplier" },
-                  { label: "Daily Habit", value: "3 min", sub: "Neuro-rewiring trigger" },
-                  { label: "Harvard Study", value: "84 yrs", sub: "Longest research ever" },
-                  { label: "Viral K-Factor", value: `K=${avgKFactor}`, sub: "Built-in friend loop" },
-                ].map((m, i) => (
-                  <div key={i} className="bg-background border border-border/40 rounded-lg p-3 text-center">
-                    <p className="text-lg font-black text-primary">{m.value}</p>
-                    <p className="text-[10px] font-bold text-foreground uppercase tracking-wider">{m.label}</p>
-                    <p className="text-[9px] text-muted-foreground">{m.sub}</p>
-                  </div>
-                ))}
               </div>
             </CardContent>
           </Card>
