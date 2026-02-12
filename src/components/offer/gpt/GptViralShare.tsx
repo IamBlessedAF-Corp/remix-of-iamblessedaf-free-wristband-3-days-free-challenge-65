@@ -11,21 +11,21 @@ const SHARE_TEXTS = [
     emoji: "💙",
     relation: "best friend",
     text: (url: string) =>
-      `Hey! Someone who cares about you just sent you a FREE 'I Am Blessed AF' Wristband (valued at $11) 🎁 They're grateful for YOU. Claim yours here → ${url} — just cover $9.95 shipping, or grab all 3 colors for $22 with FREE shipping! 💙 #IamBlessedAF`,
+      `Hey! Someone who cares about you just sent you a FREE 'I Am Blessed AF' Wristband (valued at $11) 🎁 They're grateful for YOU. Claim yours here → ${url} — just cover shipping! 💙 #IamBlessedAF`,
   },
   {
     label: "Family",
     emoji: "❤️",
     relation: "parent or sibling",
     text: (url: string) =>
-      `Someone who loves you just sent you a FREE 'I Am Blessed AF' Wristband (valued at $11) as a gratitude gift ❤️ They wanted you to know you're appreciated. Claim it here → ${url} — just $9.95 shipping, or get the 3-pack for $22 with FREE shipping!`,
+      `Someone who loves you just sent you a FREE 'I Am Blessed AF' Wristband (valued at $11) as a gratitude gift ❤️ They wanted you to know you're appreciated. Claim it here → ${url} — just cover shipping!`,
   },
   {
     label: "Mentor",
     emoji: "🙏",
     relation: "mentor or partner",
     text: (url: string) =>
-      `You just received a FREE 'I Am Blessed AF' Wristband (valued at $11) from someone who's genuinely grateful for your impact 🙏 Claim yours → ${url} — $9.95 shipping, or upgrade to all 3 colors for $22 (free shipping). You deserve this.`,
+      `You just received a FREE 'I Am Blessed AF' Wristband (valued at $11) from someone who's genuinely grateful for your impact 🙏 Claim yours → ${url} — just cover shipping. You deserve this.`,
   },
 ];
 
@@ -86,8 +86,7 @@ const GptViralShare = ({ referralLink }: GptViralShareProps) => {
         </p>
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
           Someone you love gets a <span className="font-bold text-primary">FREE wristband (valued at $11)</span> — 
-          they just cover <span className="font-bold text-foreground">$9.95 shipping</span>, or grab all 3 for{" "}
-          <span className="font-bold text-foreground">$22 with FREE shipping</span>.
+          they just cover <span className="font-bold text-foreground">shipping</span>. Spread the gratitude! 🙏
         </p>
       </div>
 
@@ -168,7 +167,7 @@ const GptViralShare = ({ referralLink }: GptViralShareProps) => {
           🎁 Share the Blessing — Gift a FREE Wristband
         </p>
         <p className="text-xs text-muted-foreground mb-3">
-          Your friends get a FREE wristband valued at $11 — just $9.95 shipping, or 3 for $22 with free shipping.
+          Your friends get a FREE wristband valued at $11 — just cover shipping. Spread the gratitude!
         </p>
         <Button
           variant="outline"

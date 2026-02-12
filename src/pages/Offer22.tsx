@@ -23,7 +23,7 @@ const Offer22 = () => {
       ? `${senderName} Sent You a FREE Gratitude Wristband 🎁`
       : "Claim Your FREE Gratitude Wristband | I am Blessed AF",
     description: senderName
-      ? `${senderName} wants to share gratitude with you. Claim your FREE NFC-enabled wristband — just cover $9.95 shipping.`
+      ? `${senderName} wants to share gratitude with you. Claim your FREE NFC-enabled wristband — just cover shipping.`
       : "Get a FREE NFC-enabled Gratitude Wristband. Join the movement — 22 meals donated with every order.",
     image: "/og-wristband.png",
     url: "https://iamblessedaf.com/offer/22",
@@ -81,8 +81,12 @@ const Offer22 = () => {
     window.location.href = "/challenge/thanks";
   };
 
-  const handleSkipUpsell = () => {
+  const handleSingleWristbandCheckout = () => {
     startCheckout("free-wristband");
+  };
+
+  const handleSkipUpsell = () => {
+    window.location.href = "/challenge/thanks";
   };
 
   return (
@@ -113,6 +117,7 @@ const Offer22 = () => {
           {step === "upsell-22" && (
             <UpsellWristbandStep
               onCheckout={handleUpsellCheckout}
+              onSingleCheckout={handleSingleWristbandCheckout}
               onSkip={handleSkipUpsell}
               loading={loading}
             />
