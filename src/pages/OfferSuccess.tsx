@@ -46,16 +46,17 @@ const OfferSuccess = () => {
   const handleMysteryClose = () => {
     setShowMystery(false);
     // Navigate to next upsell or show portal
-    const nextUrl = tier ? NEXT_UPSELL[tier] : "";
+    const nextUrl = tier ? NEXT_UPSELL[tier] : undefined;
     if (nextUrl) {
       navigate(nextUrl);
     } else {
-      setShowPortal(true);
+      // Terminal tier (pack-4444) → go straight to portal
+      navigate("/portal");
     }
   };
 
   // If no tier or not terminal, show a loading/celebration state before mystery box
-  if (showPortal || (tier && !NEXT_UPSELL[tier])) {
+  if (showPortal) {
     return (
       <div className="min-h-screen bg-background">
         <GamificationHeader />
