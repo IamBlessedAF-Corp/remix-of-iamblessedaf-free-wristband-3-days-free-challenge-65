@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useExitIntent } from "@/hooks/useExitIntent";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
@@ -26,6 +27,9 @@ const Offer1111 = () => {
   const [showDownsell, setShowDownsell] = useState(false);
   const navigate = useNavigate();
   const { startCheckout, loading } = useStripeCheckout();
+  useExitIntent(() => {
+    if (!showDownsell) setShowDownsell(true);
+  }, { sessionKey: "offer-1111" });
 
   const handleCheckout = () => {
     startCheckout("pack-1111");
