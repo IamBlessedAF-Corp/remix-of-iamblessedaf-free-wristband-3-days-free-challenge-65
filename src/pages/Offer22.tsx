@@ -4,12 +4,13 @@ import FreeWristbandStep from "@/components/offer/FreeWristbandStep";
 import UpsellWristbandStep from "@/components/offer/UpsellWristbandStep";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
 import GratitudeSetupFlow from "@/components/challenge/GratitudeSetupFlow";
+import GratitudeIntroScreen from "@/components/challenge/GratitudeIntroScreen";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useAuth } from "@/hooks/useAuth";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 import { supabase } from "@/integrations/supabase/client";
 
-type Step = "free-wristband" | "gratitude-setup" | "upsell-22";
+type Step = "free-wristband" | "gratitude-intro" | "gratitude-setup" | "upsell-22";
 
 const Offer22 = () => {
   const [step, setStep] = useState<Step>("free-wristband");
@@ -53,12 +54,17 @@ const Offer22 = () => {
       setShowAuth(true);
       return;
     }
-    setStep("gratitude-setup");
+    setStep("gratitude-intro");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleAuthSuccess = () => {
     setShowAuth(false);
+    setStep("gratitude-intro");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleIntroComplete = () => {
     setStep("gratitude-setup");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -106,6 +112,12 @@ const Offer22 = () => {
               onCheckout={handleFreeWristbandCheckout}
               onSkip={handleSkipFree}
               senderName={senderName}
+            />
+          )}
+          {step === "gratitude-intro" && (
+            <GratitudeIntroScreen
+              onContinue={handleIntroComplete}
+              onSkip={handleGratitudeSkip}
             />
           )}
           {step === "gratitude-setup" && (
