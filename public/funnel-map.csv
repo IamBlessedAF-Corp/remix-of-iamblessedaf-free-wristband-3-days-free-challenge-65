@@ -1,0 +1,15 @@
+Step,Route,Qué se vende,Vitality Loop
+1,/,Wristband GRATIS (lead capture),Auth Gate obligatorio → 100% email capture
+2,Intro Screen,Nada (educación),Science hooks (Hawkins 27x Huberman) → credibility anchor
+3,Setup Flow,Nada (data capture),"Name Your Best Friend → referral seed plantado desde Day 0"
+4,Checkout,"1 wristband ($9.95 ship) ó 3 por $22",Guilt-trip Pay It Forward → cada wristband = 11 meals
+5,/challenge/thanks,Nada (viral activation),WhatsApp-first share + ShareMilestoneTracker (BC rewards por shares)
+6,TGF Fridays (auto),Nada (reactivation),Cron SMS semanal → gratitude msg + wristband referral link a amigo rotativo
+7,/offer/22,$22 Starter Gift Pack (3 wristbands),Stock decay counter + people viewing now FOMO
+8,/offer/111,$111 Gratitude Identity Pack (custom shirt + wristbands),Mystery Box framing + friend name personalization banner
+9,/offer/444,$444 Habit Lock Pack (1,111 meals),Chained MysteryBox transition + urgency stock (111 shirts)
+10,/offer/1111,$1,111 Kingdom Ambassador (11,111 meals),ROI math + Biblical mission framing
+11,/offer/4444,$4,444 Full Ambassador (44,444 meals),Terminal tier → Portal unlock celebration (2,000 XP + confetti)
+12,/portal,Nada (retention hub),"BC wallet, missions, leaderboard, 12-method earn hierarchy, social templates"
+Fallback,Every skip,$11/mo Gratitude Identity subscription,"DownsellModal exit-intent → tracked en exit_intent_events"
+Bonus,/Gratitude-Clippers,"Clipper payouts ($2.22–$1,111/clip)","Creator flywheel: 4-tier badges, 100 BC/clip, sprint milestones"
