@@ -283,10 +283,17 @@ const ExpertsInner = () => {
             onClose={() => setVoiceSection(null)}
             agentId={ELEVENLABS_AGENT_ID}
             existingProfile={heroProfile}
+            hasExistingScripts={FRAMEWORKS.filter((f) => f.section === voiceSection.id).some((f) => !!outputs[f.id])}
             onTranscriptProcessed={(result) => {
               if (result.updatedFields.length > 0 && result.mergedProfile) {
                 setHeroProfile(result.mergedProfile);
-                autoGenerateForSection(voiceSection.id, result.mergedProfile, outputs);
+              }
+            }}
+            onRegenerateChoice={(choice) => {
+              if (choice === "regenerate" && voiceSection && heroProfile) {
+                autoGenerateForSection(voiceSection.id, heroProfile, {});
+              } else if (voiceSection && heroProfile) {
+                autoGenerateForSection(voiceSection.id, heroProfile, outputs);
               }
             }}
           />

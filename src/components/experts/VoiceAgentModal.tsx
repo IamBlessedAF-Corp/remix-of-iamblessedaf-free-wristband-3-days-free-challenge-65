@@ -1,11 +1,12 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useConversation } from "@elevenlabs/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, MicOff, X, Loader2, Volume2, Sparkles, Check } from "lucide-react";
+import { Mic, MicOff, X, Loader2, Volume2, Sparkles, Check, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Framework, HeroProfile } from "@/data/expertFrameworks";
+import VoiceWaveform from "./VoiceWaveform";
 
 interface TranscriptMsg {
   role: string;
@@ -18,11 +19,13 @@ interface VoiceAgentModalProps {
   onClose: () => void;
   agentId: string;
   existingProfile?: HeroProfile | null;
+  hasExistingScripts?: boolean;
   onTranscriptProcessed?: (result: {
     profileUpdates: Record<string, string>;
     updatedFields: string[];
     mergedProfile: HeroProfile;
   }) => void;
+  onRegenerateChoice?: (choice: "regenerate" | "keep") => void;
 }
 
 const VoiceAgentModal = ({
@@ -31,7 +34,9 @@ const VoiceAgentModal = ({
   onClose,
   agentId,
   existingProfile,
+  hasExistingScripts = false,
   onTranscriptProcessed,
+  onRegenerateChoice,
 }: VoiceAgentModalProps) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -40,19 +45,13 @@ const VoiceAgentModal = ({
     summary: string;
   } | null>(null);
   const [transcript, setTranscript] = useState<TranscriptMsg[]>([]);
+  const [showRegenChoice, setShowRegenChoice] = useState(false);
   const transcriptRef = useRef<TranscriptMsg[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Keep ref in sync
+  useEffect(() => { transcriptRef.current = transcript; }, [transcript]);
   useEffect(() => {
-    transcriptRef.current = transcript;
-  }, [transcript]);
-
-  // Auto-scroll transcript
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [transcript]);
 
   const conversation = useConversation({
@@ -62,7 +61,6 @@ const VoiceAgentModal = ({
     },
     onDisconnect: () => {
       console.log("Disconnected from ElevenLabs agent");
-      // Auto-process transcript when conversation ends
       if (transcriptRef.current.length > 0 && !isProcessing && !processResult) {
         processTranscript(transcriptRef.current);
       }
@@ -104,9 +102,7 @@ const VoiceAgentModal = ({
           }
         );
 
-        if (error) {
-          throw new Error(error.message || "Processing failed");
-        }
+        if (error) throw new Error(error.message || "Processing failed");
 
         if (data?.updatedFields?.length > 0) {
           setProcessResult({
@@ -123,6 +119,11 @@ const VoiceAgentModal = ({
             updatedFields: data.updatedFields,
             mergedProfile: data.mergedProfile,
           });
+
+          // Show regenerate choice if section already has scripts
+          if (hasExistingScripts) {
+            setShowRegenChoice(true);
+          }
         } else {
           setProcessResult({
             updatedFields: [],
@@ -137,23 +138,18 @@ const VoiceAgentModal = ({
         setIsProcessing(false);
       }
     },
-    [existingProfile, frameworks, onTranscriptProcessed]
+    [existingProfile, frameworks, onTranscriptProcessed, hasExistingScripts]
   );
 
   const startConversation = useCallback(async () => {
     setIsConnecting(true);
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
-
       const { data, error } = await supabase.functions.invoke(
         "elevenlabs-conversation-token",
         { body: { agentId } }
       );
-
-      if (error || !data?.token) {
-        throw new Error(error?.message || "No token received");
-      }
-
+      if (error || !data?.token) throw new Error(error?.message || "No token received");
       await conversation.startSession({
         conversationToken: data.token,
         connectionType: "webrtc",
@@ -176,6 +172,16 @@ const VoiceAgentModal = ({
     }
     onClose();
   }, [conversation, onClose]);
+
+  const handleRegenChoice = (choice: "regenerate" | "keep") => {
+    setShowRegenChoice(false);
+    onRegenerateChoice?.(choice);
+    if (choice === "keep") {
+      toast.info("Keeping existing scripts. Profile updated!");
+    } else {
+      toast.success("Regenerating scripts with updated profile...");
+    }
+  };
 
   return (
     <motion.div
@@ -203,6 +209,20 @@ const VoiceAgentModal = ({
           </Button>
         </div>
 
+        {/* Waveform visualization */}
+        <AnimatePresence>
+          {conversation.status === "connected" && (
+            <div className="border-b border-border/20 bg-muted/30 py-2">
+              <VoiceWaveform
+                isActive={conversation.status === "connected"}
+                isSpeaking={conversation.isSpeaking}
+                getInputVolume={() => conversation.getInputVolume()}
+                getOutputVolume={() => conversation.getOutputVolume()}
+              />
+            </div>
+          )}
+        </AnimatePresence>
+
         {/* Transcript area */}
         <div
           ref={scrollRef}
@@ -215,21 +235,19 @@ const VoiceAgentModal = ({
               <p className="text-[10px] mt-1">
                 The agent will ask you questions and your answers will automatically update your Hero Profile.
               </p>
+              {hasExistingScripts && (
+                <p className="text-[10px] mt-2 text-primary font-medium">
+                  ⚡ This section already has scripts — you'll get the option to regenerate or keep them after the interview.
+                </p>
+              )}
             </div>
           )}
 
           {transcript.map((msg, i) => (
-            <div
-              key={i}
-              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-[80%] rounded-xl px-3 py-2 text-xs ${
-                  msg.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-foreground"
-                }`}
-              >
+            <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[80%] rounded-xl px-3 py-2 text-xs ${
+                msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
+              }`}>
                 {msg.text}
               </div>
             </div>
@@ -243,13 +261,8 @@ const VoiceAgentModal = ({
             </div>
           )}
 
-          {/* Processing indicator */}
           {isProcessing && (
-            <motion.div
-              className="flex justify-center py-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
+            <motion.div className="flex justify-center py-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 flex items-center gap-2.5">
                 <Sparkles className="w-4 h-4 text-primary animate-pulse" />
                 <span className="text-xs font-medium text-foreground">
@@ -259,13 +272,8 @@ const VoiceAgentModal = ({
             </motion.div>
           )}
 
-          {/* Processing result */}
           {processResult && (
-            <motion.div
-              className="py-3"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
+            <motion.div className="py-3" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
               <div className="bg-accent border border-primary/10 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Check className="w-4 h-4 text-green-500" />
@@ -287,17 +295,47 @@ const VoiceAgentModal = ({
               </div>
             </motion.div>
           )}
+
+          {/* Regenerate/Keep choice */}
+          {showRegenChoice && (
+            <motion.div className="py-3" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="bg-card border border-border/40 rounded-xl p-4">
+                <p className="text-xs font-bold text-foreground mb-2">
+                  This section already has scripts. What would you like to do?
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => handleRegenChoice("regenerate")}
+                    className="gap-1.5 text-xs flex-1"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    Regenerate
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRegenChoice("keep")}
+                    className="gap-1.5 text-xs flex-1"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    Keep Existing
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </div>
 
         {/* Controls */}
         <div className="px-4 py-4 border-t border-border/30 flex items-center justify-center gap-4">
           {conversation.status === "disconnected" && !isProcessing ? (
-            processResult ? (
+            processResult && !showRegenChoice ? (
               <Button onClick={handleClose} className="gap-2 rounded-full px-6">
                 <Check className="w-4 h-4" />
                 Done
               </Button>
-            ) : (
+            ) : !showRegenChoice ? (
               <Button
                 onClick={startConversation}
                 disabled={isConnecting}
@@ -320,7 +358,7 @@ const VoiceAgentModal = ({
                   </>
                 )}
               </Button>
-            )
+            ) : null
           ) : isProcessing ? (
             <Button disabled className="gap-2 rounded-full px-6">
               <Loader2 className="w-4 h-4 animate-spin" />
