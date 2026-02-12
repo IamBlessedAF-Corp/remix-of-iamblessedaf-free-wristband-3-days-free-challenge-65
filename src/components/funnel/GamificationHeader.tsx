@@ -3,8 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Flame, Heart, Globe, Users, ChevronDown, ChevronUp, Zap } from "lucide-react";
 import { useGamificationStats, useCoinEarnEvent } from "@/hooks/useGamificationStats";
 import { useFunnelProgress } from "@/hooks/useFunnelProgress";
+import { useSimulatedStats } from "@/hooks/useSimulatedStats";
 import BcCoinButton from "@/components/gamification/BcCoinButton";
 import TrophyCase from "@/components/gamification/TrophyCase";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 /** Animated rolling number */
 function RollingNumber({ value, className = "" }: { value: number; className?: string }) {
@@ -40,6 +47,7 @@ const GamificationHeader = () => {
   const { stats } = useGamificationStats();
   const { earn: coinEarn, dismiss: dismissCoinEarn } = useCoinEarnEvent();
   const { totalXp, xpJustEarned } = useFunnelProgress();
+  const simulated = useSimulatedStats();
   const [tickerIndex, setTickerIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const [hasEverExpanded, setHasEverExpanded] = useState(() => {
@@ -161,43 +169,50 @@ const GamificationHeader = () => {
             className="overflow-hidden bg-card border-b border-border"
           >
             <div className="container mx-auto px-3 py-3">
-              <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-                {/* Hearts */}
-                <StatTile
-                  icon={<Heart className="w-4 h-4 text-primary fill-primary" />}
-                  value={stats.hearts}
-                  label="Hearts"
-                />
+              <TooltipProvider delayDuration={100}>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                  {/* Hearts */}
+                  <StatTile
+                    icon={<Heart className="w-4 h-4 text-primary fill-primary" />}
+                    value={simulated.isSimulated ? simulated.participants : stats.hearts}
+                    label="Hearts"
+                    tooltip="Hearts represent the love you've spread. Every purchase, share, and blessing earns hearts."
+                  />
 
-                {/* Meals impact */}
-                <StatTile
-                  icon={<span className="text-base">🍽️</span>}
-                  value={stats.mealsImpact}
-                  label={stats.mealsImpact === 1 ? "Person fed" : "People fed"}
-                />
+                  {/* Meals impact */}
+                  <StatTile
+                    icon={<span className="text-base">🍽️</span>}
+                    value={simulated.meals}
+                    label="People fed"
+                    tooltip="Real meals donated to Feeding America. Every wristband and pack you buy feeds families in need."
+                  />
 
-                {/* Global blessings */}
-                <StatTile
-                  icon={<Globe className="w-4 h-4 text-emerald-500" />}
-                  value={stats.globalBlessings}
-                  label="Global"
-                />
+                  {/* Global blessings */}
+                  <StatTile
+                    icon={<Globe className="w-4 h-4 text-emerald-500" />}
+                    value={simulated.isSimulated ? simulated.participants : stats.globalBlessings}
+                    label="Global"
+                    tooltip="Total blessings sent worldwide by the gratitude community. Each confirmed blessing counts."
+                  />
 
-                {/* Live users */}
-                <StatTile
-                  icon={<Users className="w-4 h-4 text-muted-foreground" />}
-                  value={stats.livePeopleOnline}
-                  label="Online now"
-                  live
-                />
+                  {/* Live users */}
+                  <StatTile
+                    icon={<Users className="w-4 h-4 text-muted-foreground" />}
+                    value={stats.livePeopleOnline}
+                    label="Online now"
+                    live
+                    tooltip="People currently active in the gratitude movement right now. Updated in real time."
+                  />
 
-                {/* XP */}
-                <StatTile
-                  icon={<Zap className="w-4 h-4 text-primary" />}
-                  value={totalXp}
-                  label="XP earned"
-                />
-              </div>
+                  {/* XP */}
+                  <StatTile
+                    icon={<Zap className="w-4 h-4 text-primary" />}
+                    value={totalXp}
+                    label="XP earned"
+                    tooltip="Experience points you earn by exploring the funnel, sharing, and making purchases. More XP = more rewards!"
+                  />
+                </div>
+              </TooltipProvider>
 
               {/* Trophy case link */}
               <div className="mt-3 flex justify-center">
@@ -244,14 +259,16 @@ function StatTile({
   value,
   label,
   live,
+  tooltip,
 }: {
   icon: React.ReactNode;
   value: number;
   label: string;
   live?: boolean;
+  tooltip?: string;
 }) {
-  return (
-    <div className="flex flex-col items-center gap-1 py-1.5">
+  const content = (
+    <div className="flex flex-col items-center gap-1 py-1.5 cursor-help">
       <div className="flex items-center gap-1">
         {icon}
         <span className="font-bold text-sm tabular-nums text-foreground">
@@ -268,6 +285,17 @@ function StatTile({
         {label}
       </span>
     </div>
+  );
+
+  if (!tooltip) return content;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{content}</TooltipTrigger>
+      <TooltipContent side="bottom" className="text-xs max-w-[200px] text-center">
+        {tooltip}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
