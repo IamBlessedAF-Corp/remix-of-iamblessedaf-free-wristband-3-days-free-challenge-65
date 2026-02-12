@@ -4,6 +4,7 @@ import { ArrowRight, Brain, Heart, Quote, Zap } from "lucide-react";
 import hawkinsImg from "@/assets/hawkins-scale.jpg";
 import hubermanImg from "@/assets/author-huberman.jpg";
 import dispenzaImg from "@/assets/author-joe-dispenza.jpg";
+import robbinsImg from "@/assets/author-tony-robbins.jpg";
 import wristbandImg from "@/assets/wristband-gift.avif";
 
 interface GratitudeIntroScreenProps {
@@ -168,6 +169,41 @@ const GratitudeIntroScreen = ({ onContinue, onSkip }: GratitudeIntroScreenProps)
             </p>
             <p className="text-xs text-muted-foreground mt-2 font-semibold">
               — Dr. Joe Dispenza, Neuroscientist & Author
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Tony Robbins quote */}
+      <motion.div
+        className="bg-secondary/50 rounded-xl p-4 border border-border/50 relative overflow-hidden"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.65, duration: 0.5 }}
+      >
+        <motion.div
+          className="absolute top-0 left-0 w-1 h-full bg-primary rounded-r-full"
+          initial={{ scaleY: 0 }}
+          animate={{ scaleY: 1 }}
+          transition={{ delay: 0.85, duration: 0.4 }}
+        />
+        <div className="flex items-start gap-3">
+          <motion.img
+            src={robbinsImg}
+            alt="Tony Robbins"
+            className="w-12 h-12 rounded-full object-cover border-2 border-primary/30 flex-shrink-0"
+            whileHover={{ scale: 1.1 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          />
+          <div>
+            <Quote className="w-4 h-4 text-primary/50 mb-1" />
+            <p className="text-sm leading-relaxed text-foreground">
+              "When you are grateful,{" "}
+              <span className="font-bold text-primary">fear disappears and abundance appears</span>.
+              The quality of your life is the quality of your relationships."
+            </p>
+            <p className="text-xs text-muted-foreground mt-2 font-semibold">
+              — Tony Robbins, Peak Performance Coach
             </p>
           </div>
         </div>
