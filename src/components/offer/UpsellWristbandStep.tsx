@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Crown, ArrowRight, Sparkles, Heart, Loader2 } from "lucide-react";
+import { Crown, ArrowRight, Sparkles, Heart, Loader2, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import WristbandProductCard from "./WristbandProductCard";
 import RiskReversalGuarantee from "./RiskReversalGuarantee";
@@ -10,13 +11,30 @@ import EpiphanyBridge from "./EpiphanyBridge";
 import ImpactCounter from "./ImpactCounter";
 import ViralShareNudge from "./ViralShareNudge";
 
+type WristbandOption = "single" | "triple";
+
 interface UpsellWristbandStepProps {
   onCheckout: () => void;
+  onSingleCheckout: () => void;
   onSkip: () => void;
   loading?: boolean;
 }
 
-const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWristbandStepProps) => {
+const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = false }: UpsellWristbandStepProps) => {
+  const [selected, setSelected] = useState<WristbandOption>("triple");
+
+  const handleCta = () => {
+    if (selected === "triple") {
+      onCheckout();
+    } else {
+      onSingleCheckout();
+    }
+  };
+
+  const ctaLabel = selected === "triple"
+    ? "YES! Upgrade to 3 Wristbands — $22"
+    : "Claim My FREE Wristband — $9.95 Shipping";
+
   return (
     <>
       {/* Upsell badge */}
@@ -64,36 +82,55 @@ const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWris
       {/* Epiphany Bridge — Brunson storytelling */}
       <EpiphanyBridge />
 
-      {/* Comparison */}
+      {/* Option selector (select only, no checkout) */}
       <motion.div
         className="mb-8"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.25 }}
       >
+        <p className="text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+          Choose your option
+        </p>
         <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
-          {/* Original — clickable */}
+          {/* Single wristband */}
           <button
-            onClick={onSkip}
-            className="bg-card border border-border/50 rounded-xl p-4 text-center hover:border-border transition-colors cursor-pointer"
+            onClick={() => setSelected("single")}
+            className={`rounded-xl p-4 text-center transition-all cursor-pointer ${
+              selected === "single"
+                ? "bg-card border-2 border-foreground ring-2 ring-foreground/20"
+                : "bg-card border border-border/50 hover:border-border"
+            }`}
           >
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Just For Me</p>
             <p className="text-lg font-bold text-foreground">1 Wristband</p>
-            <p className="text-sm text-muted-foreground mt-1">FREE + $9.95 ship</p>
+            <p className="text-sm text-muted-foreground mt-1">FREE wristband</p>
+            <p className="text-xs text-primary font-semibold mt-1">$9.95 shipping only</p>
             <p className="text-xs text-muted-foreground mt-2">0 meals donated</p>
+            {selected === "single" && (
+              <div className="mt-2 text-xs font-bold text-foreground">✓ Selected</div>
+            )}
           </button>
-          {/* Upgrade */}
+          {/* Triple wristband */}
           <button
-            onClick={onCheckout}
-            className="bg-card border-2 border-primary rounded-xl p-4 text-center relative hover:bg-primary/5 transition-colors cursor-pointer"
+            onClick={() => setSelected("triple")}
+            className={`rounded-xl p-4 text-center relative transition-all cursor-pointer ${
+              selected === "triple"
+                ? "bg-card border-2 border-primary ring-2 ring-primary/20"
+                : "bg-card border border-border/50 hover:border-primary/50"
+            }`}
           >
             <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
               Best Value
             </div>
             <p className="text-xs text-primary uppercase tracking-wider mb-2 font-semibold">Pay It Forward</p>
             <p className="text-lg font-bold text-foreground">3 Wristbands</p>
-            <p className="text-sm text-primary font-bold mt-1">$22 · FREE ship</p>
+            <p className="text-sm text-primary font-bold mt-1">$22 total</p>
+            <p className="text-xs text-primary font-semibold mt-1">FREE shipping 🚀</p>
             <p className="text-xs text-primary font-semibold mt-2">🍽 22 meals donated</p>
+            {selected === "triple" && (
+              <div className="mt-2 text-xs font-bold text-primary">✓ Selected</div>
+            )}
           </button>
         </div>
       </motion.div>
@@ -118,16 +155,16 @@ const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWris
       >
         <UrgencyBanner variant="wristbands" />
         <Button
-          onClick={onCheckout}
+          onClick={handleCta}
           disabled={loading}
           className="w-full h-16 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl px-4 disabled:opacity-70 disabled:animate-none"
         >
-          {loading ? <Loader2 className="w-5 h-5 mr-2 flex-shrink-0 animate-spin" /> : <Crown className="w-5 h-5 mr-2 flex-shrink-0" />}
-          <span>{loading ? "Creating checkout…" : "Upgrade to 3 Wristbands — $22"}</span>
+          {loading ? <Loader2 className="w-5 h-5 mr-2 flex-shrink-0 animate-spin" /> : selected === "triple" ? <Crown className="w-5 h-5 mr-2 flex-shrink-0" /> : <Gift className="w-5 h-5 mr-2 flex-shrink-0" />}
+          <span>{loading ? "Creating checkout…" : ctaLabel}</span>
           {!loading && <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />}
         </Button>
         <p className="text-center text-xs text-muted-foreground mt-4">
-          🔒 Secure checkout • Free US Shipping • 22 meals donated instantly
+          🔒 Secure checkout {selected === "triple" ? "• Free US Shipping • 22 meals donated instantly" : "• $9.95 covers shipping & handling"}
         </p>
         <RiskReversalGuarantee />
       </motion.div>
@@ -183,16 +220,16 @@ const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWris
         transition={{ delay: 1.0 }}
       >
         <Button
-          onClick={onCheckout}
+          onClick={handleCta}
           disabled={loading}
           className="w-full h-16 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl px-4 disabled:opacity-70 disabled:animate-none"
         >
-          {loading ? <Loader2 className="w-5 h-5 mr-2 flex-shrink-0 animate-spin" /> : <Crown className="w-5 h-5 mr-2 flex-shrink-0" />}
-          <span>{loading ? "Creating checkout…" : "Upgrade to 3 Wristbands — $22"}</span>
+          {loading ? <Loader2 className="w-5 h-5 mr-2 flex-shrink-0 animate-spin" /> : selected === "triple" ? <Crown className="w-5 h-5 mr-2 flex-shrink-0" /> : <Gift className="w-5 h-5 mr-2 flex-shrink-0" />}
+          <span>{loading ? "Creating checkout…" : ctaLabel}</span>
           {!loading && <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />}
         </Button>
         <p className="text-center text-xs text-muted-foreground mt-4">
-          🔒 Secure checkout • Free US Shipping
+          🔒 Secure checkout {selected === "triple" ? "• Free US Shipping" : "• $9.95 shipping only"}
         </p>
         <RiskReversalGuarantee />
       </motion.div>
@@ -208,16 +245,16 @@ const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWris
         transition={{ delay: 1.2 }}
       >
         <Button
-          onClick={onCheckout}
+          onClick={handleCta}
           disabled={loading}
           className="w-full h-16 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl px-4 disabled:opacity-70 disabled:animate-none"
         >
-          {loading ? <Loader2 className="w-5 h-5 mr-2 flex-shrink-0 animate-spin" /> : <Crown className="w-5 h-5 mr-2 flex-shrink-0" />}
-          <span>{loading ? "Creating checkout…" : "Upgrade to 3 Wristbands — $22"}</span>
+          {loading ? <Loader2 className="w-5 h-5 mr-2 flex-shrink-0 animate-spin" /> : selected === "triple" ? <Crown className="w-5 h-5 mr-2 flex-shrink-0" /> : <Gift className="w-5 h-5 mr-2 flex-shrink-0" />}
+          <span>{loading ? "Creating checkout…" : ctaLabel}</span>
           {!loading && <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />}
         </Button>
         <p className="text-center text-xs text-muted-foreground mt-4">
-          🔒 Secure checkout • Free US Shipping
+          🔒 Secure checkout {selected === "triple" ? "• Free US Shipping" : "• $9.95 shipping only"}
         </p>
         <RiskReversalGuarantee />
       </motion.div>
@@ -237,9 +274,9 @@ const UpsellWristbandStep = ({ onCheckout, onSkip, loading = false }: UpsellWris
           <div className="h-px bg-border/40" />
           <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground text-center">
             <p>🔒 256-bit SSL Encrypted · Secure Payment · Your data is never shared</p>
-            <p>📦 100% Satisfaction Guaranteed · Free US Shipping · Intl $14.95 Flat · 7–14 day delivery</p>
+            <p>📦 100% Satisfaction Guaranteed · 7–14 day delivery</p>
             <p>💳 One-time payment. No subscriptions. No hidden fees.</p>
-            <p>🍽 22 meals donated to Feeding America with every pack</p>
+            <p>🍽 22 meals donated to Feeding America with every 3-pack</p>
           </div>
         </div>
       </motion.div>
