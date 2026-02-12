@@ -7,8 +7,22 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, FunnelChart, Funnel, LabelList, Cell, LineChart, Line, Legend, PieChart, Pie } from "recharts";
-import { TrendingUp, Users, DollarSign, Eye, Video, ArrowRight, ArrowDown, Zap, Target, BarChart3, Settings2, Sparkles } from "lucide-react";
+import { TrendingUp, Users, DollarSign, Eye, Video, ArrowRight, ArrowDown, Zap, Target, BarChart3, Settings2, Sparkles, Gift, Brain, Share2, Repeat, MessageSquare, Crown, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
+
+/* ─── Vitality Loop annotations per step ─── */
+const VITALITY_LOOPS: Record<number, { label: string; icon: any; kFactor?: string }> = {
+  1: { label: "Auth Gate → 100% capture", icon: Gift, kFactor: "K=1.0" },
+  2: { label: "Science hooks → credibility", icon: Brain },
+  3: { label: "Friend naming → referral seed", icon: Users, kFactor: "K=3.0" },
+  4: { label: "Pay It Forward guilt loop", icon: Share2, kFactor: "K=1.5" },
+  5: { label: "WhatsApp viral share", icon: MessageSquare, kFactor: "K=2.7" },
+  6: { label: "Stock decay FOMO", icon: Zap },
+  7: { label: "Mystery Box framing", icon: Gift },
+  8: { label: "Chained transition", icon: Repeat },
+  9: { label: "ROI math + mission", icon: Crown },
+  10: { label: "Portal unlock celebration", icon: Crown },
+};
 
 /* ─── Funnel Steps Definition ─── */
 const FUNNEL_STEPS = [
@@ -148,34 +162,128 @@ export default function FunnelMap() {
           </div>
         </motion.section>
 
-        {/* ═══ SECTION 2: Visual Funnel Flowchart ═══ */}
+        {/* ═══ SECTION 2: Hormozi-Style Funnel Flow with K-Factor ═══ */}
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> Funnel Flow</CardTitle>
-              <CardDescription>Visual progression from lead capture to Ambassador</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap items-center gap-1 md:gap-0 justify-center py-2">
-                {FUNNEL_STEPS.map((step, i) => (
-                  <div key={step.id} className="flex items-center">
-                    <div className="flex flex-col items-center text-center w-20 md:w-24">
-                      <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold border-2 ${i <= 4 ? "border-primary bg-primary/10 text-primary" : "border-muted-foreground/30 bg-muted text-muted-foreground"}`}>
-                        {step.id}
-                      </div>
-                      <span className="text-[10px] font-medium text-foreground mt-1 leading-tight">{step.name}</span>
-                      <span className="text-[9px] text-muted-foreground leading-tight">{Math.round(getConv(step) * 100)}%</span>
-                    </div>
-                    {i < FUNNEL_STEPS.length - 1 && (
-                      <ArrowRight className="h-3 w-3 text-muted-foreground/40 shrink-0 hidden md:block" />
-                    )}
-                  </div>
-                ))}
+          <Card className="overflow-hidden">
+            <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-transparent">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> Funnel Flow & Vitality Engine</CardTitle>
+                  <CardDescription>Each step has a built-in growth loop — K-factor shows viral multiplier</CardDescription>
+                </div>
+                <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">
+                  <RefreshCw className="w-3 h-3 mr-1" /> K-Factor Enabled
+                </Badge>
               </div>
-              {/* Downsell annotation */}
-              <div className="flex items-center justify-center gap-2 mt-2 text-[10px] text-muted-foreground">
-                <ArrowDown className="h-3 w-3" />
-                <span>Every skip triggers $11/mo downsell (≈{Math.round(DOWNSELL_RATE * 100)}% accept)</span>
+            </CardHeader>
+            <CardContent className="p-4 md:p-6">
+              {/* Vertical funnel — mobile-first, Hormozi board style */}
+              <div className="space-y-0">
+                {FUNNEL_STEPS.map((step, i) => {
+                  const vitality = VITALITY_LOOPS[step.id];
+                  const VIcon = vitality?.icon || Zap;
+                  const isRevenue = TIER_PRICES[i] > 0;
+                  const baseStep = base.steps[i];
+
+                  return (
+                    <div key={step.id}>
+                      {/* Step row */}
+                      <motion.div
+                        className={`flex items-stretch gap-3 md:gap-4 rounded-xl p-3 md:p-4 transition-colors ${
+                          isRevenue ? "bg-primary/[0.03] border border-primary/10" : "bg-transparent"
+                        }`}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.04 }}
+                      >
+                        {/* Step number column */}
+                        <div className="flex flex-col items-center shrink-0">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black border-2 ${
+                            isRevenue
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : i <= 4
+                              ? "border-primary/40 bg-primary/10 text-primary"
+                              : "border-border bg-muted text-muted-foreground"
+                          }`}>
+                            {step.id}
+                          </div>
+                          {i < FUNNEL_STEPS.length - 1 && (
+                            <div className="w-0.5 flex-1 min-h-[12px] bg-border mt-1" />
+                          )}
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0 pb-1">
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <div>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h3 className="text-sm font-bold text-foreground">{step.name}</h3>
+                                {isRevenue && (
+                                  <Badge className="text-[9px] bg-primary/10 text-primary border-primary/20 px-1.5 py-0">
+                                    ${TIER_PRICES[i]}
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-[11px] text-muted-foreground mt-0.5">{step.sells}</p>
+                            </div>
+                            {/* Conversion badge */}
+                            <div className="text-right shrink-0">
+                              <span className={`text-xs font-bold ${
+                                getConv(step) >= 0.5 ? "text-primary" : getConv(step) >= 0.1 ? "text-foreground" : "text-muted-foreground"
+                              }`}>
+                                {Math.round(getConv(step) * 100)}%
+                              </span>
+                              <p className="text-[9px] text-muted-foreground">
+                                {baseStep?.entering.toLocaleString()} → {baseStep?.converted.toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Vitality Loop pill */}
+                          {vitality && (
+                            <div className="flex items-center gap-1.5 mt-1.5">
+                              <div className="flex items-center gap-1 bg-accent border border-primary/10 rounded-full px-2 py-0.5">
+                                <VIcon className="w-3 h-3 text-primary" />
+                                <span className="text-[10px] font-medium text-accent-foreground">{vitality.label}</span>
+                              </div>
+                              {vitality.kFactor && (
+                                <span className="text-[9px] font-black text-primary bg-primary/10 rounded-full px-1.5 py-0.5">
+                                  {vitality.kFactor}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+
+                      {/* Downsell branch annotation (after tier steps) */}
+                      {i >= 5 && i < FUNNEL_STEPS.length - 1 && (
+                        <div className="flex items-center gap-3 ml-5 pl-[14px] border-l-2 border-dashed border-muted-foreground/20 py-1">
+                          <div className="flex items-center gap-1 text-[9px] text-muted-foreground">
+                            <ArrowDown className="w-3 h-3" />
+                            <span>Skip → $11/mo downsell ({Math.round(DOWNSELL_RATE * 100)}%)</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Summary footer */}
+              <div className="mt-5 pt-4 border-t border-border/40 grid grid-cols-3 gap-3">
+                <div className="text-center">
+                  <p className="text-lg font-black text-primary">{base.visitors.toLocaleString()}</p>
+                  <p className="text-[10px] text-muted-foreground font-medium">Funnel Entry</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-lg font-black text-foreground">{base.steps[base.steps.length - 1]?.converted || 0}</p>
+                  <p className="text-[10px] text-muted-foreground font-medium">Ambassadors</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-lg font-black text-primary">${base.totalRevenue.toLocaleString()}</p>
+                  <p className="text-[10px] text-muted-foreground font-medium">Projected Revenue</p>
+                </div>
               </div>
             </CardContent>
           </Card>
