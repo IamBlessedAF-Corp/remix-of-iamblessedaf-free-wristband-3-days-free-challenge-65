@@ -158,7 +158,7 @@ export default function MysteryBox({ show, onClose }: MysteryBoxProps) {
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-white/30 text-white hover:bg-white/10"
+                  className="border-white/50 text-white bg-white/15 hover:bg-white/25 backdrop-blur-sm font-bold"
                   onClick={() => {
                     if (navigator.share) {
                       navigator.share({
