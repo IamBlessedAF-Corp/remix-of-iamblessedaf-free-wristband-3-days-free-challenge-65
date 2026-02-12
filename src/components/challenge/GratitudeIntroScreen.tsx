@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Brain, Heart, Quote, Zap } from "lucide-react";
@@ -13,6 +14,15 @@ interface GratitudeIntroScreenProps {
 }
 
 const GratitudeIntroScreen = ({ onContinue, onSkip }: GratitudeIntroScreenProps) => {
+  const quotesRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      quotesRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const steps = [
     { label: "Why It Works", active: true },
     { label: "Name Your Friend", active: false },
@@ -106,6 +116,7 @@ const GratitudeIntroScreen = ({ onContinue, onSkip }: GratitudeIntroScreenProps)
 
       {/* Huberman quote */}
       <motion.div
+        ref={quotesRef}
         className="bg-secondary/50 rounded-xl p-4 border border-border/50 relative overflow-hidden"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
