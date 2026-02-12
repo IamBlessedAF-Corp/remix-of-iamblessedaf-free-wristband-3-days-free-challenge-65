@@ -28,6 +28,7 @@ import ClipperAdmin from "./pages/ClipperAdmin";
 import Experts from "./pages/Experts";
 import ScriptsReview from "./pages/ScriptsReview";
 import GratitudeClippers from "./pages/GratitudeClippers";
+import FunnelMap from "./pages/FunnelMap";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -75,6 +76,7 @@ const App = () => (
           <Route path="/experts" element={<Experts />} />
           <Route path="/scripts-review" element={<ScriptsReview />} />
           <Route path="/Gratitude-Clippers" element={<GratitudeClippers />} />
+          <Route path="/funnel-map" element={<FunnelMap />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
