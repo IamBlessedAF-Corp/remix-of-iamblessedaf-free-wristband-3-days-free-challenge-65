@@ -12,6 +12,12 @@ interface GratitudeIntroScreenProps {
 }
 
 const GratitudeIntroScreen = ({ onContinue, onSkip }: GratitudeIntroScreenProps) => {
+  const steps = [
+    { label: "Why It Works", active: true },
+    { label: "Name Your Friend", active: false },
+    { label: "Claim Wristband", active: false },
+  ];
+
   return (
     <motion.div
       className="space-y-6 max-w-lg mx-auto"
@@ -19,6 +25,30 @@ const GratitudeIntroScreen = ({ onContinue, onSkip }: GratitudeIntroScreenProps)
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Step indicator */}
+      <div className="flex items-center justify-center gap-2">
+        {steps.map((s, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <div
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                  s.active
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {i + 1}
+              </div>
+              <span className={`text-xs font-medium ${s.active ? "text-foreground" : "text-muted-foreground"}`}>
+                {s.label}
+              </span>
+            </div>
+            {i < steps.length - 1 && (
+              <div className="w-6 h-px bg-border" />
+            )}
+          </div>
+        ))}
+      </div>
       {/* Hook headline */}
       <div className="text-center space-y-3">
         <motion.div
