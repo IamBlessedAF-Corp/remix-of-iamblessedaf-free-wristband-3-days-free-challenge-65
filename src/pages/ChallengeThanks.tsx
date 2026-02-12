@@ -114,6 +114,12 @@ const ChallengeThanks = () => {
   const youtubeText = `🎁 Gift a FREE Wristband to Someone You're Grateful For!\n\nSend a FREE "I Am Blessed AF" wristband ($11 value) to someone you care about.\n\n✅ Waterproof nylon — wear it daily as a gratitude trigger\n💰 PLUS they can join the 3-Day Gratitude Challenge & win $1,111!\n\nSend the gift: ${shareUrl}`;
   const twitterText = `🎁 Just sent someone a FREE wristband because I'm grateful for them!\n\n✅ $11 value — waterproof nylon gratitude trigger\n💰 + FREE 3-Day Challenge to win $1,111\n\nSend one to someone you love 👇`;
   const facebookText = `🎁 I just sent someone a FREE "I Am Blessed AF" wristband ($11 value) because I'm grateful for them! Waterproof nylon you wear daily as a gratitude trigger. PLUS they can join the FREE 3-Day Gratitude Challenge and win $1,111! Send one to someone you love 🙏`;
+  const whatsappText = `🎁 I just blessed someone with a FREE wristband! 🙏\n\nEach one helps feed 11 people when you wear it.\n\nGet yours FREE here: ${shareUrl}`;
+
+  const shareToWhatsApp = () => {
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
+    window.open(waUrl, "_blank");
+  };
 
   const shareToTikTok = () => {
     navigator.clipboard.writeText(tiktokText);
@@ -362,12 +368,22 @@ const ChallengeThanks = () => {
             <Button
               variant="default"
               size="sm"
+              onClick={shareToWhatsApp}
+              className="bg-[hsl(120_100%_50%)] hover:bg-[hsl(120_100%_40%)] text-white"
+            >
+              <span className="ml-2">💬 WhatsApp</span>
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
               onClick={shareToTikTok}
               className="bg-foreground hover:bg-foreground/90 text-background"
             >
               <TikTokIcon />
               <span className="ml-2">TikTok</span>
             </Button>
+          </div>
+          <div className="grid grid-cols-2 gap-2 mb-3">
             <Button
               variant="default"
               size="sm"
@@ -377,8 +393,6 @@ const ChallengeThanks = () => {
               <InstagramIcon />
               <span className="ml-2">Instagram</span>
             </Button>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -388,6 +402,8 @@ const ChallengeThanks = () => {
               <YouTubeIcon />
               <span className="ml-1.5 text-xs">YouTube</span>
             </Button>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
             <Button variant="outline" size="sm" onClick={shareToTwitter}>
               <TwitterIcon />
               <span className="ml-1.5 text-xs">X</span>
