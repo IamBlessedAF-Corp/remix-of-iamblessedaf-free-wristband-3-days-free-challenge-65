@@ -148,7 +148,7 @@ const Index = () => {
             </Button>
 
             <p className="text-xs text-muted-foreground mt-3">
-              100% Free • Just cover shipping • 22 meals donated with every order
+              100% Free • 22 meals donated with every order
             </p>
           </motion.div>
         </motion.div>

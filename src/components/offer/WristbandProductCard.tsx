@@ -42,7 +42,7 @@ const WristbandProductCard = ({ delay = 0 }: { delay?: number }) => {
                 3 Trigger Reminders Wristbands
               </h3>
               <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">
-                NFC Tap · Share Custom Link · Waterproof Silicone
+                Waterproof Nylon · One-Size-Fits-All · Debossed
               </p>
             </div>
 

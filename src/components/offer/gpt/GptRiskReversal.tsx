@@ -16,9 +16,9 @@ const GptRiskReversal = ({ delay = 0 }: { delay?: number }) => {
           <div className="flex items-start gap-2.5 text-sm text-foreground">
             <span className="text-base flex-shrink-0">💛</span>
             <span>
-              <span className="font-bold">30-Day Happiness Promise:</span>{" "}
+              <span className="font-bold">Happiness Promise:</span>{" "}
               <span className="text-muted-foreground">
-                Send 3 gratitude texts, wear the shirt for 3 days. If you don't feel the shift — full refund. Keep the donated meals as our gift.
+                Send 3 gratitude texts, wear the shirt for 3 days. If you don't feel the shift — we donate 11 meals through Feeding America under your name.
               </span>
             </span>
           </div>

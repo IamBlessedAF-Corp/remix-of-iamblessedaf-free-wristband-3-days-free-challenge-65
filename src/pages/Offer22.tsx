@@ -24,8 +24,8 @@ const Offer22 = () => {
       ? `${senderName} Sent You a FREE Gratitude Wristband 🎁`
       : "Claim Your FREE Gratitude Wristband | I am Blessed AF",
     description: senderName
-      ? `${senderName} wants to share gratitude with you. Claim your FREE NFC-enabled wristband — just cover shipping.`
-      : "Get a FREE NFC-enabled Gratitude Wristband. Join the movement — 22 meals donated with every order.",
+       ? `${senderName} wants to share gratitude with you. Claim your FREE Gratitude Wristband and join the movement.`
+       : "Get a FREE Gratitude Wristband. Join the movement — 22 meals donated with every order.",
     image: "/og-wristband.png",
     url: "https://iamblessedaf.com/offer/22",
   });

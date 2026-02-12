@@ -20,7 +20,7 @@ const VALUES = [
     title: "111× Trigger Wristbands — Value: $1,221",
     description:
       "111 bands to give away everywhere — family reunions, the office, your gym, church, school. Turn your entire circle into a gratitude network.",
-    sub: "Silicone · One-size-fits-all · IamBlessedAF debossed",
+    sub: "Waterproof nylon · One-size-fits-all · IamBlessedAF debossed",
   },
   {
     emoji: "❤️",

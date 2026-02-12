@@ -89,7 +89,7 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
                 1 Blessed Wristband
               </h3>
               <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">
-                NFC Tap · Share Custom Link · Waterproof Silicone
+                Waterproof Nylon · One-Size-Fits-All · Debossed
               </p>
             </div>
 
@@ -100,7 +100,7 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
 
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground pt-1">
               <Truck className="w-3.5 h-3.5 text-primary" />
-              <span>Ships worldwide 🌍 · Waterproof silicone · NFC enabled</span>
+              <span>Ships worldwide 🌍 · Waterproof nylon · One-size-fits-all</span>
             </div>
           </div>
         </div>
@@ -121,9 +121,6 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
           <span>Claim My FREE Wristband</span>
           <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
         </Button>
-        <p className="text-center text-xs text-muted-foreground mt-4">
-          🔒 Secure checkout · Your wristband is 100% free — only cover delivery
-        </p>
         <RiskReversalGuarantee />
       </motion.div>
 
@@ -141,9 +138,8 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
           </div>
           <div className="h-px bg-border/40" />
           <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground text-center">
-            <p>🔒 256-bit SSL Encrypted · Secure Payment · Your data is never shared</p>
-            <p>📦 7–14 day delivery · Waterproof silicone · NFC enabled</p>
-            <p>💳 One-time shipping fee. No subscriptions. No hidden fees.</p>
+            <p>📦 7–14 day delivery · Waterproof nylon · One-size-fits-all</p>
+            <p>🍽 11 meals donated to Feeding America with every wristband</p>
           </div>
         </div>
       </motion.div>

@@ -7,7 +7,7 @@ const RiskReversalGuarantee = () => (
       Happiness Guarantee
     </div>
     <p className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto">
-      Send the 3 Gratitude texts and use the pack for at least 3 days. If you don't feel happier after receiving responses from your loved ones — full refund, no questions asked.
+      Send the 3 Gratitude texts and use the pack for at least 3 days. If you don't feel happier after receiving responses from your loved ones — we will donate 11 meals through Feeding America under your name.
     </p>
   </div>
 );
