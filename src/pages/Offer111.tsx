@@ -90,7 +90,7 @@ const Offer111 = () => {
                 <div className="h-3" />
                   <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
                     {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
-                    {loading ? "Creating checkout…" : friendName ? `YES! Send ${friendName} the Full Gratitude Pack!` : "YES! Feed 11 People & Claim My $111 Pack Now!"}
+                    {loading ? "Creating checkout…" : friendName ? `YES! Send ${friendName} the Full Gratitude Pack!` : "YES! Claim My Custom Shirt Now!"}
                     {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
                   </Button>
                 <div className="flex items-center justify-center gap-2 mt-3 mb-1">
@@ -121,7 +121,7 @@ const Offer111 = () => {
                     <div className="h-3" />
                     <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
                       {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
-                      {loading ? "Creating checkout…" : "YES! Feed 11 People & Claim My $111 Pack Now!"}
+                      {loading ? "Creating checkout…" : "YES! Claim My Custom Shirt Now!"}
                       {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
                     </Button>
                     <div className="flex items-center justify-center gap-2 mt-3 mb-1">
@@ -167,7 +167,7 @@ const Offer111 = () => {
                 <div className="h-3" />
                 <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
                   {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
-                  {loading ? "Creating checkout…" : "YES! Feed 11 People & Claim My $111 Pack Now!"}
+                  {loading ? "Creating checkout…" : "YES! Claim My Custom Shirt Now!"}
                   {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
                 </Button>
                 <div className="flex items-center justify-center gap-2 mt-3 mb-1">
@@ -188,7 +188,7 @@ const Offer111 = () => {
                 <div className="h-3" />
                 <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
                   {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
-                  {loading ? "Creating checkout…" : "YES! Feed 11 People & Claim My $111 Pack Now!"}
+                  {loading ? "Creating checkout…" : "YES! Claim My Custom Shirt Now!"}
                   {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
                 </Button>
                 <div className="flex items-center justify-center gap-2 mt-3 mb-1">
