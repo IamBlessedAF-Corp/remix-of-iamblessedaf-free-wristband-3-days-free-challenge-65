@@ -26,8 +26,8 @@ const VALUES = [
     emoji: "❤️",
     title: "11,111 Meals Donated — Value: Priceless",
     description:
-      "Not 11. Not 1,111. Eleven thousand one hundred eleven meals. That's a small town fed — because of you. No bad day survives that legacy.",
-    sub: "Backed by Feeding America",
+      "Not 11. Not 1,111. Eleven thousand one hundred eleven meals — donated to Tony Robbins' \"1 Billion Meals Challenge\" in honor of Andrew Huberman's discoveries in the Neuroscience of Gratitude. That's a small town fed — because of you.",
+    sub: "Tony Robbins' 1 Billion Meals Challenge · Honoring Huberman's Research",
   },
   {
     emoji: "🧠",
