@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
+import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -21,6 +22,11 @@ const PRICE_MAP: Record<string, string> = {
 /** Tiers that use subscription mode */
 const SUBSCRIPTION_TIERS = new Set(["monthly-11"]);
 
+/** Tiers that require shipping */
+const SHIPPING_TIERS = new Set([
+  "free-wristband", "wristband-22", "pack-111", "pack-444", "pack-1111", "pack-4444",
+]);
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -36,8 +42,34 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil",
     });
 
+    // Try to get user email from auth token
+    let customerEmail: string | undefined;
+    let customerId: string | undefined;
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader) {
+      try {
+        const supabaseClient = createClient(
+          Deno.env.get("SUPABASE_URL") ?? "",
+          Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+        );
+        const token = authHeader.replace("Bearer ", "");
+        const { data } = await supabaseClient.auth.getUser(token);
+        if (data.user?.email) {
+          customerEmail = data.user.email;
+          // Check if Stripe customer already exists
+          const customers = await stripe.customers.list({ email: customerEmail, limit: 1 });
+          if (customers.data.length > 0) {
+            customerId = customers.data[0].id;
+          }
+        }
+      } catch (e) {
+        console.log("[create-checkout] Auth lookup skipped:", e);
+      }
+    }
+
     const origin = req.headers.get("origin") || "https://funnel-architect-ai-30.lovable.app";
     const isSubscription = SUBSCRIPTION_TIERS.has(tier);
+    const needsShipping = SHIPPING_TIERS.has(tier);
 
     // Ensure promotion codes exist for our test coupons
     const TEST_COUPONS: Record<string, string> = {
@@ -45,7 +77,6 @@ serve(async (req) => {
       "TESTFUNNEL": "HKTn04up",
     };
 
-    // Create promotion codes if they don't already exist
     for (const [code, couponId] of Object.entries(TEST_COUPONS)) {
       try {
         const existing = await stripe.promotionCodes.list({ code, limit: 1 });
@@ -67,9 +98,27 @@ serve(async (req) => {
       allow_promotion_codes: true,
     };
 
+    // Pre-fill customer email or attach existing Stripe customer
+    if (customerId) {
+      sessionParams.customer = customerId;
+    } else if (customerEmail) {
+      sessionParams.customer_email = customerEmail;
+    }
+
+    // Collect shipping address for physical product tiers
+    if (needsShipping) {
+      sessionParams.shipping_address_collection = {
+        allowed_countries: [
+          "US", "CA", "MX", "GB", "DE", "FR", "ES", "IT", "NL", "AU",
+          "BR", "CO", "AR", "CL", "PE", "JP", "KR", "IN", "PH", "SG",
+          "AE", "SA", "ZA", "NG", "SE", "NO", "DK", "FI", "IE", "PT",
+          "AT", "CH", "BE", "PL", "CZ", "NZ", "IL", "TH", "MY", "HK",
+        ],
+      };
+    }
+
     // Apply coupon directly if provided from frontend
     if (coupon) {
-      // Remove allow_promotion_codes when applying discount directly (they conflict)
       delete sessionParams.allow_promotion_codes;
       if (isSubscription) {
         sessionParams.subscription_data = { coupon };
