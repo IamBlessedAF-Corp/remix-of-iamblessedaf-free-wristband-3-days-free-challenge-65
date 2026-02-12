@@ -8,12 +8,15 @@ import { Separator } from "@/components/ui/separator";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   TrendingUp, Users, DollarSign, Eye, Video, ArrowRight, ArrowDown, Zap, Target, BarChart3,
   Settings2, Sparkles, Gift, Brain, Share2, Repeat, MessageSquare, Crown, RefreshCw,
-  Info, Calculator, Rocket, Snowflake, Heart, Star, ShoppingBag, Megaphone
+  Info, Calculator, Rocket, Snowflake, Heart, Star, ShoppingBag, Megaphone, ChevronDown,
+  ExternalLink, Mail, Phone, Smartphone, Trophy, Gauge, UserPlus, BookOpen
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import logoImg from "@/assets/logo-iamblessedaf.png";
 
 /* ─── Metric Tooltip Component ─── */
@@ -28,25 +31,122 @@ const MetricLabel = ({ label, tip }: { label: string; tip: string }) => (
   </Tooltip>
 );
 
+/* ─── Pre-Funnel: Viral Lead Gen Strategies ─── */
+const PRE_FUNNEL_STEPS = [
+  {
+    id: 0.1, route: "/experts-leads", name: "Expert Enrollment", sells: "Lead capture for coaches & consultants", defaultConv: 0.45, icon: BookOpen,
+    vitality: "Neuroscience hooks → authority positioning", kFactor: "K=1.8",
+    subtitle: "Captures coaches/consultants via Hawkins, Huberman, Dispenza authority hooks. Automated branded welcome email triggers on signup.",
+    emotional: "🧠 Identity shift: 'I'm a certified gratitude expert'",
+    touchpoints: ["✉️ Auto welcome email (Resend)", "📊 Admin dashboard /admin/experts", "🎯 Status tracking: New → Contacted → Converted"],
+    dashboard: "Admin sees all leads at /admin/experts with search, filter by status, and CSV export."
+  },
+  {
+    id: 0.2, route: "/Gratitude-Clippers", name: "Clipper Campaign", sells: "Creator recruitment — $2.22–$1,111/clip", defaultConv: 0.38, icon: Video,
+    vitality: "Andrew Tate Formula → paid viral content engine", kFactor: "K=4.2",
+    subtitle: "Recruits content creators via earnings psychology. 3-step workflow: Pick clip → Add CTA → Post. Redirects to /clipper-dashboard on signup.",
+    emotional: "💰 Greed + purpose: 'Get paid to spread gratitude'",
+    touchpoints: ["📱 Sticky CTA bar with confetti on first referral copy", "🏆 4-tier identity badges (New → Super Clipper)", "📊 Personal analytics tab on /clipper-dashboard", "🪙 BC rewards: 100 BC/clip"],
+    dashboard: "Each clipper gets /clipper-dashboard with Weekly Snapshot, My Clips milestones, Analytics tab, and direct access to Rewards Store."
+  },
+];
+
 /* ─── Funnel Stages (Cold → Fidelización → Ascensión) ─── */
 const COLD_TRAFFIC_STEPS = [
-  { id: 1, route: "/", name: "Free Wristband", sells: "Lead capture (wristband gratis)", defaultConv: 0.65, icon: Gift, vitality: "Auth Gate → 100% capture", kFactor: "K=1.0" },
-  { id: 2, route: "Intro", name: "Science Hook", sells: "Educación — Hawkins 27x", defaultConv: 0.85, icon: Brain, vitality: "Science hooks → credibility" },
-  { id: 3, route: "Setup", name: "Friend Capture", sells: "Name Your Best Friend", defaultConv: 0.78, icon: Users, vitality: "Friend naming → referral seed", kFactor: "K=3.0" },
-  { id: 4, route: "Checkout", name: "Wristband Checkout", sells: "$9.95 ship → 11 meals", defaultConv: 0.35, icon: ShoppingBag, vitality: "Pay It Forward guilt loop", kFactor: "K=1.5" },
+  {
+    id: 1, route: "/", name: "Free Wristband", sells: "Lead capture (wristband gratis)", defaultConv: 0.65, icon: Gift,
+    vitality: "Auth Gate → 100% capture", kFactor: "K=1.0",
+    subtitle: "Hormozi-style 'Congratulations — You're About to Become a Neuro-Hacker 🧠'. 100% FREE, no credit card. Mandatory auth gate captures every email.",
+    emotional: "🎁 Reciprocity trigger: free gift = obligation to engage",
+    touchpoints: ["🔐 Auth gate (email capture)", "📧 Welcome email sequence", "🧠 Neuro-hacker identity framing"],
+    dashboard: "User sees their wristband order status and referral link in /portal."
+  },
+  {
+    id: 2, route: "intro", name: "Science Hook", sells: "Educación — Hawkins 27x", defaultConv: 0.85, icon: Brain,
+    vitality: "Science hooks → credibility",
+    subtitle: "Hawkins Scale (27x happier) + Huberman neuroscience + Harvard Grant Study (84 years). Establishes scientific authority before any purchase.",
+    emotional: "🔬 'This isn't woo-woo — this is peer-reviewed science'",
+    touchpoints: ["📖 3 expert avatars with credentials", "📊 Hawkins Scale visual"],
+    dashboard: "N/A — education step, no user dashboard."
+  },
+  {
+    id: 3, route: "setup", name: "Friend Capture", sells: "Name Your Best Friend", defaultConv: 0.78, icon: Users,
+    vitality: "Friend naming → referral seed", kFactor: "K=3.0",
+    subtitle: "User names 1-3 best friends. Seeds referral list from Day 0. Phone input with international country selector for SMS opt-in.",
+    emotional: "❤️ 'Who deserves to feel this way too?' — guilt + love",
+    touchpoints: ["📱 SMS opt-in with country selector", "👥 Friend names stored for TGF Fridays", "⏭️ 'Maybe later' → /challenge/thanks (stays in ecosystem)"],
+    dashboard: "Friends rotate weekly in TGF Friday auto-SMS. User can see challenge streak in /portal."
+  },
+  {
+    id: 4, route: "checkout", name: "Wristband Checkout", sells: "$9.95 ship → 11 meals", defaultConv: 0.35, icon: ShoppingBag,
+    vitality: "Pay It Forward guilt loop", kFactor: "K=1.5",
+    subtitle: "1 wristband ($9.95 shipping) or 3 for $22. Each wristband = 11 meals via Feeding America. 'Pay It Forward' guilt-trip framing.",
+    emotional: "🙏 'Your shipping fee feeds 11 people today'",
+    touchpoints: ["💳 Stripe Checkout", "🍽️ Meal counter updates globally", "📦 Order confirmation email"],
+    dashboard: "Order tracked in /portal. Global meal counter updates on /impact page."
+  },
 ];
 
 const FIDELIZATION_STEPS = [
-  { id: 5, route: "/challenge/thanks", name: "Viral Activation", sells: "WhatsApp share + BC rewards", defaultConv: 0.42, icon: Share2, vitality: "WhatsApp viral share", kFactor: "K=2.7" },
-  { id: 6, route: "TGF Fridays", name: "Weekly Reactivation", sells: "Cron SMS → gratitude msg", defaultConv: 0.60, icon: Repeat, vitality: "Auto friend rotation" },
+  {
+    id: 5, route: "/challenge/thanks", name: "Viral Activation", sells: "WhatsApp share + BC rewards", defaultConv: 0.42, icon: Share2,
+    vitality: "WhatsApp viral share", kFactor: "K=2.7",
+    subtitle: "Post-signup viral activation page. WhatsApp-first sharing (higher conversion than SMS). Gamified ShareMilestoneTracker awards BC at 1, 3, 5, 10, 25 shares.",
+    emotional: "🚀 'You just changed 11 lives — now tell your friends'",
+    touchpoints: ["📲 WhatsApp share (primary)", "📱 SMS/Copy link (fallback)", "🪙 BC rewards at share milestones", "🏆 Achievement badges unlock"],
+    dashboard: "User sees share count + BC earned in /portal. ShareMilestoneTracker shows progress to next reward tier."
+  },
+  {
+    id: 6, route: "cron", name: "TGF Fridays", sells: "Weekly SMS → gratitude msg to rotating friend", defaultConv: 0.60, icon: Repeat,
+    vitality: "Auto friend rotation",
+    subtitle: "Automated weekly cron job sends gratitude SMS to a different friend each Friday. Each SMS includes the user's referral link. Keeps users engaged without manual effort.",
+    emotional: "💌 'Your friend just got a surprise gratitude message from you'",
+    touchpoints: ["📱 Auto SMS every Friday (Twilio)", "🔄 Friend name rotation from setup", "🔗 Referral link embedded in each SMS", "📊 SMS delivery tracked in sms_audit_log"],
+    dashboard: "User sees upcoming messages + delivery status in /portal. Admin tracks in SMS Compliance Dashboard."
+  },
 ];
 
 const ASCENSION_STEPS = [
-  { id: 7, route: "/offer/22", name: "$22 Starter Pack", sells: "3 wristbands ($22)", defaultConv: 0.18, icon: Gift, vitality: "Stock decay FOMO", price: 22 },
-  { id: 8, route: "/offer/111", name: "$111 Identity Pack", sells: "Shirt + wristbands ($111)", defaultConv: 0.08, icon: Star, vitality: "Mystery Box framing", price: 111 },
-  { id: 9, route: "/offer/444", name: "$444 Habit Lock", sells: "1,111 meals ($444)", defaultConv: 0.035, icon: Heart, vitality: "Chained transition", price: 444 },
-  { id: 10, route: "/offer/1111", name: "$1,111 Kingdom", sells: "11,111 meals ($1,111)", defaultConv: 0.012, icon: Crown, vitality: "ROI math + mission", price: 1111 },
-  { id: 11, route: "/offer/4444", name: "$4,444 Ambassador", sells: "44,444 meals ($4,444)", defaultConv: 0.004, icon: Crown, vitality: "Portal unlock celebration", price: 4444 },
+  {
+    id: 7, route: "/", name: "$22 Starter Pack", sells: "3 wristbands ($22)", defaultConv: 0.18, icon: Gift,
+    vitality: "Stock decay FOMO", price: 22,
+    subtitle: "3 wristbands for $22. Stock decay counter + 'X people viewing now' FOMO. Positioned after initial free wristband to upgrade to gifting pack.",
+    emotional: "⏳ 'Only 47 packs left — 12 people viewing right now'",
+    touchpoints: ["🔥 UrgencyBanner with live stock count", "👀 Simulated viewer count", "💳 Stripe Checkout → /offer/111"],
+    dashboard: "Order appears in /portal with meal impact counter (22 meals = 3×wristbands)."
+  },
+  {
+    id: 8, route: "/offer/111", name: "$111 Identity Pack", sells: "Custom shirt + wristbands ($111)", defaultConv: 0.08, icon: Star,
+    vitality: "Mystery Box framing", price: 111,
+    subtitle: "Custom 'I am Blessed AF' shirt with friend's name + wristbands. Mystery Box animation reveals the 'FREE shirt win'. Price deferred until 2nd CTA block.",
+    emotional: "🎁 'You WON a Mystery Box! Your FREE Custom Shirt awaits'",
+    touchpoints: ["🎰 MysteryBox animation", "👕 ShirtCustomizer with friend name", "📸 Friend name personalization banner", "💳 Stripe → /offer/444", "❌ Skip → $11/mo downsell modal"],
+    dashboard: "Shirt customization preview saved. User sees order + 111 meals donated in /portal."
+  },
+  {
+    id: 9, route: "/offer/444", name: "$444 Habit Lock", sells: "1,111 meals ($444)", defaultConv: 0.035, icon: Heart,
+    vitality: "Chained transition", price: 444,
+    subtitle: "1,111 meals via Feeding America. Chained MysteryBox transition from $111. Urgency: only 111 shirts available. 'Lock in your gratitude habit for life.'",
+    emotional: "🔒 'Lock your gratitude habit — feed 1,111 people'",
+    touchpoints: ["🎰 Chained MysteryBox from $111", "📉 Stock decay: 111 shirts left", "💳 Stripe → /offer/1111", "❌ Skip → $11/mo downsell"],
+    dashboard: "Major milestone in /portal: 1,111 meals badge + BC bonus."
+  },
+  {
+    id: 10, route: "/offer/1111", name: "$1,111 Kingdom", sells: "11,111 meals ($1,111)", defaultConv: 0.012, icon: Crown,
+    vitality: "ROI math + mission", price: 1111,
+    subtitle: "Kingdom Ambassador tier. ROI math showing cost-per-life-changed. Biblical mission framing: 'Feed 11,111 people.' Part of path to $44,444 Blessed Residency.",
+    emotional: "👑 'You're not buying a product — you're funding a kingdom'",
+    touchpoints: ["📊 ROI calculator embedded", "🙏 Biblical mission framing", "💳 Stripe → /offer/4444", "❌ Skip → $11/mo downsell"],
+    dashboard: "Kingdom Ambassador badge in /portal. Access to exclusive missions + higher BC earn rates."
+  },
+  {
+    id: 11, route: "/offer/4444", name: "$4,444 Ambassador", sells: "44,444 meals ($4,444)", defaultConv: 0.004, icon: Crown,
+    vitality: "Portal unlock celebration", price: 4444,
+    subtitle: "Terminal tier. Full Ambassador status. 44,444 meals. Portal unlock with confetti + 2,000 XP celebration. Access to all 12 earning methods.",
+    emotional: "💎 'Welcome to the inner circle — you ARE the movement'",
+    touchpoints: ["🎉 Confetti celebration + 2,000 XP", "🏛️ Full Portal access unlock", "🪙 BC wallet + leaderboard", "📱 12-method earn hierarchy"],
+    dashboard: "Full /portal dashboard: BC wallet, missions, leaderboard, referral hub, rewards store, social share templates, activity feed."
+  },
 ];
 
 const ALL_STEPS = [...COLD_TRAFFIC_STEPS, ...FIDELIZATION_STEPS, ...ASCENSION_STEPS];
@@ -68,74 +168,134 @@ const StageLabel = ({ icon: Icon, label, color }: { icon: any; label: string; co
   </div>
 );
 
-/* ─── Step Card ─── */
-const FunnelStepCard = ({ step, index, baseStep, getConv }: { step: any; index: number; baseStep: any; getConv: (s: any) => number }) => {
+/* ─── Step Card (Clickable + Collapsible with subtitle/touchpoints) ─── */
+const FunnelStepCard = ({ step, index, baseStep, getConv, navigate, stepNumber }: { step: any; index: number; baseStep: any; getConv: (s: any) => number; navigate: any; stepNumber: string }) => {
+  const [open, setOpen] = useState(false);
   const isRevenue = !!step.price;
   const StepIcon = step.icon;
-  return (
-    <motion.div
-      className={`relative flex items-stretch gap-3 rounded-xl p-3 md:p-4 transition-colors ${
-        isRevenue ? "bg-primary/[0.04] border border-primary/15" : "bg-card border border-border/40"
-      }`}
-      initial={{ opacity: 0, x: -8 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.03 }}
-    >
-      {/* Step number */}
-      <div className="flex flex-col items-center shrink-0">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black border-2 ${
-          isRevenue ? "border-primary bg-primary text-primary-foreground" : "border-primary/30 bg-primary/10 text-primary"
-        }`}>
-          <StepIcon className="w-4 h-4" />
-        </div>
-      </div>
+  const isClickable = step.route && !["intro", "setup", "checkout", "cron"].includes(step.route);
 
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-sm font-bold text-foreground">{step.name}</h3>
-              {step.price && (
-                <Badge className="text-[9px] bg-primary/10 text-primary border-primary/20 px-1.5 py-0">
-                  ${step.price}
-                </Badge>
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <motion.div
+        className={`relative rounded-xl transition-colors ${
+          isRevenue ? "bg-primary/[0.04] border border-primary/15" : "bg-card border border-border/40"
+        }`}
+        initial={{ opacity: 0, x: -8 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: index * 0.03 }}
+      >
+        <CollapsibleTrigger className="w-full text-left">
+          <div className="flex items-stretch gap-3 p-3 md:p-4">
+            {/* Step number */}
+            <div className="flex flex-col items-center shrink-0">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black border-2 ${
+                isRevenue ? "border-primary bg-primary text-primary-foreground" : "border-primary/30 bg-primary/10 text-primary"
+              }`}>
+                {stepNumber}
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <StepIcon className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <h3 className="text-sm font-bold text-foreground">{step.name}</h3>
+                    {step.price && (
+                      <Badge className="text-[9px] bg-primary/10 text-primary border-primary/20 px-1.5 py-0">
+                        ${step.price}
+                      </Badge>
+                    )}
+                    {isClickable && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); navigate(step.route); }}
+                        className="text-[9px] text-primary hover:underline flex items-center gap-0.5"
+                      >
+                        <ExternalLink className="w-2.5 h-2.5" /> Visit
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">{step.sells}</p>
+                </div>
+                <div className="text-right shrink-0 flex items-center gap-2">
+                  <div>
+                    <span className={`text-xs font-bold ${getConv(step) >= 0.5 ? "text-primary" : getConv(step) >= 0.1 ? "text-foreground" : "text-muted-foreground"}`}>
+                      {Math.round(getConv(step) * 100)}%
+                    </span>
+                    {baseStep && (
+                      <p className="text-[9px] text-muted-foreground">
+                        {baseStep.entering.toLocaleString()} → {baseStep.converted.toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+                </div>
+              </div>
+
+              {/* Vitality pill - summary preview */}
+              {step.vitality && (
+                <div className="flex items-center gap-1.5 mt-1">
+                  <div className="flex items-center gap-1 bg-accent border border-primary/10 rounded-full px-2 py-0.5">
+                    <Zap className="w-3 h-3 text-primary" />
+                    <span className="text-[10px] font-medium text-accent-foreground">{step.vitality}</span>
+                  </div>
+                  {step.kFactor && (
+                    <span className="text-[9px] font-black text-primary bg-primary/10 rounded-full px-1.5 py-0.5">
+                      {step.kFactor}
+                    </span>
+                  )}
+                </div>
               )}
             </div>
-            <p className="text-[11px] text-muted-foreground mt-0.5">{step.sells}</p>
           </div>
-          <div className="text-right shrink-0">
-            <span className={`text-xs font-bold ${getConv(step) >= 0.5 ? "text-primary" : getConv(step) >= 0.1 ? "text-foreground" : "text-muted-foreground"}`}>
-              {Math.round(getConv(step) * 100)}%
-            </span>
-            {baseStep && (
-              <p className="text-[9px] text-muted-foreground">
-                {baseStep.entering.toLocaleString()} → {baseStep.converted.toLocaleString()}
-              </p>
-            )}
-          </div>
-        </div>
+        </CollapsibleTrigger>
 
-        {/* Vitality pill */}
-        {step.vitality && (
-          <div className="flex items-center gap-1.5 mt-1.5">
-            <div className="flex items-center gap-1 bg-accent border border-primary/10 rounded-full px-2 py-0.5">
-              <Zap className="w-3 h-3 text-primary" />
-              <span className="text-[10px] font-medium text-accent-foreground">{step.vitality}</span>
-            </div>
-            {step.kFactor && (
-              <span className="text-[9px] font-black text-primary bg-primary/10 rounded-full px-1.5 py-0.5">
-                {step.kFactor}
-              </span>
+        {/* Expanded details */}
+        <CollapsibleContent>
+          <div className="px-4 pb-4 pt-0 ml-[52px] space-y-3 border-t border-border/30 mt-0 pt-3">
+            {/* Strategy subtitle */}
+            {step.subtitle && (
+              <p className="text-xs text-muted-foreground leading-relaxed">{step.subtitle}</p>
+            )}
+
+            {/* Emotional connection */}
+            {step.emotional && (
+              <div className="bg-primary/5 border border-primary/10 rounded-lg px-3 py-2">
+                <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-0.5">Emotional Hook</p>
+                <p className="text-xs text-foreground">{step.emotional}</p>
+              </div>
+            )}
+
+            {/* Touchpoints */}
+            {step.touchpoints && step.touchpoints.length > 0 && (
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Follow-up Touchpoints</p>
+                <div className="space-y-1">
+                  {step.touchpoints.map((tp: string, i: number) => (
+                    <p key={i} className="text-[11px] text-foreground/80">{tp}</p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Dashboard info */}
+            {step.dashboard && (
+              <div className="bg-accent/50 border border-border/40 rounded-lg px-3 py-2">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-0.5">📊 User Dashboard</p>
+                <p className="text-[11px] text-foreground/80">{step.dashboard}</p>
+              </div>
             )}
           </div>
-        )}
-      </div>
-    </motion.div>
+        </CollapsibleContent>
+      </motion.div>
+    </Collapsible>
   );
 };
 
 export default function FunnelMap() {
+  const navigate = useNavigate();
   /* ─── Clipper Campaign Inputs (Andrew Tate Formula) ─── */
   const [clippers, setClippers] = useState(250);
   const [videosPerClipper, setVideosPerClipper] = useState(4);
@@ -403,14 +563,14 @@ export default function FunnelMap() {
           </Card>
         </motion.section>
 
-        {/* ═══ VISUAL FUNNEL FLOW (Cold → Fidelización → Ascensión) ═══ */}
+        {/* ═══ VISUAL FUNNEL FLOW ═══ */}
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <Card className="overflow-hidden">
             <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-transparent">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-base flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> Funnel Flow & Vitality Engine</CardTitle>
-                  <CardDescription>3-stage architecture: Cold Traffic → Fidelización → Ascensión</CardDescription>
+                  <CardDescription>Pre-Funnel Lead Gen → Cold Traffic → Fidelización → Ascensión · Click any step to expand details</CardDescription>
                 </div>
                 <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">
                   <RefreshCw className="w-3 h-3 mr-1" /> K-Factor Enabled
@@ -423,67 +583,146 @@ export default function FunnelMap() {
                 <img src={logoImg} alt="IamBlessedAF" className="h-8 opacity-60" />
               </div>
 
-              {/* ── Stage 1: Cold Traffic ── */}
-              <StageLabel icon={Snowflake} label="Stage 1 — Cold Traffic Acquisition" color="border-blue-500/30 bg-blue-500/5 text-blue-400" />
-              <div className="space-y-2 mb-2">
-                {COLD_TRAFFIC_STEPS.map((step, i) => (
-                  <div key={step.id}>
-                    <FunnelStepCard step={step} index={i} baseStep={base.steps[i]} getConv={getConv} />
-                    {i < COLD_TRAFFIC_STEPS.length - 1 && (
-                      <div className="flex justify-center py-0.5">
-                        <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
-                      </div>
-                    )}
+              {/* ── Pre-Funnel: Viral Lead Gen ── */}
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="w-full">
+                  <div className="flex items-center justify-between gap-2 py-3 px-4 rounded-xl border-2 border-emerald-500/30 bg-emerald-500/5 mb-2">
+                    <div className="flex items-center gap-2">
+                      <Megaphone className="w-5 h-5 text-emerald-400" />
+                      <span className="text-sm font-black uppercase tracking-wider text-emerald-400">Pre-Funnel — Viral Lead Gen Strategies</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-muted-foreground">2 strategies · K=1.8–4.2</span>
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    </div>
                   </div>
-                ))}
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="space-y-2 mb-2">
+                    {PRE_FUNNEL_STEPS.map((step, i) => (
+                      <div key={step.id}>
+                        <FunnelStepCard step={step} index={i} baseStep={null} getConv={getConv} navigate={navigate} stepNumber={`0${i + 1}`} />
+                        {i < PRE_FUNNEL_STEPS.length - 1 && (
+                          <div className="flex justify-center py-0.5">
+                            <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              <div className="flex justify-center py-1">
+                <div className="w-0.5 h-6 bg-gradient-to-b from-emerald-500/30 to-blue-500/30" />
               </div>
+
+              {/* ── Stage 1: Cold Traffic ── */}
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="w-full">
+                  <div className="flex items-center justify-between gap-2 py-3 px-4 rounded-xl border-2 border-blue-500/30 bg-blue-500/5 mb-2">
+                    <div className="flex items-center gap-2">
+                      <Snowflake className="w-5 h-5 text-blue-400" />
+                      <span className="text-sm font-black uppercase tracking-wider text-blue-400">Stage 1 — Cold Traffic Acquisition</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-muted-foreground">4 steps · Auth gate + science hooks</span>
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="space-y-2 mb-2">
+                    {COLD_TRAFFIC_STEPS.map((step, i) => (
+                      <div key={step.id}>
+                        <FunnelStepCard step={step} index={i} baseStep={base.steps[i]} getConv={getConv} navigate={navigate} stepNumber={`${step.id}`} />
+                        {i < COLD_TRAFFIC_STEPS.length - 1 && (
+                          <div className="flex justify-center py-0.5">
+                            <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
 
               <div className="flex justify-center py-1">
                 <div className="w-0.5 h-6 bg-gradient-to-b from-blue-500/30 to-amber-500/30" />
               </div>
 
               {/* ── Stage 2: Fidelización ── */}
-              <StageLabel icon={Heart} label="Stage 2 — Fidelización & Viral Loops" color="border-amber-500/30 bg-amber-500/5 text-amber-400" />
-              <div className="space-y-2 mb-2">
-                {FIDELIZATION_STEPS.map((step, i) => {
-                  const idx = COLD_TRAFFIC_STEPS.length + i;
-                  return (
-                    <div key={step.id}>
-                      <FunnelStepCard step={step} index={idx} baseStep={base.steps[idx]} getConv={getConv} />
-                      {i < FIDELIZATION_STEPS.length - 1 && (
-                        <div className="flex justify-center py-0.5">
-                          <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
-                        </div>
-                      )}
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="w-full">
+                  <div className="flex items-center justify-between gap-2 py-3 px-4 rounded-xl border-2 border-amber-500/30 bg-amber-500/5 mb-2">
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-5 h-5 text-amber-400" />
+                      <span className="text-sm font-black uppercase tracking-wider text-amber-400">Stage 2 — Fidelización & Viral Loops</span>
                     </div>
-                  );
-                })}
-              </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-muted-foreground">2 steps · WhatsApp + weekly SMS</span>
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="space-y-2 mb-2">
+                    {FIDELIZATION_STEPS.map((step, i) => {
+                      const idx = COLD_TRAFFIC_STEPS.length + i;
+                      return (
+                        <div key={step.id}>
+                          <FunnelStepCard step={step} index={idx} baseStep={base.steps[idx]} getConv={getConv} navigate={navigate} stepNumber={`${step.id}`} />
+                          {i < FIDELIZATION_STEPS.length - 1 && (
+                            <div className="flex justify-center py-0.5">
+                              <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
 
               <div className="flex justify-center py-1">
                 <div className="w-0.5 h-6 bg-gradient-to-b from-amber-500/30 to-primary/30" />
               </div>
 
               {/* ── Stage 3: Ascensión ── */}
-              <StageLabel icon={Rocket} label="Stage 3 — Ascensión & Revenue" color="border-primary/30 bg-primary/5 text-primary" />
-              <div className="space-y-2">
-                {ASCENSION_STEPS.map((step, i) => {
-                  const idx = COLD_TRAFFIC_STEPS.length + FIDELIZATION_STEPS.length + i;
-                  return (
-                    <div key={step.id}>
-                      <FunnelStepCard step={step} index={idx} baseStep={base.steps[idx]} getConv={getConv} />
-                      {i < ASCENSION_STEPS.length - 1 && (
-                        <div className="flex items-center gap-3 ml-5 pl-[14px] border-l-2 border-dashed border-muted-foreground/20 py-1">
-                          <div className="flex items-center gap-1 text-[9px] text-muted-foreground">
-                            <ArrowDown className="w-3 h-3" />
-                            <span>Skip → $11/mo downsell ({Math.round(DOWNSELL_RATE * 100)}%)</span>
-                          </div>
-                        </div>
-                      )}
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="w-full">
+                  <div className="flex items-center justify-between gap-2 py-3 px-4 rounded-xl border-2 border-primary/30 bg-primary/5 mb-2">
+                    <div className="flex items-center gap-2">
+                      <Rocket className="w-5 h-5 text-primary" />
+                      <span className="text-sm font-black uppercase tracking-wider text-primary">Stage 3 — Ascensión & Revenue</span>
                     </div>
-                  );
-                })}
-              </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-muted-foreground">5 tiers · $22 → $4,444</span>
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="space-y-2">
+                    {ASCENSION_STEPS.map((step, i) => {
+                      const idx = COLD_TRAFFIC_STEPS.length + FIDELIZATION_STEPS.length + i;
+                      return (
+                        <div key={step.id}>
+                          <FunnelStepCard step={step} index={idx} baseStep={base.steps[idx]} getConv={getConv} navigate={navigate} stepNumber={`${step.id}`} />
+                          {i < ASCENSION_STEPS.length - 1 && (
+                            <div className="flex items-center gap-3 ml-5 pl-[14px] border-l-2 border-dashed border-muted-foreground/20 py-1">
+                              <div className="flex items-center gap-1 text-[9px] text-muted-foreground">
+                                <ArrowDown className="w-3 h-3" />
+                                <span>Skip → $11/mo downsell ({Math.round(DOWNSELL_RATE * 100)}%)</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
 
               {/* Summary footer */}
               <div className="mt-5 pt-4 border-t border-border/40 grid grid-cols-3 gap-3">
