@@ -386,12 +386,8 @@ export default function FunnelMap() {
             <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight mb-2">
               THE <span className="text-primary">GRATITUDE ENGINE</span> LOOP™
             </h2>
-            <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed mb-4">
-              The Practical Implementation of <strong className="text-foreground">The Biggest Andrew Huberman Discovery</strong> in the last 18 Months.
-            </p>
-            <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed mb-6">
-              The <strong className="text-primary">Neuro-Hack</strong> to spike <strong className="text-foreground">Dopamine & Serotonin</strong> (Overall Well-Being) — pre-built into a <strong className="text-foreground">trigger</strong>, <strong className="text-foreground">habit-forming system</strong> & <strong className="text-primary">brand</strong>.
-            </p>
+
+
 
             {/* Huberman Clip */}
             <div className="max-w-lg mx-auto rounded-2xl overflow-hidden border border-border/50 shadow-sm">
