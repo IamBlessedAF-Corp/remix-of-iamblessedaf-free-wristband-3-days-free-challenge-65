@@ -27,7 +27,7 @@ const Offer22 = () => {
        ? `${senderName} wants to share gratitude with you. Claim your FREE Gratitude Wristband and join the movement.`
        : "Get a FREE Gratitude Wristband. Join the movement — 22 meals donated with every order.",
     image: "/og-wristband.png",
-    url: "https://iamblessedaf.com/offer/22",
+    url: "https://iamblessedaf.com/",
   });
 
   // Look up sender name from user metadata or referral

@@ -139,7 +139,7 @@ const Index = () => {
             transition={{ delay: 0.6 }}
           >
             <Button
-              onClick={() => navigate("/offer/22")}
+              onClick={() => navigate("/")}
               className="w-full h-14 text-base md:text-lg font-bold btn-glow px-4"
             >
               <Sparkles className="w-5 h-5 mr-2 flex-shrink-0" />
