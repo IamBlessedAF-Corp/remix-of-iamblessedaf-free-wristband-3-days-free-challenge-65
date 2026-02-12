@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Map, ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Zap, Target, Shield, TrendingUp, Users, Gift, Star, Rocket, Crown, Lock, Globe, Sparkles, BarChart3, Megaphone, Cpu, ArrowLeft, Layers, Database, CreditCard, MessageSquare, Paintbrush, Server, FlaskConical, Download } from "lucide-react";
+import { Map, ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Zap, Target, Shield, TrendingUp, Users, Gift, Star, Rocket, Crown, Lock, Globe, Sparkles, BarChart3, Megaphone, Cpu, ArrowLeft, Layers, Database, CreditCard, MessageSquare, Paintbrush, Server, FlaskConical, Download, ExternalLink } from "lucide-react";
 import { PHASE_NEXT_STEPS } from "@/data/roadmapNextSteps";
 import { TRACKING_GROUPS } from "@/data/trackingGroups";
 import { exportRoadmapMarkdown, downloadMarkdown } from "@/utils/roadmapExport";
@@ -823,6 +823,66 @@ function TrackingGroupRow({ group, filters }: { group: typeof TRACKING_GROUPS[0]
   );
 }
 
+/* ─── Funnel Overview (from /Traffic-Funnel) ─── */
+function FunnelOverviewSection() {
+  const [open, setOpen] = useState(false);
+
+  const funnelSteps = [
+    { num: "0.1", name: "Expert Enrollment", route: "/experts-leads", sells: "Lead capture for coaches" },
+    { num: "0.2", name: "Clipper Campaign", route: "/Gratitude-Clippers", sells: "Creator recruitment — $2.22–$1,111/clip" },
+    { num: "01", name: "Free Wristband", route: "/", sells: "Lead capture (wristband gratis)" },
+    { num: "02", name: "Science Hook", route: null, sells: "Educación — Hawkins 27x" },
+    { num: "03", name: "Friend Capture", route: null, sells: "Name Your Best Friend" },
+    { num: "04", name: "Wristband Checkout", route: null, sells: "$9.95 ship → 11 meals" },
+    { num: "05", name: "Viral Activation", route: "/challenge/thanks", sells: "WhatsApp share + BC rewards" },
+    { num: "06", name: "TGF Fridays", route: null, sells: "Weekly SMS → gratitude msg" },
+    { num: "07", name: "$22 Starter Pack", route: "/", sells: "3 wristbands ($22)" },
+    { num: "08", name: "$111 Identity Pack", route: "/offer/111", sells: "Custom shirt + wristbands" },
+    { num: "09", name: "$444 Habit Lock 🚧", route: "/offer/444", sells: "1,111 meals ($444)" },
+    { num: "10", name: "$1,111 Kingdom 🚧", route: "/offer/1111", sells: "11,111 meals ($1,111)" },
+    { num: "11", name: "$4,444 Ambassador 🚧", route: "/offer/4444", sells: "44,444 meals ($4,444)" },
+  ];
+
+  return (
+    <div className="border border-border/50 rounded-xl bg-card overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-secondary/30 transition-colors border-l-4 border-l-primary bg-primary/5"
+      >
+        <TrendingUp className="w-5 h-5 text-primary shrink-0" />
+        <div className="flex-1">
+          <h2 className="text-sm font-bold text-foreground">🚀 Traffic Funnel — 13-Step Revenue Engine</h2>
+          <p className="text-[11px] text-muted-foreground">Pre-Funnel → Cold Traffic → Fidelización → Ascensión ($22–$4,444)</p>
+        </div>
+        <a
+          href="/Traffic-Funnel"
+          onClick={(e) => e.stopPropagation()}
+          className="text-[9px] text-primary hover:underline flex items-center gap-0.5 shrink-0"
+        >
+          <ExternalLink className="w-3 h-3" /> Full View
+        </a>
+        {open ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+      </button>
+      {open && (
+        <div className="border-t border-border/30 divide-y divide-border/20 animate-in fade-in slide-in-from-top-1 duration-150">
+          {funnelSteps.map((step) => (
+            <div key={step.num} className="flex items-center gap-3 px-5 py-2.5">
+              <span className="text-[10px] font-black text-primary bg-primary/10 rounded-md px-1.5 py-0.5 w-8 text-center shrink-0">{step.num}</span>
+              <span className="text-xs font-semibold text-foreground flex-1">{step.name}</span>
+              <span className="text-[10px] text-muted-foreground">{step.sells}</span>
+              {step.route && (
+                <a href={step.route} className="text-[9px] text-primary hover:underline flex items-center gap-0.5 shrink-0">
+                  <ExternalLink className="w-2.5 h-2.5" />
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── Main Page ─── */
 export default function Roadmap() {
   const [filters, setFilters] = useState<RoadmapFilters>({ keyword: "", status: "", priority: "" });
@@ -898,6 +958,9 @@ export default function Roadmap() {
 
         {/* Overview Stats */}
         <SummaryStats />
+
+        {/* Traffic Funnel Integration */}
+        <FunnelOverviewSection />
 
         {/* Architecture Legends */}
         <MatrixLegend />
