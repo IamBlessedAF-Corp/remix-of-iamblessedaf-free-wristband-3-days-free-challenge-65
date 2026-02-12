@@ -256,7 +256,7 @@ const ChallengeThanks = () => {
             <Button
               size="lg"
               className="w-full sm:w-auto px-8 h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all"
-              onClick={() => navigate("/offer/22")}
+              onClick={() => navigate("/")}
             >
               🍽️ Feed 11 People & Claim My Gratitude Pack
             </Button>
@@ -283,7 +283,7 @@ const ChallengeThanks = () => {
             </p>
             <Button
               className="w-full h-12 text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground"
-              onClick={() => navigate("/offer/22")}
+              onClick={() => navigate("/")}
             >
               🎁 Claim My FREE Wristband →
             </Button>

@@ -147,8 +147,8 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
       >
         <div className="border border-border/50 rounded-xl p-5 space-y-3 bg-card">
           <div className="flex items-center justify-center gap-2 text-sm font-semibold text-foreground">
-            <span>✅</span>
-            <span>30-Day Money-Back Guarantee — No questions asked</span>
+            <span>🎁</span>
+            <span>100% FREE — No credit card required</span>
           </div>
           <div className="h-px bg-border/40" />
           <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground text-center">

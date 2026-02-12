@@ -4,10 +4,10 @@ const RiskReversalGuarantee = () => (
   <div className="mt-4 text-center">
     <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground mb-1">
       <ShieldCheck className="w-4 h-4 text-primary" />
-      Happiness Guarantee
+      Gratitude Guarantee
     </div>
     <p className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto">
-      Send the 3 Gratitude texts and use the pack for at least 3 days. If you don't feel happier after receiving responses from your loved ones — we will donate 11 meals through Feeding America under your name.
+      Every wristband claimed feeds 11 people through Feeding America. Wear it daily as your gratitude trigger. 🙏
     </p>
   </div>
 );

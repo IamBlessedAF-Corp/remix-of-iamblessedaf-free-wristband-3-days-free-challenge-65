@@ -26,7 +26,7 @@ export default function ImpactCta() {
           <Button
             size="lg"
             className="gap-2 btn-glow"
-            onClick={() => navigate("/offer/22")}
+            onClick={() => navigate("/")}
           >
             Get Your FREE Wristband
             <ArrowRight className="w-4 h-4" />

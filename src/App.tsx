@@ -50,7 +50,6 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Offer22 />} />
-          <Route path="/offer/22" element={<Offer22 />} />
           <Route path="/challenge" element={<Challenge />} />
           <Route path="/challenge/thanks" element={<ChallengeThanks />} />
           <Route path="/r/:code" element={<ReferralRedirect />} />

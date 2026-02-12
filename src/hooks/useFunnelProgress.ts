@@ -18,7 +18,7 @@ export const FUNNEL_STEPS: FunnelStep[] = [
   { id: "challenge",   label: "Join Challenge",        shortLabel: "Join",      path: "/challenge",        xp: 10,  emoji: "🚀" },
   { id: "thanks",      label: "Challenge Confirmed",   shortLabel: "Confirmed", path: "/challenge/thanks",  xp: 25,  emoji: "✅" },
   { id: "confirm",     label: "Blessing Confirmed",    shortLabel: "Blessed",   path: "/confirm",          xp: 50,  emoji: "🙏" },
-  { id: "offer-22",    label: "Starter Gift Pack",     shortLabel: "$22",       path: "/offer/22",         xp: 75,  emoji: "📿" },
+  { id: "offer-22",    label: "Starter Gift Pack",     shortLabel: "$22",       path: "/",                 xp: 75,  emoji: "📿" },
   { id: "offer-111",   label: "Identity Pack",         shortLabel: "$111",      path: ["/offer/111", "/offer/111/grok", "/offer/111/gpt"], xp: 150, emoji: "👕" },
   { id: "offer-444",   label: "Habit Lock Pack",       shortLabel: "$444",      path: "/offer/444",        xp: 300, emoji: "🔒" },
   { id: "offer-1111",  label: "Kingdom Pack",          shortLabel: "$1,111",    path: "/offer/1111",       xp: 750, emoji: "👑" },

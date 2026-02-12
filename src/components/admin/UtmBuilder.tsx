@@ -15,7 +15,7 @@ import { toast } from "sonner";
 
 const DESTINATION_PRESETS = [
   { label: "Offer $111", value: "/offer/111" },
-  { label: "Offer $22", value: "/offer/22" },
+  { label: "Home / Free Wristband", value: "/" },
   { label: "Offer $444", value: "/offer/444" },
   { label: "Offer $1111", value: "/offer/1111" },
   { label: "Offer $4444", value: "/offer/4444" },

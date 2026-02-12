@@ -185,7 +185,7 @@ export default function SpinWheel({
   }, [hasWon]);
 
   const handleClaim = () => {
-    navigate("/offer/22?source=wheel_win");
+    navigate("/?source=wheel_win");
   };
 
   return (
