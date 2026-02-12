@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useExitIntent } from "@/hooks/useExitIntent";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Crown, ArrowRight, Heart } from "lucide-react";
@@ -32,7 +33,12 @@ const Offer111 = () => {
   const { startCheckout, loading } = useStripeCheckout();
   const { newlyUnlocked, dismissNewlyUnlocked } = useAchievements();
 
-  // Pull friend name from localStorage OR URL params (?friend=Name)
+  // Exit-intent: trigger downsell when user tries to leave
+  useExitIntent(() => setShowDownsell(true), {
+    enabled: !showDownsell,
+    sessionKey: "offer-111",
+    delayMs: 8000,
+  });
   const urlFriend = searchParams.get("friend") || "";
   const [friendName, setFriendName] = useState(() => {
     const stored = localStorage.getItem("friendShirtName") || "";
