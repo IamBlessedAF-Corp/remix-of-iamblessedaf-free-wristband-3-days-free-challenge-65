@@ -35,7 +35,7 @@ const GptRiskReversal = ({ delay = 0 }: { delay?: number }) => {
             <span className="text-base flex-shrink-0">🌍</span>
             <span>
               <span className="font-bold">Free US Shipping</span>{" "}
-              <span className="text-muted-foreground">· International $14.95 Flat · Ships with love in 7–14 days.</span>
+              <span className="text-muted-foreground">· International Flat Rate · Ships with love in 7–14 days.</span>
             </span>
           </div>
         </div>

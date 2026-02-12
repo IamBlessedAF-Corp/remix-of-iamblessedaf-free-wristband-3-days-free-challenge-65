@@ -46,7 +46,7 @@ const Grok1111CtaBlock = ({
           <span className="text-sm text-muted-foreground">one-time</span>
         </div>
         <p className="text-xs text-muted-foreground mt-1">
-          Free US Shipping · International $14.95 Flat
+          Free US Shipping · International Flat Rate
         </p>
       </div>
 

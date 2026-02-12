@@ -9,6 +9,7 @@ interface GptCtaBlockProps {
   delay?: number;
   showScarcity?: boolean;
   loading?: boolean;
+  hidePricing?: boolean;
 }
 
 const GptCtaBlock = ({
@@ -16,6 +17,7 @@ const GptCtaBlock = ({
   delay = 0,
   showScarcity = false,
   loading = false,
+  hidePricing = false,
 }: GptCtaBlockProps) => {
   return (
     <motion.div
@@ -35,20 +37,24 @@ const GptCtaBlock = ({
       <OfferTimer />
       <div className="h-3" />
 
-      {/* Price anchor — warm framing */}
-      <div className="text-center mb-3">
-        <div className="flex items-center justify-center gap-3">
-          <span className="text-sm text-muted-foreground line-through">$333</span>
-          <span className="text-3xl font-black text-foreground">$111</span>
-          <span className="text-sm text-muted-foreground">one-time</span>
-        </div>
-        <p className="text-xs text-muted-foreground mt-1">
-          That's less than a dinner out — but the feeling lasts all year
-        </p>
-        <p className="text-xs text-muted-foreground">
-          Free US Shipping · International $14.95 Flat
-        </p>
-      </div>
+      {!hidePricing && (
+        <>
+          {/* Price anchor — warm framing */}
+          <div className="text-center mb-3">
+            <div className="flex items-center justify-center gap-3">
+              <span className="text-sm text-muted-foreground line-through">$333</span>
+              <span className="text-3xl font-black text-foreground">$111</span>
+              <span className="text-sm text-muted-foreground">one-time</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              That's less than a dinner out — but the feeling lasts all year
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Free US Shipping · International Flat Rate
+            </p>
+          </div>
+        </>
+      )}
 
       <Button
         onClick={onCheckout}
@@ -56,7 +62,7 @@ const GptCtaBlock = ({
         className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none"
       >
         {loading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Heart className="w-5 h-5 mr-2" />}
-        {loading ? "Creating checkout…" : "YES! Send Love to My Best Friend 💌"}
+        {loading ? "Creating checkout…" : hidePricing ? "🎁 Claim My FREE Custom Shirt Now!" : "YES! Send Love to My Best Friend 💌"}
         {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
       </Button>
 
