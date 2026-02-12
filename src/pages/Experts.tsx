@@ -1,16 +1,19 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Settings2, Sparkles, ChevronRight, Trophy, ArrowRight, CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
+import { Settings2, Sparkles, ChevronRight, Trophy, ArrowRight, CheckCircle2, ChevronDown, Loader2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { useNavigate } from "react-router-dom";
 import HeroQuestionnaire from "@/components/experts/HeroQuestionnaire";
 import FrameworkCard from "@/components/experts/FrameworkCard";
 import ScriptGeneratorModal from "@/components/experts/ScriptGeneratorModal";
+import ExpertsAuthGate from "@/components/experts/ExpertsAuthGate";
 import { FRAMEWORK_SECTIONS, FRAMEWORKS, HeroProfile, Framework } from "@/data/expertFrameworks";
 import { useExpertScripts } from "@/hooks/useExpertScripts";
 import logoImg from "@/assets/logo.png";
 
-const Experts = () => {
+const ExpertsInner = () => {
+  const navigate = useNavigate();
   const { outputs, heroProfile, setHeroProfile, saveOutput, isLoading } = useExpertScripts();
   const [activeFramework, setActiveFramework] = useState<Framework | null>(null);
   const [editingProfile, setEditingProfile] = useState(false);
@@ -79,15 +82,26 @@ const Experts = () => {
             <img src={logoImg} alt="Logo" className="h-6" />
             <span className="text-xs font-bold text-foreground">Script Lab</span>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setEditingProfile(true)}
-            className="text-xs h-8 px-2.5 gap-1"
-          >
-            <Settings2 className="w-3.5 h-3.5" />
-            Profile
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/scripts-review")}
+              className="text-xs h-8 px-2.5 gap-1"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              Review
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setEditingProfile(true)}
+              className="text-xs h-8 px-2.5 gap-1"
+            >
+              <Settings2 className="w-3.5 h-3.5" />
+              Profile
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -241,5 +255,11 @@ const Experts = () => {
     </div>
   );
 };
+
+const Experts = () => (
+  <ExpertsAuthGate>
+    <ExpertsInner />
+  </ExpertsAuthGate>
+);
 
 export default Experts;
