@@ -6,6 +6,7 @@ import ImageZoomModal from "./ImageZoomModal";
 import { useState } from "react";
 import RiskReversalGuarantee from "./RiskReversalGuarantee";
 import UrgencyBanner from "./UrgencyBanner";
+import { useMovementCount } from "@/hooks/useMovementCount";
 
 interface FreeWristbandStepProps {
   onCheckout: () => void;
@@ -15,6 +16,7 @@ interface FreeWristbandStepProps {
 
 const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStepProps) => {
   const [zoomed, setZoomed] = useState(false);
+  const { displayCount } = useMovementCount();
 
   return (
     <>
@@ -47,7 +49,7 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
         transition={{ delay: 0.2 }}
       >
         <p className="text-xs text-muted-foreground">
-          🙏 <span className="font-semibold text-foreground">847 people</span> joined the movement this week
+          🙏 <span className="font-semibold text-foreground">{displayCount.toLocaleString()} people</span> joined the movement this week
         </p>
       </motion.div>
 

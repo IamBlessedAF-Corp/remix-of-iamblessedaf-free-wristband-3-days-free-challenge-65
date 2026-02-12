@@ -109,11 +109,11 @@ const ChallengeThanks = () => {
   };
 
   // Short, punchy share texts optimized for each platform
-  const tiktokText = `🎁 Someone is GRATEFUL for you!\nThey just sent you a FREE wristband ($11 value)\n\n✅ Just cover shipping\n✅ Or grab all 3 colors for $22 w/ FREE shipping\n\n💰 PLUS: Join the FREE 3-Day Gratitude Challenge & win $1,111!\n\nClaim yours 👇\n${shareUrl}`;
-  const instagramText = `🎁 Someone just sent you a FREE "I Am Blessed AF" Wristband!\n\nThey're grateful for YOU 🙏\n\n✅ FREE wristband ($11 value)\n✅ Just cover shipping\n💰 PLUS: Join the 3-Day Challenge & win $1,111!\n\nClaim yours → ${shareUrl}\n\n#grateful #blessed #iamblessedaf #gratitudechallenge`;
-  const youtubeText = `🎁 Gift a FREE Wristband to Someone You're Grateful For!\n\nSend a FREE "I Am Blessed AF" wristband ($11 value) to someone you care about.\n\n✅ They just cover shipping\n💰 PLUS they can join the 3-Day Gratitude Challenge & win $1,111!\n\nSend the gift: ${shareUrl}`;
-  const twitterText = `🎁 Just sent someone a FREE wristband because I'm grateful for them!\n\n✅ $11 value — just cover shipping\n💰 + FREE 3-Day Challenge to win $1,111\n\nSend one to someone you love 👇`;
-  const facebookText = `🎁 I just sent someone a FREE "I Am Blessed AF" wristband ($11 value) because I'm grateful for them! They just cover shipping. PLUS they can join the FREE 3-Day Gratitude Challenge and win $1,111! Send one to someone you love 🙏`;
+  const tiktokText = `🎁 Someone is GRATEFUL for you!\nThey just sent you a FREE wristband ($11 value)\n\n✅ Waterproof nylon — wear it everywhere\n✅ Or grab all 3 colors for $22\n\n💰 PLUS: Join the FREE 3-Day Gratitude Challenge & win $1,111!\n\nClaim yours 👇\n${shareUrl}`;
+  const instagramText = `🎁 Someone just sent you a FREE "I Am Blessed AF" Wristband!\n\nThey're grateful for YOU 🙏\n\n✅ FREE wristband ($11 value)\n✅ Waterproof nylon — daily gratitude trigger\n💰 PLUS: Join the 3-Day Challenge & win $1,111!\n\nClaim yours → ${shareUrl}\n\n#grateful #blessed #iamblessedaf #gratitudechallenge`;
+  const youtubeText = `🎁 Gift a FREE Wristband to Someone You're Grateful For!\n\nSend a FREE "I Am Blessed AF" wristband ($11 value) to someone you care about.\n\n✅ Waterproof nylon — wear it daily as a gratitude trigger\n💰 PLUS they can join the 3-Day Gratitude Challenge & win $1,111!\n\nSend the gift: ${shareUrl}`;
+  const twitterText = `🎁 Just sent someone a FREE wristband because I'm grateful for them!\n\n✅ $11 value — waterproof nylon gratitude trigger\n💰 + FREE 3-Day Challenge to win $1,111\n\nSend one to someone you love 👇`;
+  const facebookText = `🎁 I just sent someone a FREE "I Am Blessed AF" wristband ($11 value) because I'm grateful for them! Waterproof nylon you wear daily as a gratitude trigger. PLUS they can join the FREE 3-Day Gratitude Challenge and win $1,111! Send one to someone you love 🙏`;
 
   const shareToTikTok = () => {
     navigator.clipboard.writeText(tiktokText);

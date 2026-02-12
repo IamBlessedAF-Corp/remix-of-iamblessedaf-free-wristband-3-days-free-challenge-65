@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Crown, ArrowRight, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,15 +22,50 @@ import ViralShareNudge from "@/components/offer/ViralShareNudge";
 import AchievementUnlockToast from "@/components/gamification/AchievementUnlockToast";
 import { useAchievements } from "@/hooks/useAchievements";
 import DownsellModal from "@/components/offer/DownsellModal";
+import { supabase } from "@/integrations/supabase/client";
 
 const Offer111 = () => {
   const [showDownsell, setShowDownsell] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { startCheckout, loading } = useStripeCheckout();
   const { newlyUnlocked, dismissNewlyUnlocked } = useAchievements();
 
-  // Pull friend name for personalized copy
-  const friendName = localStorage.getItem("friendShirtName") || "";
+  // Pull friend name from localStorage OR URL params (?friend=Name)
+  const urlFriend = searchParams.get("friend") || "";
+  const [friendName, setFriendName] = useState(() => {
+    const stored = localStorage.getItem("friendShirtName") || "";
+    const name = stored || urlFriend;
+    // Persist URL param to localStorage for downstream use
+    if (urlFriend && !stored) localStorage.setItem("friendShirtName", urlFriend);
+    return name;
+  });
+
+  // Also look up sender name from referral code (like Offer22 does)
+  const [senderName, setSenderName] = useState("");
+  useEffect(() => {
+    const refCode = sessionStorage.getItem("referral_code") || searchParams.get("ref") || "";
+    if (!refCode) return;
+    supabase
+      .from("creator_profiles_public")
+      .select("display_name")
+      .eq("referral_code", refCode)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.display_name) setSenderName(data.display_name.split(" ")[0]);
+      });
+  }, [searchParams]);
+
+  // Listen for localStorage changes from ProductSections/ShirtCustomizer
+  useEffect(() => {
+    const check = () => {
+      const stored = localStorage.getItem("friendShirtName") || "";
+      if (stored && stored !== friendName) setFriendName(stored);
+    };
+    window.addEventListener("storage", check);
+    const interval = setInterval(check, 1000);
+    return () => { window.removeEventListener("storage", check); clearInterval(interval); };
+  }, [friendName]);
 
   const handleCheckout = () => {
     startCheckout("pack-111");
