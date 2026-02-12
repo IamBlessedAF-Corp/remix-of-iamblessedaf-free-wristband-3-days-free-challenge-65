@@ -522,124 +522,7 @@ export default function FunnelMap() {
           </Collapsible>
         </motion.section>
 
-        {/* ═══ CLIPPERS CAMPAIGN CALCULATOR (Andrew Tate Formula) ═══ */}
-        <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          <Card className="border-primary/20">
-            <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-transparent">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-base flex items-center gap-2"><Calculator className="h-4 w-4 text-primary" /> Clippers Campaign Calculator</CardTitle>
-                  <CardDescription>Andrew Tate Formula — Editable inputs. Preset: $3/clip, $3K budget fully deployed, 3K views/clip</CardDescription>
-                </div>
-                <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">
-                  <Video className="w-3 h-3 mr-1" /> Live Model
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="p-4 md:p-6 space-y-5">
-              {/* Editable Inputs */}
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                {[
-                  { label: "# Clippers", value: clippers, set: setClippers, icon: Users, tip: "Number of content creators posting clips for your campaign" },
-                  { label: "Videos / Clipper", value: videosPerClipper, set: setVideosPerClipper, icon: Video, tip: "Average number of videos each clipper posts" },
-                  { label: "Avg Views / Clip", value: viewsPerClip, set: setViewsPerClip, icon: Eye, tip: "Average views per clip. Industry avg for short-form is 2K-10K" },
-                  { label: "$ per Clip", value: pricePerClip, set: setPricePerClip, icon: DollarSign, step: 0.01, tip: "Cost you pay per clip submitted. Higher = more creators attracted" },
-                  { label: "Campaign Budget", value: campaignBudget, set: setCampaignBudget, icon: DollarSign, tip: "Total budget for the test campaign. Determines max clips you can afford" },
-                ].map((inp) => (
-                  <div key={inp.label}>
-                    <MetricLabel label={inp.label} tip={inp.tip} />
-                    <Input
-                      type="number"
-                      value={inp.value}
-                      step={(inp as any).step ?? 1}
-                      min={0}
-                      onChange={(e) => inp.set(Number(e.target.value))}
-                      className="h-9 text-sm font-medium mt-1"
-                    />
-                  </div>
-                ))}
-              </div>
-
-              {/* Total Clips Card (like the reference screenshot) */}
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <Card className="border bg-card">
-                  <CardContent className="p-3">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <Video className="h-3.5 w-3.5 text-primary" />
-                      <MetricLabel label="Total Clips" tip="Total videos produced: Clippers × Videos per Clipper" />
-                    </div>
-                    <p className="text-2xl font-black text-foreground">{base.totalClips.toLocaleString()}</p>
-                    <p className="text-[10px] text-muted-foreground">{clippers} clippers × {videosPerClipper} vids</p>
-                  </CardContent>
-                </Card>
-                <Card className="border bg-card">
-                  <CardContent className="p-3">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <Eye className="h-3.5 w-3.5 text-primary" />
-                      <MetricLabel label="Total Views" tip="Total impressions: Clips × Avg Views per Clip" />
-                    </div>
-                    <p className="text-2xl font-black text-foreground">{(base.totalViews / 1000).toFixed(0)}K</p>
-                    <p className="text-[10px] text-muted-foreground">{(viewsPerClip / 1000).toFixed(0)}K avg/clip</p>
-                  </CardContent>
-                </Card>
-                <Card className="border bg-card">
-                  <CardContent className="p-3">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <DollarSign className="h-3.5 w-3.5 text-primary" />
-                      <MetricLabel label="Clipper Cost" tip="Total spend on clips: Total Clips × Price per Clip" />
-                    </div>
-                    <p className="text-2xl font-black text-foreground">${base.clipperCost.toLocaleString()}</p>
-                    <p className="text-[10px] text-muted-foreground">Budget: ${campaignBudget.toLocaleString()}</p>
-                  </CardContent>
-                </Card>
-                <Card className="border bg-card">
-                  <CardContent className="p-3">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <Users className="h-3.5 w-3.5 text-primary" />
-                      <MetricLabel label="Funnel Visitors" tip="People who click through from clips to your site. Assumes 1.2% CTR" />
-                    </div>
-                    <p className="text-2xl font-black text-foreground">{base.visitors.toLocaleString()}</p>
-                    <p className="text-[10px] text-muted-foreground">1.2% clip→site CTR</p>
-                  </CardContent>
-                </Card>
-                <Card className="border bg-card">
-                  <CardContent className="p-3">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <TrendingUp className="h-3.5 w-3.5 text-primary" />
-                      <MetricLabel label="Projected Revenue" tip="Total revenue generated from all funnel tiers + downsell conversions" />
-                    </div>
-                    <p className="text-2xl font-black text-primary">${base.totalRevenue.toLocaleString()}</p>
-                    <p className="text-[10px] text-muted-foreground">{base.roi.toFixed(1)}x ROI</p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* RPM / LTV / CAC / K-Factor */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {[
-                  { label: "RPM", value: `$${rpm.toFixed(2)}`, tip: "Revenue Per Mille — revenue generated per 1,000 views. Higher RPM = more efficient content monetization." },
-                  { label: "LTV", value: `$${ltv.toFixed(2)}`, tip: "Lifetime Value — average revenue per funnel visitor. Includes all tiers + downsell. Goal: LTV > CAC." },
-                  { label: "CAC", value: `$${cac.toFixed(2)}`, tip: "Customer Acquisition Cost — how much you spend (clipper payouts) to get one visitor into the funnel." },
-                  { label: "K-Factor", value: avgKFactor.toFixed(1), tip: "Viral coefficient — how many new users each user brings. K>1 means organic growth. We average K=2.1 across all loops." },
-                ].map((m, i) => (
-                  <Card key={i} className={`border ${m.label === "K-Factor" ? "border-primary/30 bg-primary/[0.03]" : "bg-card"}`}>
-                    <CardContent className="p-3 text-center">
-                      <MetricLabel label={m.label} tip={m.tip} />
-                      <p className={`text-xl font-black mt-1 ${m.label === "K-Factor" ? "text-primary" : cac > 0 && m.label === "LTV" && ltv > cac ? "text-primary" : "text-foreground"}`}>
-                        {m.value}
-                      </p>
-                      {m.label === "LTV" && cac > 0 && (
-                        <p className={`text-[9px] font-bold ${ltv > cac ? "text-primary" : "text-destructive"}`}>
-                          {ltv > cac ? `✅ LTV > CAC (${(ltv / cac).toFixed(1)}x)` : "⚠️ LTV < CAC"}
-                        </p>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.section>
+        {/* Calculator moved inside Pre-Funnel Clipper Campaign step */}
 
         {/* ═══ VISUAL FUNNEL FLOW ═══ */}
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
@@ -761,6 +644,128 @@ export default function FunnelMap() {
                     {PRE_FUNNEL_STEPS.map((step, i) => (
                       <div key={step.id}>
                         <FunnelStepCard step={step} index={i} baseStep={null} getConv={getConv} navigate={navigate} stepNumber={`0${i + 1}`} />
+
+                        {/* ═══ Embed Calculator after Clipper Campaign step (id 0.2) ═══ */}
+                        {step.id === 0.2 && (
+                          <div className="mt-3 mb-3">
+                            <Card className="border-primary/20">
+                              <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-transparent">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <CardTitle className="text-base flex items-center gap-2"><Calculator className="h-4 w-4 text-primary" /> Clippers Campaign Calculator</CardTitle>
+                                    <CardDescription>Andrew Tate Formula — Editable inputs. Preset: $3/clip, $3K budget fully deployed, 3K views/clip</CardDescription>
+                                  </div>
+                                  <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">
+                                    <Video className="w-3 h-3 mr-1" /> Live Model
+                                  </Badge>
+                                </div>
+                              </CardHeader>
+                              <CardContent className="p-4 md:p-6 space-y-5">
+                                {/* Editable Inputs */}
+                                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                                  {[
+                                    { label: "# Clippers", value: clippers, set: setClippers, icon: Users, tip: "Number of content creators posting clips for your campaign" },
+                                    { label: "Videos / Clipper", value: videosPerClipper, set: setVideosPerClipper, icon: Video, tip: "Average number of videos each clipper posts" },
+                                    { label: "Avg Views / Clip", value: viewsPerClip, set: setViewsPerClip, icon: Eye, tip: "Average views per clip. Industry avg for short-form is 2K-10K" },
+                                    { label: "$ per Clip", value: pricePerClip, set: setPricePerClip, icon: DollarSign, step: 0.01, tip: "Cost you pay per clip submitted. Higher = more creators attracted" },
+                                    { label: "Campaign Budget", value: campaignBudget, set: setCampaignBudget, icon: DollarSign, tip: "Total budget for the test campaign. Determines max clips you can afford" },
+                                  ].map((inp) => (
+                                    <div key={inp.label}>
+                                      <MetricLabel label={inp.label} tip={inp.tip} />
+                                      <Input
+                                        type="number"
+                                        value={inp.value}
+                                        step={(inp as any).step ?? 1}
+                                        min={0}
+                                        onChange={(e) => inp.set(Number(e.target.value))}
+                                        className="h-9 text-sm font-medium mt-1"
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+
+                                {/* Total Clips Card */}
+                                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                                  <Card className="border bg-card">
+                                    <CardContent className="p-3">
+                                      <div className="flex items-center gap-1.5 mb-1">
+                                        <Video className="h-3.5 w-3.5 text-primary" />
+                                        <MetricLabel label="Total Clips" tip="Total videos produced: Clippers × Videos per Clipper" />
+                                      </div>
+                                      <p className="text-2xl font-black text-foreground">{base.totalClips.toLocaleString()}</p>
+                                      <p className="text-[10px] text-muted-foreground">{clippers} clippers × {videosPerClipper} vids</p>
+                                    </CardContent>
+                                  </Card>
+                                  <Card className="border bg-card">
+                                    <CardContent className="p-3">
+                                      <div className="flex items-center gap-1.5 mb-1">
+                                        <Eye className="h-3.5 w-3.5 text-primary" />
+                                        <MetricLabel label="Total Views" tip="Total impressions: Clips × Avg Views per Clip" />
+                                      </div>
+                                      <p className="text-2xl font-black text-foreground">{(base.totalViews / 1000).toFixed(0)}K</p>
+                                      <p className="text-[10px] text-muted-foreground">{(viewsPerClip / 1000).toFixed(0)}K avg/clip</p>
+                                    </CardContent>
+                                  </Card>
+                                  <Card className="border bg-card">
+                                    <CardContent className="p-3">
+                                      <div className="flex items-center gap-1.5 mb-1">
+                                        <DollarSign className="h-3.5 w-3.5 text-primary" />
+                                        <MetricLabel label="Clipper Cost" tip="Total spend on clips: Total Clips × Price per Clip" />
+                                      </div>
+                                      <p className="text-2xl font-black text-foreground">${base.clipperCost.toLocaleString()}</p>
+                                      <p className="text-[10px] text-muted-foreground">Budget: ${campaignBudget.toLocaleString()}</p>
+                                    </CardContent>
+                                  </Card>
+                                  <Card className="border bg-card">
+                                    <CardContent className="p-3">
+                                      <div className="flex items-center gap-1.5 mb-1">
+                                        <Users className="h-3.5 w-3.5 text-primary" />
+                                        <MetricLabel label="Funnel Visitors" tip="People who click through from clips to your site. Assumes 1.2% CTR" />
+                                      </div>
+                                      <p className="text-2xl font-black text-foreground">{base.visitors.toLocaleString()}</p>
+                                      <p className="text-[10px] text-muted-foreground">1.2% clip→site CTR</p>
+                                    </CardContent>
+                                  </Card>
+                                  <Card className="border bg-card">
+                                    <CardContent className="p-3">
+                                      <div className="flex items-center gap-1.5 mb-1">
+                                        <TrendingUp className="h-3.5 w-3.5 text-primary" />
+                                        <MetricLabel label="Projected Revenue" tip="Total revenue generated from all funnel tiers + downsell conversions" />
+                                      </div>
+                                      <p className="text-2xl font-black text-primary">${base.totalRevenue.toLocaleString()}</p>
+                                      <p className="text-[10px] text-muted-foreground">{base.roi.toFixed(1)}x ROI</p>
+                                    </CardContent>
+                                  </Card>
+                                </div>
+
+                                {/* RPM / LTV / CAC / K-Factor */}
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                  {[
+                                    { label: "RPM", value: `$${rpm.toFixed(2)}`, tip: "Revenue Per Mille — revenue generated per 1,000 views." },
+                                    { label: "LTV", value: `$${ltv.toFixed(2)}`, tip: "Lifetime Value — average revenue per funnel visitor." },
+                                    { label: "CAC", value: `$${cac.toFixed(2)}`, tip: "Customer Acquisition Cost — clipper payouts per visitor." },
+                                    { label: "K-Factor", value: avgKFactor.toFixed(1), tip: "Viral coefficient — K>1 means organic growth. We average K=2.1." },
+                                  ].map((m, i) => (
+                                    <Card key={i} className={`border ${m.label === "K-Factor" ? "border-primary/30 bg-primary/[0.03]" : "bg-card"}`}>
+                                      <CardContent className="p-3 text-center">
+                                        <MetricLabel label={m.label} tip={m.tip} />
+                                        <p className={`text-xl font-black mt-1 ${m.label === "K-Factor" ? "text-primary" : cac > 0 && m.label === "LTV" && ltv > cac ? "text-primary" : "text-foreground"}`}>
+                                          {m.value}
+                                        </p>
+                                        {m.label === "LTV" && cac > 0 && (
+                                          <p className={`text-[9px] font-bold ${ltv > cac ? "text-primary" : "text-destructive"}`}>
+                                            {ltv > cac ? `✅ LTV > CAC (${(ltv / cac).toFixed(1)}x)` : "⚠️ LTV < CAC"}
+                                          </p>
+                                        )}
+                                      </CardContent>
+                                    </Card>
+                                  ))}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </div>
+                        )}
+
                         {i < PRE_FUNNEL_STEPS.length - 1 && (
                           <div className="flex justify-center py-0.5">
                             <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
