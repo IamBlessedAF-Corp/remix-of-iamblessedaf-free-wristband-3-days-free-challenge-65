@@ -382,12 +382,12 @@ export default function FunnelMap() {
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
         <div className="relative max-w-5xl mx-auto px-4 pt-8 pb-10 text-center">
           <img src={logoImg} alt="IamBlessedAF" className="h-8 mx-auto mb-4" />
-          <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1 animate-pulse">
-            🔴 INVESTOR DECK · LIVE MODEL
+          <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1">
+            Traffic → Funnel → Conversiones
           </Badge>
           <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
-            How We Turn <span className="text-primary">$3,000</span> Into a<br />
-            Self-Replicating <span className="text-primary">Revenue Engine</span>
+            How the <span className="text-primary">Gratitude Engine</span> Turns<br />
+            Clips Into <span className="text-primary">Cash & Impact</span>
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-6 leading-relaxed">
             <strong className="text-foreground">250 Clippers × 3,000 Views/Clip</strong> = 3M Impressions → <strong className="text-foreground">{base.visitors.toLocaleString()} Visitors</strong> → <strong className="text-primary">${base.totalRevenue.toLocaleString()} Revenue</strong> ({base.roi.toFixed(1)}x ROI)
@@ -737,6 +737,101 @@ export default function FunnelMap() {
           </Card>
         </motion.section>
 
+        {/* ═══ GAMIFICATION & K-FACTOR BOOST ═══ */}
+        <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <Card className="border-primary/20">
+            <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-transparent">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2"><Trophy className="h-4 w-4 text-primary" /> Gamification & K-Factor Boost</CardTitle>
+                  <CardDescription>Retention engines that multiply viral loops and lifetime value</CardDescription>
+                </div>
+                <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">
+                  <Zap className="w-3 h-3 mr-1" /> Active
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 md:p-6 space-y-4">
+              {/* Portal */}
+              <div className="bg-card border border-border/40 rounded-xl p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Crown className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-foreground">Ambassador Portal</h3>
+                      <p className="text-[11px] text-muted-foreground">/portal — Retention & engagement hub</p>
+                    </div>
+                  </div>
+                  <button onClick={() => navigate("/portal")} className="text-[10px] text-primary hover:underline flex items-center gap-0.5">
+                    <ExternalLink className="w-3 h-3" /> Visit
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {[
+                    { label: "BC Wallet", desc: "Virtual currency + daily streak bonuses", icon: "🪙" },
+                    { label: "Leaderboard", desc: "Global rankings drive competition", icon: "🏆" },
+                    { label: "Missions", desc: "Daily/weekly tasks for BC rewards", icon: "🎯" },
+                    { label: "Rewards Store", desc: "8 items: wristbands, shoutouts, credits", icon: "🛒" },
+                  ].map((m, i) => (
+                    <div key={i} className="bg-accent/50 border border-border/30 rounded-lg p-2.5">
+                      <p className="text-sm mb-0.5">{m.icon}</p>
+                      <p className="text-[11px] font-bold text-foreground">{m.label}</p>
+                      <p className="text-[10px] text-muted-foreground">{m.desc}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-primary/5 border border-primary/10 rounded-lg px-3 py-2">
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">
+                    <strong className="text-foreground">K-Factor Impact:</strong> Portal's 12-method earn hierarchy + social sharing templates drive K=2.1 average. 
+                    ShareMilestoneTracker awards BC at 1, 3, 5, 10, 25 shares. Activity feed pads real events with simulated actions for social momentum.
+                  </p>
+                </div>
+              </div>
+
+              {/* Clipper Dashboard */}
+              <div className="bg-card border border-border/40 rounded-xl p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Video className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-foreground">Clipper Dashboard</h3>
+                      <p className="text-[11px] text-muted-foreground">/clipper-dashboard — Creator retention engine</p>
+                    </div>
+                  </div>
+                  <button onClick={() => navigate("/clipper-dashboard")} className="text-[10px] text-primary hover:underline flex items-center gap-0.5">
+                    <ExternalLink className="w-3 h-3" /> Visit
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {[
+                    { label: "Identity Badges", desc: "New → Verified → Proven → Super Clipper", icon: "🏅" },
+                    { label: "Weekly Snapshot", desc: "Progress bars with 'Perceived Acceleration'", icon: "📊" },
+                    { label: "Analytics Tab", desc: "Personal views, earnings, performance", icon: "📈" },
+                    { label: "Milestone Track", desc: "Starter → Consistent → Machine → Legend", icon: "🎮" },
+                  ].map((m, i) => (
+                    <div key={i} className="bg-accent/50 border border-border/30 rounded-lg p-2.5">
+                      <p className="text-sm mb-0.5">{m.icon}</p>
+                      <p className="text-[11px] font-bold text-foreground">{m.label}</p>
+                      <p className="text-[10px] text-muted-foreground">{m.desc}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-primary/5 border border-primary/10 rounded-lg px-3 py-2">
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">
+                    <strong className="text-foreground">Retention Strategy:</strong> Mobile-first layout prioritizes momentum over data density. 
+                    Dopamine-based activation triggers for first-time clippers + urgency prompts for low daily output. 
+                    100 BC/clip earned links directly to Portal Rewards Store.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.section>
+
         {/* ═══ TABS: Projections · Conversions · Revenue ═══ */}
         <Tabs defaultValue="projections" className="space-y-4">
           <TabsList className="w-full md:w-auto">
@@ -748,10 +843,19 @@ export default function FunnelMap() {
           {/* ─── TAB: Projections ─── */}
           <TabsContent value="projections" className="space-y-4">
             {/* 3-Scenario Comparison Table */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">3-Scenario Projections</CardTitle>
-              </CardHeader>
+            <Collapsible>
+              <CollapsibleTrigger className="w-full">
+                <Card className="cursor-pointer hover:border-primary/20 transition-colors">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm">3-Scenario Projections</CardTitle>
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  </CardHeader>
+                </Card>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+              <Card className="mt-1 border-t-0 rounded-t-none">
               <CardContent className="overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -786,6 +890,8 @@ export default function FunnelMap() {
                 </Table>
               </CardContent>
             </Card>
+              </CollapsibleContent>
+            </Collapsible>
 
             {/* Editable Conversion Rates per Step */}
             <Collapsible>
