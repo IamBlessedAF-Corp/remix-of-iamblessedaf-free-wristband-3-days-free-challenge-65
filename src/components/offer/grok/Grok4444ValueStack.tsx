@@ -40,8 +40,8 @@ const VALUES = [
     emoji: "❤️",
     title: "44,444 Meals Donated — Value: Priceless",
     description:
-      "The ultimate legacy move. Forty-four thousand meals donated in your name. That's not a purchase — that's a chapter in someone's survival story.",
-    sub: "Backed by Feeding America",
+      "The ultimate legacy move. Forty-four thousand meals donated to Tony Robbins' \"1 Billion Meals Challenge\" in honor of Andrew Huberman's Gratitude Research. That's not a purchase — that's a chapter in someone's survival story.",
+    sub: "Tony Robbins' 1 Billion Meals Challenge · Honoring Huberman's Research",
   },
 ];
 
