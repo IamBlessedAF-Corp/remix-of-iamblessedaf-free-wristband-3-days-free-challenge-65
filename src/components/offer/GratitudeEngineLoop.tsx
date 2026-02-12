@@ -41,7 +41,7 @@ const GratitudeEngineLoop = ({ delay = 0.4, className = "" }: GratitudeEngineLoo
         <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
           <iframe
             className="absolute inset-0 w-full h-full"
-            src="https://www.youtube.com/embed/ph1BuMRFJ88"
+            src="https://www.youtube.com/embed/ph1BuMRFJ88?rel=0&modestbranding=1&fs=0"
             title="Huberman on Gratitude"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen

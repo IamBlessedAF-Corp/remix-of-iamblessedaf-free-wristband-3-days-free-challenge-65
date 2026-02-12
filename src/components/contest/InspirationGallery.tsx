@@ -69,7 +69,7 @@ const InlinePlayer = ({ videoId, onClose }: { videoId: string; onClose: () => vo
       <div className="relative w-full rounded-xl overflow-hidden" style={{ paddingBottom: "177.78%" }}>
         <iframe
           className="absolute inset-0 w-full h-full"
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&fs=0`}
           title="Clip player"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
@@ -116,7 +116,7 @@ const InspirationGallery = () => {
             <div className="relative w-full" style={{ paddingBottom: "177.78%" }}>
               <iframe
                 className="absolute inset-0 w-full h-full"
-                src={`https://www.youtube.com/embed/${exampleRemix}`}
+                src={`https://www.youtube.com/embed/${exampleRemix}?rel=0&modestbranding=1&fs=0`}
                 title="Example remix style"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
