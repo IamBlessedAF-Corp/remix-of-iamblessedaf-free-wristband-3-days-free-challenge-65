@@ -233,7 +233,7 @@ export default function ExpertsLeads() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
         >
-          <img src={wristbandImg} alt="Gratitude wristbands" className="w-full h-48 md:h-64 object-cover" loading="lazy" />
+          <img src={wristbandImg} alt="Gratitude wristbands" className="w-full h-56 md:h-72 object-contain bg-card" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-5">
             <p className="text-xs font-bold text-primary uppercase tracking-wider mb-1">What Your Leads Receive</p>
