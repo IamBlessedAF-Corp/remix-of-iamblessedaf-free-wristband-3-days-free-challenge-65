@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useExitIntent } from "@/hooks/useExitIntent";
+import { useExitIntentTracking } from "@/hooks/useExitIntentTracking";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Crown, ArrowRight, Heart } from "lucide-react";
@@ -31,6 +32,7 @@ const Offer111 = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { startCheckout, loading } = useStripeCheckout();
+  const { track } = useExitIntentTracking("offer-111");
   const { newlyUnlocked, dismissNewlyUnlocked } = useAchievements();
 
   // Exit-intent: trigger downsell when user tries to leave
@@ -301,6 +303,7 @@ const Offer111 = () => {
                 onClose={() => setShowDownsell(false)}
                 onAccept={() => { setShowDownsell(false); navigate("/offer/11mo"); }}
                 onDecline={() => { setShowDownsell(false); navigate("/offer/444"); }}
+                onTrack={track}
               />
             </>
 

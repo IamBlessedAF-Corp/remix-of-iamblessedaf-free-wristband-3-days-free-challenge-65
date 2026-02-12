@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useExitIntent } from "@/hooks/useExitIntent";
+import { useExitIntentTracking } from "@/hooks/useExitIntentTracking";
 import { useNavigate } from "react-router-dom";
 import CrossFunnelShareNudge from "@/components/viral/CrossFunnelShareNudge";
 import { motion } from "framer-motion";
@@ -29,8 +30,8 @@ const Offer444 = () => {
   const [showDownsell, setShowDownsell] = useState(false);
   const navigate = useNavigate();
   const { startCheckout, loading } = useStripeCheckout();
+  const { track } = useExitIntentTracking("offer-444");
 
-  // Exit-intent: trigger downsell when user tries to leave
   useExitIntent(() => setShowDownsell(true), {
     enabled: !showDownsell,
     sessionKey: "offer-444",
@@ -179,6 +180,7 @@ const Offer444 = () => {
                 onClose={() => setShowDownsell(false)}
                 onAccept={handleDownsellAccept}
                 onDecline={handleFinalDecline}
+                onTrack={track}
               />
              </>
         </div>

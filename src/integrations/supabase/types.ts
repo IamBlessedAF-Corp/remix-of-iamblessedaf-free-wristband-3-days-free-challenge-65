@@ -452,6 +452,33 @@ export type Database = {
         }
         Relationships: []
       }
+      exit_intent_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          page: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          page: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          page?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       expert_scripts: {
         Row: {
           created_at: string

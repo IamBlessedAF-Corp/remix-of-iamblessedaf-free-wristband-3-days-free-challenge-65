@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useExitIntentTracking } from "@/hooks/useExitIntentTracking";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
@@ -23,6 +24,7 @@ const Offer111Grok = () => {
   const [showDownsell, setShowDownsell] = useState(false);
   const navigate = useNavigate();
   const { startCheckout, loading } = useStripeCheckout();
+  const { track } = useExitIntentTracking("offer-111-grok");
 
   const handleCheckout = () => {
     startCheckout("pack-111");
@@ -189,6 +191,7 @@ const Offer111Grok = () => {
             onClose={() => setShowDownsell(false)}
             onAccept={() => { setShowDownsell(false); navigate("/offer/11mo"); }}
             onDecline={() => { setShowDownsell(false); navigate("/offer/444"); }}
+            onTrack={track}
           />
 
         </div>

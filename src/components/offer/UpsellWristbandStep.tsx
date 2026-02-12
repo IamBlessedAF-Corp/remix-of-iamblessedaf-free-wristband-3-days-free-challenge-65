@@ -58,13 +58,12 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
         transition={{ duration: 0.5, delay: 0.1 }}
       >
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3 leading-tight">
-          Keep One. <span className="text-primary">Gift Two.</span>{" "}
-          <span className="text-primary">Rekindle 2 Relationships.</span>
+          Wanna Really <span className="text-primary">Hack Your Brain</span> to Feel Up to{" "}
+          <span className="text-primary">27× Happier?</span>
         </h2>
         <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-2 leading-relaxed">
-          Think of 2 people who changed your life. A friend who was there. A family member who believed in you.{" "}
-          <span className="font-bold text-foreground">Send them a wristband</span> — it's the simplest way to say
-          "I'm grateful for you."  When they wear it, they think of you.
+          Keep one wristband and <span className="font-bold text-foreground">gift 1–2 to your best friends</span>.
+          Then watch what happens when you meet. When they wear it, they think of you.
           When they feel grateful,{" "}
           <span className="font-bold text-foreground">YOUR brain rewards you too</span>{" "}
           — that's the 27× serotonin boost Huberman found.
