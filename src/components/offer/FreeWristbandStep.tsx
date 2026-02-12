@@ -39,6 +39,18 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
         </div>
       </motion.div>
 
+      {/* Social proof counter */}
+      <motion.div
+        className="text-center mb-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        <p className="text-xs text-muted-foreground">
+          🙏 <span className="font-semibold text-foreground">847 people</span> joined the movement this week
+        </p>
+      </motion.div>
+
       {/* Intro copy */}
       <motion.div
         className="text-center mb-8"
