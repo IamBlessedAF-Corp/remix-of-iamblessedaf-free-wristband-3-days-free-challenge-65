@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Brain, Heart, Quote } from "lucide-react";
+import { ArrowRight, Brain, Heart, Quote, Zap } from "lucide-react";
 import hawkinsImg from "@/assets/hawkins-scale.jpg";
 import hubermanImg from "@/assets/author-huberman.jpg";
+import dispenzaImg from "@/assets/author-joe-dispenza.jpg";
 import wristbandImg from "@/assets/wristband-gift.avif";
 
 interface GratitudeIntroScreenProps {
@@ -26,12 +27,23 @@ const GratitudeIntroScreen = ({ onContinue, onSkip }: GratitudeIntroScreenProps)
           animate={{ scale: 1 }}
           transition={{ type: "spring", delay: 0.2 }}
         >
-          <Brain className="w-8 h-8 text-primary" />
+          <motion.div
+            animate={{ rotate: [0, 8, -8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+          >
+            <Brain className="w-8 h-8 text-primary" />
+          </motion.div>
         </motion.div>
 
         <h2 className="text-2xl md:text-3xl font-extrabold leading-tight">
           Just 2 Minutes to Feel Up to{" "}
-          <span className="text-primary">27× Happier</span>
+          <motion.span
+            className="text-primary inline-block"
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 2 }}
+          >
+            27× Happier
+          </motion.span>
         </h2>
 
         <p className="text-sm text-muted-foreground italic">
@@ -39,13 +51,20 @@ const GratitudeIntroScreen = ({ onContinue, onSkip }: GratitudeIntroScreenProps)
         </p>
       </div>
 
-      {/* Hawkins scale image */}
+      {/* Hawkins scale image with glow effect */}
       <motion.div
-        className="rounded-xl overflow-hidden border border-border/50 shadow-sm"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+        className="relative rounded-xl overflow-hidden border border-border/50 shadow-lg"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        whileInView={{ y: [0, -3, 0] }}
+        viewport={{ once: false }}
       >
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent z-10 pointer-events-none"
+          animate={{ opacity: [0.3, 0.6, 0.3] }}
+          transition={{ duration: 3, repeat: Infinity }}
+        />
         <img
           src={hawkinsImg}
           alt="Dr. Hawkins Consciousness Scale — Gratitude at 500"
@@ -56,16 +75,24 @@ const GratitudeIntroScreen = ({ onContinue, onSkip }: GratitudeIntroScreenProps)
 
       {/* Huberman quote */}
       <motion.div
-        className="bg-secondary/50 rounded-xl p-4 border border-border/50"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
+        className="bg-secondary/50 rounded-xl p-4 border border-border/50 relative overflow-hidden"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
       >
+        <motion.div
+          className="absolute top-0 left-0 w-1 h-full bg-primary rounded-r-full"
+          initial={{ scaleY: 0 }}
+          animate={{ scaleY: 1 }}
+          transition={{ delay: 0.6, duration: 0.4 }}
+        />
         <div className="flex items-start gap-3">
-          <img
+          <motion.img
             src={hubermanImg}
             alt="Andrew Huberman"
             className="w-12 h-12 rounded-full object-cover border-2 border-primary/30 flex-shrink-0"
+            whileHover={{ scale: 1.1 }}
+            transition={{ type: "spring", stiffness: 300 }}
           />
           <div>
             <Quote className="w-4 h-4 text-primary/50 mb-1" />
@@ -81,15 +108,55 @@ const GratitudeIntroScreen = ({ onContinue, onSkip }: GratitudeIntroScreenProps)
         </div>
       </motion.div>
 
+      {/* Joe Dispenza quote */}
+      <motion.div
+        className="bg-secondary/50 rounded-xl p-4 border border-border/50 relative overflow-hidden"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.55, duration: 0.5 }}
+      >
+        <motion.div
+          className="absolute top-0 left-0 w-1 h-full bg-primary rounded-r-full"
+          initial={{ scaleY: 0 }}
+          animate={{ scaleY: 1 }}
+          transition={{ delay: 0.75, duration: 0.4 }}
+        />
+        <div className="flex items-start gap-3">
+          <motion.img
+            src={dispenzaImg}
+            alt="Dr. Joe Dispenza"
+            className="w-12 h-12 rounded-full object-cover border-2 border-primary/30 flex-shrink-0"
+            whileHover={{ scale: 1.1 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          />
+          <div>
+            <Quote className="w-4 h-4 text-primary/50 mb-1" />
+            <p className="text-sm leading-relaxed text-foreground">
+              "When you're truly grateful, your body believes it's already{" "}
+              <span className="font-bold text-primary">receiving something wonderful</span>.
+              Your brain doesn't know the difference between the experience you're having and the one you're imagining."
+            </p>
+            <p className="text-xs text-muted-foreground mt-2 font-semibold">
+              — Dr. Joe Dispenza, Neuroscientist & Author
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
       {/* The movement explanation */}
       <motion.div
         className="bg-accent/50 rounded-xl p-4 border border-primary/20 space-y-3"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.65 }}
       >
         <div className="flex items-center gap-2">
-          <Heart className="w-5 h-5 text-primary flex-shrink-0" />
+          <motion.div
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
+          >
+            <Heart className="w-5 h-5 text-primary flex-shrink-0" />
+          </motion.div>
           <p className="text-sm font-bold">The Gratitude Pay-It-Forward Movement</p>
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
@@ -108,12 +175,15 @@ const GratitudeIntroScreen = ({ onContinue, onSkip }: GratitudeIntroScreenProps)
         className="flex items-center gap-3 bg-card rounded-xl p-3 border border-border/50"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
+        transition={{ delay: 0.75 }}
+        whileHover={{ scale: 1.02 }}
       >
-        <img
+        <motion.img
           src={wristbandImg}
           alt="FREE Wristband"
           className="w-14 h-14 rounded-lg object-cover border border-border/50"
+          animate={{ rotate: [0, 2, -2, 0] }}
+          transition={{ duration: 3, repeat: Infinity, repeatDelay: 4 }}
         />
         <div>
           <p className="text-sm font-bold">🎁 Your FREE Wristband is Waiting</p>
@@ -125,12 +195,13 @@ const GratitudeIntroScreen = ({ onContinue, onSkip }: GratitudeIntroScreenProps)
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
+        transition={{ delay: 0.85 }}
       >
         <Button
           onClick={onContinue}
           className="w-full h-14 text-base md:text-lg font-bold btn-glow px-4"
         >
+          <Zap className="w-5 h-5 mr-2 flex-shrink-0" />
           Let's Do It — Takes 2 Minutes
           <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
         </Button>
