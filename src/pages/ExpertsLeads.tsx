@@ -151,6 +151,12 @@ export default function ExpertsLeads() {
         source_page: "experts-leads",
       });
       if (error) throw error;
+
+      // Send welcome email (fire-and-forget)
+      supabase.functions.invoke("send-expert-welcome", {
+        body: { email, name, niche: niche || null },
+      }).catch(console.error);
+
       setEnrolled(true);
       toast.success("🎉 You're in! Check your email for next steps.");
     } catch {

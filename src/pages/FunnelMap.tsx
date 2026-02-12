@@ -6,39 +6,51 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, FunnelChart, Funnel, LabelList, Cell, LineChart, Line, Legend, PieChart, Pie } from "recharts";
-import { TrendingUp, Users, DollarSign, Eye, Video, ArrowRight, ArrowDown, Zap, Target, BarChart3, Settings2, Sparkles, Gift, Brain, Share2, Repeat, MessageSquare, Crown, RefreshCw } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  TrendingUp, Users, DollarSign, Eye, Video, ArrowRight, ArrowDown, Zap, Target, BarChart3,
+  Settings2, Sparkles, Gift, Brain, Share2, Repeat, MessageSquare, Crown, RefreshCw,
+  Info, Calculator, Rocket, Snowflake, Heart, Star, ShoppingBag, Megaphone
+} from "lucide-react";
 import { motion } from "framer-motion";
+import logoImg from "@/assets/logo-iamblessedaf.png";
 
-/* ─── Vitality Loop annotations per step ─── */
-const VITALITY_LOOPS: Record<number, { label: string; icon: any; kFactor?: string }> = {
-  1: { label: "Auth Gate → 100% capture", icon: Gift, kFactor: "K=1.0" },
-  2: { label: "Science hooks → credibility", icon: Brain },
-  3: { label: "Friend naming → referral seed", icon: Users, kFactor: "K=3.0" },
-  4: { label: "Pay It Forward guilt loop", icon: Share2, kFactor: "K=1.5" },
-  5: { label: "WhatsApp viral share", icon: MessageSquare, kFactor: "K=2.7" },
-  6: { label: "Stock decay FOMO", icon: Zap },
-  7: { label: "Mystery Box framing", icon: Gift },
-  8: { label: "Chained transition", icon: Repeat },
-  9: { label: "ROI math + mission", icon: Crown },
-  10: { label: "Portal unlock celebration", icon: Crown },
-};
+/* ─── Metric Tooltip Component ─── */
+const MetricLabel = ({ label, tip }: { label: string; tip: string }) => (
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <span className="text-xs font-medium text-muted-foreground flex items-center gap-1 cursor-help underline decoration-dotted decoration-muted-foreground/40 underline-offset-2">
+        {label} <Info className="w-3 h-3" />
+      </span>
+    </TooltipTrigger>
+    <TooltipContent side="top" className="max-w-[240px] text-xs">{tip}</TooltipContent>
+  </Tooltip>
+);
 
-/* ─── Funnel Steps Definition ─── */
-const FUNNEL_STEPS = [
-  { id: 1, route: "/", name: "Free Wristband", sells: "Lead capture (wristband gratis)", defaultConv: 0.65 },
-  { id: 2, route: "Intro", name: "Science Hook", sells: "Educación (nada)", defaultConv: 0.85 },
-  { id: 3, route: "Setup", name: "Friend Capture", sells: "Data capture (nada)", defaultConv: 0.78 },
-  { id: 4, route: "Checkout", name: "Wristband Checkout", sells: "$9.95–$22 wristbands", defaultConv: 0.35 },
-  { id: 5, route: "/challenge/thanks", name: "Viral Activation", sells: "Nada (share loop)", defaultConv: 0.42 },
-  { id: 6, route: "/offer/22", name: "$22 Starter Pack", sells: "3 wristbands ($22)", defaultConv: 0.18 },
-  { id: 7, route: "/offer/111", name: "$111 Identity Pack", sells: "Shirt + wristbands ($111)", defaultConv: 0.08 },
-  { id: 8, route: "/offer/444", name: "$444 Habit Lock", sells: "1,111 meals ($444)", defaultConv: 0.035 },
-  { id: 9, route: "/offer/1111", name: "$1,111 Kingdom", sells: "11,111 meals ($1,111)", defaultConv: 0.012 },
-  { id: 10, route: "/offer/4444", name: "$4,444 Ambassador", sells: "44,444 meals ($4,444)", defaultConv: 0.004 },
+/* ─── Funnel Stages (Cold → Fidelización → Ascensión) ─── */
+const COLD_TRAFFIC_STEPS = [
+  { id: 1, route: "/", name: "Free Wristband", sells: "Lead capture (wristband gratis)", defaultConv: 0.65, icon: Gift, vitality: "Auth Gate → 100% capture", kFactor: "K=1.0" },
+  { id: 2, route: "Intro", name: "Science Hook", sells: "Educación — Hawkins 27x", defaultConv: 0.85, icon: Brain, vitality: "Science hooks → credibility" },
+  { id: 3, route: "Setup", name: "Friend Capture", sells: "Name Your Best Friend", defaultConv: 0.78, icon: Users, vitality: "Friend naming → referral seed", kFactor: "K=3.0" },
+  { id: 4, route: "Checkout", name: "Wristband Checkout", sells: "$9.95 ship → 11 meals", defaultConv: 0.35, icon: ShoppingBag, vitality: "Pay It Forward guilt loop", kFactor: "K=1.5" },
 ];
 
-const TIER_PRICES = [0, 0, 0, 16, 0, 22, 111, 444, 1111, 4444];
+const FIDELIZATION_STEPS = [
+  { id: 5, route: "/challenge/thanks", name: "Viral Activation", sells: "WhatsApp share + BC rewards", defaultConv: 0.42, icon: Share2, vitality: "WhatsApp viral share", kFactor: "K=2.7" },
+  { id: 6, route: "TGF Fridays", name: "Weekly Reactivation", sells: "Cron SMS → gratitude msg", defaultConv: 0.60, icon: Repeat, vitality: "Auto friend rotation" },
+];
+
+const ASCENSION_STEPS = [
+  { id: 7, route: "/offer/22", name: "$22 Starter Pack", sells: "3 wristbands ($22)", defaultConv: 0.18, icon: Gift, vitality: "Stock decay FOMO", price: 22 },
+  { id: 8, route: "/offer/111", name: "$111 Identity Pack", sells: "Shirt + wristbands ($111)", defaultConv: 0.08, icon: Star, vitality: "Mystery Box framing", price: 111 },
+  { id: 9, route: "/offer/444", name: "$444 Habit Lock", sells: "1,111 meals ($444)", defaultConv: 0.035, icon: Heart, vitality: "Chained transition", price: 444 },
+  { id: 10, route: "/offer/1111", name: "$1,111 Kingdom", sells: "11,111 meals ($1,111)", defaultConv: 0.012, icon: Crown, vitality: "ROI math + mission", price: 1111 },
+  { id: 11, route: "/offer/4444", name: "$4,444 Ambassador", sells: "44,444 meals ($4,444)", defaultConv: 0.004, icon: Crown, vitality: "Portal unlock celebration", price: 4444 },
+];
+
+const ALL_STEPS = [...COLD_TRAFFIC_STEPS, ...FIDELIZATION_STEPS, ...ASCENSION_STEPS];
+const TIER_PRICES: Record<number, number> = { 4: 16, 7: 22, 8: 111, 9: 444, 10: 1111, 11: 4444 };
 const DOWNSELL_PRICE = 11;
 const DOWNSELL_RATE = 0.06;
 
@@ -48,42 +60,120 @@ const SCENARIOS = [
   { key: "optimistic", label: "Optimistic", color: "hsl(142 71% 45%)", multiplier: 1.4 },
 ] as const;
 
+/* ─── Stage Label Component ─── */
+const StageLabel = ({ icon: Icon, label, color }: { icon: any; label: string; color: string }) => (
+  <div className={`flex items-center gap-2 py-3 px-4 rounded-xl border-2 ${color} mb-2 mt-6 first:mt-0`}>
+    <Icon className="w-5 h-5" />
+    <span className="text-sm font-black uppercase tracking-wider">{label}</span>
+  </div>
+);
+
+/* ─── Step Card ─── */
+const FunnelStepCard = ({ step, index, baseStep, getConv }: { step: any; index: number; baseStep: any; getConv: (s: any) => number }) => {
+  const isRevenue = !!step.price;
+  const StepIcon = step.icon;
+  return (
+    <motion.div
+      className={`relative flex items-stretch gap-3 rounded-xl p-3 md:p-4 transition-colors ${
+        isRevenue ? "bg-primary/[0.04] border border-primary/15" : "bg-card border border-border/40"
+      }`}
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.03 }}
+    >
+      {/* Step number */}
+      <div className="flex flex-col items-center shrink-0">
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black border-2 ${
+          isRevenue ? "border-primary bg-primary text-primary-foreground" : "border-primary/30 bg-primary/10 text-primary"
+        }`}>
+          <StepIcon className="w-4 h-4" />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-sm font-bold text-foreground">{step.name}</h3>
+              {step.price && (
+                <Badge className="text-[9px] bg-primary/10 text-primary border-primary/20 px-1.5 py-0">
+                  ${step.price}
+                </Badge>
+              )}
+            </div>
+            <p className="text-[11px] text-muted-foreground mt-0.5">{step.sells}</p>
+          </div>
+          <div className="text-right shrink-0">
+            <span className={`text-xs font-bold ${getConv(step) >= 0.5 ? "text-primary" : getConv(step) >= 0.1 ? "text-foreground" : "text-muted-foreground"}`}>
+              {Math.round(getConv(step) * 100)}%
+            </span>
+            {baseStep && (
+              <p className="text-[9px] text-muted-foreground">
+                {baseStep.entering.toLocaleString()} → {baseStep.converted.toLocaleString()}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Vitality pill */}
+        {step.vitality && (
+          <div className="flex items-center gap-1.5 mt-1.5">
+            <div className="flex items-center gap-1 bg-accent border border-primary/10 rounded-full px-2 py-0.5">
+              <Zap className="w-3 h-3 text-primary" />
+              <span className="text-[10px] font-medium text-accent-foreground">{step.vitality}</span>
+            </div>
+            {step.kFactor && (
+              <span className="text-[9px] font-black text-primary bg-primary/10 rounded-full px-1.5 py-0.5">
+                {step.kFactor}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
 export default function FunnelMap() {
-  /* ─── Clipper Inputs ─── */
+  /* ─── Clipper Campaign Inputs (Andrew Tate Formula) ─── */
   const [clippers, setClippers] = useState(50);
   const [videosPerClipper, setVideosPerClipper] = useState(4);
-  const [viewsPerClip, setViewsPerClip] = useState(25000);
-  const [pricePerClip, setPricePerClip] = useState(2.22);
+  const [viewsPerClip, setViewsPerClip] = useState(3000);
+  const [pricePerClip, setPricePerClip] = useState(3);
+  const [campaignBudget, setCampaignBudget] = useState(3000);
 
   /* ─── Funnel Conversion Overrides ─── */
   const [convOverrides, setConvOverrides] = useState<Record<number, number>>({});
-  const getConv = (step: typeof FUNNEL_STEPS[0]) => convOverrides[step.id] ?? step.defaultConv;
+  const getConv = (step: any) => convOverrides[step.id] ?? step.defaultConv;
 
   /* ─── Projections Engine ─── */
   const projections = useMemo(() => {
     const totalClips = clippers * videosPerClipper;
     const totalViews = totalClips * viewsPerClip;
     const clipperCost = totalClips * pricePerClip;
+    const maxClips = campaignBudget / pricePerClip;
 
     return SCENARIOS.map((s) => {
-      let visitors = Math.round(totalViews * 0.012 * s.multiplier); // CTR to site
-      const stepResults = FUNNEL_STEPS.map((step, i) => {
+      let visitors = Math.round(totalViews * 0.012 * s.multiplier);
+      const stepResults = ALL_STEPS.map((step, i) => {
         const conv = getConv(step) * s.multiplier;
         const entering = visitors;
         const converted = Math.round(entering * Math.min(conv, 1));
         const skipped = entering - converted;
-        const downsellConverted = i >= 5 ? Math.round(skipped * DOWNSELL_RATE * s.multiplier) : 0;
-        const revenue = converted * TIER_PRICES[i] + downsellConverted * DOWNSELL_PRICE;
+        const downsellConverted = (TIER_PRICES[step.id] ?? 0) > 0 ? Math.round(skipped * DOWNSELL_RATE * s.multiplier) : 0;
+        const revenue = converted * (TIER_PRICES[step.id] ?? 0) + downsellConverted * DOWNSELL_PRICE;
         visitors = converted;
         return { ...step, entering, converted, skipped, downsellConverted, revenue, convRate: conv };
       });
-      const totalRevenue = stepResults.reduce((s, r) => s + r.revenue, 0);
-      const downsellRevenue = stepResults.reduce((s, r) => s + r.downsellConverted * DOWNSELL_PRICE, 0);
+      const totalRevenue = stepResults.reduce((sum, r) => sum + r.revenue, 0);
+      const downsellRevenue = stepResults.reduce((sum, r) => sum + r.downsellConverted * DOWNSELL_PRICE, 0);
       return {
         ...s,
         totalClips,
         totalViews,
         clipperCost,
+        maxClips: Math.floor(maxClips),
         visitors: Math.round(totalViews * 0.012 * s.multiplier),
         steps: stepResults,
         totalRevenue,
@@ -94,11 +184,17 @@ export default function FunnelMap() {
         day30: totalRevenue,
       };
     });
-  }, [clippers, videosPerClipper, viewsPerClip, pricePerClip, convOverrides]);
+  }, [clippers, videosPerClipper, viewsPerClip, pricePerClip, campaignBudget, convOverrides]);
 
   const base = projections[1];
 
-  /* ─── Chart configs ─── */
+  /* ─── Advanced Metrics ─── */
+  const rpm = base.totalViews > 0 ? ((base.totalRevenue / base.totalViews) * 1000) : 0;
+  const ltv = base.visitors > 0 ? (base.totalRevenue / base.visitors) : 0;
+  const cac = base.visitors > 0 ? (base.clipperCost / base.visitors) : 0;
+  const avgKFactor = 2.1; // Weighted average across all vitality loops
+
+  /* ─── Chart Data ─── */
   const funnelChartData = base.steps.map((s) => ({
     name: s.name,
     value: s.entering,
@@ -110,13 +206,6 @@ export default function FunnelMap() {
     revenue: s.revenue,
   }));
 
-  const timelineData = SCENARIOS.map((s, i) => ({
-    scenario: s.label,
-    "Day 1": projections[i].day1,
-    "Day 7": projections[i].day7,
-    "Day 30": projections[i].day30,
-  }));
-
   const convChartData = base.steps.map((s) => ({
     name: s.name.replace("$", "").substring(0, 12),
     "Conv %": Math.round(s.convRate * 100),
@@ -125,21 +214,24 @@ export default function FunnelMap() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* ─── Header ─── */}
+      {/* ─── Header with Logo ─── */}
       <header className="border-b bg-card sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-primary" /> Funnel Command Center
-            </h1>
-            <p className="text-xs text-muted-foreground mt-0.5">Gratitude Engine™ — Executive Dashboard</p>
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img src={logoImg} alt="IamBlessedAF" className="h-7" />
+            <div>
+              <h1 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-primary" /> Funnel Command Center
+              </h1>
+              <p className="text-[10px] text-muted-foreground">Gratitude Engine™ — Executive Dashboard</p>
+            </div>
           </div>
           <Badge variant="outline" className="text-xs">Board-Ready</Badge>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* ═══ EXECUTIVE SUMMARY: Neuro-Hackers Movement ═══ */}
+        {/* ═══ EXECUTIVE SUMMARY ═══ */}
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <Card className="border-primary/20 bg-gradient-to-br from-primary/[0.03] via-card to-card overflow-hidden">
             <CardContent className="p-5 md:p-7">
@@ -155,19 +247,29 @@ export default function FunnelMap() {
                 </div>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                <strong className="text-foreground">IamBlessedAF</strong> is building a <strong className="text-foreground">pay-it-forward gratitude movement</strong> backed by 
-                the top neuroscience PhDs and personal development experts in the world — to help people feel up to{" "}
-                <strong className="text-primary">27x happier</strong> (Dr. David Hawkins PhD research). 
-                We install the most advanced neuro-hack triggers designed to spark random gratitude conversations 
-                in elevators and coffee shops. Backed by <strong className="text-foreground">Harvard's longest-running study</strong> (The Grant Study, 84+ years), 
-                we scale the quality of your personal relationships — including the one with yourself.
+                <strong className="text-foreground">IamBlessedAF</strong> is a <strong className="text-foreground">pay-it-forward gratitude movement</strong> backed by 
+                top neuroscience PhDs. We help people feel up to <strong className="text-primary">27x happier</strong> (Dr. Hawkins PhD) by installing advanced neuro-hack triggers 
+                to spark gratitude conversations. Backed by <strong className="text-foreground">Harvard's Grant Study (84+ years)</strong>, we scale the quality of your relationships.
               </p>
+              
+              {/* Growth Hacking Identity */}
+              <div className="bg-foreground/5 border border-foreground/10 rounded-xl p-4 mb-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Megaphone className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-black text-foreground uppercase tracking-wider">Growth Hacking Campaign</span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Mixing <strong className="text-foreground">Dropbox's viral referral engine</strong> × <strong className="text-foreground">Ice Bucket Challenge's emotional virality</strong> × <strong className="text-foreground">Supreme's scarcity model</strong> — powered by the <strong className="text-primary">Andrew Tate Clippers Formula</strong>. 
+                  Pay creators per clip, each clip drives traffic, each visitor enters a conversion funnel with built-in K-factor loops.
+                </p>
+              </div>
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {[
                   { label: "Hawkins Scale", value: "27x", sub: "Happiness multiplier" },
                   { label: "Daily Habit", value: "3 min", sub: "Neuro-rewiring trigger" },
                   { label: "Harvard Study", value: "84 yrs", sub: "Longest research ever" },
-                  { label: "Viral K-Factor", value: "K=3.0", sub: "Built-in friend loop" },
+                  { label: "Viral K-Factor", value: `K=${avgKFactor}`, sub: "Built-in friend loop" },
                 ].map((m, i) => (
                   <div key={i} className="bg-background border border-border/40 rounded-lg p-3 text-center">
                     <p className="text-lg font-black text-primary">{m.value}</p>
@@ -180,37 +282,133 @@ export default function FunnelMap() {
           </Card>
         </motion.section>
 
-        {/* ═══ SECTION 1: Executive Summary KPIs ═══ */}
+        {/* ═══ CLIPPERS CAMPAIGN CALCULATOR (Andrew Tate Formula) ═══ */}
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[
-              { label: "Total Clips", value: base.totalClips.toLocaleString(), icon: Video, sub: `${clippers} clippers × ${videosPerClipper} vids` },
-              { label: "Total Views", value: `${(base.totalViews / 1_000_000).toFixed(1)}M`, icon: Eye, sub: `${(viewsPerClip / 1000).toFixed(0)}K avg/clip` },
-              { label: "Projected Revenue", value: `$${base.totalRevenue.toLocaleString()}`, icon: DollarSign, sub: `${base.roi.toFixed(1)}x ROI` },
-              { label: "Funnel Visitors", value: base.visitors.toLocaleString(), icon: Users, sub: "1.2% clip→site CTR" },
-            ].map((kpi, i) => (
-              <Card key={i} className="border bg-card">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <kpi.icon className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-medium text-muted-foreground">{kpi.label}</span>
+          <Card className="border-primary/20">
+            <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-transparent">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2"><Calculator className="h-4 w-4 text-primary" /> Clippers Campaign Calculator</CardTitle>
+                  <CardDescription>Andrew Tate Formula — Editable inputs. Preset: $3/clip, $3K budget, 3K views/clip</CardDescription>
+                </div>
+                <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">
+                  <Video className="w-3 h-3 mr-1" /> Live Model
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 md:p-6 space-y-5">
+              {/* Editable Inputs */}
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {[
+                  { label: "# Clippers", value: clippers, set: setClippers, icon: Users, tip: "Number of content creators posting clips for your campaign" },
+                  { label: "Videos / Clipper", value: videosPerClipper, set: setVideosPerClipper, icon: Video, tip: "Average number of videos each clipper posts" },
+                  { label: "Avg Views / Clip", value: viewsPerClip, set: setViewsPerClip, icon: Eye, tip: "Average views per clip. Industry avg for short-form is 2K-10K" },
+                  { label: "$ per Clip", value: pricePerClip, set: setPricePerClip, icon: DollarSign, step: 0.01, tip: "Cost you pay per clip submitted. Higher = more creators attracted" },
+                  { label: "Campaign Budget", value: campaignBudget, set: setCampaignBudget, icon: DollarSign, tip: "Total budget for the test campaign. Determines max clips you can afford" },
+                ].map((inp) => (
+                  <div key={inp.label}>
+                    <MetricLabel label={inp.label} tip={inp.tip} />
+                    <Input
+                      type="number"
+                      value={inp.value}
+                      step={(inp as any).step ?? 1}
+                      min={0}
+                      onChange={(e) => inp.set(Number(e.target.value))}
+                      className="h-9 text-sm font-medium mt-1"
+                    />
                   </div>
-                  <p className="text-2xl font-bold text-foreground">{kpi.value}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">{kpi.sub}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                ))}
+              </div>
+
+              {/* Total Clips Card (like the reference screenshot) */}
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <Card className="border bg-card">
+                  <CardContent className="p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Video className="h-3.5 w-3.5 text-primary" />
+                      <MetricLabel label="Total Clips" tip="Total videos produced: Clippers × Videos per Clipper" />
+                    </div>
+                    <p className="text-2xl font-black text-foreground">{base.totalClips.toLocaleString()}</p>
+                    <p className="text-[10px] text-muted-foreground">{clippers} clippers × {videosPerClipper} vids</p>
+                  </CardContent>
+                </Card>
+                <Card className="border bg-card">
+                  <CardContent className="p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Eye className="h-3.5 w-3.5 text-primary" />
+                      <MetricLabel label="Total Views" tip="Total impressions: Clips × Avg Views per Clip" />
+                    </div>
+                    <p className="text-2xl font-black text-foreground">{(base.totalViews / 1000).toFixed(0)}K</p>
+                    <p className="text-[10px] text-muted-foreground">{(viewsPerClip / 1000).toFixed(0)}K avg/clip</p>
+                  </CardContent>
+                </Card>
+                <Card className="border bg-card">
+                  <CardContent className="p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <DollarSign className="h-3.5 w-3.5 text-primary" />
+                      <MetricLabel label="Clipper Cost" tip="Total spend on clips: Total Clips × Price per Clip" />
+                    </div>
+                    <p className="text-2xl font-black text-foreground">${base.clipperCost.toLocaleString()}</p>
+                    <p className="text-[10px] text-muted-foreground">Budget: ${campaignBudget.toLocaleString()}</p>
+                  </CardContent>
+                </Card>
+                <Card className="border bg-card">
+                  <CardContent className="p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Users className="h-3.5 w-3.5 text-primary" />
+                      <MetricLabel label="Funnel Visitors" tip="People who click through from clips to your site. Assumes 1.2% CTR" />
+                    </div>
+                    <p className="text-2xl font-black text-foreground">{base.visitors.toLocaleString()}</p>
+                    <p className="text-[10px] text-muted-foreground">1.2% clip→site CTR</p>
+                  </CardContent>
+                </Card>
+                <Card className="border bg-card">
+                  <CardContent className="p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <TrendingUp className="h-3.5 w-3.5 text-primary" />
+                      <MetricLabel label="Projected Revenue" tip="Total revenue generated from all funnel tiers + downsell conversions" />
+                    </div>
+                    <p className="text-2xl font-black text-primary">${base.totalRevenue.toLocaleString()}</p>
+                    <p className="text-[10px] text-muted-foreground">{base.roi.toFixed(1)}x ROI</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* RPM / LTV / CAC / K-Factor */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { label: "RPM", value: `$${rpm.toFixed(2)}`, tip: "Revenue Per Mille — revenue generated per 1,000 views. Higher RPM = more efficient content monetization." },
+                  { label: "LTV", value: `$${ltv.toFixed(2)}`, tip: "Lifetime Value — average revenue per funnel visitor. Includes all tiers + downsell. Goal: LTV > CAC." },
+                  { label: "CAC", value: `$${cac.toFixed(2)}`, tip: "Customer Acquisition Cost — how much you spend (clipper payouts) to get one visitor into the funnel." },
+                  { label: "K-Factor", value: avgKFactor.toFixed(1), tip: "Viral coefficient — how many new users each user brings. K>1 means organic growth. We average K=2.1 across all loops." },
+                ].map((m, i) => (
+                  <Card key={i} className={`border ${m.label === "K-Factor" ? "border-primary/30 bg-primary/[0.03]" : "bg-card"}`}>
+                    <CardContent className="p-3 text-center">
+                      <MetricLabel label={m.label} tip={m.tip} />
+                      <p className={`text-xl font-black mt-1 ${m.label === "K-Factor" ? "text-primary" : cac > 0 && m.label === "LTV" && ltv > cac ? "text-primary" : "text-foreground"}`}>
+                        {m.value}
+                      </p>
+                      {m.label === "LTV" && cac > 0 && (
+                        <p className={`text-[9px] font-bold ${ltv > cac ? "text-primary" : "text-destructive"}`}>
+                          {ltv > cac ? `✅ LTV > CAC (${(ltv / cac).toFixed(1)}x)` : "⚠️ LTV < CAC"}
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </motion.section>
 
-        {/* ═══ SECTION 2: Hormozi-Style Funnel Flow with K-Factor ═══ */}
-        <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+        {/* ═══ VISUAL FUNNEL FLOW (Cold → Fidelización → Ascensión) ═══ */}
+        <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <Card className="overflow-hidden">
             <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-transparent">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-base flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> Funnel Flow & Vitality Engine</CardTitle>
-                  <CardDescription>Each step has a built-in growth loop — K-factor shows viral multiplier</CardDescription>
+                  <CardDescription>3-stage architecture: Cold Traffic → Fidelización → Ascensión</CardDescription>
                 </div>
                 <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">
                   <RefreshCw className="w-3 h-3 mr-1" /> K-Factor Enabled
@@ -218,87 +416,61 @@ export default function FunnelMap() {
               </div>
             </CardHeader>
             <CardContent className="p-4 md:p-6">
-              {/* Vertical funnel — mobile-first, Hormozi board style */}
-              <div className="space-y-0">
-                {FUNNEL_STEPS.map((step, i) => {
-                  const vitality = VITALITY_LOOPS[step.id];
-                  const VIcon = vitality?.icon || Zap;
-                  const isRevenue = TIER_PRICES[i] > 0;
-                  const baseStep = base.steps[i];
+              {/* Logo top */}
+              <div className="flex justify-center mb-4">
+                <img src={logoImg} alt="IamBlessedAF" className="h-8 opacity-60" />
+              </div>
 
+              {/* ── Stage 1: Cold Traffic ── */}
+              <StageLabel icon={Snowflake} label="Stage 1 — Cold Traffic Acquisition" color="border-blue-500/30 bg-blue-500/5 text-blue-400" />
+              <div className="space-y-2 mb-2">
+                {COLD_TRAFFIC_STEPS.map((step, i) => (
+                  <div key={step.id}>
+                    <FunnelStepCard step={step} index={i} baseStep={base.steps[i]} getConv={getConv} />
+                    {i < COLD_TRAFFIC_STEPS.length - 1 && (
+                      <div className="flex justify-center py-0.5">
+                        <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex justify-center py-1">
+                <div className="w-0.5 h-6 bg-gradient-to-b from-blue-500/30 to-amber-500/30" />
+              </div>
+
+              {/* ── Stage 2: Fidelización ── */}
+              <StageLabel icon={Heart} label="Stage 2 — Fidelización & Viral Loops" color="border-amber-500/30 bg-amber-500/5 text-amber-400" />
+              <div className="space-y-2 mb-2">
+                {FIDELIZATION_STEPS.map((step, i) => {
+                  const idx = COLD_TRAFFIC_STEPS.length + i;
                   return (
                     <div key={step.id}>
-                      {/* Step row */}
-                      <motion.div
-                        className={`flex items-stretch gap-3 md:gap-4 rounded-xl p-3 md:p-4 transition-colors ${
-                          isRevenue ? "bg-primary/[0.03] border border-primary/10" : "bg-transparent"
-                        }`}
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.04 }}
-                      >
-                        {/* Step number column */}
-                        <div className="flex flex-col items-center shrink-0">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black border-2 ${
-                            isRevenue
-                              ? "border-primary bg-primary text-primary-foreground"
-                              : i <= 4
-                              ? "border-primary/40 bg-primary/10 text-primary"
-                              : "border-border bg-muted text-muted-foreground"
-                          }`}>
-                            {step.id}
-                          </div>
-                          {i < FUNNEL_STEPS.length - 1 && (
-                            <div className="w-0.5 flex-1 min-h-[12px] bg-border mt-1" />
-                          )}
+                      <FunnelStepCard step={step} index={idx} baseStep={base.steps[idx]} getConv={getConv} />
+                      {i < FIDELIZATION_STEPS.length - 1 && (
+                        <div className="flex justify-center py-0.5">
+                          <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
                         </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
 
-                        {/* Content */}
-                        <div className="flex-1 min-w-0 pb-1">
-                          <div className="flex items-start justify-between gap-2 mb-1">
-                            <div>
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <h3 className="text-sm font-bold text-foreground">{step.name}</h3>
-                                {isRevenue && (
-                                  <Badge className="text-[9px] bg-primary/10 text-primary border-primary/20 px-1.5 py-0">
-                                    ${TIER_PRICES[i]}
-                                  </Badge>
-                                )}
-                              </div>
-                              <p className="text-[11px] text-muted-foreground mt-0.5">{step.sells}</p>
-                            </div>
-                            {/* Conversion badge */}
-                            <div className="text-right shrink-0">
-                              <span className={`text-xs font-bold ${
-                                getConv(step) >= 0.5 ? "text-primary" : getConv(step) >= 0.1 ? "text-foreground" : "text-muted-foreground"
-                              }`}>
-                                {Math.round(getConv(step) * 100)}%
-                              </span>
-                              <p className="text-[9px] text-muted-foreground">
-                                {baseStep?.entering.toLocaleString()} → {baseStep?.converted.toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
+              <div className="flex justify-center py-1">
+                <div className="w-0.5 h-6 bg-gradient-to-b from-amber-500/30 to-primary/30" />
+              </div>
 
-                          {/* Vitality Loop pill */}
-                          {vitality && (
-                            <div className="flex items-center gap-1.5 mt-1.5">
-                              <div className="flex items-center gap-1 bg-accent border border-primary/10 rounded-full px-2 py-0.5">
-                                <VIcon className="w-3 h-3 text-primary" />
-                                <span className="text-[10px] font-medium text-accent-foreground">{vitality.label}</span>
-                              </div>
-                              {vitality.kFactor && (
-                                <span className="text-[9px] font-black text-primary bg-primary/10 rounded-full px-1.5 py-0.5">
-                                  {vitality.kFactor}
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </motion.div>
-
-                      {/* Downsell branch annotation (after tier steps) */}
-                      {i >= 5 && i < FUNNEL_STEPS.length - 1 && (
+              {/* ── Stage 3: Ascensión ── */}
+              <StageLabel icon={Rocket} label="Stage 3 — Ascensión & Revenue" color="border-primary/30 bg-primary/5 text-primary" />
+              <div className="space-y-2">
+                {ASCENSION_STEPS.map((step, i) => {
+                  const idx = COLD_TRAFFIC_STEPS.length + FIDELIZATION_STEPS.length + i;
+                  return (
+                    <div key={step.id}>
+                      <FunnelStepCard step={step} index={idx} baseStep={base.steps[idx]} getConv={getConv} />
+                      {i < ASCENSION_STEPS.length - 1 && (
                         <div className="flex items-center gap-3 ml-5 pl-[14px] border-l-2 border-dashed border-muted-foreground/20 py-1">
                           <div className="flex items-center gap-1 text-[9px] text-muted-foreground">
                             <ArrowDown className="w-3 h-3" />
@@ -326,6 +498,11 @@ export default function FunnelMap() {
                   <p className="text-[10px] text-muted-foreground font-medium">Projected Revenue</p>
                 </div>
               </div>
+
+              {/* Logo bottom */}
+              <div className="flex justify-center mt-5">
+                <img src={logoImg} alt="IamBlessedAF" className="h-7 opacity-40" />
+              </div>
             </CardContent>
           </Card>
         </motion.section>
@@ -340,38 +517,6 @@ export default function FunnelMap() {
 
           {/* ─── TAB: Projections ─── */}
           <TabsContent value="projections" className="space-y-4">
-            {/* Editable Inputs */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Scenario Inputs</CardTitle>
-                <CardDescription className="text-xs">Adjust to model different outcomes</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {[
-                    { label: "# Clippers", value: clippers, set: setClippers, icon: Users },
-                    { label: "Videos / Clipper", value: videosPerClipper, set: setVideosPerClipper, icon: Video },
-                    { label: "Avg Views / Clip", value: viewsPerClip, set: setViewsPerClip, icon: Eye },
-                    { label: "$ per Clip", value: pricePerClip, set: setPricePerClip, icon: DollarSign, step: 0.01 },
-                  ].map((inp) => (
-                    <div key={inp.label}>
-                      <label className="text-xs font-medium text-muted-foreground flex items-center gap-1 mb-1">
-                        <inp.icon className="h-3 w-3" /> {inp.label}
-                      </label>
-                      <Input
-                        type="number"
-                        value={inp.value}
-                        step={inp.step ?? 1}
-                        min={0}
-                        onChange={(e) => inp.set(Number(e.target.value))}
-                        className="h-9 text-sm font-medium"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
             {/* 3-Scenario Comparison Table */}
             <Card>
               <CardHeader className="pb-2">
@@ -462,11 +607,8 @@ export default function FunnelMap() {
           {/* ─── TAB: Conversions ─── */}
           <TabsContent value="conversions" className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
-              {/* Conversion Rate Bar Chart */}
               <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm">Conversion vs Skip Rate</CardTitle>
-                </CardHeader>
+                <CardHeader className="pb-2"><CardTitle className="text-sm">Conversion vs Skip Rate</CardTitle></CardHeader>
                 <CardContent>
                   <ChartContainer config={{ "Conv %": { label: "Converted", color: "hsl(var(--primary))" }, "Skip %": { label: "Skipped", color: "hsl(var(--muted))" } }} className="h-[280px]">
                     <BarChart data={convChartData} layout="vertical" margin={{ left: 60 }}>
@@ -474,18 +616,15 @@ export default function FunnelMap() {
                       <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 10 }} />
                       <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={60} />
                       <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="Conv %" stackId="a" fill="hsl(var(--primary))" radius={[0, 0, 0, 0]} />
+                      <Bar dataKey="Conv %" stackId="a" fill="hsl(var(--primary))" />
                       <Bar dataKey="Skip %" stackId="a" fill="hsl(var(--muted))" radius={[0, 4, 4, 0]} />
                     </BarChart>
                   </ChartContainer>
                 </CardContent>
               </Card>
 
-              {/* Funnel Drop-off */}
               <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm">Funnel Drop-off (Visitors)</CardTitle>
-                </CardHeader>
+                <CardHeader className="pb-2"><CardTitle className="text-sm">Funnel Drop-off (Visitors)</CardTitle></CardHeader>
                 <CardContent>
                   <ChartContainer config={{ value: { label: "Visitors", color: "hsl(var(--primary))" } }} className="h-[280px]">
                     <BarChart data={funnelChartData} margin={{ left: 10 }}>
@@ -500,11 +639,8 @@ export default function FunnelMap() {
               </Card>
             </div>
 
-            {/* Downsell Performance */}
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Downsell Performance ($11/mo)</CardTitle>
-              </CardHeader>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Downsell Performance ($11/mo)</CardTitle></CardHeader>
               <CardContent className="overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -517,7 +653,7 @@ export default function FunnelMap() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {base.steps.filter((s) => s.id >= 6).map((s) => (
+                    {base.steps.filter((s) => (TIER_PRICES[s.id] ?? 0) > 0).map((s) => (
                       <TableRow key={s.id}>
                         <TableCell className="text-xs font-medium">{s.name}</TableCell>
                         <TableCell className="text-xs text-right">{s.skipped.toLocaleString()}</TableCell>
@@ -535,11 +671,8 @@ export default function FunnelMap() {
           {/* ─── TAB: Revenue ─── */}
           <TabsContent value="revenue" className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
-              {/* Revenue by Tier */}
               <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm">Revenue by Tier (Base Case)</CardTitle>
-                </CardHeader>
+                <CardHeader className="pb-2"><CardTitle className="text-sm">Revenue by Tier (Base Case)</CardTitle></CardHeader>
                 <CardContent>
                   <ChartContainer config={{ revenue: { label: "Revenue", color: "hsl(var(--primary))" } }} className="h-[280px]">
                     <BarChart data={revenueByTier}>
@@ -553,29 +686,20 @@ export default function FunnelMap() {
                 </CardContent>
               </Card>
 
-              {/* Sales Timeline */}
               <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm">Sales Timeline — 3 Scenarios</CardTitle>
-                </CardHeader>
+                <CardHeader className="pb-2"><CardTitle className="text-sm">Sales Timeline — 3 Scenarios</CardTitle></CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {timelineData.map((row, i) => (
+                    {SCENARIOS.map((s, i) => (
                       <div key={i} className="flex items-center gap-3">
-                        <span className="text-xs font-medium w-24" style={{ color: SCENARIOS[i].color }}>{row.scenario}</span>
+                        <span className="text-xs font-medium w-24" style={{ color: s.color }}>{s.label}</span>
                         <div className="flex-1 grid grid-cols-3 gap-2 text-center">
-                          <div>
-                            <p className="text-[10px] text-muted-foreground">Day 1</p>
-                            <p className="text-sm font-bold" style={{ color: SCENARIOS[i].color }}>${row["Day 1"].toLocaleString()}</p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] text-muted-foreground">Day 7</p>
-                            <p className="text-sm font-bold" style={{ color: SCENARIOS[i].color }}>${row["Day 7"].toLocaleString()}</p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] text-muted-foreground">Day 30</p>
-                            <p className="text-sm font-bold" style={{ color: SCENARIOS[i].color }}>${row["Day 30"].toLocaleString()}</p>
-                          </div>
+                          {(["day1", "day7", "day30"] as const).map((d) => (
+                            <div key={d}>
+                              <p className="text-[10px] text-muted-foreground">{d === "day1" ? "Day 1" : d === "day7" ? "Day 7" : "Day 30"}</p>
+                              <p className="text-sm font-bold" style={{ color: s.color }}>${(projections[i] as any)[d].toLocaleString()}</p>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     ))}
@@ -584,24 +708,21 @@ export default function FunnelMap() {
               </Card>
             </div>
 
-            {/* Revenue Split Pie */}
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Revenue Split: Funnel vs Downsell</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-center gap-8">
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Revenue Split: Funnel vs Downsell</CardTitle></CardHeader>
+              <CardContent className="flex flex-wrap items-center justify-center gap-6 md:gap-8">
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-foreground">${(base.totalRevenue - base.downsellRevenue).toLocaleString()}</p>
+                  <p className="text-2xl md:text-3xl font-bold text-foreground">${(base.totalRevenue - base.downsellRevenue).toLocaleString()}</p>
                   <p className="text-xs text-muted-foreground">Funnel Tiers</p>
                 </div>
-                <Separator orientation="vertical" className="h-12" />
+                <Separator orientation="vertical" className="h-12 hidden md:block" />
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-primary">${base.downsellRevenue.toLocaleString()}</p>
+                  <p className="text-2xl md:text-3xl font-bold text-primary">${base.downsellRevenue.toLocaleString()}</p>
                   <p className="text-xs text-muted-foreground">$11/mo Downsell</p>
                 </div>
-                <Separator orientation="vertical" className="h-12" />
+                <Separator orientation="vertical" className="h-12 hidden md:block" />
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-foreground">${base.clipperCost.toLocaleString()}</p>
+                  <p className="text-2xl md:text-3xl font-bold text-foreground">${base.clipperCost.toLocaleString()}</p>
                   <p className="text-xs text-muted-foreground">Clipper Cost</p>
                 </div>
               </CardContent>
@@ -609,10 +730,13 @@ export default function FunnelMap() {
           </TabsContent>
         </Tabs>
 
-        {/* Footer */}
-        <p className="text-center text-[10px] text-muted-foreground py-4">
-          Gratitude Engine™ · Funnel Command Center · Projections are estimates based on editable inputs
-        </p>
+        {/* Footer with Logo */}
+        <div className="flex flex-col items-center gap-2 py-6">
+          <img src={logoImg} alt="IamBlessedAF" className="h-8 opacity-40" />
+          <p className="text-center text-[10px] text-muted-foreground">
+            Gratitude Engine™ · Funnel Command Center · Projections are estimates based on editable inputs
+          </p>
+        </div>
       </main>
     </div>
   );
