@@ -17,8 +17,7 @@ import ReactMarkdown from "react-markdown";
 import logoImg from "@/assets/logo.png";
 import { toast } from "sonner";
 
-// TODO: Replace with your ElevenLabs Agent ID once created
-const ELEVENLABS_AGENT_ID = "";
+const ELEVENLABS_AGENT_ID = "agent_3901kh7tvnf8ftpbf5p771dgmbyc";
 
 /* ─── PDF Export helper ─── */
 const exportPdf = (heroProfile: any, outputs: Record<string, string>) => {
