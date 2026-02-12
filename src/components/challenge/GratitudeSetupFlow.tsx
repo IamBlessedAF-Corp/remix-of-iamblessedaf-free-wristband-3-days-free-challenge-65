@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Progress } from "@/components/ui/progress";
+
 import {
   Heart,
   Send,
@@ -31,6 +31,12 @@ const STEPS: Step[] = [
   "write-message",
   "phone-optin",
   "confirmation",
+];
+
+const STEP_LABELS = [
+  { label: "Why It Works", done: true },
+  { label: "Name Your Friend", done: false },
+  { label: "Claim Wristband", done: false },
 ];
 
 const anim = {
@@ -124,15 +130,38 @@ const GratitudeSetupFlow = ({ onComplete, onSkip }: GratitudeSetupFlowProps) => 
 
   return (
     <div className="space-y-6">
-      {/* Progress Bar */}
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm text-muted-foreground">
-          <span>
-            Step {stepIndex + 1} of {STEPS.length}
-          </span>
-          <span>{Math.round(progress)}%</span>
-        </div>
-        <Progress value={progress} className="h-2" />
+      {/* Step indicator matching intro screen */}
+      <div className="flex items-center justify-center gap-2">
+        {STEP_LABELS.map((s, i) => {
+          const isStep2 = i === 1;
+          const isStep3 = i === 2;
+          const isInSetup = currentStep !== "confirmation";
+          const isActive = isInSetup ? isStep2 : isStep3;
+          const isDone = i === 0 || (isStep2 && !isInSetup);
+          return (
+            <div key={i} className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <div
+                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                    isDone
+                      ? "bg-primary/30 text-primary"
+                      : isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {isDone ? "✓" : i + 1}
+                </div>
+                <span className={`text-xs font-medium ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
+                  {s.label}
+                </span>
+              </div>
+              {i < STEP_LABELS.length - 1 && (
+                <div className={`w-6 h-px ${isDone ? "bg-primary/50" : "bg-border"}`} />
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <AnimatePresence mode="wait">
