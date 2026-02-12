@@ -34,7 +34,7 @@ const Offer111Grok = () => {
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-2xl mx-auto">
 
-          {/* ─── 1. Hook Badge — benefit-driven, not congratulatory ─── */}
+          {/* ─── 1. Mystery Box Win Badge ─── */}
           <motion.div
             className="text-center mb-6"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -43,7 +43,7 @@ const Offer111Grok = () => {
           >
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold font-mono">
               <Lock className="w-4 h-4" />
-              ✅ Challenge Complete → Your Gratitude Pack Is Ready
+              🎉 You Won a FREE Custom Shirt From the Mystery Box! 🎁
             </div>
           </motion.div>
 

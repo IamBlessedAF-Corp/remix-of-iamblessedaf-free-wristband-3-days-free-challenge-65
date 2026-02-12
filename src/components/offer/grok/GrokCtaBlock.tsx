@@ -46,7 +46,7 @@ const GrokCtaBlock = ({
           $111 ÷ 365 = $0.30/day · ROI: 27× happiness multiplier
         </p>
         <p className="text-xs text-muted-foreground">
-          Free US Shipping · International $14.95 Flat
+          Free US Shipping · International Flat Rate
         </p>
       </div>
 

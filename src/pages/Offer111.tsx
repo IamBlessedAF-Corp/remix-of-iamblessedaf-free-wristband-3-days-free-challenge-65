@@ -51,9 +51,7 @@ const Offer111 = () => {
               >
                 <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
                   <Crown className="w-4 h-4" />
-                  {friendName
-                    ? `🎉 ${friendName}'s wristband is locked in! Now give them something UNFORGETTABLE`
-                    : "🎉 You locked in 3 Wristbands + 22 Meals Donated!"}
+                  🎉 Congratulations! You Won a FREE Custom Shirt! 🎁
                 </div>
               </motion.div>
 
@@ -213,7 +211,7 @@ const Offer111 = () => {
                   <div className="h-px bg-border/40" />
                   <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground text-center">
                     <p>🔒 256-bit SSL Encrypted · Secure Payment · Your data is never shared</p>
-                    <p>📦 100% Satisfaction Guaranteed · Free US Shipping · Intl $14.95 Flat · 7–14 day delivery</p>
+                    <p>📦 100% Satisfaction Guaranteed · Free US Shipping · International Flat Rate · 7–14 day delivery</p>
                     <p>💳 One-time payment. No subscriptions. No hidden fees.</p>
                     <p>🍽 11 meals donated to Feeding America with every Gratitude Pack</p>
                   </div>
