@@ -479,6 +479,39 @@ export type Database = {
         }
         Relationships: []
       }
+      expert_leads: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          niche: string | null
+          source_page: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          niche?: string | null
+          source_page?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          niche?: string | null
+          source_page?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       expert_scripts: {
         Row: {
           created_at: string

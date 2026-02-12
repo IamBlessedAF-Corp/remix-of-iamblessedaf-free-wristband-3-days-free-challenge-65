@@ -78,6 +78,7 @@ const App = () => (
           <Route path="/scripts-review" element={<ScriptsReview />} />
           <Route path="/Gratitude-Clippers" element={<GratitudeClippers />} />
           <Route path="/funnel-map" element={<FunnelMap />} />
+          <Route path="/funnel-flow" element={<FunnelMap />} />
           <Route path="/experts-leads" element={<ExpertsLeads />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
