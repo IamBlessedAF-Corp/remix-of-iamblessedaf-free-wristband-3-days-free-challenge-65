@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import CrossFunnelShareNudge from "@/components/viral/CrossFunnelShareNudge";
 import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
 import Grok444HeroSection from "@/components/offer/grok/Grok444HeroSection";
@@ -183,6 +184,7 @@ const Offer444 = () => {
         trackingSource="offer_444"
         triggerSelector="[data-price-anchor]"
       />
+      <CrossFunnelShareNudge />
     </div>
   );
 };
