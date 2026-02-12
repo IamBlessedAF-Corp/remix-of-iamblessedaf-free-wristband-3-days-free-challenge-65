@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronDown, ChevronRight, Copy, Check, Sparkles,
-  ArrowRight, Loader2, Trophy, Search, FileDown, X, LogOut,
+  ArrowRight, Loader2, Trophy, Search, FileDown, X, LogOut, Mic, CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,9 +12,13 @@ import { FRAMEWORK_SECTIONS, FRAMEWORKS } from "@/data/expertFrameworks";
 import { useExpertScripts } from "@/hooks/useExpertScripts";
 import { useAuth } from "@/hooks/useAuth";
 import ExpertsAuthGate from "@/components/experts/ExpertsAuthGate";
+import VoiceAgentModal from "@/components/experts/VoiceAgentModal";
 import ReactMarkdown from "react-markdown";
 import logoImg from "@/assets/logo.png";
 import { toast } from "sonner";
+
+// TODO: Replace with your ElevenLabs Agent ID once created
+const ELEVENLABS_AGENT_ID = "";
 
 /* ─── PDF Export helper ─── */
 const exportPdf = (heroProfile: any, outputs: Record<string, string>) => {
@@ -99,6 +103,8 @@ const ScriptsReviewInner = () => {
   const [expandedScripts, setExpandedScripts] = useState<Record<string, boolean>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+  const [voiceSection, setVoiceSection] = useState<{ id: string; title: string } | null>(null);
 
   if (isLoading) {
     return (
@@ -160,8 +166,25 @@ const ScriptsReviewInner = () => {
     const sectionFrameworks = filteredFrameworks.filter((f) => f.section === section.id);
     const allSectionFw = FRAMEWORKS.filter((f) => f.section === section.id);
     const done = allSectionFw.filter((f) => outputs[f.id]).length;
-    return { ...section, total: allSectionFw.length, done, frameworks: sectionFrameworks };
+    return { ...section, total: allSectionFw.length, done, frameworks: sectionFrameworks, allDone: done === allSectionFw.length };
   }).filter((s) => s.frameworks.length > 0);
+
+  // Collapsible logic — first incomplete section is open by default
+  const firstIncomplete = sectionStats.find((s) => !s.allDone)?.id;
+
+  const isSectionOpen = (id: string) => {
+    if (id in openSections) return openSections[id];
+    return id === firstIncomplete;
+  };
+
+  const toggleSection = (id: string) => {
+    setOpenSections((prev) => ({ ...prev, [id]: !isSectionOpen(id) }));
+  };
+
+  // Get frameworks for voice modal
+  const voiceSectionFrameworks = voiceSection
+    ? FRAMEWORKS.filter((f) => f.section === voiceSection.id)
+    : [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -328,100 +351,148 @@ const ScriptsReviewInner = () => {
           </motion.div>
         )}
 
-        {/* Scripts by section */}
-        <div className="space-y-3">
-          {sectionStats.map((section) => (
-            <div key={section.id} className="rounded-xl border border-border/40 bg-card overflow-hidden">
-              <div className="px-4 py-3 flex items-center gap-2.5 border-b border-border/20">
-                <div className="flex-1 min-w-0">
-                  <h2 className="text-xs font-bold text-foreground leading-tight">{section.title}</h2>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{section.subtitle}</p>
-                </div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                  section.done === section.total
-                    ? "bg-green-500/10 text-green-600"
-                    : section.done > 0
-                    ? "bg-primary/10 text-primary"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  {section.done}/{section.total}
-                </span>
-              </div>
+        {/* Scripts by section — collapsible */}
+        <div className="space-y-2">
+          {sectionStats.map((section) => {
+            const isOpen = isSectionOpen(section.id);
 
-              <div className="divide-y divide-border/20">
-                {section.frameworks.map((fw) => {
-                  const hasOutput = !!outputs[fw.id];
-                  const isExpanded = expandedScripts[fw.id];
+            return (
+              <div key={section.id} className="rounded-xl border border-border/40 bg-card overflow-hidden">
+                {/* Section header — tappable to collapse */}
+                <button
+                  className="w-full px-4 py-3 flex items-center gap-2.5 text-left hover:bg-accent/50 transition-colors"
+                  onClick={() => toggleSection(section.id)}
+                >
+                  {section.allDone ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                  ) : (
+                    <div className="w-4 h-4 rounded-full border-2 border-border shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-xs font-bold text-foreground leading-tight truncate">
+                      {section.title}
+                    </h2>
+                    <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{section.subtitle}</p>
+                  </div>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                    section.allDone
+                      ? "bg-green-500/10 text-green-600"
+                      : section.done > 0
+                      ? "bg-primary/10 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  }`}>
+                    {section.done}/{section.total}
+                  </span>
 
-                  return (
-                    <div key={fw.id}>
-                      <button
-                        className={`w-full px-4 py-3 flex items-center gap-3 text-left transition-colors ${
-                          hasOutput ? "hover:bg-accent/50" : "opacity-50"
-                        }`}
-                        onClick={() => hasOutput && toggleScript(fw.id)}
-                        disabled={!hasOutput}
-                      >
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 mb-0.5">
-                            <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
-                              hasOutput ? "text-primary bg-primary/10" : "text-muted-foreground bg-muted"
-                            }`}>
-                              {fw.secret}
-                            </span>
-                            {hasOutput && (
-                              <span className="text-[9px] font-bold uppercase tracking-wider text-green-600 bg-green-500/10 px-1.5 py-0.5 rounded-full">
-                                ✓ Done
-                              </span>
-                            )}
-                          </div>
-                          <h3 className="text-[13px] font-semibold text-foreground leading-tight">{fw.name}</h3>
-                        </div>
+                  {/* Voice AI button */}
+                  {ELEVENLABS_AGENT_ID && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setVoiceSection({ id: section.id, title: section.title });
+                      }}
+                      className="p-1.5 rounded-md hover:bg-primary/10 transition-colors shrink-0"
+                      title="Voice AI Interview"
+                    >
+                      <Mic className="w-3.5 h-3.5 text-primary" />
+                    </button>
+                  )}
 
-                        {hasOutput ? (
-                          <div className="flex items-center gap-2 shrink-0">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleCopy(fw.id, outputs[fw.id]); }}
-                              className="p-1.5 rounded-md hover:bg-muted transition-colors"
-                            >
-                              {copiedId === fw.id ? (
-                                <Check className="w-3.5 h-3.5 text-green-500" />
-                              ) : (
-                                <Copy className="w-3.5 h-3.5 text-muted-foreground" />
-                              )}
-                            </button>
-                            <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
-                          </div>
-                        ) : (
-                          <span className="text-[10px] text-muted-foreground shrink-0">Not generated</span>
-                        )}
-                      </button>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform duration-200 ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
 
-                      <AnimatePresence initial={false}>
-                        {isExpanded && hasOutput && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.2, ease: "easeInOut" }}
-                            className="overflow-hidden"
-                          >
-                            <div className="px-4 pb-4">
-                              <div className="bg-muted/50 border border-border/30 rounded-xl p-4">
-                                <div className="prose prose-sm max-w-none text-foreground">
-                                  <ReactMarkdown>{outputs[fw.id]}</ReactMarkdown>
+                {/* Section content — collapsible */}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="divide-y divide-border/20">
+                        {section.frameworks.map((fw) => {
+                          const hasOutput = !!outputs[fw.id];
+                          const isExpanded = expandedScripts[fw.id];
+
+                          return (
+                            <div key={fw.id}>
+                              <button
+                                className={`w-full px-4 py-3 flex items-center gap-3 text-left transition-colors ${
+                                  hasOutput ? "hover:bg-accent/50" : "opacity-50"
+                                }`}
+                                onClick={() => hasOutput && toggleScript(fw.id)}
+                                disabled={!hasOutput}
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-1.5 mb-0.5">
+                                    <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
+                                      hasOutput ? "text-primary bg-primary/10" : "text-muted-foreground bg-muted"
+                                    }`}>
+                                      {fw.secret}
+                                    </span>
+                                    {hasOutput && (
+                                      <span className="text-[9px] font-bold uppercase tracking-wider text-green-600 bg-green-500/10 px-1.5 py-0.5 rounded-full">
+                                        ✓ Done
+                                      </span>
+                                    )}
+                                  </div>
+                                  <h3 className="text-[13px] font-semibold text-foreground leading-tight">{fw.name}</h3>
                                 </div>
-                              </div>
+
+                                {hasOutput ? (
+                                  <div className="flex items-center gap-2 shrink-0">
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); handleCopy(fw.id, outputs[fw.id]); }}
+                                      className="p-1.5 rounded-md hover:bg-muted transition-colors"
+                                    >
+                                      {copiedId === fw.id ? (
+                                        <Check className="w-3.5 h-3.5 text-green-500" />
+                                      ) : (
+                                        <Copy className="w-3.5 h-3.5 text-muted-foreground" />
+                                      )}
+                                    </button>
+                                    <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
+                                  </div>
+                                ) : (
+                                  <span className="text-[10px] text-muted-foreground shrink-0">Not generated</span>
+                                )}
+                              </button>
+
+                              <AnimatePresence initial={false}>
+                                {isExpanded && hasOutput && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.2, ease: "easeInOut" }}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className="px-4 pb-4">
+                                      <div className="bg-muted/50 border border-border/30 rounded-xl p-4">
+                                        <div className="prose prose-sm max-w-none text-foreground">
+                                          <ReactMarkdown>{outputs[fw.id]}</ReactMarkdown>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
                             </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  );
-                })}
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           {query && filteredFrameworks.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">
@@ -431,6 +502,18 @@ const ScriptsReviewInner = () => {
           )}
         </div>
       </div>
+
+      {/* Voice Agent Modal */}
+      <AnimatePresence>
+        {voiceSection && ELEVENLABS_AGENT_ID && (
+          <VoiceAgentModal
+            frameworks={voiceSectionFrameworks}
+            sectionTitle={voiceSection.title}
+            onClose={() => setVoiceSection(null)}
+            agentId={ELEVENLABS_AGENT_ID}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
