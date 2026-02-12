@@ -97,7 +97,7 @@ const exportPdf = (heroProfile: any, outputs: Record<string, string>) => {
 /* ─── Inner component (behind auth) ─── */
 const ScriptsReviewInner = () => {
   const navigate = useNavigate();
-  const { outputs, heroProfile, isLoading } = useExpertScripts();
+  const { outputs, heroProfile, setHeroProfile, saveOutput, isLoading } = useExpertScripts();
   const { signOut, user } = useAuth();
   const [expandedScripts, setExpandedScripts] = useState<Record<string, boolean>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -510,6 +510,13 @@ const ScriptsReviewInner = () => {
             sectionTitle={voiceSection.title}
             onClose={() => setVoiceSection(null)}
             agentId={ELEVENLABS_AGENT_ID}
+            existingProfile={heroProfile}
+            onTranscriptProcessed={(result) => {
+              if (result.updatedFields.length > 0 && result.mergedProfile) {
+                setHeroProfile(result.mergedProfile);
+                toast.success(`Profile updated: ${result.updatedFields.join(", ")}`);
+              }
+            }}
           />
         )}
       </AnimatePresence>
