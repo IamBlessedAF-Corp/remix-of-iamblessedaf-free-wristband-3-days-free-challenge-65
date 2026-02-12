@@ -137,7 +137,7 @@ const FunnelStepCard = ({ step, index, baseStep, getConv }: { step: any; index: 
 
 export default function FunnelMap() {
   /* ─── Clipper Campaign Inputs (Andrew Tate Formula) ─── */
-  const [clippers, setClippers] = useState(50);
+  const [clippers, setClippers] = useState(250);
   const [videosPerClipper, setVideosPerClipper] = useState(4);
   const [viewsPerClip, setViewsPerClip] = useState(3000);
   const [pricePerClip, setPricePerClip] = useState(3);
@@ -223,10 +223,12 @@ export default function FunnelMap() {
               <h1 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
                 <BarChart3 className="h-4 w-4 text-primary" /> Funnel Command Center
               </h1>
-              <p className="text-[10px] text-muted-foreground">Gratitude Engine™ — Executive Dashboard</p>
+              <p className="text-[10px] text-muted-foreground">Gratitude Engine™ — Growth Hacking Campaign · Dropbox × Ice Bucket Challenge × Supreme</p>
             </div>
           </div>
-          <Badge variant="outline" className="text-xs">Board-Ready</Badge>
+          <div className="flex items-center gap-2">
+            <Badge className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1 animate-pulse">🔴 Investor Deck</Badge>
+          </div>
         </div>
       </header>
 
@@ -289,7 +291,7 @@ export default function FunnelMap() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-base flex items-center gap-2"><Calculator className="h-4 w-4 text-primary" /> Clippers Campaign Calculator</CardTitle>
-                  <CardDescription>Andrew Tate Formula — Editable inputs. Preset: $3/clip, $3K budget, 3K views/clip</CardDescription>
+                  <CardDescription>Andrew Tate Formula — Editable inputs. Preset: $3/clip, $3K budget fully deployed, 3K views/clip</CardDescription>
                 </div>
                 <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">
                   <Video className="w-3 h-3 mr-1" /> Live Model
