@@ -381,19 +381,7 @@ export default function FunnelMap() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
         <div className="relative max-w-5xl mx-auto px-4 pt-8 pb-10 text-center">
-          {/* ─── Neuro Hackers Movement (before title) ─── */}
-          <div className="relative rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-card to-primary/5 overflow-hidden mb-8">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.08),transparent_60%)]" />
-            <div className="relative text-center py-10 px-6">
-              <img src={logoImg} alt="IamBlessedAF" className="h-10 mx-auto mb-3" />
-              <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight mb-2">
-                The <span className="text-primary">Neuro Hackers</span> Movement
-              </h2>
-              <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
-                You're <strong className="text-foreground">1 Hack</strong> & <strong className="text-foreground">3 Min/Day</strong> away from a life you <strong className="text-primary">Love</strong>
-              </p>
-            </div>
-          </div>
+          <img src={logoImg} alt="IamBlessedAF" className="h-8 mx-auto mb-4" />
 
           <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1">
             Traffic → Funnel → Conversiones
@@ -499,6 +487,39 @@ export default function FunnelMap() {
               </Card>
             </CollapsibleContent>
           </Collapsible>
+        </motion.section>
+
+        {/* ═══ THE GRATITUDE ENGINE LOOP™ ═══ */}
+        <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.045 }}>
+          <div className="relative rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-card to-primary/5 overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.08),transparent_60%)]" />
+            <div className="relative text-center py-10 px-6">
+              <img src={logoImg} alt="IamBlessedAF" className="h-10 mx-auto mb-3" />
+              <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight mb-2">
+                THE <span className="text-primary">GRATITUDE ENGINE</span> LOOP™
+              </h2>
+              <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed mb-4">
+                The Practical Implementation of <strong className="text-foreground">The Biggest Andrew Huberman Discovery</strong> in the last 18 Months.
+              </p>
+              <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed mb-6">
+                The <strong className="text-primary">Neuro-Hack</strong> to spike <strong className="text-foreground">Dopamine & Serotonin</strong> (Overall Well-Being) — pre-built into a <strong className="text-foreground">trigger</strong>, <strong className="text-foreground">habit-forming system</strong> & <strong className="text-primary">brand</strong>.
+              </p>
+
+              {/* Huberman Clip */}
+              <div className="max-w-lg mx-auto rounded-2xl overflow-hidden border border-border/50 shadow-sm">
+                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src="https://www.youtube.com/embed/ph1BuMRFJ88"
+                    title="Huberman on Gratitude"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </motion.section>
 
         {/* ═══ CLIPPERS CAMPAIGN CALCULATOR (Andrew Tate Formula) ═══ */}
