@@ -159,9 +159,12 @@ const Offer111 = () => {
                     {loading ? "Creating checkout…" : friendName ? `YES! Send ${friendName} the Full Gratitude Pack!` : "YES! Claim My Custom Shirt Now!"}
                     {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
                   </Button>
-                <div className="flex items-center justify-center gap-2 mt-3 mb-1">
-                  <Heart className="w-4 h-4 text-primary" />
-                  <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated to Feeding America</p>
+                <div className="flex flex-col items-center gap-1.5 mt-3 mb-1">
+                  <div className="flex items-center gap-2">
+                    <Heart className="w-4 h-4 text-primary fill-primary" />
+                    <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated in Honor of Neuroscience</p>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground max-w-xs text-center">Honoring Huberman's Gratitude Research — donated to Tony Robbins' "1 Billion Meals Challenge"</p>
                 </div>
                 <p className="text-center text-xs text-muted-foreground mt-1">Instant Gratitude Access + Shipping within 24hrs</p>
                 <RiskReversalGuarantee />
@@ -190,9 +193,12 @@ const Offer111 = () => {
                       {loading ? "Creating checkout…" : "YES! Claim My Custom Shirt Now!"}
                       {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
                     </Button>
-                    <div className="flex items-center justify-center gap-2 mt-3 mb-1">
-                      <Heart className="w-4 h-4 text-primary" />
-                      <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated to Feeding America</p>
+                    <div className="flex flex-col items-center gap-1.5 mt-3 mb-1">
+                      <div className="flex items-center gap-2">
+                        <Heart className="w-4 h-4 text-primary fill-primary" />
+                        <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated in Honor of Neuroscience</p>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground max-w-xs text-center">Honoring Huberman's Gratitude Research — donated to Tony Robbins' "1 Billion Meals Challenge"</p>
                     </div>
                     <p className="text-center text-xs text-muted-foreground mt-1">Instant Gratitude Access + Shipping within 24hrs</p>
                     <RiskReversalGuarantee />
@@ -236,9 +242,12 @@ const Offer111 = () => {
                   {loading ? "Creating checkout…" : "YES! Claim My Custom Shirt Now!"}
                   {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
                 </Button>
-                <div className="flex items-center justify-center gap-2 mt-3 mb-1">
-                  <Heart className="w-4 h-4 text-primary" />
-                  <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated to Feeding America</p>
+                <div className="flex flex-col items-center gap-1.5 mt-3 mb-1">
+                  <div className="flex items-center gap-2">
+                    <Heart className="w-4 h-4 text-primary fill-primary" />
+                    <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated in Honor of Neuroscience</p>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground max-w-xs text-center">Honoring Huberman's Gratitude Research — donated to Tony Robbins' "1 Billion Meals Challenge"</p>
                 </div>
                 <p className="text-center text-xs text-muted-foreground mt-1">Instant Gratitude Access + Shipping within 24hrs</p>
                 <RiskReversalGuarantee />
@@ -257,9 +266,12 @@ const Offer111 = () => {
                   {loading ? "Creating checkout…" : "YES! Claim My Custom Shirt Now!"}
                   {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
                 </Button>
-                <div className="flex items-center justify-center gap-2 mt-3 mb-1">
-                  <Heart className="w-4 h-4 text-primary" />
-                  <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated to Feeding America</p>
+                <div className="flex flex-col items-center gap-1.5 mt-3 mb-1">
+                  <div className="flex items-center gap-2">
+                    <Heart className="w-4 h-4 text-primary fill-primary" />
+                    <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated in Honor of Neuroscience</p>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground max-w-xs text-center">Honoring Huberman's Gratitude Research — donated to Tony Robbins' "1 Billion Meals Challenge"</p>
                 </div>
                 <p className="text-center text-xs text-muted-foreground mt-1">Instant Gratitude Access + Shipping within 24hrs</p>
                 <RiskReversalGuarantee />
@@ -279,7 +291,7 @@ const Offer111 = () => {
                     <p>🔒 256-bit SSL Encrypted · Secure Payment · Your data is never shared</p>
                     <p>📦 100% Satisfaction Guaranteed · Free US Shipping · International Flat Rate · 7–14 day delivery</p>
                     <p>💳 One-time payment. No subscriptions. No hidden fees.</p>
-                    <p>🍽 11 meals donated to Feeding America with every Gratitude Pack</p>
+                    <p>🍽 11 meals donated to Tony Robbins' "1 Billion Meals Challenge" — honoring Huberman's Gratitude Research</p>
                   </div>
                 </div>
               </motion.div>

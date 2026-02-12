@@ -28,7 +28,7 @@ const GrokHeroSection = () => {
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed text-left mt-3">
           1 custom shirt with your words → your friend reads it → they text you back →{" "}
           <span className="font-bold text-primary">both your brains flood with serotonin.</span>{" "}
-          Plus <span className="font-bold text-primary">11 meals donated</span> through Feeding America.{" "}
+          Plus <span className="font-bold text-primary">11 meals donated</span> to Tony Robbins' "1 Billion Meals Challenge".{" "}
           Total value: <span className="font-bold text-foreground line-through">$333</span>.{" "}
           You pay <span className="font-bold text-primary">$111</span>.
         </p>

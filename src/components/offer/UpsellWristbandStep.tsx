@@ -74,7 +74,7 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
         </p>
         <div className="inline-flex items-center gap-2 bg-accent/50 text-foreground px-4 py-2 rounded-full text-sm font-semibold mt-2">
           <Heart className="w-4 h-4 text-primary" />
-          + 22 Meals Donated to Feeding America
+          + 22 Meals Donated — Honoring Huberman's Research
         </div>
       </motion.div>
 
@@ -273,7 +273,7 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
             <p>🔒 256-bit SSL Encrypted · Secure Payment · Your data is never shared</p>
             <p>📦 100% Satisfaction Guaranteed · 7–14 day delivery</p>
             <p>💳 One-time payment. No subscriptions. No hidden fees.</p>
-            <p>🍽 22 meals donated to Feeding America with every 3-pack</p>
+            <p>🍽 22 meals donated to Tony Robbins' "1 Billion Meals Challenge" — honoring Huberman's Gratitude Research</p>
           </div>
         </div>
       </motion.div>

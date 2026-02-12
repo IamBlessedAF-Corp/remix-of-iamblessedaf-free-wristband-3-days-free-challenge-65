@@ -15,7 +15,7 @@ const GrokRiskReversal = ({ delay = 0 }: { delay?: number }) => {
             <span>
              <span className="font-bold">Happiness Guarantee:</span>{" "}
 17:               <span className="text-muted-foreground">
-18:                 Not happier? We donate 11 meals through Feeding America under your name.
+18:                 Not happier? We donate 11 meals to Tony Robbins' "1 Billion Meals Challenge" under your name — honoring Huberman's Gratitude Research.
 19:               </span>
             </span>
           </div>

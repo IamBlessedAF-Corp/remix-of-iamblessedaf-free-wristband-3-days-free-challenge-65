@@ -246,7 +246,7 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
           <div className="h-px bg-border/40" />
           <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground text-center">
             <p>📦 7–14 day delivery · Waterproof nylon · One-size-fits-all</p>
-            <p>🍽 11 meals donated to Feeding America with every wristband</p>
+            <p>🍽 Honoring Huberman's Gratitude Research — {11} meals donated to Tony Robbins' "1 Billion Meals Challenge"</p>
           </div>
         </div>
       </motion.div>

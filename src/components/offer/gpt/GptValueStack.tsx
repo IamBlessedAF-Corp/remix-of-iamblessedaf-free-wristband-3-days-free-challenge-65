@@ -20,9 +20,9 @@ const VALUES = [
   {
     emoji: "🌊",
     title: "Turn Your Worst Day into Someone's Best",
-    benefit: "11 meals donated instantly — bad day? You already changed 11 lives before lunch",
+    benefit: "11 meals donated to Tony Robbins' 1 Billion Meals Challenge — bad day? You already changed 11 lives before lunch",
     description:
-      "There's no bad day that survives knowing you fed 11 people. That warmth in your chest? That's gratitude doing what it was designed to do.",
+      "There's no bad day that survives knowing you fed 11 people. Honoring Huberman's Gratitude Research — that warmth in your chest? That's gratitude doing what it was designed to do.",
     sub: "Backed by Feeding America",
   },
   {

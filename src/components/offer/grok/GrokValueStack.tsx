@@ -40,11 +40,11 @@ const VALUES = [
   {
     emoji: "📈",
     title: "Impact Metric: 11 Meals Deployed",
-    benefit: "Instant charitable impact — measurable mood elevation even on worst-case days",
+    benefit: "Honoring Huberman's Gratitude Research — instant charitable impact via Tony Robbins' 1 Billion Meals Challenge",
     description:
       "Bad day scenario: you already deployed 11 meals before cortisol peaked. Measurable impact = measurable mood shift. No bad day survives verified altruism data.",
     value: "Priceless",
-    sub: "Feeding America verified · Instant deployment",
+    sub: "Tony Robbins' 1 Billion Meals Challenge · Instant deployment",
   },
 ];
 
