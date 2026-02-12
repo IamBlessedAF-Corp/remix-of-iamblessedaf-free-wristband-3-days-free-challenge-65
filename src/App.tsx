@@ -26,6 +26,7 @@ import Roadmap from "./pages/Roadmap";
 import ClipperDashboard from "./pages/ClipperDashboard";
 import ClipperAdmin from "./pages/ClipperAdmin";
 import Experts from "./pages/Experts";
+import ScriptsReview from "./pages/ScriptsReview";
 import GratitudeClippers from "./pages/GratitudeClippers";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
@@ -65,6 +66,7 @@ const App = () => (
           <Route path="/clipper-dashboard" element={<ClipperDashboard />} />
           <Route path="/admin/clippers" element={<ClipperAdmin />} />
           <Route path="/experts" element={<Experts />} />
+          <Route path="/scripts-review" element={<ScriptsReview />} />
           <Route path="/Gratitude-Clippers" element={<GratitudeClippers />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
