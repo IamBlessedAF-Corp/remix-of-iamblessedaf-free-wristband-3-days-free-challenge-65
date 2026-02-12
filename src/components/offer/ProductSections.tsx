@@ -224,9 +224,13 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
   const [activeIndex, setActiveIndex] = useState(0);
 
   // Unified state — owned here, passed down to preview + customizer
-  const [friendName, setFriendName] = useState(() => localStorage.getItem("friendShirtName") || "");
-  const [message, setMessage] = useState(() => localStorage.getItem("friendShirtMessage") || "");
+  const [friendName, setFriendNameRaw] = useState(() => localStorage.getItem("friendShirtName") || "");
+  const [message, setMessageRaw] = useState(() => localStorage.getItem("friendShirtMessage") || "");
   const [selectedSize, setSelectedSize] = useState(() => localStorage.getItem("friendShirtSize") || "M");
+
+  // Persist on every change so other pages can pick it up
+  const setFriendName = (v: string) => { setFriendNameRaw(v); localStorage.setItem("friendShirtName", v); };
+  const setMessage = (v: string) => { setMessageRaw(v); localStorage.setItem("friendShirtMessage", v); };
 
   // First item is the live preview component, rest are standard images/video
   const media = [
@@ -265,11 +269,11 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
           <div className="px-4 pt-4 pb-2">
             <label className="flex items-center gap-1.5 text-sm font-semibold text-foreground mb-1.5">
               <span className="text-primary">👤</span>
-              What's your best friend's name?
+              {friendName ? `${friendName}'s Custom Shirt Is Almost Ready!` : "Who's the friend that CHANGED YOUR LIFE?"}
             </label>
             <input
               type="text"
-              placeholder="Your best friend's name"
+              placeholder="Type their name — they deserve this"
               value={friendName}
               onChange={(e) => {
                 if (e.target.value.length <= 20) setFriendName(e.target.value);
@@ -284,13 +288,13 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
             <div className="px-4 pb-3">
               <label className="flex items-center gap-1.5 text-sm font-semibold text-foreground mb-1.5">
                 <span className="text-primary">✏️</span>
-                Your message to {friendName}
+                What will {friendName} read and NEVER forget?
               </label>
               <p className="text-xs text-muted-foreground mb-2">
-                💡 Mention a specific moment you felt grateful — the more personal, the more powerful
+                💡 Name the EXACT moment {friendName} made you feel loved — this is what makes them cry happy tears
               </p>
               <textarea
-                placeholder={`e.g. "you stayed up all night to help me move — I felt so loved"`}
+                placeholder={`e.g. "you drove 3 hours at 2am just to be there for me"`}
                 value={message}
                 onChange={(e) => {
                   if (e.target.value.length <= 130) setMessage(e.target.value);
@@ -408,6 +412,11 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
               <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">
                 IamBlessedAF to have U as a Best Friend · One-side print
               </p>
+              {friendName && (
+                <p className="text-sm text-primary font-semibold mt-2">
+                  ⚡ {friendName} will wear YOUR words every day — this shirt becomes a gratitude trigger they NEVER take off
+                </p>
+              )}
             </div>
 
             {/* Price */}

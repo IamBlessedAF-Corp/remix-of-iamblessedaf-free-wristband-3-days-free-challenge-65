@@ -29,6 +29,9 @@ const Offer111 = () => {
   const { startCheckout, loading } = useStripeCheckout();
   const { newlyUnlocked, dismissNewlyUnlocked } = useAchievements();
 
+  // Pull friend name for personalized copy
+  const friendName = localStorage.getItem("friendShirtName") || "";
+
   const handleCheckout = () => {
     startCheckout("pack-111");
   };
@@ -48,7 +51,9 @@ const Offer111 = () => {
               >
                 <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
                   <Crown className="w-4 h-4" />
-                  🎉 You locked in 3 Wristbands + 22 Meals Donated!
+                  {friendName
+                    ? `🎉 ${friendName}'s wristband is locked in! Now give them something UNFORGETTABLE`
+                    : "🎉 You locked in 3 Wristbands + 22 Meals Donated!"}
                 </div>
               </motion.div>
 
@@ -85,11 +90,11 @@ const Offer111 = () => {
                 <OfferTimer />
                 <UrgencyBanner />
                 <div className="h-3" />
-                <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
-                  {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
-                  {loading ? "Creating checkout…" : "YES! Feed 11 People & Claim My $111 Pack Now!"}
-                  {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
-                </Button>
+                  <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
+                    {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
+                    {loading ? "Creating checkout…" : friendName ? `YES! Send ${friendName} the Full Gratitude Pack!` : "YES! Feed 11 People & Claim My $111 Pack Now!"}
+                    {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
+                  </Button>
                 <div className="flex items-center justify-center gap-2 mt-3 mb-1">
                   <Heart className="w-4 h-4 text-primary" />
                   <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated to Feeding America</p>
