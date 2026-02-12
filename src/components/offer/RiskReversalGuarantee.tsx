@@ -7,7 +7,7 @@ const RiskReversalGuarantee = () => (
       Gratitude Guarantee
     </div>
     <p className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto">
-      Every wristband claimed feeds 11 people through Feeding America. Wear it daily as your gratitude trigger. 🙏
+      Every wristband claimed & worn — in honor of Andrew Huberman's discoveries in the Neuroscience of Gratitude — feeds 11 people through Tony Robbins' "1 Billion Meals Challenge". 🙏
     </p>
   </div>
 );

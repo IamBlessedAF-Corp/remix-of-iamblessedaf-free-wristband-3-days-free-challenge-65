@@ -18,7 +18,7 @@ const GptRiskReversal = ({ delay = 0 }: { delay?: number }) => {
             <span>
               <span className="font-bold">Happiness Promise:</span>{" "}
               <span className="text-muted-foreground">
-                Send 3 gratitude texts, wear the shirt for 3 days. If you don't feel the shift — we donate 11 meals through Feeding America under your name.
+                Send 3 gratitude texts, wear the shirt for 3 days. If you don't feel the shift — we donate 11 meals to Tony Robbins' "1 Billion Meals Challenge" under your name, honoring Huberman's Research.
               </span>
             </span>
           </div>
