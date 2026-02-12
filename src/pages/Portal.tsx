@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ShareMilestoneTracker from "@/components/viral/ShareMilestoneTracker";
 import { LayoutDashboard, Trophy, Share2, ShoppingBag, Target, Activity, LogOut, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -170,6 +171,7 @@ const Portal = () => {
                   onClaimDaily={portalData.claimDailyBonus}
                 />
                 <PortalActivityFeed />
+                <ShareMilestoneTracker />
               </div>
             )}
             {activeTab === "leaderboard" && (

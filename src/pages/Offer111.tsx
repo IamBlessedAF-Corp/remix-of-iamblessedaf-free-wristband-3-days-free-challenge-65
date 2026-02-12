@@ -19,6 +19,7 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import EpiphanyBridge from "@/components/offer/EpiphanyBridge";
 import ImpactCounter from "@/components/offer/ImpactCounter";
 import ViralShareNudge from "@/components/offer/ViralShareNudge";
+import CrossFunnelShareNudge from "@/components/viral/CrossFunnelShareNudge";
 import AchievementUnlockToast from "@/components/gamification/AchievementUnlockToast";
 import { useAchievements } from "@/hooks/useAchievements";
 import DownsellModal from "@/components/offer/DownsellModal";
@@ -299,6 +300,7 @@ const Offer111 = () => {
 
         {/* Achievement Unlock Toast */}
         <AchievementUnlockToast achievement={newlyUnlocked} onDismiss={dismissNewlyUnlocked} />
+        <CrossFunnelShareNudge />
         </div>
       </div>
     </div>

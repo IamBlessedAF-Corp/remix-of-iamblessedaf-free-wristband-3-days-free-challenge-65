@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Share2, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useShortLinks } from "@/hooks/useShortLinks";
+import { recordShare } from "@/components/viral/ShareMilestoneTracker";
 
 /**
  * Viral Share Nudge — footer-level component encouraging UGC sharing.
@@ -55,8 +56,7 @@ const ViralShareNudge = () => {
   };
 
   const trackShare = () => {
-    const count = parseInt(localStorage.getItem("achievements-shares") || "0", 10) + 1;
-    localStorage.setItem("achievements-shares", JSON.stringify(count));
+    recordShare();
   };
 
   return (
