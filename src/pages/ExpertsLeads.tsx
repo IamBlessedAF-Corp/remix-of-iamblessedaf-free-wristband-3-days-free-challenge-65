@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import ImageZoomModal from "@/components/offer/ImageZoomModal";
 import {
   ArrowRight,
   Brain,
@@ -138,6 +139,7 @@ export default function ExpertsLeads() {
   const [submitting, setSubmitting] = useState(false);
   const [enrolled, setEnrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [hawkinsZoomed, setHawkinsZoomed] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,7 +181,7 @@ export default function ExpertsLeads() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <img src={logoImg} alt="I am Blessed AF" className="h-10 mx-auto mb-5" />
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1">
-              <Sparkles className="w-3 h-3 mr-1" /> FOR COACHES, EXPERTS & CONSULTANTS
+              <Sparkles className="w-3 h-3 mr-1" /> ATTENTION: COACHES, EXPERTS & CONSULTANTS
             </Badge>
             <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
               Increase Your Lead Capture{" "}
@@ -395,8 +397,18 @@ export default function ExpertsLeads() {
             </p>
           </div>
 
-          <div className="rounded-xl overflow-hidden border border-border/40 mb-8">
-            <img src={hawkinsImg} alt="Dr. Hawkins consciousness scale" className="w-full h-40 md:h-52 object-cover" loading="lazy" />
+          {hawkinsZoomed && (
+            <ImageZoomModal
+              image={hawkinsImg}
+              alt="Dr. Hawkins consciousness scale"
+              onClose={() => setHawkinsZoomed(false)}
+            />
+          )}
+          <div
+            className="rounded-xl overflow-hidden border border-border/40 mb-8 cursor-zoom-in"
+            onClick={() => setHawkinsZoomed(true)}
+          >
+            <img src={hawkinsImg} alt="Dr. Hawkins consciousness scale" className="w-full h-auto object-contain" loading="lazy" />
             <div className="bg-card p-4">
               <p className="text-xs font-bold text-primary uppercase tracking-wider">Dr. David R. Hawkins Scale</p>
               <p className="text-sm text-foreground font-semibold">
@@ -567,6 +579,46 @@ export default function ExpertsLeads() {
             </motion.div>
           ))}
         </div>
+      </section>
+
+      {/* ═══ ROADMAP PHASES OVERVIEW ═══ */}
+      <section className="max-w-3xl mx-auto px-4 py-12">
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+          <div className="text-center mb-6">
+            <Badge className="mb-3 bg-accent text-accent-foreground border-primary/10 text-xs">
+              <Rocket className="w-3 h-3 mr-1" /> BUILT FOR SCALE
+            </Badge>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+              Where <span className="text-primary">Your Funnel</span> Lives
+            </h2>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              A 9-phase growth engine with gamification, analytics, and viral loops — already built for you.
+            </p>
+          </div>
+          <div className="grid gap-2">
+            {[
+              { name: "Phase 1 — Foundation & Core Engine", pct: 100, color: "bg-emerald-500" },
+              { name: "Phase 2 — Revenue Funnel (Hormozi)", pct: 100, color: "bg-emerald-500" },
+              { name: "Phase 3 — Viral Growth Engine", pct: 67, color: "bg-amber-500" },
+              { name: "Phase 4 — Gamification & Retention", pct: 63, color: "bg-amber-500" },
+              { name: "Phase 5 — Operations & PM", pct: 100, color: "bg-emerald-500" },
+              { name: "Phase 6 — Analytics & Optimization", pct: 56, color: "bg-amber-500" },
+              { name: "Phase 7 — Communications & Lifecycle", pct: 0, color: "bg-destructive" },
+              { name: "Phase 8 — Conversion Optimization", pct: 22, color: "bg-amber-500" },
+              { name: "Phase 9 — Impact & Community", pct: 60, color: "bg-amber-500" },
+            ].map((phase, i) => (
+              <div key={i} className="flex items-center gap-3 bg-card border border-border/40 rounded-lg px-4 py-2.5">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-foreground truncate">{phase.name}</p>
+                </div>
+                <div className="w-20 h-2 rounded-full bg-secondary overflow-hidden shrink-0">
+                  <div className={`h-full rounded-full ${phase.color}`} style={{ width: `${phase.pct}%` }} />
+                </div>
+                <span className="text-[10px] font-bold text-muted-foreground w-8 text-right shrink-0">{phase.pct}%</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </section>
 
       {/* ═══ FINAL CTA ═══ */}
