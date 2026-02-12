@@ -62,3 +62,6 @@ verify_jwt = false
 
 [functions.elevenlabs-conversation-token]
 verify_jwt = false
+
+[functions.process-voice-transcript]
+verify_jwt = false

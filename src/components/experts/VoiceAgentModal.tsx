@@ -1,31 +1,59 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useConversation } from "@elevenlabs/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, MicOff, X, Loader2, Volume2 } from "lucide-react";
+import { Mic, MicOff, X, Loader2, Volume2, Sparkles, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Framework } from "@/data/expertFrameworks";
+import { Framework, HeroProfile } from "@/data/expertFrameworks";
+
+interface TranscriptMsg {
+  role: string;
+  text: string;
+}
 
 interface VoiceAgentModalProps {
   frameworks: Framework[];
   sectionTitle: string;
   onClose: () => void;
   agentId: string;
+  existingProfile?: HeroProfile | null;
+  onTranscriptProcessed?: (result: {
+    profileUpdates: Record<string, string>;
+    updatedFields: string[];
+    mergedProfile: HeroProfile;
+  }) => void;
 }
 
-const VoiceAgentModal = ({ frameworks, sectionTitle, onClose, agentId }: VoiceAgentModalProps) => {
+const VoiceAgentModal = ({
+  frameworks,
+  sectionTitle,
+  onClose,
+  agentId,
+  existingProfile,
+  onTranscriptProcessed,
+}: VoiceAgentModalProps) => {
   const [isConnecting, setIsConnecting] = useState(false);
-  const [transcript, setTranscript] = useState<Array<{ role: string; text: string }>>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processResult, setProcessResult] = useState<{
+    updatedFields: string[];
+    summary: string;
+  } | null>(null);
+  const [transcript, setTranscript] = useState<TranscriptMsg[]>([]);
+  const transcriptRef = useRef<TranscriptMsg[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Build questions list for the system prompt
-  const allQuestions = frameworks.flatMap((fw) =>
-    fw.questions.map((q) => `[${fw.secret}: ${fw.name}] ${q}`)
-  );
+  // Keep ref in sync
+  useEffect(() => {
+    transcriptRef.current = transcript;
+  }, [transcript]);
 
-  const questionsContext = allQuestions
-    .map((q, i) => `${i + 1}. ${q}`)
-    .join("\n");
+  // Auto-scroll transcript
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [transcript]);
 
   const conversation = useConversation({
     onConnect: () => {
@@ -34,6 +62,10 @@ const VoiceAgentModal = ({ frameworks, sectionTitle, onClose, agentId }: VoiceAg
     },
     onDisconnect: () => {
       console.log("Disconnected from ElevenLabs agent");
+      // Auto-process transcript when conversation ends
+      if (transcriptRef.current.length > 0 && !isProcessing && !processResult) {
+        processTranscript(transcriptRef.current);
+      }
     },
     onMessage: (message: any) => {
       if (message.type === "user_transcript" && message.user_transcription_event) {
@@ -54,6 +86,59 @@ const VoiceAgentModal = ({ frameworks, sectionTitle, onClose, agentId }: VoiceAg
       toast.error("Voice connection error. Please try again.");
     },
   });
+
+  const processTranscript = useCallback(
+    async (msgs: TranscriptMsg[]) => {
+      if (msgs.length === 0) return;
+      setIsProcessing(true);
+
+      try {
+        const { data, error } = await supabase.functions.invoke(
+          "process-voice-transcript",
+          {
+            body: {
+              transcript: msgs,
+              sectionId: frameworks[0]?.section || "unknown",
+              existingProfile: existingProfile || {},
+            },
+          }
+        );
+
+        if (error) {
+          throw new Error(error.message || "Processing failed");
+        }
+
+        if (data?.updatedFields?.length > 0) {
+          setProcessResult({
+            updatedFields: data.updatedFields,
+            summary: data.transcriptSummary,
+          });
+
+          toast.success(
+            `Updated ${data.updatedFields.length} profile fields from your interview!`
+          );
+
+          onTranscriptProcessed?.({
+            profileUpdates: data.profileUpdates,
+            updatedFields: data.updatedFields,
+            mergedProfile: data.mergedProfile,
+          });
+        } else {
+          setProcessResult({
+            updatedFields: [],
+            summary: "No new profile data was detected in the conversation.",
+          });
+          toast.info("No new profile updates detected.");
+        }
+      } catch (err) {
+        console.error("Transcript processing error:", err);
+        toast.error("Failed to process transcript. Your conversation was still recorded.");
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [existingProfile, frameworks, onTranscriptProcessed]
+  );
 
   const startConversation = useCallback(async () => {
     setIsConnecting(true);
@@ -119,13 +204,16 @@ const VoiceAgentModal = ({ frameworks, sectionTitle, onClose, agentId }: VoiceAg
         </div>
 
         {/* Transcript area */}
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2 min-h-[200px] max-h-[400px]">
-          {transcript.length === 0 && conversation.status !== "connected" && (
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto px-4 py-3 space-y-2 min-h-[200px] max-h-[400px]"
+        >
+          {transcript.length === 0 && conversation.status !== "connected" && !isProcessing && !processResult && (
             <div className="text-center py-8 text-muted-foreground">
               <Mic className="w-8 h-8 mx-auto mb-3 opacity-40" />
               <p className="text-xs">Press the mic button to start the voice interview.</p>
               <p className="text-[10px] mt-1">
-                The agent will ask you {allQuestions.length} questions from {frameworks.length} framework{frameworks.length !== 1 ? "s" : ""}.
+                The agent will ask you questions and your answers will automatically update your Hero Profile.
               </p>
             </div>
           )}
@@ -154,27 +242,89 @@ const VoiceAgentModal = ({ frameworks, sectionTitle, onClose, agentId }: VoiceAg
               </div>
             </div>
           )}
+
+          {/* Processing indicator */}
+          {isProcessing && (
+            <motion.div
+              className="flex justify-center py-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 flex items-center gap-2.5">
+                <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+                <span className="text-xs font-medium text-foreground">
+                  Analyzing transcript & updating your profile...
+                </span>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Processing result */}
+          {processResult && (
+            <motion.div
+              className="py-3"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <div className="bg-accent border border-primary/10 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Check className="w-4 h-4 text-green-500" />
+                  <span className="text-xs font-bold text-foreground">Interview Processed!</span>
+                </div>
+                <p className="text-[10px] text-muted-foreground mb-2">{processResult.summary}</p>
+                {processResult.updatedFields.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {processResult.updatedFields.map((field) => (
+                      <span
+                        key={field}
+                        className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary"
+                      >
+                        {field}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
         </div>
 
         {/* Controls */}
         <div className="px-4 py-4 border-t border-border/30 flex items-center justify-center gap-4">
-          {conversation.status === "disconnected" ? (
-            <Button
-              onClick={startConversation}
-              disabled={isConnecting}
-              className="gap-2 rounded-full px-6"
-            >
-              {isConnecting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Connecting...
-                </>
-              ) : (
-                <>
-                  <Mic className="w-4 h-4" />
-                  Start Voice Interview
-                </>
-              )}
+          {conversation.status === "disconnected" && !isProcessing ? (
+            processResult ? (
+              <Button onClick={handleClose} className="gap-2 rounded-full px-6">
+                <Check className="w-4 h-4" />
+                Done
+              </Button>
+            ) : (
+              <Button
+                onClick={startConversation}
+                disabled={isConnecting}
+                className="gap-2 rounded-full px-6"
+              >
+                {isConnecting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Connecting...
+                  </>
+                ) : transcript.length > 0 ? (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Process Transcript
+                  </>
+                ) : (
+                  <>
+                    <Mic className="w-4 h-4" />
+                    Start Voice Interview
+                  </>
+                )}
+              </Button>
+            )
+          ) : isProcessing ? (
+            <Button disabled className="gap-2 rounded-full px-6">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Processing...
             </Button>
           ) : (
             <Button
