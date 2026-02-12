@@ -407,6 +407,39 @@ export default function FunnelMap() {
               </div>
             </div>
 
+            {/* Bridge headline */}
+            <motion.div
+              className="mt-8 mb-6 max-w-xl mx-auto text-center space-y-4"
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <h3 className="text-xl md:text-2xl font-extrabold leading-tight text-foreground">
+                The Practical Implementation of{" "}
+                <span className="text-primary">The Biggest Andrew Huberman Discovery</span>{" "}
+                in the Last 18 Months.
+              </h3>
+              <p className="text-base md:text-lg font-semibold text-foreground/90 leading-snug">
+                Dr. Hawkins' (PhD) Research affirms it could make you up to{" "}
+                <motion.span
+                  className="text-primary inline-block"
+                  animate={{ scale: [1, 1.08, 1] }}
+                  transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 3 }}
+                >
+                  27× Happier
+                </motion.span>
+                .
+              </p>
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                The <strong className="text-foreground">Neuro-Hack</strong> to spike{" "}
+                <strong className="text-primary">Dopamine & Serotonin</strong> (Overall Well-Being) — pre-built into a{" "}
+                <strong className="text-foreground">trigger</strong>,{" "}
+                <strong className="text-foreground">habit-forming system</strong> &{" "}
+                <strong className="text-primary">brand</strong>.
+              </p>
+            </motion.div>
+
             {/* Science of Gratitude — collapsible */}
             <Collapsible>
               <CollapsibleTrigger className="w-full mt-5">
