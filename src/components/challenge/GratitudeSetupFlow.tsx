@@ -14,6 +14,7 @@ import {
   Sparkles,
   Calendar,
   Gift,
+  ChevronDown,
 } from "lucide-react";
 import MessageBubblePreview from "./MessageBubblePreview";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,9 +51,36 @@ const GratitudeSetupFlow = ({ onComplete, onSkip }: GratitudeSetupFlowProps) => 
   const [currentStep, setCurrentStep] = useState<Step>("name-friend");
   const [bestFriend, setBestFriend] = useState("");
   const [gratitudeMemory, setGratitudeMemory] = useState("");
-  const [phone, setPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("+1");
+  const [phoneLocal, setPhoneLocal] = useState("");
   const [agreedToSms, setAgreedToSms] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showCountryCodes, setShowCountryCodes] = useState(false);
+
+  const phone = `${countryCode}${phoneLocal}`;
+
+  const COUNTRY_CODES = [
+    { code: "+1", flag: "🇺🇸", label: "US/CA" },
+    { code: "+52", flag: "🇲🇽", label: "MX" },
+    { code: "+44", flag: "🇬🇧", label: "UK" },
+    { code: "+34", flag: "🇪🇸", label: "ES" },
+    { code: "+57", flag: "🇨🇴", label: "CO" },
+    { code: "+54", flag: "🇦🇷", label: "AR" },
+    { code: "+55", flag: "🇧🇷", label: "BR" },
+    { code: "+56", flag: "🇨🇱", label: "CL" },
+    { code: "+51", flag: "🇵🇪", label: "PE" },
+    { code: "+91", flag: "🇮🇳", label: "IN" },
+    { code: "+61", flag: "🇦🇺", label: "AU" },
+    { code: "+49", flag: "🇩🇪", label: "DE" },
+    { code: "+33", flag: "🇫🇷", label: "FR" },
+    { code: "+81", flag: "🇯🇵", label: "JP" },
+    { code: "+82", flag: "🇰🇷", label: "KR" },
+    { code: "+234", flag: "🇳🇬", label: "NG" },
+    { code: "+27", flag: "🇿🇦", label: "ZA" },
+    { code: "+971", flag: "🇦🇪", label: "AE" },
+    { code: "+966", flag: "🇸🇦", label: "SA" },
+    { code: "+63", flag: "🇵🇭", label: "PH" },
+  ];
 
   const stepIndex = STEPS.indexOf(currentStep);
   const progress = ((stepIndex + 1) / STEPS.length) * 100;
@@ -306,14 +334,50 @@ const GratitudeSetupFlow = ({ onComplete, onSkip }: GratitudeSetupFlowProps) => 
             </div>
 
             <div className="space-y-4">
-              <Input
-                type="tel"
-                placeholder="Your phone number"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="h-12 text-base bg-secondary/50 border-border/50 focus:border-primary"
-                maxLength={20}
-              />
+              <div className="flex gap-2">
+                {/* Country code picker */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowCountryCodes(!showCountryCodes)}
+                    className="h-12 px-3 rounded-md border border-input bg-secondary/50 flex items-center gap-1 text-sm font-medium hover:bg-secondary transition-colors min-w-[90px]"
+                  >
+                    <span>{COUNTRY_CODES.find(c => c.code === countryCode)?.flag}</span>
+                    <span>{countryCode}</span>
+                    <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                  </button>
+                  {showCountryCodes && (
+                    <div className="absolute top-full left-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-20 max-h-48 overflow-y-auto w-44">
+                      {COUNTRY_CODES.map((c) => (
+                        <button
+                          key={c.code}
+                          type="button"
+                          onClick={() => {
+                            setCountryCode(c.code);
+                            setShowCountryCodes(false);
+                          }}
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-secondary/50 transition-colors ${
+                            countryCode === c.code ? "bg-primary/10 text-primary font-semibold" : ""
+                          }`}
+                        >
+                          <span>{c.flag}</span>
+                          <span className="font-mono">{c.code}</span>
+                          <span className="text-muted-foreground text-xs">{c.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {/* Phone number */}
+                <Input
+                  type="tel"
+                  placeholder="Your phone number"
+                  value={phoneLocal}
+                  onChange={(e) => setPhoneLocal(e.target.value)}
+                  className="h-12 text-base bg-secondary/50 border-border/50 focus:border-primary flex-1"
+                  maxLength={15}
+                />
+              </div>
 
               <div className="flex items-start gap-3">
                 <Checkbox

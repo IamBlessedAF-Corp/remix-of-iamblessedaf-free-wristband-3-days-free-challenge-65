@@ -1,3 +1,4 @@
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Repeat, ArrowRight, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,9 +9,33 @@ interface DownsellModalProps {
   onClose: () => void;
   onAccept: () => void;
   onDecline: () => void;
+  onShown?: () => void;
+  onTrack?: (event: "shown" | "accepted" | "declined" | "closed") => void;
 }
 
-const DownsellModal = ({ open, onClose, onAccept, onDecline }: DownsellModalProps) => {
+const DownsellModal = ({ open, onClose, onAccept, onDecline, onTrack }: DownsellModalProps) => {
+  // Track shown event when modal opens
+  const shownRef = React.useRef(false);
+  React.useEffect(() => {
+    if (open && !shownRef.current) {
+      shownRef.current = true;
+      onTrack?.("shown");
+    }
+    if (!open) shownRef.current = false;
+  }, [open, onTrack]);
+
+  const handleClose = () => {
+    onTrack?.("closed");
+    onClose();
+  };
+  const handleAccept = () => {
+    onTrack?.("accepted");
+    onAccept();
+  };
+  const handleDecline = () => {
+    onTrack?.("declined");
+    onDecline();
+  };
   return (
     <AnimatePresence>
       {open && (
@@ -19,7 +44,7 @@ const DownsellModal = ({ open, onClose, onAccept, onDecline }: DownsellModalProp
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose}
+          onClick={handleClose}
         >
           <motion.div
             className="bg-background w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto"
@@ -31,7 +56,7 @@ const DownsellModal = ({ open, onClose, onAccept, onDecline }: DownsellModalProp
           >
             {/* Close button */}
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="absolute top-3 right-3 text-muted-foreground hover:text-foreground z-10"
             >
               <X className="w-5 h-5" />
@@ -94,7 +119,7 @@ const DownsellModal = ({ open, onClose, onAccept, onDecline }: DownsellModalProp
 
               {/* CTA */}
               <Button
-                onClick={onAccept}
+                onClick={handleAccept}
                 className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow transition-all duration-300 rounded-xl"
               >
                 <Repeat className="w-5 h-5 mr-2" />
@@ -116,7 +141,7 @@ const DownsellModal = ({ open, onClose, onAccept, onDecline }: DownsellModalProp
 
               {/* Final decline */}
               <button
-                onClick={onDecline}
+                onClick={handleDecline}
                 className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors py-2"
               >
                 No thanks, I'll pass on everything →

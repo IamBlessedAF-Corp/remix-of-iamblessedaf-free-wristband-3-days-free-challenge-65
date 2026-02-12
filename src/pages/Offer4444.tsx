@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useExitIntent } from "@/hooks/useExitIntent";
+import { useExitIntentTracking } from "@/hooks/useExitIntentTracking";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
@@ -25,6 +26,7 @@ const Offer4444 = () => {
   const [showDownsell, setShowDownsell] = useState(false);
   const navigate = useNavigate();
   const { startCheckout, loading } = useStripeCheckout();
+  const { track } = useExitIntentTracking("offer-4444");
   useExitIntent(() => {
     if (!showDownsell) setShowDownsell(true);
   }, { sessionKey: "offer-4444" });
@@ -180,6 +182,7 @@ const Offer4444 = () => {
                 onClose={() => setShowDownsell(false)}
                 onAccept={() => { setShowDownsell(false); navigate("/offer/11mo"); }}
                 onDecline={() => { setShowDownsell(false); navigate("/portal"); }}
+                onTrack={track}
               />
              </>
         </div>

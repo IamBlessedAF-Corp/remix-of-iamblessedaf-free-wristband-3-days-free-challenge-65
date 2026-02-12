@@ -162,12 +162,12 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
           </button>
 
           <h2 className="text-2xl font-bold mb-2">
-            {mode === "signup" ? "Join the Contest" : "Welcome Back"}
+            {mode === "signup" ? "Claim Your FREE Wristband 🎁" : "Welcome Back"}
           </h2>
           <p className="text-muted-foreground mb-6">
             {mode === "signup"
-              ? "Create your account to get your unique referral link"
-              : "Sign in to access your creator dashboard"}
+              ? "Sign up in 5 seconds to start your gratitude journey"
+              : "Sign in to continue your journey"}
           </p>
 
           {/* OAuth Buttons */}
