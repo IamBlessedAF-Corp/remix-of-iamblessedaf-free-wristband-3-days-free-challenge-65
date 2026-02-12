@@ -181,6 +181,7 @@ const Offer444 = () => {
         discount="Save $553"
         label="YES! Lock My Habit Pack 🔒"
         trackingSource="offer_444"
+        triggerSelector="[data-price-anchor]"
       />
     </div>
   );
