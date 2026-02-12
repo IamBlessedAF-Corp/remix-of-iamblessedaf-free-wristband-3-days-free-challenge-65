@@ -368,8 +368,19 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
             </div>
           </div>
 
-          {/* Built-in customizer — gender, size, save (name + message are above) */}
-          <div className="px-4 py-4 border-t border-border/30">
+           {/* Scarcity urgency line */}
+           {friendName.trim().length > 0 && (
+             <div className="px-4 py-3 bg-destructive/10 border-y border-destructive/30">
+               <div className="animate-pulse">
+                 <p className="text-sm font-bold text-destructive text-center">
+                   ⏰ Only 7 custom shirts left today — {friendName}'s is reserved for 15 minutes
+                 </p>
+               </div>
+             </div>
+           )}
+
+           {/* Built-in customizer — gender, size, save (name + message are above) */}
+           <div className="px-4 py-4 border-t border-border/30">
             <ShirtCustomizer
               friendName={friendName}
               onFriendNameChange={setFriendName}
