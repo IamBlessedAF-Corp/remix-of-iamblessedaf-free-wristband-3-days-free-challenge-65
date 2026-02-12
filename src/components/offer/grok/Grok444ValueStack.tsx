@@ -20,7 +20,7 @@ const VALUES = [
     title: "14× Trigger Wristbands — Value: $154",
     description:
       "14 bands = 14 daily micro-reminders. Give them away, start convos, hack gratitude into every interaction. Cost per hack: $0.01.",
-    sub: "Silicone · One-size-fits-all · IamBlessedAF debossed",
+    sub: "Waterproof nylon · One-size-fits-all · IamBlessedAF debossed",
   },
   {
     emoji: "❤️",

@@ -138,7 +138,7 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
         YOUR DAILY HAPPINESS TRIGGER
       </p>
       <p className="text-center text-sm text-muted-foreground max-w-md mx-auto mb-4">
-        3 silicone wristbands. Every time you glance at your wrist, your brain fires a gratitude micro-moment.{" "}
+        3 waterproof nylon wristbands. Every time you glance at your wrist, your brain fires a gratitude micro-moment.{" "}
         <span className="font-bold text-foreground">That's happiness for $0.02/day.</span>
       </p>
 
@@ -162,7 +162,7 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
           {!loading && <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />}
         </Button>
         <p className="text-center text-xs text-muted-foreground mt-4">
-          🔒 Secure checkout {selected === "triple" ? "• Free US Shipping • 22 meals donated instantly" : "• $9.95 covers shipping & handling"}
+          {selected === "triple" ? "🍽 22 meals donated instantly • Free US Shipping" : ""}
         </p>
         <RiskReversalGuarantee />
       </motion.div>
@@ -227,7 +227,7 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
           {!loading && <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />}
         </Button>
         <p className="text-center text-xs text-muted-foreground mt-4">
-          🔒 Secure checkout {selected === "triple" ? "• Free US Shipping" : "• $9.95 shipping only"}
+          {selected === "triple" ? "🍽 22 meals donated • Free US Shipping" : ""}
         </p>
         <RiskReversalGuarantee />
       </motion.div>
@@ -252,7 +252,7 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
           {!loading && <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />}
         </Button>
         <p className="text-center text-xs text-muted-foreground mt-4">
-          🔒 Secure checkout {selected === "triple" ? "• Free US Shipping" : "• $9.95 shipping only"}
+          {selected === "triple" ? "🍽 22 meals donated • Free US Shipping" : ""}
         </p>
         <RiskReversalGuarantee />
       </motion.div>

@@ -35,7 +35,7 @@ const VALUES = [
     description:
       "Glance → micro-gratitude → cortisol drop → repeat. 50×/day × 365 days = 18,250 neural activations/year. Cost per activation: $0.02. Best ROI in behavioral neuroscience.",
     value: "$33",
-    sub: "NFC-enabled · Waterproof silicone · Debossed trigger",
+    sub: "Waterproof nylon · One-size-fits-all · Debossed trigger",
   },
   {
     emoji: "📈",

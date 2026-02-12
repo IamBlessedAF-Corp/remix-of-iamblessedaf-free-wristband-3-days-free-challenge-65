@@ -45,7 +45,7 @@ const WristbandDiscountBanner = () => {
           </p>
         </div>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          3 NFC Wristbands worth <span className="font-bold text-foreground">$33</span> — get them today for just{" "}
+          3 Wristbands worth <span className="font-bold text-foreground">$33</span> — get them today for just{" "}
           <span className="font-bold text-foreground">$22</span>
         </p>
       </div>
@@ -58,7 +58,7 @@ const WristbandDiscountBanner = () => {
       {/* Price block */}
       <div className="flex items-center justify-center gap-4">
         <p className="text-lg md:text-xl font-bold text-foreground leading-tight text-left">
-          3 NFC Wristbands
+          3 Wristbands
           <br />
           <span className="text-sm text-muted-foreground font-normal">Tap · Share · Remind</span>
         </p>

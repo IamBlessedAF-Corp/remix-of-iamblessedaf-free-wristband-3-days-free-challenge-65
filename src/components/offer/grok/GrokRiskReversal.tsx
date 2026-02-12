@@ -13,10 +13,10 @@ const GrokRiskReversal = ({ delay = 0 }: { delay?: number }) => {
           <div className="flex items-start gap-2.5 text-sm text-foreground">
             <span className="text-base flex-shrink-0">✅</span>
             <span>
-              <span className="font-bold">30-Day Happiness Guarantee:</span>{" "}
-              <span className="text-muted-foreground">
-                Not happier? Full refund — keep the donated meals.
-              </span>
+             <span className="font-bold">Happiness Guarantee:</span>{" "}
+17:               <span className="text-muted-foreground">
+18:                 Not happier? We donate 11 meals through Feeding America under your name.
+19:               </span>
             </span>
           </div>
           <div className="flex items-start gap-2.5 text-sm text-foreground">
