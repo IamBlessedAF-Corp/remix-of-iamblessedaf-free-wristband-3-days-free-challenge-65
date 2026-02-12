@@ -208,6 +208,9 @@ const FunnelStepCard = ({ step, index, baseStep, getConv, navigate, stepNumber }
                         ${step.price}
                       </Badge>
                     )}
+                    {[9, 10, 11].includes(step.id) && (
+                      <Badge variant="outline" className="text-[8px] py-0 px-1 border-amber-500/40 text-amber-500">🚧 Under Construction</Badge>
+                    )}
                     {isClickable && (
                       <button
                         onClick={(e) => { e.stopPropagation(); navigate(step.route); }}
@@ -380,10 +383,10 @@ export default function FunnelMap() {
           <div className="flex items-center gap-3">
             <img src={logoImg} alt="IamBlessedAF" className="h-7" />
             <div>
-              <h1 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
-                <BarChart3 className="h-4 w-4 text-primary" /> Funnel Command Center
+              <h1 className="text-lg md:text-xl font-black text-foreground tracking-tight leading-tight">
+                🚀 Traffic → Conversion → Revenue Machine
               </h1>
-              <p className="text-[10px] text-muted-foreground">Gratitude Engine™ — Growth Hacking Campaign · Dropbox × Ice Bucket Challenge × Supreme</p>
+              <p className="text-[10px] text-muted-foreground">Gratitude Engine™ · Dropbox × Ice Bucket Challenge × Supreme</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -397,16 +400,16 @@ export default function FunnelMap() {
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <Card className="border-primary/20 bg-gradient-to-br from-primary/[0.03] via-card to-card overflow-hidden">
             <CardContent className="p-5 md:p-7">
-              <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <Brain className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h2 className="text-base md:text-lg font-black text-foreground leading-tight">
-                    The Neuro-Hackers Movement
-                  </h2>
-                  <p className="text-xs text-primary font-bold mt-0.5">You're 3 minutes away per day to feel up to 27x happier</p>
-                </div>
+              <div className="mb-5">
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-foreground leading-tight tracking-tight">
+                  How We Turn $3,000 Into a <span className="text-primary">Self-Replicating Revenue Engine</span> That Feeds Millions
+                </h2>
+                <p className="text-sm md:text-base text-primary font-bold mt-2">
+                  250 Clippers × 3,000 Views/Clip = 3M Impressions → {base.visitors.toLocaleString()} Visitors → ${base.totalRevenue.toLocaleString()} Revenue ({base.roi.toFixed(1)}x ROI)
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Backed by Dr. Hawkins PhD (27x happiness multiplier) · Harvard Grant Study (84+ years) · Neuroscience-proven gratitude triggers
+                </p>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                 <strong className="text-foreground">IamBlessedAF</strong> is a <strong className="text-foreground">pay-it-forward gratitude movement</strong> backed by 
@@ -799,11 +802,22 @@ export default function FunnelMap() {
             </Card>
 
             {/* Editable Conversion Rates per Step */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Conversion Rates by Step</CardTitle>
-                <CardDescription className="text-xs">Edit to model custom scenarios</CardDescription>
-              </CardHeader>
+            <Collapsible>
+              <CollapsibleTrigger className="w-full">
+                <Card className="cursor-pointer hover:border-primary/20 transition-colors">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-sm">Conversion Rates by Step</CardTitle>
+                        <CardDescription className="text-xs">Edit to model custom scenarios · Click to expand</CardDescription>
+                      </div>
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  </CardHeader>
+                </Card>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <Card className="mt-1 border-t-0 rounded-t-none">
               <CardContent className="overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -819,9 +833,17 @@ export default function FunnelMap() {
                   </TableHeader>
                   <TableBody>
                     {base.steps.map((step) => (
-                      <TableRow key={step.id}>
-                        <TableCell className="text-xs text-muted-foreground">{step.id}</TableCell>
-                        <TableCell className="text-xs font-medium">{step.name}</TableCell>
+                      <TableRow key={step.id} className={[9, 10, 11].includes(step.id) ? "opacity-60" : ""}>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {step.id}
+                          {[9, 10, 11].includes(step.id) && <span className="ml-1">🚧</span>}
+                        </TableCell>
+                        <TableCell className="text-xs font-medium">
+                          {step.name}
+                          {[9, 10, 11].includes(step.id) && (
+                            <Badge variant="outline" className="ml-1.5 text-[8px] py-0 px-1 border-amber-500/40 text-amber-500">Under Construction</Badge>
+                          )}
+                        </TableCell>
                         <TableCell className="text-[11px] text-muted-foreground max-w-[160px] truncate">{step.sells}</TableCell>
                         <TableCell className="text-center p-1">
                           <Input
@@ -843,6 +865,8 @@ export default function FunnelMap() {
                 </Table>
               </CardContent>
             </Card>
+              </CollapsibleContent>
+            </Collapsible>
           </TabsContent>
 
           {/* ─── TAB: Conversions ─── */}

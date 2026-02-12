@@ -79,8 +79,6 @@ const App = () => (
           <Route path="/scripts-review" element={<ScriptsReview />} />
           <Route path="/Gratitude-Clippers" element={<GratitudeClippers />} />
           <Route path="/Traffic-Funnel" element={<FunnelMap />} />
-          <Route path="/funnel-map" element={<FunnelMap />} />
-          <Route path="/funnel-flow" element={<FunnelMap />} />
           <Route path="/experts-leads" element={<ExpertsLeads />} />
           <Route path="/admin/experts" element={<ExpertsLeadsAdmin />} />
           <Route path="/privacy" element={<Privacy />} />
