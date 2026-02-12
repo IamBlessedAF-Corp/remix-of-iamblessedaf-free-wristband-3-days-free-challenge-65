@@ -1,16 +1,20 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Settings2, Sparkles, ChevronRight, Trophy, ArrowRight, CheckCircle2, ChevronDown, Loader2, FileText } from "lucide-react";
+import { Settings2, Sparkles, ChevronRight, Trophy, ArrowRight, CheckCircle2, ChevronDown, Loader2, FileText, Mic, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import HeroQuestionnaire from "@/components/experts/HeroQuestionnaire";
 import FrameworkCard from "@/components/experts/FrameworkCard";
 import ScriptGeneratorModal from "@/components/experts/ScriptGeneratorModal";
+import VoiceAgentModal from "@/components/experts/VoiceAgentModal";
 import ExpertsAuthGate from "@/components/experts/ExpertsAuthGate";
 import { FRAMEWORK_SECTIONS, FRAMEWORKS, HeroProfile, Framework } from "@/data/expertFrameworks";
 import { useExpertScripts } from "@/hooks/useExpertScripts";
+import { useVoiceScriptGeneration } from "@/hooks/useVoiceScriptGeneration";
 import logoImg from "@/assets/logo.png";
+
+const ELEVENLABS_AGENT_ID = "agent_3901kh7tvnf8ftpbf5p771dgmbyc";
 
 const ExpertsInner = () => {
   const navigate = useNavigate();
@@ -18,6 +22,9 @@ const ExpertsInner = () => {
   const [activeFramework, setActiveFramework] = useState<Framework | null>(null);
   const [editingProfile, setEditingProfile] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+  const [voiceSection, setVoiceSection] = useState<{ id: string; title: string } | null>(null);
+  const { isAutoGenerating, generationQueue, autoGenerateForSection } =
+    useVoiceScriptGeneration(saveOutput);
 
   const handleOutputGenerated = useCallback((frameworkId: string, output: string) => {
     if (heroProfile) {
@@ -206,6 +213,21 @@ const ExpertsInner = () => {
                   <span className="text-[10px] font-bold text-muted-foreground shrink-0">
                     {section.done}/{section.total}
                   </span>
+
+                  {/* Voice AI button */}
+                  {ELEVENLABS_AGENT_ID && heroProfile && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setVoiceSection({ id: section.id, title: section.title });
+                      }}
+                      className="p-1.5 rounded-md hover:bg-primary/10 transition-colors shrink-0"
+                      title="Voice AI Interview"
+                    >
+                      <Mic className="w-3.5 h-3.5 text-primary" />
+                    </button>
+                  )}
+
                   <ChevronDown
                     className={`w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform duration-200 ${
                       isOpen ? "rotate-180" : ""
@@ -251,6 +273,47 @@ const ExpertsInner = () => {
           existingOutput={outputs[activeFramework.id]}
           onOutputGenerated={handleOutputGenerated}
         />
+      )}
+      {/* Voice Agent Modal */}
+      <AnimatePresence>
+        {voiceSection && ELEVENLABS_AGENT_ID && heroProfile && (
+          <VoiceAgentModal
+            frameworks={FRAMEWORKS.filter((f) => f.section === voiceSection.id)}
+            sectionTitle={voiceSection.title}
+            onClose={() => setVoiceSection(null)}
+            agentId={ELEVENLABS_AGENT_ID}
+            existingProfile={heroProfile}
+            onTranscriptProcessed={(result) => {
+              if (result.updatedFields.length > 0 && result.mergedProfile) {
+                setHeroProfile(result.mergedProfile);
+                autoGenerateForSection(voiceSection.id, result.mergedProfile, outputs);
+              }
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Auto-generation progress */}
+      {isAutoGenerating && (
+        <div className="fixed bottom-4 right-4 z-50 bg-card border border-border/40 rounded-xl p-4 shadow-lg max-w-xs">
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+            <span className="text-xs font-bold text-foreground">Auto-generating scripts...</span>
+          </div>
+          <div className="space-y-1">
+            {generationQueue.map((item) => (
+              <div key={item.frameworkId} className="flex items-center gap-2 text-[10px]">
+                {item.status === "generating" && <Loader2 className="w-3 h-3 animate-spin text-primary shrink-0" />}
+                {item.status === "done" && <CheckCircle2 className="w-3 h-3 text-green-500 shrink-0" />}
+                {item.status === "pending" && <div className="w-3 h-3 rounded-full border border-border shrink-0" />}
+                {item.status === "error" && <X className="w-3 h-3 text-destructive shrink-0" />}
+                <span className={`truncate ${item.status === "done" ? "text-muted-foreground" : "text-foreground"}`}>
+                  {item.frameworkName}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

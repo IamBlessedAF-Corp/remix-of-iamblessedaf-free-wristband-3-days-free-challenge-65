@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { FRAMEWORK_SECTIONS, FRAMEWORKS } from "@/data/expertFrameworks";
 import { useExpertScripts } from "@/hooks/useExpertScripts";
+import { useVoiceScriptGeneration } from "@/hooks/useVoiceScriptGeneration";
 import { useAuth } from "@/hooks/useAuth";
 import ExpertsAuthGate from "@/components/experts/ExpertsAuthGate";
 import VoiceAgentModal from "@/components/experts/VoiceAgentModal";
@@ -104,6 +105,8 @@ const ScriptsReviewInner = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [voiceSection, setVoiceSection] = useState<{ id: string; title: string } | null>(null);
+  const { isAutoGenerating, generationQueue, autoGenerateForSection } =
+    useVoiceScriptGeneration(saveOutput);
 
   if (isLoading) {
     return (
@@ -514,12 +517,40 @@ const ScriptsReviewInner = () => {
             onTranscriptProcessed={(result) => {
               if (result.updatedFields.length > 0 && result.mergedProfile) {
                 setHeroProfile(result.mergedProfile);
-                toast.success(`Profile updated: ${result.updatedFields.join(", ")}`);
+                // Auto-generate scripts for this section with the enriched profile
+                autoGenerateForSection(
+                  voiceSection.id,
+                  result.mergedProfile,
+                  outputs
+                );
               }
             }}
           />
         )}
       </AnimatePresence>
+
+      {/* Auto-generation progress toast */}
+      {isAutoGenerating && (
+        <div className="fixed bottom-4 right-4 z-50 bg-card border border-border/40 rounded-xl p-4 shadow-lg max-w-xs">
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+            <span className="text-xs font-bold text-foreground">Auto-generating scripts...</span>
+          </div>
+          <div className="space-y-1">
+            {generationQueue.map((item) => (
+              <div key={item.frameworkId} className="flex items-center gap-2 text-[10px]">
+                {item.status === "generating" && <Loader2 className="w-3 h-3 animate-spin text-primary shrink-0" />}
+                {item.status === "done" && <CheckCircle2 className="w-3 h-3 text-green-500 shrink-0" />}
+                {item.status === "pending" && <div className="w-3 h-3 rounded-full border border-border shrink-0" />}
+                {item.status === "error" && <X className="w-3 h-3 text-destructive shrink-0" />}
+                <span className={`truncate ${item.status === "done" ? "text-muted-foreground" : "text-foreground"}`}>
+                  {item.frameworkName}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
