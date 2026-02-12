@@ -11,6 +11,8 @@ const SIMULATED = {
   participants: 2340,
   meals: 25000,
   wristbands: 4800,
+  hearts: 8720,
+  global: 3150,
 };
 
 export function useSimulatedStats() {
