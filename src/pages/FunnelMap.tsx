@@ -381,7 +381,20 @@ export default function FunnelMap() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
         <div className="relative max-w-5xl mx-auto px-4 pt-8 pb-10 text-center">
-          <img src={logoImg} alt="IamBlessedAF" className="h-8 mx-auto mb-4" />
+          {/* ─── Neuro Hackers Movement (before title) ─── */}
+          <div className="relative rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-card to-primary/5 overflow-hidden mb-8">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.08),transparent_60%)]" />
+            <div className="relative text-center py-10 px-6">
+              <img src={logoImg} alt="IamBlessedAF" className="h-10 mx-auto mb-3" />
+              <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight mb-2">
+                The <span className="text-primary">Neuro Hackers</span> Movement
+              </h2>
+              <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
+                You're <strong className="text-foreground">1 Hack</strong> & <strong className="text-foreground">3 Min/Day</strong> away from a life you <strong className="text-primary">Love</strong>
+              </p>
+            </div>
+          </div>
+
           <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1">
             Traffic → Funnel → Conversiones
           </Badge>
@@ -433,21 +446,8 @@ export default function FunnelMap() {
           </Card>
         </motion.section>
 
-        {/* ═══ THE NEURO HACKERS MOVEMENT ═══ */}
-        <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
-          <div className="relative rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-card to-primary/5 overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.08),transparent_60%)]" />
-            <div className="relative text-center py-10 px-6">
-              <Brain className="w-10 h-10 text-primary mx-auto mb-3" />
-              <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight mb-2">
-                The <span className="text-primary">Neuro Hackers</span> Movement
-              </h2>
-              <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
-                You're <strong className="text-foreground">1 Hack</strong> & <strong className="text-foreground">3 Min/Day</strong> away from a life you <strong className="text-primary">Love</strong>
-              </p>
-            </div>
-          </div>
-        </motion.section>
+
+
 
         {/* ═══ VIRAL LOOPS INSTALLED (Pre-collapsed) ═══ */}
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
@@ -1049,8 +1049,9 @@ export default function FunnelMap() {
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle className="text-sm">Conversion Rates by Step</CardTitle>
-                        <CardDescription className="text-xs">Edit to model custom scenarios · Click to expand</CardDescription>
+                        <h3 className="text-lg md:text-xl font-black text-foreground mb-1">Think this is too Optimistic? 🤔</h3>
+                        <CardTitle className="text-sm text-primary">Play with the Numbers here...</CardTitle>
+                        <CardDescription className="text-xs">Edit conversion rates to model custom scenarios · Click to expand</CardDescription>
                       </div>
                       <ChevronDown className="w-4 h-4 text-muted-foreground" />
                     </div>
