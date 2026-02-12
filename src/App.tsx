@@ -30,6 +30,7 @@ import ScriptsReview from "./pages/ScriptsReview";
 import GratitudeClippers from "./pages/GratitudeClippers";
 import FunnelMap from "./pages/FunnelMap";
 import ExpertsLeads from "./pages/ExpertsLeads";
+import ExpertsLeadsAdmin from "./pages/ExpertsLeadsAdmin";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -80,6 +81,7 @@ const App = () => (
           <Route path="/funnel-map" element={<FunnelMap />} />
           <Route path="/funnel-flow" element={<FunnelMap />} />
           <Route path="/experts-leads" element={<ExpertsLeads />} />
+          <Route path="/admin/experts" element={<ExpertsLeadsAdmin />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
