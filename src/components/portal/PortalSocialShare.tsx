@@ -42,6 +42,16 @@ export default function PortalSocialShare({ referralCode, displayName, open, onC
 
   const PLATFORMS: PlatformConfig[] = [
     {
+      id: "whatsapp",
+      name: "WhatsApp",
+      emoji: "💬",
+      color: "bg-[hsl(120_100%_50%)] text-[hsl(0_0%_100%)]",
+      reward: 40,
+      caption: `🎁 I just blessed someone with a FREE wristband! 🙏\n\nThey literally help feed 11 people when you wear it.\n\nGet yours FREE: ${url}`,
+      hashtags: "#IamBlessedAF #BlessedAF #Gratitude",
+      shareUrl: (u, t) => `https://wa.me/?text=${encodeURIComponent(t)}`,
+    },
+    {
       id: "tiktok",
       name: "TikTok",
       emoji: "🎵",
