@@ -13,7 +13,7 @@ import {
   TrendingUp, Users, DollarSign, Eye, Video, ArrowRight, ArrowDown, Zap, Target, BarChart3,
   Settings2, Sparkles, Gift, Brain, Share2, Repeat, MessageSquare, Crown, RefreshCw,
   Info, Calculator, Rocket, Snowflake, Heart, Star, ShoppingBag, Megaphone, ChevronDown,
-  ExternalLink, Mail, Phone, Smartphone, Trophy, Gauge, UserPlus, BookOpen
+  ExternalLink, Mail, Phone, Smartphone, Trophy, Gauge, UserPlus, BookOpen, Flame, Radio, Shield
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -433,6 +433,74 @@ export default function FunnelMap() {
           </Card>
         </motion.section>
 
+        {/* ═══ THE NEURO HACKERS MOVEMENT ═══ */}
+        <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
+          <div className="relative rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-card to-primary/5 overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.08),transparent_60%)]" />
+            <div className="relative text-center py-10 px-6">
+              <Brain className="w-10 h-10 text-primary mx-auto mb-3" />
+              <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight mb-2">
+                The <span className="text-primary">Neuro Hackers</span> Movement
+              </h2>
+              <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
+                You're <strong className="text-foreground">1 Hack</strong> & <strong className="text-foreground">3 Min/Day</strong> away from a life you <strong className="text-primary">Love</strong>
+              </p>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* ═══ VIRAL LOOPS INSTALLED (Pre-collapsed) ═══ */}
+        <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
+          <Collapsible>
+            <CollapsibleTrigger className="w-full">
+              <Card className="cursor-pointer hover:border-primary/20 transition-colors">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <RefreshCw className="h-4 w-4 text-primary" />
+                      <CardTitle className="text-base">Viral Loops Installed</CardTitle>
+                      <Badge className="bg-primary/10 text-primary border-primary/20 text-[9px]">7 Active</Badge>
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                  <CardDescription className="text-xs text-left">Every touchpoint in the funnel has a built-in K-factor multiplier</CardDescription>
+                </CardHeader>
+              </Card>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <Card className="mt-1 border-t-0 rounded-t-none">
+                <CardContent className="p-4 md:p-6">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {[
+                      { name: "Friend Name Capture", where: "Setup Flow (Step 3)", kFactor: "K=3.0", desc: "Users name 1-3 best friends at Day 0. Seeds referral list before any purchase.", icon: Users },
+                      { name: "WhatsApp-First Share", where: "Challenge Thanks (Step 5)", kFactor: "K=2.7", desc: "Post-signup viral activation. WhatsApp preferred for higher conversion vs SMS.", icon: Share2 },
+                      { name: "TGF Friday Auto-SMS", where: "Weekly Cron (Step 6)", kFactor: "K=1.5", desc: "Automated gratitude SMS to rotating friend each Friday with embedded referral link.", icon: MessageSquare },
+                      { name: "ShareMilestoneTracker", where: "Portal + Post-Purchase", kFactor: "K=2.1", desc: "Gamified BC rewards at 1, 3, 5, 10, 25 shares. Escalating incentive.", icon: Trophy },
+                      { name: "Pay It Forward Guilt", where: "Checkout (Step 4)", kFactor: "K=1.5", desc: "Each wristband = 11 meals. 'Your shipping fee feeds 11 people today.'", icon: Heart },
+                      { name: "Post-Purchase Share Prompt", where: "Success Page", kFactor: "K=1.8", desc: "Triggers immediately after confetti celebration. Rides dopamine peak.", icon: Sparkles },
+                      { name: "Clipper Creator Flywheel", where: "Pre-Funnel", kFactor: "K=4.2", desc: "Creators paid per clip → clips drive traffic → traffic feeds funnel → revenue funds more clips.", icon: Video },
+                    ].map((loop, i) => (
+                      <div key={i} className="bg-card border border-border/40 rounded-xl p-3 flex gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <loop.icon className="w-4 h-4 text-primary" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                            <h4 className="text-xs font-bold text-foreground">{loop.name}</h4>
+                            <span className="text-[9px] font-black text-primary bg-primary/10 rounded-full px-1.5 py-0.5">{loop.kFactor}</span>
+                          </div>
+                          <p className="text-[10px] text-primary/70 font-medium mb-0.5">{loop.where}</p>
+                          <p className="text-[10px] text-muted-foreground leading-relaxed">{loop.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </CollapsibleContent>
+          </Collapsible>
+        </motion.section>
+
         {/* ═══ CLIPPERS CAMPAIGN CALCULATOR (Andrew Tate Formula) ═══ */}
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
           <Card className="border-primary/20">
@@ -570,6 +638,87 @@ export default function FunnelMap() {
               {/* Logo top */}
               <div className="flex justify-center mb-4">
                 <img src={logoImg} alt="IamBlessedAF" className="h-8 opacity-60" />
+              </div>
+
+              {/* ── Engine Ignition: Authority + Retargeting ── */}
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="w-full">
+                  <div className="flex items-center justify-between gap-2 py-3 px-4 rounded-xl border-2 border-orange-500/30 bg-orange-500/5 mb-2">
+                    <div className="flex items-center gap-2">
+                      <Flame className="w-5 h-5 text-orange-400" />
+                      <span className="text-sm font-black uppercase tracking-wider text-orange-400">Engine Ignition — Paid Amplification</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-muted-foreground">$9K total budget</span>
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="space-y-2 mb-2">
+                    {/* Authority Hack */}
+                    <div className="relative rounded-xl bg-card border border-border/40 p-3 md:p-4">
+                      <div className="flex items-stretch gap-3">
+                        <div className="flex flex-col items-center shrink-0">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black border-2 border-orange-500/30 bg-orange-500/10 text-orange-500">
+                            🔥1
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <Shield className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                            <h3 className="text-sm font-bold text-foreground">Authority-Hack</h3>
+                            <Badge className="text-[9px] bg-orange-500/10 text-orange-500 border-orange-500/20 px-1.5 py-0">$3,000</Badge>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground mb-2">
+                            1 Gratitude Influencer with <strong className="text-foreground">300K+ followers</strong>. Single collaboration creates instant credibility + organic reach spike.
+                          </p>
+                          <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1 bg-accent border border-primary/10 rounded-full px-2 py-0.5">
+                              <Zap className="w-3 h-3 text-orange-500" />
+                              <span className="text-[10px] font-medium text-accent-foreground">Authority positioning → trust shortcut</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-center py-0.5">
+                      <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
+                    </div>
+
+                    {/* Retargeting Ads */}
+                    <div className="relative rounded-xl bg-card border border-border/40 p-3 md:p-4">
+                      <div className="flex items-stretch gap-3">
+                        <div className="flex flex-col items-center shrink-0">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black border-2 border-orange-500/30 bg-orange-500/10 text-orange-500">
+                            🔥2
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <Radio className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                            <h3 className="text-sm font-bold text-foreground">Retargeting Ads</h3>
+                            <Badge className="text-[9px] bg-orange-500/10 text-orange-500 border-orange-500/20 px-1.5 py-0">$6,000</Badge>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground mb-2">
+                            Re-engage <strong className="text-foreground">warm visitors</strong> who saw clips but didn't convert. Meta + TikTok retargeting pixels on all funnel pages.
+                          </p>
+                          <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1 bg-accent border border-primary/10 rounded-full px-2 py-0.5">
+                              <Zap className="w-3 h-3 text-orange-500" />
+                              <span className="text-[10px] font-medium text-accent-foreground">2nd-touch conversion → 3-5x ROAS</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              <div className="flex justify-center py-1">
+                <div className="w-0.5 h-6 bg-gradient-to-b from-orange-500/30 to-emerald-500/30" />
               </div>
 
               {/* ── Pre-Funnel: Viral Lead Gen ── */}
