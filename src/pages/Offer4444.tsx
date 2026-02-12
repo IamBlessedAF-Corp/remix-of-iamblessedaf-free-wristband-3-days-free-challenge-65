@@ -187,6 +187,7 @@ const Offer4444 = () => {
         discount="77% to Artist"
         label="YES! Fund My Artist & Own the Art 🎨"
         trackingSource="offer_4444"
+        triggerSelector="[data-price-anchor]"
       />
     </div>
   );

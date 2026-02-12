@@ -39,7 +39,7 @@ const Grok4444CtaBlock = ({
       <div className="h-3" />
 
       {/* Price anchor */}
-      <div className="text-center mb-3">
+      <div className="text-center mb-3" data-price-anchor>
         <div className="flex items-center justify-center gap-3">
           <span className="text-sm text-muted-foreground line-through">$8,888</span>
           <span className="text-3xl font-black text-foreground">$4,444</span>

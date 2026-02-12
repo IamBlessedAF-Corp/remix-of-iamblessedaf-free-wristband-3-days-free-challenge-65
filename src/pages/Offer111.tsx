@@ -36,7 +36,6 @@ const Offer111 = () => {
   const [friendName, setFriendName] = useState(() => {
     const stored = localStorage.getItem("friendShirtName") || "";
     const name = stored || urlFriend;
-    // Persist URL param to localStorage for downstream use
     if (urlFriend && !stored) localStorage.setItem("friendShirtName", urlFriend);
     return name;
   });
@@ -67,6 +66,8 @@ const Offer111 = () => {
     return () => { window.removeEventListener("storage", check); clearInterval(interval); };
   }, [friendName]);
 
+  const hasFriendParam = Boolean(urlFriend);
+
   const handleCheckout = () => {
     startCheckout("pack-111");
   };
@@ -89,6 +90,27 @@ const Offer111 = () => {
                   🎉 Congratulations! You Won a FREE Custom Shirt! 🎁
                 </div>
               </motion.div>
+
+              {/* Friend waiting banner */}
+              {hasFriendParam && friendName && (
+                <motion.div
+                  className="mb-6 bg-primary/10 border border-primary/30 rounded-2xl p-4 text-center"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.15 }}
+                >
+                  <motion.p
+                    className="text-base md:text-lg font-bold text-primary"
+                    animate={{ scale: [1, 1.03, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    👕 {friendName} is waiting for their shirt!
+                  </motion.p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Personalize the message & send gratitude today
+                  </p>
+                </motion.div>
+              )}
 
               {/* Gratitude Intro Section */}
               <GratitudeIntro />

@@ -166,6 +166,7 @@ const Offer1111 = () => {
         discount="Save $2,220"
         label="YES! Become a Kingdom Ambassador 👑"
         trackingSource="offer_1111"
+        triggerSelector="[data-price-anchor]"
       />
     </div>
   );

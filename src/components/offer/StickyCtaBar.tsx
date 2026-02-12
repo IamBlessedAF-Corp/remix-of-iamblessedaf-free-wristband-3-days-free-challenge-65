@@ -10,6 +10,8 @@ interface StickyCtaBarProps {
   discount: string;
   label?: string;
   trackingSource?: string;
+  /** CSS selector for the element that must be scrolled past before showing the bar */
+  triggerSelector?: string;
 }
 
 const StickyCtaBar = ({
@@ -19,16 +21,30 @@ const StickyCtaBar = ({
   discount,
   label = "Add to My Order",
   trackingSource = "sticky_bar",
+  triggerSelector,
 }: StickyCtaBarProps) => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setVisible(window.scrollY > 400);
-    };
+    if (triggerSelector) {
+      // Use IntersectionObserver: show bar only after trigger element has been scrolled past
+      const el = document.querySelector(triggerSelector);
+      if (!el) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          // Show when the trigger element is above the viewport (scrolled past)
+          setVisible(!entry.isIntersecting && entry.boundingClientRect.top < 0);
+        },
+        { threshold: 0 }
+      );
+      observer.observe(el);
+      return () => observer.disconnect();
+    }
+    // Fallback: show after scrolling 600px
+    const handleScroll = () => setVisible(window.scrollY > 600);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [triggerSelector]);
 
   if (!visible) return null;
 
