@@ -32,8 +32,8 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
   };
 
   const ctaLabel = selected === "triple"
-    ? "YES! Upgrade to 3 Wristbands — $22"
-    : "Claim My FREE Wristband — $9.95 Shipping";
+    ? "YES! Upgrade to 3 Wristbands & Get FREE Shipping"
+    : "Claim My FREE Wristband";
 
   return (
     <>
@@ -105,19 +105,18 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Just For Me</p>
             <p className="text-lg font-bold text-foreground">1 Wristband</p>
             <p className="text-sm text-muted-foreground mt-1">FREE wristband</p>
-            <p className="text-xs text-primary font-semibold mt-1">$9.95 shipping only</p>
             <p className="text-xs text-muted-foreground mt-2">0 meals donated</p>
             {selected === "single" && (
               <div className="mt-2 text-xs font-bold text-foreground">✓ Selected</div>
             )}
           </button>
-          {/* Triple wristband */}
-          <button
-            onClick={() => setSelected("triple")}
-            className={`rounded-xl p-4 text-center relative transition-all cursor-pointer ${
-              selected === "triple"
-                ? "bg-card border-2 border-primary ring-2 ring-primary/20"
-                : "bg-card border border-border/50 hover:border-primary/50"
+           {/* Triple wristband */}
+           <button
+             onClick={() => setSelected("triple")}
+             className={`rounded-xl p-4 text-center relative transition-all cursor-pointer ${
+               selected === "triple"
+                 ? "bg-card border-2 border-primary ring-2 ring-primary/20"
+                 : "bg-card border border-border/50 hover:border-primary/50"
             }`}
           >
             <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
@@ -125,7 +124,6 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
             </div>
             <p className="text-xs text-primary uppercase tracking-wider mb-2 font-semibold">Pay It Forward</p>
             <p className="text-lg font-bold text-foreground">3 Wristbands</p>
-            <p className="text-sm text-primary font-bold mt-1">$22 total</p>
             <p className="text-xs text-primary font-semibold mt-1">FREE shipping 🚀</p>
             <p className="text-xs text-primary font-semibold mt-2">🍽 22 meals donated</p>
             {selected === "triple" && (
