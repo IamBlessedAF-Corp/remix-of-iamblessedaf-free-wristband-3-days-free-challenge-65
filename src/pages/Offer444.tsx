@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useExitIntent } from "@/hooks/useExitIntent";
 import { useNavigate } from "react-router-dom";
 import CrossFunnelShareNudge from "@/components/viral/CrossFunnelShareNudge";
 import { motion } from "framer-motion";
@@ -28,6 +29,13 @@ const Offer444 = () => {
   const [showDownsell, setShowDownsell] = useState(false);
   const navigate = useNavigate();
   const { startCheckout, loading } = useStripeCheckout();
+
+  // Exit-intent: trigger downsell when user tries to leave
+  useExitIntent(() => setShowDownsell(true), {
+    enabled: !showDownsell,
+    sessionKey: "offer-444",
+    delayMs: 8000,
+  });
 
   const handleCheckout = () => {
     startCheckout("pack-444");
