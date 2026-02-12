@@ -1,13 +1,26 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Brain, Heart, Users, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
+import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
+import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/logo.png";
 import wristbandImg from "@/assets/wristband-gift.avif";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [showAuth, setShowAuth] = useState(false);
+
+  const handleClaim = () => {
+    if (user) {
+      navigate("/challenge");
+    } else {
+      setShowAuth(true);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -139,7 +152,7 @@ const Index = () => {
             transition={{ delay: 0.6 }}
           >
             <Button
-              onClick={() => navigate("/")}
+              onClick={handleClaim}
               className="w-full h-14 text-base md:text-lg font-bold btn-glow px-4"
             >
               <Sparkles className="w-5 h-5 mr-2 flex-shrink-0" />
@@ -153,6 +166,14 @@ const Index = () => {
           </motion.div>
         </motion.div>
       </div>
+      <CreatorSignupModal
+        isOpen={showAuth}
+        onClose={() => setShowAuth(false)}
+        onSuccess={() => {
+          setShowAuth(false);
+          navigate("/challenge");
+        }}
+      />
     </div>
   );
 };
