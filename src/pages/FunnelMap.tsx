@@ -139,8 +139,49 @@ export default function FunnelMap() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* ═══ SECTION 1: Executive Summary KPIs ═══ */}
+        {/* ═══ EXECUTIVE SUMMARY: Neuro-Hackers Movement ═══ */}
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+          <Card className="border-primary/20 bg-gradient-to-br from-primary/[0.03] via-card to-card overflow-hidden">
+            <CardContent className="p-5 md:p-7">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Brain className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-base md:text-lg font-black text-foreground leading-tight">
+                    The Neuro-Hackers Movement
+                  </h2>
+                  <p className="text-xs text-primary font-bold mt-0.5">You're 3 minutes away per day to feel up to 27x happier</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                <strong className="text-foreground">IamBlessedAF</strong> is building a <strong className="text-foreground">pay-it-forward gratitude movement</strong> backed by 
+                the top neuroscience PhDs and personal development experts in the world — to help people feel up to{" "}
+                <strong className="text-primary">27x happier</strong> (Dr. David Hawkins PhD research). 
+                We install the most advanced neuro-hack triggers designed to spark random gratitude conversations 
+                in elevators and coffee shops. Backed by <strong className="text-foreground">Harvard's longest-running study</strong> (The Grant Study, 84+ years), 
+                we scale the quality of your personal relationships — including the one with yourself.
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {[
+                  { label: "Hawkins Scale", value: "27x", sub: "Happiness multiplier" },
+                  { label: "Daily Habit", value: "3 min", sub: "Neuro-rewiring trigger" },
+                  { label: "Harvard Study", value: "84 yrs", sub: "Longest research ever" },
+                  { label: "Viral K-Factor", value: "K=3.0", sub: "Built-in friend loop" },
+                ].map((m, i) => (
+                  <div key={i} className="bg-background border border-border/40 rounded-lg p-3 text-center">
+                    <p className="text-lg font-black text-primary">{m.value}</p>
+                    <p className="text-[10px] font-bold text-foreground uppercase tracking-wider">{m.label}</p>
+                    <p className="text-[9px] text-muted-foreground">{m.sub}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.section>
+
+        {/* ═══ SECTION 1: Executive Summary KPIs ═══ */}
+        <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
               { label: "Total Clips", value: base.totalClips.toLocaleString(), icon: Video, sub: `${clippers} clippers × ${videosPerClipper} vids` },
