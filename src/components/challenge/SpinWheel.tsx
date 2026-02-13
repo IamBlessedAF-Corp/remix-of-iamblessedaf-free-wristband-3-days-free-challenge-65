@@ -14,6 +14,10 @@ interface SpinWheelProps {
   rotation: number;
   onSpin: () => void;
   onClose: () => void;
+  spinsRemaining?: number;
+  spinCount?: number;
+  maxSpins?: number;
+  allSpinsUsed?: boolean;
 }
 
 const WHEEL_SIZE = 300;
@@ -147,6 +151,10 @@ export default function SpinWheel({
   rotation,
   onSpin,
   onClose,
+  spinsRemaining = 0,
+  spinCount = 0,
+  maxSpins = 1,
+  allSpinsUsed = false,
 }: SpinWheelProps) {
   const navigate = useNavigate();
   const confettiFired = useRef(false);
@@ -185,6 +193,11 @@ export default function SpinWheel({
   }, [hasWon]);
 
   const handleClaim = () => {
+    if (!allSpinsUsed) {
+      // Still have spins left — spin again
+      onSpin();
+      return;
+    }
     navigate("/?source=wheel_win");
   };
 
@@ -225,22 +238,24 @@ export default function SpinWheel({
               </button>
             )}
 
-            {!hasWon ? (
-              <>
-                {/* Pre-spin state */}
-                <motion.div
-                  className="text-center mb-4"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <h2 className="text-xl font-bold text-foreground mb-1">
-                    🎰 Spin to Win!
-                  </h2>
-                  <p className="text-sm text-muted-foreground">
-                    Try your luck — everyone wins something!
-                  </p>
-                </motion.div>
+                {!hasWon ? (
+                <>
+                  {/* Pre-spin state */}
+                  <motion.div
+                    className="text-center mb-4"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <h2 className="text-xl font-bold text-foreground mb-1">
+                      🎰 Spin to Win!
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      {maxSpins > 1
+                        ? `Spin ${spinCount + 1} of ${maxSpins} — everyone wins something!`
+                        : "Try your luck — everyone wins something!"}
+                    </p>
+                  </motion.div>
 
                 {/* Wheel */}
                 <motion.div
@@ -311,16 +326,24 @@ export default function SpinWheel({
                     className="w-full h-14 text-lg font-bold btn-glow animate-pulse-glow"
                     size="lg"
                   >
-                    Claim My FREE Wristband
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    {!allSpinsUsed ? (
+                      <>🎰 Spin Again! ({spinsRemaining} left)</>
+                    ) : (
+                      <>
+                        Claim My FREE Wristband
+                        <ArrowRight className="w-5 h-5 ml-2" />
+                      </>
+                    )}
                   </Button>
 
-                  <button
-                    onClick={onClose}
-                    className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    No thanks, I'll skip this
-                  </button>
+                  {allSpinsUsed && (
+                    <button
+                      onClick={onClose}
+                      className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      No thanks, I'll skip this
+                    </button>
+                  )}
                 </motion.div>
               </>
             )}

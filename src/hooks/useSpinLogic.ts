@@ -25,12 +25,14 @@ const WINNING_INDEX = 0;
 const SEGMENT_ANGLE = 360 / SEGMENTS.length;
 const EXTRA_SPINS = 6; // Full rotations before landing
 
-export function useSpinLogic() {
+export function useSpinLogic(totalSpins: number = 1) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [hasWon, setHasWon] = useState(false);
   const [showWheel, setShowWheel] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [alreadyClaimed, setAlreadyClaimed] = useState(false);
+  const [spinCount, setSpinCount] = useState(0);
+  const maxSpins = Math.max(1, totalSpins);
 
   // Check localStorage on mount
   useEffect(() => {
@@ -46,35 +48,41 @@ export function useSpinLogic() {
 
     const timer = setTimeout(() => {
       setShowWheel(true);
-    }, 4000); // Show after 4 seconds
+    }, 4000);
 
     return () => clearTimeout(timer);
   }, [alreadyClaimed]);
 
   const spin = useCallback(() => {
-    if (isSpinning || hasWon) return;
+    if (isSpinning || (hasWon && spinCount >= maxSpins)) return;
+
+    // Reset hasWon for the next spin
+    if (hasWon) setHasWon(false);
 
     setIsSpinning(true);
 
-    // Calculate target rotation:
-    // We want the pointer (at top) to point at WINNING_INDEX
-    // Each segment spans SEGMENT_ANGLE degrees
-    // The center of segment 0 is at 0 degrees
-    // To land on segment 0, the wheel needs to rotate so segment 0 is at the top
     const targetAngle = 360 - (WINNING_INDEX * SEGMENT_ANGLE + SEGMENT_ANGLE / 2);
-    // Add a small random offset within the winning segment for realism
     const jitter = (Math.random() - 0.5) * (SEGMENT_ANGLE * 0.6);
-    const totalRotation = EXTRA_SPINS * 360 + targetAngle + jitter;
+    // Use cumulative rotation so the wheel keeps spinning forward
+    const baseRotation = (spinCount + 1) * EXTRA_SPINS * 360;
+    const totalRotation = baseRotation + targetAngle + jitter;
 
     setRotation(totalRotation);
 
-    // After animation completes, mark as won
+    const nextCount = spinCount + 1;
+
     setTimeout(() => {
       setIsSpinning(false);
       setHasWon(true);
-      localStorage.setItem(STORAGE_KEY, "true");
-    }, 4500); // Match the CSS transition duration
-  }, [isSpinning, hasWon]);
+      setSpinCount(nextCount);
+      if (nextCount >= maxSpins) {
+        localStorage.setItem(STORAGE_KEY, "true");
+      }
+    }, 4500);
+  }, [isSpinning, hasWon, spinCount, maxSpins]);
+
+  const allSpinsUsed = spinCount >= maxSpins && hasWon;
+  const spinsRemaining = Math.max(0, maxSpins - spinCount);
 
   const openWheel = useCallback(() => {
     if (!alreadyClaimed) {
@@ -95,6 +103,10 @@ export function useSpinLogic() {
     showWheel,
     rotation,
     alreadyClaimed,
+    allSpinsUsed,
+    spinsRemaining,
+    spinCount,
+    maxSpins,
     spin,
     openWheel,
     closeWheel,
