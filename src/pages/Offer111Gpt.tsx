@@ -92,8 +92,7 @@ const Offer111Gpt = () => {
           {/* ─── 3. Value Stack: Emotion-First ─── */}
           <GptValueStack />
 
-          {/* ─── Shopify-style Cart ─── */}
-          <ShopifyStyleCart friendName={friendName} />
+          {/* Cart moved below 3rd CTA for consistency */}
 
           {/* ─── 4. CTA #1 (warm scarcity) ─── */}
           <GptCtaBlock
@@ -203,6 +202,12 @@ const Offer111Gpt = () => {
 
           {/* ─── 13. CTA #4 (final) ─── */}
           <GptCtaBlock onCheckout={handleCheckout} delay={0.85} loading={loading} />
+
+          {/* ─── Shopify-style Cart — after 3rd CTA ─── */}
+          <ShopifyStyleCart friendName={friendName} />
+
+          {/* ─── 4th CTA after cart breakdown ─── */}
+          <GptCtaBlock onCheckout={handleCheckout} delay={0.9} loading={loading} />
 
           {/* ─── 14. Decline link ─── */}
           <motion.div

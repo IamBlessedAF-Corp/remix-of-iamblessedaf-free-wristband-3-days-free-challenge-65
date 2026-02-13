@@ -84,8 +84,7 @@ const Offer111Grok = () => {
           {/* ─── 3. Value Stack: Benefits-First Bullets ─── */}
           <GrokValueStack />
 
-          {/* ─── Shopify-style Cart ─── */}
-          <ShopifyStyleCart friendName={friendName} />
+          {/* Cart moved below 3rd CTA for consistency */}
 
           {/* ─── 4. CTA #1 (with scarcity) ─── */}
           <GrokCtaBlock
@@ -193,6 +192,12 @@ const Offer111Grok = () => {
 
           {/* ─── 13. CTA #4 (final) ─── */}
           <GrokCtaBlock onCheckout={handleCheckout} delay={0.85} loading={loading} />
+
+          {/* ─── Shopify-style Cart — after 3rd CTA ─── */}
+          <ShopifyStyleCart friendName={friendName} />
+
+          {/* ─── 4th CTA after cart breakdown ─── */}
+          <GrokCtaBlock onCheckout={handleCheckout} delay={0.9} loading={loading} />
 
           {/* ─── 14. Viral Footer + Skip ─── */}
           <GrokViralFooter
