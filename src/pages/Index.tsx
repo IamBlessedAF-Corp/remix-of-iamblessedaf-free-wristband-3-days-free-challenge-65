@@ -76,7 +76,7 @@ const Index = () => {
               transition={{ duration: 3, repeat: Infinity, repeatDelay: 4 }}
             />
             <div>
-              <p className="text-sm font-bold text-foreground">🎁 Your FREE Neuro-Hack Wristband</p>
+              <p className="text-sm font-bold text-foreground">🎁 Your FREE Neuro-Hacker Wristband</p>
               <p className="text-xs text-muted-foreground mt-1">
                 A visual gratitude trigger on your wrist. Every time you see it, your brain fires
                 the same neural pathways as feeling deeply grateful — <span className="text-primary font-semibold">without thinking about it.</span>
@@ -160,7 +160,7 @@ const Index = () => {
               className="w-full h-14 text-base md:text-lg font-bold btn-glow px-4"
             >
               <Sparkles className="w-5 h-5 mr-2 flex-shrink-0" />
-              Claim My FREE Wristband & Join
+              Claim My FREE Neuro-Hacker Wristband & Join
               <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
             </Button>
 

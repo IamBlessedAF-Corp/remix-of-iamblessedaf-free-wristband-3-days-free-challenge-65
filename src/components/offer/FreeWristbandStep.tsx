@@ -38,7 +38,7 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
       >
         <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
           <Gift className="w-4 h-4" />
-          {senderName ? `${senderName} blessed you with a FREE Wristband 🎁` : "Someone blessed you with a FREE Wristband 🎁"}
+          {senderName ? `${senderName} blessed you with a FREE Neuro-Hacker Wristband 🎁` : "Someone blessed you with a FREE Neuro-Hacker Wristband 🎁"}
         </div>
       </motion.div>
 
@@ -68,7 +68,7 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
         <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
           From now on, every time you look at your wrist, your brain will release{" "}
           <span className="font-bold text-foreground">happiness chemicals</span>.
-          This FREE wristband is your daily gratitude trigger — backed by neuroscience.
+          This FREE Neuro-Hacker Wristband is your daily gratitude trigger — backed by neuroscience.
           Wear it. Feel it. Change.
         </p>
       </motion.div>
@@ -88,7 +88,7 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
             >
               <img
                 src={productWristbands}
-                alt="Blessed Wristband — FREE gift"
+                alt="Neuro-Hacker Wristband — FREE gift"
                 className="max-w-full max-h-full object-contain"
                 loading="lazy"
               />
@@ -102,7 +102,7 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
           <div className="px-4 pb-5 pt-4 space-y-3 border-t border-border/30">
             <div>
               <h3 className="text-lg md:text-xl font-semibold text-foreground tracking-tight leading-snug">
-                1 Blessed Wristband
+                1 Neuro-Hacker Wristband
               </h3>
               <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">
                 Waterproof Nylon · One-Size-Fits-All · Debossed
@@ -138,7 +138,7 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
           className="w-full h-16 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl px-4"
         >
           <Gift className="w-5 h-5 mr-2 flex-shrink-0" />
-          <span>Claim My FREE Wristband</span>
+          <span>Claim My FREE Neuro-Hacker Wristband</span>
           <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
         </Button>
         <RiskReversalGuarantee />

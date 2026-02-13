@@ -7,7 +7,7 @@ const RiskReversalGuarantee = () => (
       Not Feeling Grateful Today?
     </div>
     <p className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto">
-      Only in America, 14 million children are facing hunger. Claiming this FREE Wristband feeds 11 of them — in honor of Andrew Huberman's discoveries in the Neuroscience of Gratitude — through Tony Robbins' "1 Billion Meals Challenge". 🙏
+      Only in America, 14 million children are facing hunger. Claiming this FREE Neuro-Hacker Wristband feeds 11 of them — in honor of Andrew Huberman's discoveries in the Neuroscience of Gratitude — through Tony Robbins' "1 Billion Meals Challenge". 🙏
     </p>
   </div>
 );
