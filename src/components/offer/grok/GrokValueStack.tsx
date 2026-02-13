@@ -31,7 +31,7 @@ const VALUES = [
   {
     emoji: "📊",
     title: "Micro-Dose Trigger Array",
-    benefit: "3 wristbands = 50+ micro-gratitude activations/day at $0.02/trigger",
+    benefit: "3 Neuro-Hacker Wristbands = 50+ micro-gratitude activations/day at $0.02/trigger",
     description:
       "Glance → micro-gratitude → cortisol drop → repeat. 50×/day × 365 days = 18,250 neural activations/year. Cost per activation: $0.02. Best ROI in behavioral neuroscience.",
     value: "$33",

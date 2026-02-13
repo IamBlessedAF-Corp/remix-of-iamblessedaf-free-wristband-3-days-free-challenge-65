@@ -32,8 +32,8 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
   };
 
   const ctaLabel = selected === "triple"
-    ? "YES! Upgrade to 3 Wristbands & Get FREE Shipping"
-    : "Claim My FREE Wristband";
+    ? "YES! Upgrade to 3 Neuro-Hacker Wristbands & Get FREE Shipping"
+    : "Claim My FREE Neuro-Hacker Wristband";
 
   return (
     <>
@@ -62,14 +62,14 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
           <span className="text-primary">27× Happier?</span>
         </h2>
         <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-2 leading-relaxed">
-          Keep one wristband and <span className="font-bold text-foreground">gift 1–2 to your best friends</span>.
+          Keep one Neuro-Hacker Wristband and <span className="font-bold text-foreground">gift 1–2 to your best friends</span>.
           Then watch what happens when you meet. When they wear it, they think of you.
           When they feel grateful,{" "}
           <span className="font-bold text-foreground">YOUR brain rewards you too</span>{" "}
           — that's the 27× serotonin boost Huberman found.
         </p>
         <p className="text-xs text-muted-foreground max-w-md mx-auto mt-3 italic">
-          💔 Don't let the people who matter most wonder if you care. One wristband can reopen a conversation,
+          💔 Don't let the people who matter most wonder if you care. One Neuro-Hacker Wristband can reopen a conversation,
           heal a distance, and start a gratitude loop that changes both of you.
         </p>
         <div className="inline-flex items-center gap-2 bg-accent/50 text-foreground px-4 py-2 rounded-full text-sm font-semibold mt-2">
@@ -102,8 +102,8 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
             }`}
           >
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Just For Me</p>
-            <p className="text-lg font-bold text-foreground">1 Wristband</p>
-            <p className="text-sm text-muted-foreground mt-1">FREE wristband</p>
+            <p className="text-lg font-bold text-foreground">1 Neuro-Hacker Wristband</p>
+            <p className="text-sm text-muted-foreground mt-1">FREE Neuro-Hacker Wristband</p>
             <p className="text-xs text-muted-foreground mt-2">0 meals donated</p>
             {selected === "single" && (
               <div className="mt-2 text-xs font-bold text-foreground">✓ Selected</div>
@@ -122,7 +122,7 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
               Best Value
             </div>
             <p className="text-xs text-primary uppercase tracking-wider mb-2 font-semibold">Pay It Forward</p>
-            <p className="text-lg font-bold text-foreground">3 Wristbands</p>
+            <p className="text-lg font-bold text-foreground">3 Neuro-Hacker Wristbands</p>
             <p className="text-xs text-primary font-semibold mt-1">FREE shipping 🚀</p>
             <p className="text-xs text-primary font-semibold mt-2">🍽 22 meals donated</p>
             {selected === "triple" && (
@@ -137,7 +137,7 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
         YOUR DAILY HAPPINESS TRIGGER
       </p>
       <p className="text-center text-sm text-muted-foreground max-w-md mx-auto mb-4">
-        3 waterproof nylon wristbands. Every time you glance at your wrist, your brain fires a gratitude micro-moment.{" "}
+        3 waterproof nylon Neuro-Hacker Wristbands. Every time you glance at your wrist, your brain fires a gratitude micro-moment.{" "}
         <span className="font-bold text-foreground">That's happiness for $0.02/day.</span>
       </p>
 
@@ -298,7 +298,7 @@ const UpsellWristbandStep = ({ onCheckout, onSingleCheckout, onSkip, loading = f
           No thanks, I'll keep just mine →
         </button>
         <p className="text-[11px] text-muted-foreground/60 mt-2 max-w-xs mx-auto">
-          You'll still get your FREE wristband. But your 2 friends won't know you thought of them today.
+          You'll still get your FREE Neuro-Hacker Wristband. But your 2 friends won't know you thought of them today.
         </p>
       </motion.div>
     </>

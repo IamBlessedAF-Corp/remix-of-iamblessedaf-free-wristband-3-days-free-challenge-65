@@ -33,7 +33,7 @@ const DiscountBanner = () => {
       {/* Value proposition + price */}
       <div className="flex items-center justify-center gap-4">
         <p className="text-lg md:text-xl font-bold text-foreground leading-tight text-left">
-          Buy 1 Shirt & Get this
+          Get Best Friend's Custom Shirt + 3 Neuro-Hacker Wristbands
           <br />
           Pack for <span className="text-primary">FREE</span>
         </p>

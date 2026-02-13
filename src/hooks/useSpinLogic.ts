@@ -10,14 +10,14 @@ export interface SpinSegment {
 }
 
 export const SEGMENTS: SpinSegment[] = [
-  { label: "FREE Wristband", shortLabel: "Wristband", emoji: "🎁", color: "hsl(0, 100%, 50%)" },
+  { label: "FREE Neuro-Hacker Wristband", shortLabel: "Wristband", emoji: "🎁", color: "hsl(0, 100%, 50%)" },
   { label: "10 Blessed Coins", shortLabel: "10 BC", emoji: "🪙", color: "hsl(45, 90%, 50%)" },
   { label: "5 Hearts", shortLabel: "5 Hearts", emoji: "💚", color: "hsl(140, 70%, 45%)" },
   { label: "Mystery Box", shortLabel: "Mystery", emoji: "📦", color: "hsl(270, 70%, 55%)" },
-  { label: "FREE Wristband", shortLabel: "Wristband", emoji: "🎁", color: "hsl(0, 85%, 55%)" },
+  { label: "FREE Neuro-Hacker Wristband", shortLabel: "Wristband", emoji: "🎁", color: "hsl(0, 85%, 55%)" },
   { label: "20 Blessed Coins", shortLabel: "20 BC", emoji: "🪙", color: "hsl(50, 85%, 50%)" },
   { label: "Free Shipping", shortLabel: "Shipping", emoji: "🚀", color: "hsl(200, 80%, 50%)" },
-  { label: "FREE Wristband", shortLabel: "Wristband", emoji: "🎁", color: "hsl(350, 90%, 50%)" },
+  { label: "FREE Neuro-Hacker Wristband", shortLabel: "Wristband", emoji: "🎁", color: "hsl(350, 90%, 50%)" },
 ];
 
 // Always land on index 0 → "FREE Wristband"

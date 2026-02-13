@@ -28,7 +28,7 @@ const VALUES = [
   {
     emoji: "📿",
     title: "Tiny Reminders, Big Shifts",
-    benefit: "3 wristbands that whisper \"you're blessed\" 50+ times a day",
+    benefit: "3 Neuro-Hacker Wristbands that whisper \"you're blessed\" 50+ times a day",
     description:
       "Glance at your wrist during a stressful meeting, a tough commute, a lonely moment — and remember: you are blessed. Give the extras to people who need that reminder too.",
     sub: "Waterproof nylon · IamBlessedAF debossed",

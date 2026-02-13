@@ -11,21 +11,21 @@ const SHARE_TEXTS = [
     emoji: "💙",
     relation: "best friend",
     text: (url: string) =>
-      `Hey! Someone who cares about you just sent you a FREE 'I Am Blessed AF' Wristband (valued at $11) 🎁 They're grateful for YOU. Claim yours here → ${url} — just cover shipping! 💙 #IamBlessedAF`,
+      `Hey! Someone who cares about you just sent you a FREE 'I Am Blessed AF' Neuro-Hacker Wristband (valued at $11) 🎁 They're grateful for YOU. Claim yours here → ${url} 💙 #IamBlessedAF`,
   },
   {
     label: "Family",
     emoji: "❤️",
     relation: "parent or sibling",
     text: (url: string) =>
-      `Someone who loves you just sent you a FREE 'I Am Blessed AF' Wristband (valued at $11) as a gratitude gift ❤️ They wanted you to know you're appreciated. Claim it here → ${url} — just cover shipping!`,
+      `Someone who loves you just sent you a FREE 'I Am Blessed AF' Neuro-Hacker Wristband (valued at $11) as a gratitude gift ❤️ They wanted you to know you're appreciated. Claim it here → ${url}`,
   },
   {
     label: "Mentor",
     emoji: "🙏",
     relation: "mentor or partner",
     text: (url: string) =>
-      `You just received a FREE 'I Am Blessed AF' Wristband (valued at $11) from someone who's genuinely grateful for your impact 🙏 Claim yours → ${url} — just cover shipping. You deserve this.`,
+      `You just received a FREE 'I Am Blessed AF' Neuro-Hacker Wristband (valued at $11) from someone who's genuinely grateful for your impact 🙏 Claim yours → ${url}. You deserve this.`,
   },
 ];
 
@@ -82,11 +82,11 @@ const GptViralShare = ({ referralLink }: GptViralShareProps) => {
       {/* Header */}
       <div className="text-center mb-6">
         <p className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-          🎁 Gift a FREE Wristband!
+          🎁 Gift a FREE Neuro-Hacker Wristband!
         </p>
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Someone you love gets a <span className="font-bold text-primary">FREE wristband (valued at $11)</span> — 
-          they just cover <span className="font-bold text-foreground">shipping</span>. Spread the gratitude! 🙏
+          Someone you love gets a <span className="font-bold text-primary">FREE Neuro-Hacker Wristband (valued at $11)</span> — 
+          Spread the gratitude! 🙏
         </p>
       </div>
 
@@ -164,10 +164,10 @@ const GptViralShare = ({ referralLink }: GptViralShareProps) => {
       <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 text-center">
         <Heart className="w-5 h-5 text-primary mx-auto mb-2" />
         <p className="text-sm font-bold text-foreground mb-1">
-          🎁 Share the Blessing — Gift a FREE Wristband
+          🎁 Share the Blessing — Gift a FREE Neuro-Hacker Wristband
         </p>
         <p className="text-xs text-muted-foreground mb-3">
-          Your friends get a FREE wristband valued at $11 — just cover shipping. Spread the gratitude!
+          Your friends get a FREE Neuro-Hacker Wristband valued at $11. Spread the gratitude!
         </p>
         <Button
           variant="outline"

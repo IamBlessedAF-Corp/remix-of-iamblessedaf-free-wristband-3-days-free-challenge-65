@@ -53,7 +53,7 @@ const GratitudeEngineLoop = ({ delay = 0.4, className = "" }: GratitudeEngineLoo
       {/* Bridge copy */}
       <div className="space-y-3 max-w-sm mx-auto">
         <h3 className="text-lg md:text-xl font-extrabold leading-tight text-foreground">
-          Receiving & Giving a FREE "I am Blessed" Wristband is the Practical Implementation of{" "}
+          Receiving & Giving a FREE "I am Blessed" Neuro-Hacker Wristband is the Practical Implementation of{" "}
           <span className="text-primary">The Biggest Andrew Huberman Discovery</span>{" "}
           in the Last 18 Months for Overall Well-Being.
         </h3>

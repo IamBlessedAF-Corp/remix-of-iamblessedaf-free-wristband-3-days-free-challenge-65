@@ -62,7 +62,7 @@ const GptCtaBlock = ({
         className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none"
       >
         {loading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Heart className="w-5 h-5 mr-2" />}
-        {loading ? "Creating checkout…" : hidePricing ? "🎁 Claim My FREE Custom Shirt Now!" : "YES! Send Love to My Best Friend 💌"}
+        {loading ? "Creating checkout…" : hidePricing ? "🎁 Claim My FREE Custom Shirt Now!" : "YES! Claim My FREE Custom Shirt NOW! 💌"}
         {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
       </Button>
 

@@ -29,7 +29,7 @@ const WristbandProductCard = ({ delay = 0 }: { delay?: number }) => {
             >
               <img
                 src={productWristbands}
-                alt="3 Trigger Reminders Wristbands"
+                alt="3 Neuro-Hacker Wristbands"
                 className="max-w-full max-h-full object-contain"
                 loading="lazy"
               />
@@ -39,7 +39,7 @@ const WristbandProductCard = ({ delay = 0 }: { delay?: number }) => {
           <div className="px-4 pb-5 pt-4 space-y-3 border-t border-border/30">
             <div>
               <h3 className="text-lg md:text-xl font-semibold text-foreground tracking-tight leading-snug">
-                3 Trigger Reminders Wristbands
+                3 Neuro-Hacker Wristbands
               </h3>
               <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">
                 Waterproof Nylon · One-Size-Fits-All · Debossed
