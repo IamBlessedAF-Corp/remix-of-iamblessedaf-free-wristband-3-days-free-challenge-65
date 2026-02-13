@@ -92,16 +92,11 @@ const OfferSuccess = () => {
 
   const proceedAfterMystery = () => {
     const nextUrl = tier ? NEXT_UPSELL[tier] : undefined;
-    pendingNextUrl.current = nextUrl;
-
-    if (referralUrl) {
-      setShowSharePrompt(true);
+    // Skip share prompt — keep users in funnel
+    if (nextUrl) {
+      navigate(nextUrl);
     } else {
-      if (nextUrl) {
-        navigate(nextUrl);
-      } else {
-        navigate("/portal");
-      }
+      navigate("/portal");
     }
   };
 
@@ -163,13 +158,7 @@ const OfferSuccess = () => {
           onClose={handleSpinWheelClose}
         />
       )}
-      {showSharePrompt && (
-        <PostPurchaseSharePrompt
-          referralUrl={referralUrl}
-          tierName={tier ? TIER_LABELS[tier] || tier : "purchase"}
-          onDismiss={handleShareDismiss}
-        />
-      )}
+      {/* Share prompt removed — keep users in funnel */}
       <AchievementUnlockToast achievement={newlyUnlocked} onDismiss={dismissNewlyUnlocked} />
     </div>
   );

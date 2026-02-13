@@ -38,6 +38,7 @@ const Offer111 = () => {
   const { newlyUnlocked, dismissNewlyUnlocked } = useAchievements();
 
   // Exit-intent: trigger downsell + show urgency banners when user tries to leave
+  // Show banners on exit intent OR after 3 minutes
   useExitIntent(() => {
     setShowDownsell(true);
     setShowExitBanners(true);
@@ -46,6 +47,14 @@ const Offer111 = () => {
     sessionKey: "offer-111",
     delayMs: 8000,
   });
+
+  // Also trigger banners after 3 minutes on page
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowExitBanners(true);
+    }, 180_000); // 3 minutes
+    return () => clearTimeout(timer);
+  }, []);
   const urlFriend = searchParams.get("friend") || "";
   const [friendName, setFriendName] = useState(() => {
     const stored = localStorage.getItem("friendShirtName") || "";
