@@ -162,8 +162,7 @@ const Offer111 = () => {
                 </p>
               </motion.div>
 
-              {/* Shopify-style Cart — revealed before any CTA */}
-              <ShopifyStyleCart friendName={friendName} />
+              {/* Cart moved below 3rd CTA */}
 
               {/* CTA before products */}
               <motion.div className="mb-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
@@ -293,6 +292,9 @@ const Offer111 = () => {
                 <p className="text-center text-xs text-muted-foreground mt-1">Instant Gratitude Access + Shipping within 24hrs</p>
                 <RiskReversalGuarantee />
               </motion.div>
+
+              {/* Shopify-style Cart — after 3rd CTA */}
+              <ShopifyStyleCart friendName={friendName} />
 
               {/* Live Impact Counter */}
               <ImpactCounter />

@@ -46,8 +46,9 @@ const OfferSuccess = () => {
   const [referralUrl, setReferralUrl] = useState("");
   const pendingNextUrl = useRef<string | undefined>(undefined);
   const [showSpinWheel, setShowSpinWheel] = useState(false);
-  const spinLogic = useSpinLogic();
   const isWristband22 = tier === "wristband-22";
+  const spinLogic = useSpinLogic(isWristband22 ? 2 : 1);
+
 
   // Fetch user's referral URL
   useEffect(() => {
@@ -81,7 +82,6 @@ const OfferSuccess = () => {
   const handleMysteryClose = () => {
     setShowMystery(false);
 
-    // For wristband-22, show spin wheel before proceeding
     if (isWristband22 && !spinLogic.alreadyClaimed) {
       setShowSpinWheel(true);
       return;
@@ -101,8 +101,11 @@ const OfferSuccess = () => {
   };
 
   const handleSpinWheelClose = () => {
-    setShowSpinWheel(false);
-    proceedAfterMystery();
+    // Only close if all spins used
+    if (spinLogic.allSpinsUsed) {
+      setShowSpinWheel(false);
+      proceedAfterMystery();
+    }
   };
 
   const handleShareDismiss = () => {
@@ -156,6 +159,10 @@ const OfferSuccess = () => {
           rotation={spinLogic.rotation}
           onSpin={spinLogic.spin}
           onClose={handleSpinWheelClose}
+          spinsRemaining={spinLogic.spinsRemaining}
+          spinCount={spinLogic.spinCount}
+          maxSpins={spinLogic.maxSpins}
+          allSpinsUsed={spinLogic.allSpinsUsed}
         />
       )}
       {/* Share prompt removed — keep users in funnel */}
