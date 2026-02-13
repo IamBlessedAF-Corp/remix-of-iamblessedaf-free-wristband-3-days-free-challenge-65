@@ -8,6 +8,8 @@ import AchievementUnlockToast from "@/components/gamification/AchievementUnlockT
 import { useAchievements } from "@/hooks/useAchievements";
 import PostPurchaseSharePrompt from "@/components/viral/PostPurchaseSharePrompt";
 import { supabase } from "@/integrations/supabase/client";
+import SpinWheel from "@/components/challenge/SpinWheel";
+import { useSpinLogic } from "@/hooks/useSpinLogic";
 
 const VALID_TIERS = Object.keys(TIER_REWARDS) as OfferTier[];
 
@@ -43,6 +45,9 @@ const OfferSuccess = () => {
   const [showPortal, setShowPortal] = useState(false);
   const [referralUrl, setReferralUrl] = useState("");
   const pendingNextUrl = useRef<string | undefined>(undefined);
+  const [showSpinWheel, setShowSpinWheel] = useState(false);
+  const spinLogic = useSpinLogic();
+  const isWristband22 = tier === "wristband-22";
 
   // Fetch user's referral URL
   useEffect(() => {
@@ -75,20 +80,34 @@ const OfferSuccess = () => {
 
   const handleMysteryClose = () => {
     setShowMystery(false);
+
+    // For wristband-22, show spin wheel before proceeding
+    if (isWristband22 && !spinLogic.alreadyClaimed) {
+      setShowSpinWheel(true);
+      return;
+    }
+
+    proceedAfterMystery();
+  };
+
+  const proceedAfterMystery = () => {
     const nextUrl = tier ? NEXT_UPSELL[tier] : undefined;
     pendingNextUrl.current = nextUrl;
 
-    // Show share prompt if user has a referral URL
     if (referralUrl) {
       setShowSharePrompt(true);
     } else {
-      // No referral URL → proceed immediately
       if (nextUrl) {
         navigate(nextUrl);
       } else {
         navigate("/portal");
       }
     }
+  };
+
+  const handleSpinWheelClose = () => {
+    setShowSpinWheel(false);
+    proceedAfterMystery();
   };
 
   const handleShareDismiss = () => {
@@ -123,9 +142,27 @@ const OfferSuccess = () => {
           <div className="text-6xl animate-bounce">🎉</div>
           <h1 className="text-3xl font-bold text-foreground">Payment Confirmed!</h1>
           <p className="text-muted-foreground">Your order is being processed. Open your mystery reward!</p>
+          {isWristband22 && (
+            <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 mt-4">
+              <p className="text-sm font-semibold text-primary">
+                🎰 Because you gave Neuro-Hacker Wristbands to 2 of your friends, you earned a bonus spin!
+              </p>
+            </div>
+          )}
         </div>
       </div>
       <MysteryBox show={showMystery} onClose={handleMysteryClose} />
+      {showSpinWheel && (
+        <SpinWheel
+          segments={spinLogic.segments}
+          isSpinning={spinLogic.isSpinning}
+          hasWon={spinLogic.hasWon}
+          showWheel={showSpinWheel}
+          rotation={spinLogic.rotation}
+          onSpin={spinLogic.spin}
+          onClose={handleSpinWheelClose}
+        />
+      )}
       {showSharePrompt && (
         <PostPurchaseSharePrompt
           referralUrl={referralUrl}
