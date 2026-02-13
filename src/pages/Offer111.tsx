@@ -25,18 +25,23 @@ import CrossFunnelShareNudge from "@/components/viral/CrossFunnelShareNudge";
 import AchievementUnlockToast from "@/components/gamification/AchievementUnlockToast";
 import { useAchievements } from "@/hooks/useAchievements";
 import DownsellModal from "@/components/offer/DownsellModal";
+import ShopifyStyleCart from "@/components/offer/ShopifyStyleCart";
 import { supabase } from "@/integrations/supabase/client";
 
 const Offer111 = () => {
   const [showDownsell, setShowDownsell] = useState(false);
+  const [showExitBanners, setShowExitBanners] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { startCheckout, loading } = useStripeCheckout();
   const { track } = useExitIntentTracking("offer-111");
   const { newlyUnlocked, dismissNewlyUnlocked } = useAchievements();
 
-  // Exit-intent: trigger downsell when user tries to leave
-  useExitIntent(() => setShowDownsell(true), {
+  // Exit-intent: trigger downsell + show urgency banners when user tries to leave
+  useExitIntent(() => {
+    setShowDownsell(true);
+    setShowExitBanners(true);
+  }, {
     enabled: !showDownsell,
     sessionKey: "offer-111",
     delayMs: 8000,
@@ -148,11 +153,14 @@ const Offer111 = () => {
                 </p>
               </motion.div>
 
+              {/* Shopify-style Cart — revealed before any CTA */}
+              <ShopifyStyleCart friendName={friendName} />
+
               {/* CTA before products */}
               <motion.div className="mb-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                 <p className="text-center text-3xl md:text-4xl font-black text-primary mb-2">77% OFF TODAY</p>
                 <OfferTimer />
-                <UrgencyBanner />
+                {showExitBanners && <UrgencyBanner />}
                 <div className="h-3" />
                   <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
                     {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
@@ -186,7 +194,7 @@ const Offer111 = () => {
                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
                     <div className="text-center mb-6"><DiscountBanner /></div>
                     <OfferTimer />
-                    <UrgencyBanner />
+                    {showExitBanners && <UrgencyBanner />}
                     <div className="h-3" />
                     <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
                       {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
@@ -235,7 +243,7 @@ const Offer111 = () => {
 
               <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.45 }}>
                 <OfferTimer />
-                <UrgencyBanner />
+                {showExitBanners && <UrgencyBanner />}
                 <div className="h-3" />
                 <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
                   {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
@@ -259,7 +267,7 @@ const Offer111 = () => {
               {/* CTA after research */}
               <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.6 }}>
                 <OfferTimer />
-                <UrgencyBanner />
+                {showExitBanners && <UrgencyBanner />}
                 <div className="h-3" />
                 <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
                   {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}

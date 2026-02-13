@@ -19,12 +19,23 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
 import DownsellModal from "@/components/offer/DownsellModal";
+import ShopifyStyleCart from "@/components/offer/ShopifyStyleCart";
 
 const Offer111Grok = () => {
   const [showDownsell, setShowDownsell] = useState(false);
   const navigate = useNavigate();
   const { startCheckout, loading } = useStripeCheckout();
   const { track } = useExitIntentTracking("offer-111-grok");
+
+  // Get friend name from localStorage (pre-loaded from challenge setup)
+  const [friendName] = useState(() => {
+    const shirtName = localStorage.getItem("friendShirtName") || "";
+    if (shirtName) return shirtName;
+    try {
+      const setup = JSON.parse(localStorage.getItem("gratitude_challenge_setup") || "{}");
+      return setup?.friends?.friend1 || "";
+    } catch { return ""; }
+  });
 
   const handleCheckout = () => {
     startCheckout("pack-111");
@@ -72,6 +83,9 @@ const Offer111Grok = () => {
 
           {/* ─── 3. Value Stack: Benefits-First Bullets ─── */}
           <GrokValueStack />
+
+          {/* ─── Shopify-style Cart ─── */}
+          <ShopifyStyleCart friendName={friendName} />
 
           {/* ─── 4. CTA #1 (with scarcity) ─── */}
           <GrokCtaBlock

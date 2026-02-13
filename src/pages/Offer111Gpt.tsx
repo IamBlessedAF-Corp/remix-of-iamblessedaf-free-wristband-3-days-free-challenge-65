@@ -11,7 +11,6 @@ import SocialProofSection from "@/components/offer/SocialProofSection";
 import GptQuotesSection from "@/components/offer/gpt/GptQuotesSection";
 import GptRiskReversal from "@/components/offer/gpt/GptRiskReversal";
 import GptMessageModule from "@/components/offer/gpt/GptMessageModule";
-import StickyCtaBar from "@/components/offer/StickyCtaBar";
 import DiscountBanner from "@/components/offer/DiscountBanner";
 import ResearchList from "@/components/offer/ResearchList";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
@@ -19,11 +18,22 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
 import logo from "@/assets/logo.png";
 import DownsellModal from "@/components/offer/DownsellModal";
+import ShopifyStyleCart from "@/components/offer/ShopifyStyleCart";
 
 const Offer111Gpt = () => {
   const [showDownsell, setShowDownsell] = useState(false);
   const navigate = useNavigate();
   const { startCheckout, loading } = useStripeCheckout();
+
+  // Get friend name from localStorage (pre-loaded from challenge setup)
+  const [friendName] = useState(() => {
+    const shirtName = localStorage.getItem("friendShirtName") || "";
+    if (shirtName) return shirtName;
+    try {
+      const setup = JSON.parse(localStorage.getItem("gratitude_challenge_setup") || "{}");
+      return setup?.friends?.friend1 || "";
+    } catch { return ""; }
+  });
 
   useEffect(() => {
     window.dispatchEvent(new CustomEvent("track", { detail: { event: "upsell2_view" } }));
@@ -81,6 +91,9 @@ const Offer111Gpt = () => {
 
           {/* ─── 3. Value Stack: Emotion-First ─── */}
           <GptValueStack />
+
+          {/* ─── Shopify-style Cart ─── */}
+          <ShopifyStyleCart friendName={friendName} />
 
           {/* ─── 4. CTA #1 (warm scarcity) ─── */}
           <GptCtaBlock
@@ -215,8 +228,6 @@ const Offer111Gpt = () => {
 
         </div>
       </div>
-
-      {/* Sticky bar removed — pricing deferred to first explicit CTA block */}
     </div>
   );
 };

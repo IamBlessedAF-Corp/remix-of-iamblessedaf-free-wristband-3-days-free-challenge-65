@@ -224,8 +224,31 @@ const FriendShirtSection = ({ delay = 0, afterHeroSlot }: { delay?: number; afte
   const [activeIndex, setActiveIndex] = useState(0);
 
   // Unified state — owned here, passed down to preview + customizer
-  const [friendName, setFriendNameRaw] = useState(() => localStorage.getItem("friendShirtName") || "");
-  const [message, setMessageRaw] = useState(() => localStorage.getItem("friendShirtMessage") || "");
+  // Pre-load from challenge setup data if shirt-specific data is empty
+  const [friendName, setFriendNameRaw] = useState(() => {
+    const shirtName = localStorage.getItem("friendShirtName") || "";
+    if (shirtName) return shirtName;
+    try {
+      const setup = JSON.parse(localStorage.getItem("gratitude_challenge_setup") || "{}");
+      const challengeName = setup?.friends?.friend1 || "";
+      if (challengeName) localStorage.setItem("friendShirtName", challengeName);
+      return challengeName;
+    } catch { return ""; }
+  });
+  const [message, setMessageRaw] = useState(() => {
+    const shirtMsg = localStorage.getItem("friendShirtMessage") || "";
+    if (shirtMsg) return shirtMsg;
+    try {
+      const setup = JSON.parse(localStorage.getItem("gratitude_challenge_setup") || "{}");
+      const memory = setup?.gratitudeMemory || "";
+      if (memory) {
+        const preloaded = memory;
+        localStorage.setItem("friendShirtMessage", preloaded);
+        return preloaded;
+      }
+      return "";
+    } catch { return ""; }
+  });
   const [selectedSize, setSelectedSize] = useState(() => localStorage.getItem("friendShirtSize") || "M");
 
   // Persist on every change so other pages can pick it up
