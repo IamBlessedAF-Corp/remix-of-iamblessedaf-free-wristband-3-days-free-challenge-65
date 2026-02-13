@@ -296,6 +296,27 @@ const Offer111 = () => {
               {/* Shopify-style Cart — after 3rd CTA */}
               <ShopifyStyleCart friendName={friendName} />
 
+              {/* 4th CTA — after cart breakdown */}
+              <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.65 }}>
+                <OfferTimer />
+                {showExitBanners && <UrgencyBanner />}
+                <div className="h-3" />
+                <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
+                  {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
+                  {loading ? "Creating checkout…" : friendName ? `YES! Feed 11 People & Claim My Pack for ${friendName}!` : "YES! Feed 11 People & Claim My Pack!"}
+                  {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
+                </Button>
+                <div className="flex flex-col items-center gap-1.5 mt-3 mb-1">
+                  <div className="flex items-center gap-2">
+                    <Heart className="w-4 h-4 text-primary fill-primary" />
+                    <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated in Honor of Neuroscience</p>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground max-w-xs text-center">Honoring Huberman's Gratitude Research — donated to Tony Robbins' "1 Billion Meals Challenge"</p>
+                </div>
+                <p className="text-center text-xs text-muted-foreground mt-1">Instant Gratitude Access + Shipping within 24hrs</p>
+                <RiskReversalGuarantee />
+              </motion.div>
+
               {/* Live Impact Counter */}
               <ImpactCounter />
 
