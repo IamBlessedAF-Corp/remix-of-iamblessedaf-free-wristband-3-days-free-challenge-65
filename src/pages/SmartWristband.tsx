@@ -4,6 +4,7 @@ import MpfcTooltip from "@/components/offer/MpfcTooltip";
 import SmartWristbandAuth from "@/components/smart-wristband/SmartWristbandAuth";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import logoImg from "@/assets/logo.png";
+import productWristbands from "@/assets/product-wristbands-new.avif";
 
 const DISCOVERIES = [
   { icon: Brain, label: "mPFC Activation Loop" },
@@ -65,6 +66,25 @@ const SmartWristband = () => {
           "<MpfcTooltip /> Neuro-Hacker Wristband{" "}
           <span className="text-primary">SMART</span>"
         </motion.h2>
+
+        {/* ── Wristband Product Image ── */}
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, type: "spring", duration: 0.6 }}
+        >
+          <div className="bg-card border border-border/50 rounded-2xl overflow-hidden shadow-soft">
+            <div className="aspect-[4/3] flex items-center justify-center p-6 bg-secondary/20">
+              <img
+                src={productWristbands}
+                alt="mPFC Neuro-Hacker Wristband SMART"
+                className="max-w-full max-h-full object-contain drop-shadow-lg"
+                loading="eager"
+              />
+            </div>
+          </div>
+        </motion.div>
 
         {/* ── Bridge Copy (Brunson storytelling) ── */}
         <motion.div
