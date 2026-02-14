@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Cpu, Zap, Brain, Sparkles, Rocket, Shield, Activity, Wifi, Loader2 } from "lucide-react";
+import { Cpu, Zap, Brain, Sparkles, Rocket, Shield, Activity, Wifi, Loader2, Users } from "lucide-react";
 import MpfcTooltip from "@/components/offer/MpfcTooltip";
 import SmartWristbandAuth from "@/components/smart-wristband/SmartWristbandAuth";
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { useAuth } from "@/hooks/useAuth";
-import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { useWristbandWaitlist } from "@/hooks/useWristbandWaitlist";
 import { Button } from "@/components/ui/button";
 import logoImg from "@/assets/logo.png";
 import productWristbands from "@/assets/product-wristbands-new.avif";
@@ -49,24 +48,15 @@ const useLaunchCountdown = () => {
 
 const SmartWristband = () => {
   usePageMeta({
-    title: "Reserve Your mPFC Neuro-Hacker Wristband SMART | IamBlessedAF",
+    title: "mPFC Neuro-Hacker Wristband SMART Waitlist | IamBlessedAF",
     description:
-      "The world's first smart wearable neuro-hack. NFC TAP technology to activate your mPFC and trigger Dopamine × Serotonin spikes on autopilot.",
+      "Join the waitlist for the world's first smart wearable neuro-hack. NFC TAP technology to activate your mPFC on autopilot.",
     image: "/og-wristband.png",
     url: "https://iamblessedaf.com/Reserve-your-Neuro-Hack-Wristband-SMART",
   });
 
-  const { user } = useAuth();
-  const { startCheckout, loading } = useStripeCheckout();
   const countdown = useLaunchCountdown();
-
-  // A/B test: check URL for ?variant=1 to show $1 option
-  const variant = new URLSearchParams(window.location.search).get("variant");
-  const isOneVariant = variant === "1";
-
-  const handleReserve = () => {
-    startCheckout(isOneVariant ? ("kickstarter-1" as any) : ("kickstarter-11" as any));
-  };
+  const { count } = useWristbandWaitlist();
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -79,6 +69,29 @@ const SmartWristband = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         />
+
+        {/* ── Social Proof Counter ── */}
+        <motion.div
+          className="mb-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.05 }}
+        >
+          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2">
+            <div className="flex -space-x-2">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="w-6 h-6 rounded-full bg-primary/30 border-2 border-background" />
+              ))}
+            </div>
+            <span className="text-sm font-bold text-foreground">
+              {count.toLocaleString()}+ people on the waitlist
+            </span>
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+            </span>
+          </div>
+        </motion.div>
 
         {/* ── Countdown Timer ── */}
         <motion.div
@@ -176,45 +189,23 @@ const SmartWristband = () => {
           </div>
         </motion.div>
 
-        {/* ── Reserve CTA ── */}
+        {/* ── Waitlist CTA (replaces Reserve CTA) ── */}
         <motion.div
           className="mb-8 bg-card border-2 border-primary/30 rounded-2xl p-5 md:p-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.42 }}
         >
-          <p className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
-            Early Bird Reservation
+          <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2">
+            Be First In Line
           </p>
-          <p className="text-2xl md:text-3xl font-black text-foreground mb-1">
-            Reserve with{" "}
-            <span className="text-primary">{isOneVariant ? "$1" : "$11"}</span>{" "}
-            — Secure{" "}
-            <span className="text-primary">77% OFF</span>
+          <p className="text-lg md:text-xl font-black text-foreground mb-4">
+            Get early access to the <span className="text-primary">mPFC Neuro-Hacker Wristband SMART</span> — and lock your <span className="text-primary">77% OFF</span> Kickstarter price
           </p>
-          <p className="text-sm text-muted-foreground mb-4">
-            Regular Price <span className="line-through">$99</span> → Early-Bird{" "}
-            <strong className="text-foreground">$33</strong>{" "}
-            <span className="text-[11px]">(+ your {isOneVariant ? "$1" : "$11"} deposit applied)</span>
-          </p>
-          <Button
-            onClick={handleReserve}
-            disabled={loading}
-            className="w-full min-h-[56px] h-auto text-base md:text-lg font-black bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl gap-2"
-          >
-            {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Rocket className="w-5 h-5" />
-            )}
-            🚀 YES! Reserve with {isOneVariant ? "$1" : "$11"} NOW — Lock My 77% OFF
-          </Button>
-          <p className="text-[10px] text-muted-foreground mt-2">
-            ✅ Fully refundable • ✅ Secure Stripe checkout • ✅ Deposit applied to final price
-          </p>
+          <SmartWristbandAuth />
         </motion.div>
 
-        {/* ── Bridge Copy (Brunson storytelling) ── */}
+        {/* ── Bridge Copy ── */}
         <motion.div
           className="bg-card border border-border/50 rounded-2xl p-5 md:p-6 text-left shadow-soft mb-8"
           initial={{ opacity: 0, y: 20 }}
@@ -223,51 +214,29 @@ const SmartWristband = () => {
         >
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-4">
             <span className="font-bold text-foreground">
-              Let me tell you something nobody in the wellness industry will
-              admit:
+              Let me tell you something nobody in the wellness industry will admit:
             </span>{" "}
-            every "gratitude journal" and "mindfulness app" on the market asks
-            you to <em>think</em> your way to happiness.{" "}
-            <span className="font-bold text-foreground">
-              But your brain doesn't work that way.
-            </span>
+            every "gratitude journal" and "mindfulness app" on the market asks you to <em>think</em> your way to happiness.{" "}
+            <span className="font-bold text-foreground">But your brain doesn't work that way.</span>
           </p>
 
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-4">
             The <MpfcTooltip /> — your{" "}
-            <strong className="text-foreground">
-              medial Prefrontal Cortex
-            </strong>{" "}
-            — only fires its full{" "}
-            <strong className="text-primary">Dopamine × Serotonin</strong>{" "}
-            cascade when you{" "}
-            <em className="text-foreground font-semibold">
-              receive genuine gratitude
-            </em>
-            , not when you journal about it alone in your room.
+            <strong className="text-foreground">medial Prefrontal Cortex</strong> — only fires its full{" "}
+            <strong className="text-primary">Dopamine × Serotonin</strong> cascade when you{" "}
+            <em className="text-foreground font-semibold">receive genuine gratitude</em>, not when you journal about it alone in your room.
           </p>
 
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-4">
-            The{" "}
-            <strong className="text-foreground">
-              mPFC Neuro-Hacker Wristband SMART
-            </strong>{" "}
-            is a{" "}
-            <strong className="text-primary">zero-battery smart wearable</strong>{" "}
-            with <strong className="text-foreground">NFC TAP technology</strong>{" "}
-            that naturally activates your <MpfcTooltip /> to{" "}
-            <strong className="text-primary">
-              trigger a Dopamine × Serotonin spike on autopilot
-            </strong>{" "}
-            — the <em>happy chemicals</em> — every single day, without
-            willpower, without an app, without thinking about it.
+            The <strong className="text-foreground">mPFC Neuro-Hacker Wristband SMART</strong> is a{" "}
+            <strong className="text-primary">zero-battery smart wearable</strong> with{" "}
+            <strong className="text-foreground">NFC TAP technology</strong> that naturally activates your <MpfcTooltip /> to{" "}
+            <strong className="text-primary">trigger a Dopamine × Serotonin spike on autopilot</strong> — the <em>happy chemicals</em> — every single day, without willpower, without an app, without thinking about it.
           </p>
 
           <p className="text-sm md:text-base text-foreground font-bold leading-relaxed">
             This isn't a bracelet.{" "}
-            <span className="text-primary">
-              This is the future of wearable neuroscience.
-            </span>
+            <span className="text-primary">This is the future of wearable neuroscience.</span>
           </p>
         </motion.div>
 
@@ -296,34 +265,21 @@ const SmartWristband = () => {
           </div>
         </motion.div>
 
-        {/* ── Second Reserve CTA ── */}
+        {/* ── Bottom Waitlist CTA ── */}
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <Button
-            onClick={handleReserve}
-            disabled={loading}
-            className="w-full min-h-[56px] h-auto text-base md:text-lg font-black bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl gap-2"
-          >
-            {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Rocket className="w-5 h-5" />
-            )}
-            🚀 Reserve with {isOneVariant ? "$1" : "$11"} — Secure 77% OFF
-          </Button>
-        </motion.div>
-
-        {/* ── Auth Gate ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.65 }}
-        >
-          <SmartWristbandAuth />
+          <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+            <Button
+              className="w-full min-h-[56px] h-auto text-base md:text-lg font-black bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl gap-2"
+            >
+              <Users className="w-5 h-5" />
+              🧠 Join the mPFC SMART Wristband Waitlist NOW
+            </Button>
+          </a>
         </motion.div>
 
         {/* ── Bottom nudge ── */}
@@ -334,8 +290,7 @@ const SmartWristband = () => {
           transition={{ delay: 0.8 }}
         >
           <strong className="text-foreground">
-            Experience first. Witness the future of non-battery-powered
-            wearable Neuro-Hacks.
+            Experience first. Witness the future of non-battery-powered wearable Neuro-Hacks.
           </strong>{" "}
           Get early updates and be the first to see the{" "}
           <MpfcTooltip /> Neuro-Hacker Wristband SMART in action.

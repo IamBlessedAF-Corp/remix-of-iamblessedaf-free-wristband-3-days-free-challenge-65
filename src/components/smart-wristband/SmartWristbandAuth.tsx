@@ -1,18 +1,33 @@
-import { useState } from "react";
-import { Mail, Lock, User, Loader2, LogIn, CheckCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Mail, Lock, User, Loader2, LogIn, CheckCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
+import { useWristbandWaitlist } from "@/hooks/useWristbandWaitlist";
 import { toast } from "sonner";
 
 const SmartWristbandAuth = () => {
   const { user, loading, signInWithGoogle, signInWithApple, signUpWithEmail, signInWithEmail } = useAuth();
+  const { joinWaitlist, loading: waitlistLoading } = useWristbandWaitlist();
   const [mode, setMode] = useState<"login" | "signup">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [joined, setJoined] = useState(false);
+
+  // Auto-join waitlist when user is authenticated
+  useEffect(() => {
+    if (user && !joined) {
+      joinWaitlist(
+        user.email || "",
+        user.user_metadata?.first_name || user.email?.split("@")[0],
+        user.id
+      );
+      setJoined(true);
+    }
+  }, [user, joined]);
 
   if (loading) {
     return (
@@ -26,10 +41,15 @@ const SmartWristbandAuth = () => {
     return (
       <div className="bg-card border border-primary/30 rounded-2xl p-6 text-center">
         <CheckCircle className="w-10 h-10 text-primary mx-auto mb-3" />
-        <h3 className="text-lg font-bold text-foreground mb-1">You're on the Early Access list! 🎉</h3>
-        <p className="text-sm text-muted-foreground">
+        <h3 className="text-lg font-bold text-foreground mb-1">You're on the waitlist! 🎉</h3>
+        <p className="text-sm text-muted-foreground mb-3">
           We'll notify you the moment the mPFC Neuro-Hacker Wristband SMART launches on Kickstarter.
         </p>
+        <a href="/Reserve-a-SMART-wristband">
+          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl gap-2">
+            🚀 Reserve with $11 NOW — Lock 77% OFF
+          </Button>
+        </a>
       </div>
     );
   }
@@ -43,7 +63,9 @@ const SmartWristbandAuth = () => {
         if (error) {
           toast.error(typeof error === "object" && "message" in error ? (error as any).message : "Signup failed");
         } else {
-          toast.success("Check your email to confirm your account!");
+          // Join waitlist immediately
+          await joinWaitlist(email, firstName);
+          toast.success("You're on the waitlist! Check your email 🎉");
         }
       } else {
         const { error } = await signInWithEmail(email, password);
@@ -69,10 +91,10 @@ const SmartWristbandAuth = () => {
   return (
     <div className="bg-card border border-border/50 rounded-2xl p-5 max-w-sm mx-auto">
       <h3 className="text-base font-bold text-foreground text-center mb-1">
-        🔒 Reserve Your Spot — Early Access
+        🧠 Join the mPFC SMART Wristband Waitlist NOW
       </h3>
       <p className="text-xs text-muted-foreground text-center mb-4">
-        {mode === "signup" ? "Sign up to get notified first" : "Welcome back, Neuro-Hacker"}
+        {mode === "signup" ? "Sign up to get notified first & lock 77% OFF" : "Welcome back, Neuro-Hacker"}
       </p>
 
       {/* Social logins */}
@@ -118,8 +140,8 @@ const SmartWristbandAuth = () => {
           </div>
         </div>
         <Button type="submit" disabled={submitting} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl gap-2">
-          {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogIn className="w-4 h-4" />}
-          {mode === "signup" ? "🚀 Reserve My Early Access" : "Sign In"}
+          {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Users className="w-4 h-4" />}
+          {mode === "signup" ? "🧠 Join the Waitlist NOW" : "Sign In"}
         </Button>
       </form>
 

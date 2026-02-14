@@ -851,6 +851,30 @@ export type Database = {
         }
         Relationships: []
       }
+      smart_wristband_waitlist: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       sms_audit_log: {
         Row: {
           created_at: string
@@ -1025,6 +1049,7 @@ export type Database = {
       generate_short_code: { Args: never; Returns: string }
       get_global_blessing_count: { Args: never; Returns: number }
       get_total_meals_donated: { Args: never; Returns: number }
+      get_wristband_waitlist_count: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
