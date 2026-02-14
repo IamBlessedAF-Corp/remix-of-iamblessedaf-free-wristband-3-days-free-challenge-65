@@ -9,16 +9,6 @@ import joedavincyProfileImg from "@/assets/joedavincy-profile.jpeg";
 
 const INFLUENCERS = [
   {
-    name: "Joe Da Vincy Cury",
-    handle: "@joedavincy",
-    followers: "322K",
-    verified: true,
-    title: "Growth Hacker × 7 Inc 5000 Companies",
-    img: joedavincyImg,
-    embedUrl: "https://www.instagram.com/p/CNaP-mCnhts/embed",
-    quote: "This movement is about to change the game. The gratitude wristband isn't just merch — it's a conversation starter, a brand builder, and a lead magnet all in one.",
-  },
-  {
     name: "Daven Michaels",
     handle: "@davenmichaels",
     followers: "1M",
@@ -60,25 +50,32 @@ const InfluencerTestimonials = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Award className="w-4 h-4 text-primary shrink-0" />
+          <span className="text-xs font-bold text-primary uppercase tracking-wider">Your Marketing Strategist</span>
+        </div>
+
+        {/* Instagram profile screenshot */}
+        <div className="rounded-xl overflow-hidden border border-border/30 mb-4">
           <img
             src={joedavincyProfileImg}
-            alt="Joe Da Vincy — Marketing Strategist"
-            className="w-20 h-20 rounded-full object-cover border-2 border-primary/30 shrink-0"
+            alt="Joe Da Vincy — @joedavincy Instagram Profile"
+            className="w-full h-auto object-cover"
+            loading="lazy"
           />
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Award className="w-4 h-4 text-primary shrink-0" />
-              <span className="text-xs font-bold text-primary uppercase tracking-wider">Your Marketing Strategist</span>
-            </div>
-            <p className="text-base font-bold text-foreground">Joe Da Vincy</p>
-            <p className="text-sm text-muted-foreground leading-snug">
-              Marketing Strategist for <strong className="text-foreground">7 Inc 5000 Companies</strong> & hundreds of influencers. The same proven system Inc 5000 companies paid <strong className="text-foreground">$25,000</strong> for — valued at <strong className="text-primary">$9,700</strong> — yours FREE.
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              <Instagram className="w-3 h-3 inline mr-1" />@joedavincy · <span className="font-semibold text-foreground">322K</span> followers
-            </p>
-          </div>
+        </div>
+
+        <div>
+          <p className="text-lg font-bold text-foreground mb-1">Joe Da Vincy</p>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-2">
+            Marketing Strategist for <strong className="text-foreground">7 Inc 5000 Companies</strong> & hundreds of influencers.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-2">
+            You are getting the same proven system Inc 5000 companies paid <strong className="text-foreground">$25,000</strong> for — valued at <strong className="text-primary">$9,700</strong> — yours <strong className="text-primary">FREE</strong> for the Next 30 days.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            <Instagram className="w-3 h-3 inline mr-1" />@joedavincy · <span className="font-semibold text-foreground">322K</span> followers
+          </p>
         </div>
       </motion.div>
 
@@ -87,7 +84,7 @@ const InfluencerTestimonials = () => {
           <Users className="w-3 h-3 mr-1" /> ENDORSED BY INDUSTRY LEADERS
         </Badge>
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-          Trusted by <span className="text-primary">2M+ Combined Followers</span>
+          Trusted by <span className="text-primary">70M+ Combined Followers</span>
         </h2>
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
           Top entrepreneurs and growth hackers are already using this strategy.
