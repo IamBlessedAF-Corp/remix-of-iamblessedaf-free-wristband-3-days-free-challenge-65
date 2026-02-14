@@ -17,6 +17,8 @@ const PRICE_MAP: Record<string, string> = {
   "pack-1111": "price_1SyiikK7ifE56qrAO0C5eQIT",
   "pack-4444": "price_1SyiilK7ifE56qrApkieQ2bM",
   "monthly-11": "price_1SyjC7K7ifE56qrAEmDjOCEL",
+  "kickstarter-11": "price_1T0l4cK7ifE56qrAx5B6cYUN",
+  "kickstarter-1": "price_1T0l4dK7ifE56qrAqSF3wQzh",
 };
 
 /** Tiers that use subscription mode */
@@ -25,6 +27,7 @@ const SUBSCRIPTION_TIERS = new Set(["monthly-11"]);
 /** Tiers that require shipping */
 const SHIPPING_TIERS = new Set([
   "free-wristband", "wristband-22", "pack-111", "pack-444", "pack-1111", "pack-4444",
+  "kickstarter-11", "kickstarter-1",
 ]);
 
 serve(async (req) => {
