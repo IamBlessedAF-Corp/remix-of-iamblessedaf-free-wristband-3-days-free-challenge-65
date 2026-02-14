@@ -310,10 +310,10 @@ export default function SpinWheel({
 
                   <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 mb-4">
                     <p className="text-lg font-bold text-primary">
-                      🎁 FREE Wristband
+                      👕 FREE Custom Shirt
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">
-                      "I Am Blessed AF" wristband — on us!
+                      Personalized for your best friend — on us!
                     </p>
                   </div>
 
