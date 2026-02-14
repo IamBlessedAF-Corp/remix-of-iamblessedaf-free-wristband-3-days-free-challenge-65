@@ -102,12 +102,12 @@ const TESTIMONIALS = [
 ];
 
 const VALUE_STACK = [
+  { item: "The same proven system Inc 5000 companies paid $25,000 for", value: "$9,700" },
   { item: "Full branded funnel (customized with YOUR branding)", value: "$2,500" },
   { item: "List & past-client reactivation system", value: "$1,500" },
   { item: "Automated email & SMS nurture sequences", value: "$1,500" },
   { item: "Lead capture & booking integration", value: "$2,000" },
   { item: "Conversion-optimized copy & design", value: "$1,000" },
-  { item: "Done-for-you setup & launch support", value: "$800" },
 ];
 
 const FAQS = [

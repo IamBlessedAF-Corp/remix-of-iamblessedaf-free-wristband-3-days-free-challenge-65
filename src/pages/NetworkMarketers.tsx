@@ -49,11 +49,6 @@ const HOW_STEPS = [
     desc: "A full lead-capture funnel customized with YOUR branding and YOUR products — designed to attract warm prospects instead of cold pitching.",
   },
   {
-    icon: Share2,
-    title: "Repost Proven Viral Content with Your CTA",
-    desc: "Share value-driven content that your audience actually wants to see. Your CTA links back to YOUR funnel — content does the selling for you.",
-  },
-  {
     icon: Phone,
     title: "Capture Emails & Phone Numbers Automatically",
     desc: "Every interested prospect enters their contact info through your funnel. You get a warm lead list of people who already said YES.",
@@ -105,9 +100,9 @@ const TESTIMONIALS = [
 ];
 
 const VALUE_STACK = [
+  { item: "The same proven system Inc 5000 companies paid $25,000 for", value: "$9,700" },
   { item: "Full branded funnel (customized with YOUR branding)", value: "$2,500" },
   { item: "List & past-client reactivation system", value: "$1,500" },
-  { item: "Library of viral content to repost", value: "$2,000" },
   { item: "Automated email & phone capture system", value: "$1,500" },
   { item: "DM scripts & conversation starters", value: "$500" },
   { item: "Warm follow-up sequence templates", value: "$1,000" },

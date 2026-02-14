@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
-import { Users, Instagram } from "lucide-react";
+import { Users, Instagram, Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import joedavincyImg from "@/assets/testimonial-joedavincy.jpeg";
 import davenmichaelsImg from "@/assets/testimonial-davenmichaels.jpeg";
 import elpatronnImg from "@/assets/testimonial-elpatronn.jpeg";
 import jefflernerImg from "@/assets/testimonial-jefflerner.jpeg";
+import joedavincyProfileImg from "@/assets/joedavincy-profile.jpeg";
 
 const INFLUENCERS = [
   {
@@ -52,6 +53,35 @@ const INFLUENCERS = [
 const InfluencerTestimonials = () => {
   return (
     <section className="max-w-3xl mx-auto px-4 py-14">
+      {/* ─── Strategist Positioning ─── */}
+      <motion.div
+        className="bg-card border border-border/40 rounded-2xl p-5 mb-10"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+      >
+        <div className="flex items-center gap-4">
+          <img
+            src={joedavincyProfileImg}
+            alt="Joe Da Vincy — Marketing Strategist"
+            className="w-20 h-20 rounded-full object-cover border-2 border-primary/30 shrink-0"
+          />
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Award className="w-4 h-4 text-primary shrink-0" />
+              <span className="text-xs font-bold text-primary uppercase tracking-wider">Your Marketing Strategist</span>
+            </div>
+            <p className="text-base font-bold text-foreground">Joe Da Vincy</p>
+            <p className="text-sm text-muted-foreground leading-snug">
+              Marketing Strategist for <strong className="text-foreground">7 Inc 5000 Companies</strong> & hundreds of influencers. The same proven system Inc 5000 companies paid <strong className="text-foreground">$25,000</strong> for — valued at <strong className="text-primary">$9,700</strong> — yours FREE.
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              <Instagram className="w-3 h-3 inline mr-1" />@joedavincy · <span className="font-semibold text-foreground">322K</span> followers
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
       <div className="text-center mb-10">
         <Badge className="mb-3 bg-primary/10 text-primary border-primary/20 text-xs font-bold">
           <Users className="w-3 h-3 mr-1" /> ENDORSED BY INDUSTRY LEADERS
