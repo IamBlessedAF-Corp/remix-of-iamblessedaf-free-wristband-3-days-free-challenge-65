@@ -1,8 +1,12 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Cpu, Zap, Brain, Sparkles, Rocket, Shield, Activity, Wifi } from "lucide-react";
+import { Cpu, Zap, Brain, Sparkles, Rocket, Shield, Activity, Wifi, Loader2 } from "lucide-react";
 import MpfcTooltip from "@/components/offer/MpfcTooltip";
 import SmartWristbandAuth from "@/components/smart-wristband/SmartWristbandAuth";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { useAuth } from "@/hooks/useAuth";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { Button } from "@/components/ui/button";
 import logoImg from "@/assets/logo.png";
 import productWristbands from "@/assets/product-wristbands-new.avif";
 
@@ -17,6 +21,32 @@ const DISCOVERIES = [
   { icon: Rocket, label: "Autopilot Gratitude Habits" },
 ];
 
+/** Countdown hook — persists launch date so it doesn't shift on refresh */
+const useLaunchCountdown = () => {
+  const [end] = useState(() => {
+    const saved = localStorage.getItem("kickstarter-launch-ts");
+    if (saved) return parseInt(saved);
+    const ts = Date.now() + 27 * 24 * 60 * 60 * 1000;
+    localStorage.setItem("kickstarter-launch-ts", ts.toString());
+    return ts;
+  });
+
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const diff = Math.max(0, end - now);
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+
+  return { days, hours, minutes, seconds };
+};
+
 const SmartWristband = () => {
   usePageMeta({
     title: "Reserve Your mPFC Neuro-Hacker Wristband SMART | IamBlessedAF",
@@ -25,6 +55,18 @@ const SmartWristband = () => {
     image: "/og-wristband.png",
     url: "https://iamblessedaf.com/Reserve-your-Neuro-Hack-Wristband-SMART",
   });
+
+  const { user } = useAuth();
+  const { startCheckout, loading } = useStripeCheckout();
+  const countdown = useLaunchCountdown();
+
+  // A/B test: check URL for ?variant=1 to show $1 option
+  const variant = new URLSearchParams(window.location.search).get("variant");
+  const isOneVariant = variant === "1";
+
+  const handleReserve = () => {
+    startCheckout(isOneVariant ? ("kickstarter-1" as any) : ("kickstarter-11" as any));
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -37,6 +79,38 @@ const SmartWristband = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         />
+
+        {/* ── Countdown Timer ── */}
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+            Kickstarter Launches In
+          </p>
+          <div className="flex justify-center gap-2">
+            {[
+              { value: countdown.days, label: "Days" },
+              { value: countdown.hours, label: "Hrs" },
+              { value: countdown.minutes, label: "Min" },
+              { value: countdown.seconds, label: "Sec" },
+            ].map((unit) => (
+              <div
+                key={unit.label}
+                className="bg-card border border-primary/20 rounded-xl px-3 py-2 min-w-[56px]"
+              >
+                <p className="text-xl md:text-2xl font-black text-primary tabular-nums">
+                  {String(unit.value).padStart(2, "0")}
+                </p>
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase">
+                  {unit.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
 
         <motion.p
           className="text-xs font-black uppercase tracking-[0.25em] text-primary mb-4"
@@ -84,6 +158,44 @@ const SmartWristband = () => {
               />
             </div>
           </div>
+        </motion.div>
+
+        {/* ── Reserve CTA ── */}
+        <motion.div
+          className="mb-8 bg-card border-2 border-primary/30 rounded-2xl p-5 md:p-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.42 }}
+        >
+          <p className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
+            Early Bird Reservation
+          </p>
+          <p className="text-2xl md:text-3xl font-black text-foreground mb-1">
+            Reserve with{" "}
+            <span className="text-primary">{isOneVariant ? "$1" : "$11"}</span>{" "}
+            — Secure{" "}
+            <span className="text-primary">77% OFF</span>
+          </p>
+          <p className="text-sm text-muted-foreground mb-4">
+            Regular Price <span className="line-through">$99</span> → Early-Bird{" "}
+            <strong className="text-foreground">$33</strong>{" "}
+            <span className="text-[11px]">(+ your {isOneVariant ? "$1" : "$11"} deposit applied)</span>
+          </p>
+          <Button
+            onClick={handleReserve}
+            disabled={loading}
+            className="w-full min-h-[56px] h-auto text-base md:text-lg font-black bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl gap-2"
+          >
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Rocket className="w-5 h-5" />
+            )}
+            🚀 YES! Reserve with {isOneVariant ? "$1" : "$11"} NOW — Lock My 77% OFF
+          </Button>
+          <p className="text-[10px] text-muted-foreground mt-2">
+            ✅ Fully refundable • ✅ Secure Stripe checkout • ✅ Deposit applied to final price
+          </p>
         </motion.div>
 
         {/* ── Bridge Copy (Brunson storytelling) ── */}
@@ -166,6 +278,27 @@ const SmartWristband = () => {
               </div>
             ))}
           </div>
+        </motion.div>
+
+        {/* ── Second Reserve CTA ── */}
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <Button
+            onClick={handleReserve}
+            disabled={loading}
+            className="w-full min-h-[56px] h-auto text-base md:text-lg font-black bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl gap-2"
+          >
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Rocket className="w-5 h-5" />
+            )}
+            🚀 Reserve with {isOneVariant ? "$1" : "$11"} — Secure 77% OFF
+          </Button>
         </motion.div>
 
         {/* ── Auth Gate ── */}
