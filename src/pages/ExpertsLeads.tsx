@@ -32,6 +32,7 @@ import wristbandImg from "@/assets/product-wristbands-new.avif";
 import coachSarahImg from "@/assets/coach-sarah.jpg";
 import coachMarcusImg from "@/assets/coach-marcus.jpg";
 import coachDianaImg from "@/assets/coach-diana.jpg";
+import InfluencerTestimonials from "@/components/lead-pages/InfluencerTestimonials";
 
 /* ─── Data ─── */
 const STATS = [
@@ -315,6 +316,9 @@ export default function ExpertsLeads() {
           </motion.div>
         </div>
       </section>
+
+      {/* ═══ INFLUENCER ENDORSEMENTS ═══ */}
+      <InfluencerTestimonials />
 
       {/* ═══ PROBLEM ═══ */}
       <section className="max-w-3xl mx-auto px-4 py-14">
