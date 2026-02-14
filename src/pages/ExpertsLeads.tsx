@@ -35,10 +35,10 @@ import coachDianaImg from "@/assets/coach-diana.jpg";
 
 /* ─── Data ─── */
 const STATS = [
-  { value: "2.7x", label: "More Leads Captured", icon: TrendingUp },
-  { value: "47%", label: "Higher Show-Up Rate", icon: Users },
-  { value: "$0", label: "Cost to You", icon: Gift },
-  { value: "11", label: "Meals Donated per Lead", icon: Heart },
+  { value: "48", label: "Wristbands Per Box", icon: Gift },
+  { value: "$1,500", label: "Reserved Box Value", icon: TrendingUp },
+  { value: "3 FREE", label: "For First 100 Experts", icon: Star },
+  { value: "11", label: "Meals per Wristband", icon: Heart },
 ];
 
 const PROBLEMS = [
@@ -117,6 +117,8 @@ const PROOF_POINTS = [
 ];
 
 const VALUE_STACK = [
+  { item: "Reserved box of 48 wristbands ($33 each)", value: "$1,584" },
+  { item: "3 FREE wristbands for your list (first 100 experts)", value: "$99" },
   { item: "Custom-branded wristband funnel page", value: "$2,500" },
   { item: "3-day gratitude challenge automation", value: "$1,500" },
   { item: "Viral SMS/WhatsApp loop system", value: "$3,000" },
@@ -184,15 +186,15 @@ export default function ExpertsLeads() {
               <Sparkles className="w-3 h-3 mr-1" /> ATTENTION: COACHES, EXPERTS & CONSULTANTS
             </Badge>
             <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
-              Increase Your Lead Capture{" "}
-              <span className="text-primary">Up to 2.7x</span>
+              We've Reserved a Box of 48 Wristbands{" "}
+              <span className="text-primary">Valued at $1,500</span>
               <br />
-              by Giving Away a FREE Wristband
+              For Your Practice 💝
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6 leading-relaxed">
               Join a <strong className="text-foreground">pay-it-forward gratitude movement</strong> backed
-              by neuroscience PhDs. Your leads get a real physical gift.
-              You get <strong className="text-foreground">more booked calls, more sales, zero extra cost.</strong>
+              by neuroscience PhDs. Gift wristbands to prospects, repost viral clips & look like a hero.
+              <strong className="text-foreground"> First 100 experts: 3 FREE wristbands shipped to you.</strong>
             </p>
           </motion.div>
 
@@ -218,10 +220,10 @@ export default function ExpertsLeads() {
               onClick={scrollToEnroll}
               className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2 btn-glow"
             >
-              YES! Enroll Me — It's FREE <ArrowRight className="w-5 h-5" />
+              YES! Reserve My Box + 3 FREE Wristbands <ArrowRight className="w-5 h-5" />
             </Button>
             <p className="text-xs text-muted-foreground mt-2">
-              100% free for experts. No credit card required.
+              100% free. Limited to first 100 experts. No credit card required.
             </p>
           </motion.div>
         </div>
@@ -446,7 +448,7 @@ export default function ExpertsLeads() {
               What You Get — <span className="text-primary">100% FREE</span>
             </h2>
             <p className="text-sm text-muted-foreground text-center mb-8">
-              Total value: $10,000+ — yours at zero cost when you join the movement.
+              Total value: $11,684+ — yours at zero cost when you join as one of the first 100 experts.
             </p>
             <Card className="border-primary/20 overflow-hidden">
               <CardContent className="p-0">
@@ -503,10 +505,10 @@ export default function ExpertsLeads() {
                 <Rocket className="w-3 h-3 mr-1" /> LIMITED SPOTS
               </Badge>
               <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                Enroll Now — <span className="text-primary">It's FREE</span>
+                Enroll Now — <span className="text-primary">Reserve Your Box</span>
               </h2>
               <p className="text-sm text-muted-foreground">
-                Join the gratitude movement and start capturing 2.7x more leads within 48 hours.
+                Join the gratitude movement. First 100 experts get 3 FREE wristbands + a reserved box of 48 ($1,500 value).
               </p>
             </div>
 
@@ -547,7 +549,7 @@ export default function ExpertsLeads() {
                       Enrolling...
                     </span>
                   ) : (
-                    <>YES! Enroll Me FREE <ArrowRight className="w-5 h-5" /></>
+                    <>YES! Reserve My Box + 3 FREE Wristbands <ArrowRight className="w-5 h-5" /></>
                   )}
                 </Button>
                 <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground">

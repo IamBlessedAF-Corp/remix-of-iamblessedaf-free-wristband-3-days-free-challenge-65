@@ -13,7 +13,7 @@ import {
   TrendingUp, Users, DollarSign, Eye, Video, ArrowRight, ArrowDown, Zap, Target, BarChart3,
   Settings2, Sparkles, Gift, Brain, Share2, Repeat, MessageSquare, Crown, RefreshCw,
   Info, Calculator, Rocket, Snowflake, Heart, Star, ShoppingBag, Megaphone, ChevronDown,
-  ExternalLink, Mail, Phone, Smartphone, Trophy, Gauge, UserPlus, BookOpen, Flame, Radio, Shield, FlaskConical
+  ExternalLink, Mail, Phone, Smartphone, Trophy, Gauge, UserPlus, BookOpen, Flame, Radio, Shield, FlaskConical, Home
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -34,11 +34,11 @@ const MetricLabel = ({ label, tip }: { label: string; tip: string }) => (
 /* ─── Pre-Funnel: Viral Lead Gen Strategies ─── */
 const PRE_FUNNEL_STEPS = [
   {
-    id: 0.1, route: "/experts-leads", name: "Expert Enrollment", sells: "Lead capture for coaches & consultants", defaultConv: 0.45, icon: BookOpen,
-    vitality: "Neuroscience hooks → authority positioning", kFactor: "K=1.8",
-    subtitle: "Captures coaches/consultants via Hawkins, Huberman, Dispenza authority hooks. Automated branded welcome email triggers on signup.",
-    emotional: "🧠 Identity shift: 'I'm a certified gratitude expert'",
-    touchpoints: ["✉️ Auto welcome email (Resend)", "📊 Admin dashboard /admin/experts", "🎯 Status tracking: New → Contacted → Converted"],
+    id: 0.1, route: "/experts-leads", name: "Expert Enrollment", sells: "Reserved box of 48 wristbands ($1,500) — lead capture for coaches", defaultConv: 0.45, icon: BookOpen,
+    vitality: "Neuroscience hooks → authority positioning + reserved box", kFactor: "K=1.8",
+    subtitle: "Coaches & consultants receive a reserved box of 48 wristbands ($33 each, $1,500 value). First 100 get 3 FREE. Hawkins, Huberman, Dispenza authority hooks. Automated branded welcome email triggers on signup.",
+    emotional: "🧠 Identity shift: 'I'm a certified gratitude expert with a $1,500 box'",
+    touchpoints: ["📦 Reserved box: 48 wristbands ($1,500 value)", "🎁 First 100: 3 FREE wristbands shipped", "✉️ Auto welcome email (Resend)", "📊 Admin dashboard /admin/experts", "🎯 Status tracking: New → Contacted → Converted"],
     dashboard: "Admin sees all leads at /admin/experts with search, filter by status, and CSV export."
   },
   {
@@ -50,12 +50,20 @@ const PRE_FUNNEL_STEPS = [
     dashboard: "Each clipper gets /clipper-dashboard with Weekly Snapshot, My Clips milestones, Analytics tab, and direct access to Rewards Store."
   },
   {
-    id: 0.3, route: "/network-marketers", name: "Network Marketers", sells: "Gift-first strategy for social sellers", defaultConv: 0.42, icon: Share2,
-    vitality: "Repost viral clips + gift wristband → warm DMs", kFactor: "K=3.5",
-    subtitle: "Network marketers gift FREE wristbands via DMs/comments, repost viral neuroscience clips with CTA overlays. Captures email + phone from prospects automatically.",
-    emotional: "🎁 'Stop cold DM'ing — start gifting'",
-    touchpoints: ["📱 Viral clip library with CTA overlays", "💬 Copy-paste DM scripts", "📧 Auto email + phone capture", "🍽️ 11 meals per lead (social proof)"],
+    id: 0.3, route: "/network-marketers", name: "Network Marketers", sells: "Reserved box of 48 wristbands ($1,500) — gift-first strategy", defaultConv: 0.42, icon: Share2,
+    vitality: "Repost viral clips + gift from reserved box → warm DMs", kFactor: "K=3.5",
+    subtitle: "Network marketers receive a reserved box of 48 wristbands ($33 each, $1,500 value). First 100 get 3 FREE. Gift via DMs/comments, repost viral neuroscience clips with CTA overlays. Captures email + phone automatically.",
+    emotional: "🎁 'Stop cold DM'ing — start gifting from your reserved box'",
+    touchpoints: ["📦 Reserved box: 48 wristbands ($1,500 value)", "🎁 First 100: 3 FREE wristbands shipped", "📱 Viral clip library with CTA overlays", "💬 Copy-paste DM scripts", "📧 Auto email + phone capture"],
     dashboard: "Leads tracked in /admin/experts with source_page='network-marketers' filter."
+  },
+  {
+    id: 0.4, route: "/realtors-list-activation", name: "Realtors List Activation", sells: "Reserved box of 48 wristbands — reactivate dead contact lists", defaultConv: 0.48, icon: Home,
+    vitality: "Gift wristbands to past clients → reactivate SOI → spike referrals", kFactor: "K=2.8",
+    subtitle: "Realtors receive a reserved box of 48 wristbands ($33 each, $1,500 value). First 100 get 3 FREE. Gift to past clients, use at open houses, repost gratitude clips to look like heroes with kind hearts.",
+    emotional: "💝 'Become the hero with a kind heart — not a salesy agent'",
+    touchpoints: ["📦 Reserved box: 48 wristbands ($1,500 value)", "🎁 First 100: 3 FREE wristbands shipped", "🏡 Open house gifting strategy", "📱 List reactivation text scripts", "📧 Auto email + phone capture"],
+    dashboard: "Leads tracked in /admin/experts with source_page='realtors-list-activation' filter."
   },
 ];
 

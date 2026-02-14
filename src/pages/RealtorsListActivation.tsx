@@ -19,6 +19,8 @@ import {
   Share2,
   MessageCircle,
   Phone,
+  Home,
+  Package,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,77 +40,77 @@ import coachDianaImg from "@/assets/coach-diana.jpg";
 
 /* ─── Data ─── */
 const STATS = [
-  { value: "48", label: "Wristbands Per Box", icon: Gift },
-  { value: "$1,500", label: "Reserved Box Value", icon: TrendingUp },
-  { value: "3 FREE", label: "For First 100 Marketers", icon: Star },
+  { value: "48", label: "Wristbands Per Box", icon: Package },
+  { value: "$1,500", label: "Total Box Value", icon: Gift },
+  { value: "3 FREE", label: "For First 100 Realtors", icon: Star },
   { value: "11", label: "Meals per Wristband", icon: Heart },
 ];
 
 const PROBLEMS = [
-  "Cold DMs get ignored — nobody trusts \"Hey girl!\" anymore",
-  "You're pitching products before building any real connection",
-  "Reposting company promos looks salesy and kills your feed aesthetic",
-  "Your audience scrolls past your posts because they look like every other rep",
+  "Your contact list is sitting dead — hundreds of past clients you never re-engage",
+  "Sending 'market update' emails gets 3% open rates and zero replies",
+  "You spend thousands on Zillow & Realtor.com leads that ghost you",
+  "Pop-bys feel awkward and most gifts end up in the trash within a week",
 ];
 
 const HOW_STEPS = [
   {
+    icon: Package,
+    title: "Claim Your Reserved Box of 48 Wristbands",
+    desc: "We've reserved a box of 4 dozen Neuro-Hacker Gratitude Wristbands valued at $33 each ($1,500 total). First 100 realtors: your list claims the first 3 FREE.",
+  },
+  {
     icon: Gift,
-    title: "Gift a FREE Wristband in DMs & Comments",
-    desc: "Instead of pitching, lead with a genuine gift. Drop \"I'd love to send you a FREE gratitude wristband\" — instant curiosity, zero sales resistance.",
+    title: "Gift Wristbands to Past Clients & SOI",
+    desc: "Send a text: 'Hey [Name], I found this neuroscience-backed gratitude wristband and thought of you — can I send you one FREE?' Instant re-engagement. You become the hero with a kind heart.",
   },
   {
     icon: Share2,
     title: "Repost Viral Neuroscience & Gratitude Clips",
-    desc: "Share proven viral content about gratitude science, Huberman brain hacks & happiness research. Your CTA? \"Want a FREE wristband? Link in bio.\" Content does the selling.",
-  },
-  {
-    icon: Phone,
-    title: "Capture Emails & Phone Numbers Automatically",
-    desc: "When they claim the wristband, they enter their email & phone. You get a warm lead list of people who already said YES to something from you.",
+    desc: "Share proven viral clips about brain science and gratitude. Your CTA? 'DM me BLESSED for a FREE wristband.' You look like a caring, generous expert — not a salesy agent.",
   },
   {
     icon: Rocket,
-    title: "Start Conversations That Lead to Sales",
-    desc: "Follow up naturally: \"Did your wristband arrive? How's the gratitude challenge going?\" Now you have a real relationship — and a warm prospect for your products.",
+    title: "Reactivate Your List & Spike Referrals",
+    desc: "When someone wears YOUR wristband daily, they think of YOU. Pop-bys that actually stick. Referrals that come naturally. 'Who's your realtor?' — 'The one who gave me this.'",
   },
 ];
 
 const TESTIMONIALS = [
   {
     name: "Sarah Mitchell",
-    role: "Health & Wellness Rep",
-    niche: "Essential Oils & Supplements",
+    role: "Luxury Realtor",
+    niche: "Residential Real Estate",
     img: coachSarahImg,
-    quote: "I used to send 50 cold DMs a day with maybe 2 replies. Now I post a gratitude clip, offer a free wristband, and get 15-20 warm conversations DAILY. My team duplication went through the roof.",
+    quote: "I texted 50 past clients offering a free gratitude wristband. 38 responded within 24 hours. THREE asked about listing their homes. My dead database came alive overnight — and I looked like a hero, not a salesperson.",
     results: [
-      { label: "DM replies", before: "2/day", after: "18/day" },
-      { label: "Team signups", before: "2/mo", after: "9/mo" },
-      { label: "Income", before: "$800", after: "$4,200" },
+      { label: "List reactivation", before: "3%", after: "76%" },
+      { label: "Referrals/mo", before: "2", after: "11" },
+      { label: "Listings", before: "1/mo", after: "4/mo" },
     ],
   },
   {
     name: "Marcus Chen",
-    role: "Fitness Network Leader",
-    niche: "Nutrition & Performance",
+    role: "Team Leader",
+    niche: "Commercial & Residential",
     img: coachMarcusImg,
-    quote: "The wristband is the ultimate ice-breaker. I repost neuroscience clips about gratitude and dopamine — my audience already cares about brain optimization. Then I just say 'want a free one?' and the DMs flood.",
+    quote: "My team of 8 agents each got a box. We gifted wristbands at open houses instead of business cards. People actually WEAR them. Every wristband is a walking billboard that feeds 11 people. Clients love telling that story.",
     results: [
-      { label: "Leads/week", before: "8", after: "35" },
-      { label: "Conversions", before: "3%", after: "22%" },
-      { label: "Team size", before: "12", after: "47" },
+      { label: "Open house leads", before: "5/event", after: "22/event" },
+      { label: "Close rate", before: "12%", after: "31%" },
+      { label: "GCI", before: "$180K", after: "$420K" },
     ],
   },
   {
     name: "Diana Rosales",
-    role: "Beauty & Skincare Rep",
-    niche: "Clean Beauty MLM",
+    role: "Neighborhood Specialist",
+    niche: "First-Time Buyers",
     img: coachDianaImg,
-    quote: "My Instagram stories used to feel so salesy. Now I share gratitude content, gift wristbands, and people come to ME asking about my products. The energy completely shifted. Plus, 11 meals donated per lead? My audience LOVES that.",
+    quote: "I post gratitude science clips on Instagram and offer free wristbands in comments. My DMs went from 2/day to 25/day. People say 'I love that you're about more than just selling houses.' That's the whole point — and it WORKS.",
     results: [
-      { label: "Story replies", before: "5/wk", after: "40/wk" },
-      { label: "New customers", before: "4/mo", after: "16/mo" },
-      { label: "Referrals", before: "1/mo", after: "8/mo" },
+      { label: "DMs/day", before: "2", after: "25" },
+      { label: "Buyer leads", before: "8/mo", after: "35/mo" },
+      { label: "Reviews", before: "12", after: "67" },
     ],
   },
 ];
@@ -121,32 +123,30 @@ const PROOF_POINTS = [
 
 const VALUE_STACK = [
   { item: "Reserved box of 48 wristbands ($33 each)", value: "$1,584" },
-  { item: "3 FREE wristbands for your prospects (first 100 marketers)", value: "$99" },
-  { item: "Unlimited FREE wristbands to gift prospects", value: "$500+" },
+  { item: "3 FREE wristbands for your list (first 100 realtors)", value: "$99" },
   { item: "Library of viral neuroscience clips to repost", value: "$2,000" },
-  { item: "Automated email & phone capture system", value: "$1,500" },
-  { item: "DM scripts & conversation starters", value: "$500" },
-  { item: "Warm follow-up sequence templates", value: "$1,000" },
-  { item: "11 meals donated per lead (social proof)", value: "Priceless" },
+  { item: "Text/DM scripts for list reactivation", value: "$500" },
+  { item: "Open house gifting strategy playbook", value: "$500" },
+  { item: "11 meals donated per wristband (social proof)", value: "Priceless" },
 ];
 
 const FAQS = [
-  { q: "Do I have to pay for the wristbands I gift?", a: "No. The gratitude movement covers manufacturing. Your prospects only pay shipping ($9.95), which funds 11 meals through Feeding America. You pay $0 — it's a genuinely free gift." },
-  { q: "How does this help me sell my actual products?", a: "It opens conversations. Instead of cold-pitching, you lead with value. When someone wears a wristband you gifted, they feel genuine gratitude toward YOU. Follow up naturally about your products from a place of trust." },
-  { q: "What clips do I repost?", a: "We provide a library of viral neuroscience & gratitude clips with your custom CTA overlay (\"FREE wristband — link in bio\"). Topics include dopamine, brain rewiring, happiness hacks — content your audience already loves." },
-  { q: "Will this work with my current MLM/network?", a: "Yes. This isn't a competing product — it's a lead generation strategy. Whether you sell wellness, beauty, fitness, or financial services, the wristband is a universal ice-breaker that captures warm leads for YOUR business." },
-  { q: "Can my team duplicate this?", a: "Absolutely. The system is simple: Post clip → Offer free wristband → Capture contact info → Follow up. Any team member can do this in 10 minutes/day. We even provide copy-paste DM scripts." },
+  { q: "What's in the reserved box?", a: "4 dozen (48) premium Neuro-Hacker Gratitude Wristbands, each valued at $33. Waterproof nylon, debossed, one-size-fits-all. Perfect for gifting at open houses, pop-bys, or mailing to past clients." },
+  { q: "How do I get 3 FREE wristbands?", a: "The first 100 realtors who enroll get 3 wristbands shipped FREE to experience them personally and gift to their top clients. Just enroll below — we'll send them to you." },
+  { q: "Do I pay for the rest of the box?", a: "Your clients claim wristbands through your custom link and only pay shipping ($9.95). Each claim feeds 11 people. You pay $0 — and you get the lead data (email + phone) automatically." },
+  { q: "How does this reactivate my contact list?", a: "Text your past clients: 'I found this neuroscience-backed wristband and thought of you — want one FREE?' This triggers reciprocity AND shows you care. 76% average response rate vs. 3% for market update emails." },
+  { q: "Can my whole team use this?", a: "Yes! Each agent on your team can get their own reserved box and custom gifting link. Great for team trainings, open houses, and client appreciation events." },
 ];
 
 const CLIP_IDEAS = [
   "🧠 \"This brain hack makes you 27x happier in 3 minutes\" + free wristband CTA",
+  "🏡 \"The #1 thing top realtors do that has nothing to do with houses\"",
   "🔬 \"Stanford study: gratitude rewires your brain faster than meditation\"",
-  "💡 \"Dr. Huberman's #1 hack for dopamine without supplements\"",
-  "🎯 \"The 3-minute morning ritual billionaires swear by\"",
-  "✨ \"Why giving compliments literally changes your brain chemistry\"",
+  "💝 \"Why the best realtors are known for their hearts, not their sales\"",
+  "✨ \"The $0 gift that gets more referrals than any closing gift\"",
 ];
 
-export default function NetworkMarketers() {
+export default function RealtorsListActivation() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -164,17 +164,17 @@ export default function NetworkMarketers() {
       const { error } = await supabase.from("expert_leads").insert({
         full_name: name,
         email,
-        niche: niche || "Network Marketing",
-        source_page: "network-marketers",
+        niche: niche || "Real Estate",
+        source_page: "realtors-list-activation",
       });
       if (error) throw error;
 
       supabase.functions.invoke("send-expert-welcome", {
-        body: { email, name, niche: niche || "Network Marketing" },
+        body: { email, name, niche: niche || "Real Estate" },
       }).catch(console.error);
 
       setEnrolled(true);
-      toast.success("🎉 You're in! Check your email for your clip library & DM scripts.");
+      toast.success("🎉 You're in! Your 3 FREE wristbands are on the way.");
     } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
@@ -195,19 +195,18 @@ export default function NetworkMarketers() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <img src={logoImg} alt="I am Blessed AF" className="h-10 mx-auto mb-5" />
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1">
-              <Sparkles className="w-3 h-3 mr-1" /> ATTENTION: NETWORK MARKETERS & SOCIAL SELLERS
+              <Home className="w-3 h-3 mr-1" /> ATTENTION: REALTORS & REAL ESTATE TEAMS
             </Badge>
             <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
-              We've Reserved a Box of 48 Wristbands{" "}
-              <span className="text-primary">Valued at $1,500</span>
+              Reactivate Your Dead Contact List{" "}
+              <span className="text-primary">& Become the Hero</span>
               <br className="hidden md:block" />
-              For Your Business 🔥
+              With a Kind Heart 💝
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6 leading-relaxed">
-              Repost <strong className="text-foreground">viral neuroscience clips</strong>, gift a{" "}
-              <strong className="text-foreground">FREE physical wristband</strong> from your reserved box, capture emails & phone numbers —
-              and start <strong className="text-foreground">real conversations that close sales.</strong>{" "}
-              <strong className="text-foreground">First 100 marketers: 3 FREE wristbands shipped to you.</strong>
+              We've <strong className="text-foreground">reserved a box of 48 wristbands</strong> valued at{" "}
+              <strong className="text-foreground">$1,500</strong> for you. Gift them to past clients, post viral gratitude clips,
+              and watch your <strong className="text-foreground">referrals explode</strong> — while feeding 11 people per wristband.
             </p>
           </motion.div>
 
@@ -227,6 +226,23 @@ export default function NetworkMarketers() {
             ))}
           </motion.div>
 
+          {/* Reserved Box Callout */}
+          <motion.div
+            className="bg-primary/5 border-2 border-primary/30 rounded-2xl p-5 mb-8 max-w-lg mx-auto"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Package className="w-8 h-8 text-primary mx-auto mb-2" />
+            <p className="text-sm font-bold text-foreground mb-1">🎁 YOUR RESERVED BOX</p>
+            <p className="text-xs text-muted-foreground mb-2">
+              4 dozen wristbands × $33 each = <strong className="text-foreground">$1,500 value</strong>
+            </p>
+            <Badge className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1">
+              First 100 Realtors → 3 FREE Wristbands Shipped to You
+            </Badge>
+          </motion.div>
+
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
             <Button
               size="lg"
@@ -236,7 +252,7 @@ export default function NetworkMarketers() {
               YES! Reserve My Box + 3 FREE Wristbands <ArrowRight className="w-5 h-5" />
             </Button>
             <p className="text-xs text-muted-foreground mt-2">
-              100% free. First 100 marketers only. Works with any network or product.
+              100% free to enroll. Limited to first 100 realtors.
             </p>
           </motion.div>
         </div>
@@ -253,9 +269,9 @@ export default function NetworkMarketers() {
           <img src={wristbandImg} alt="Gratitude wristbands" className="w-full h-56 md:h-72 object-contain bg-card" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-5">
-            <p className="text-xs font-bold text-primary uppercase tracking-wider mb-1">Your Secret Weapon</p>
-            <h3 className="text-lg font-bold text-foreground">Gift This FREE Wristband → Start a Conversation → Close the Sale</h3>
-            <p className="text-xs text-muted-foreground mt-1">Waterproof nylon • Debossed • Ships worldwide • $0 cost to you</p>
+            <p className="text-xs font-bold text-primary uppercase tracking-wider mb-1">Your Gift That Keeps Giving</p>
+            <h3 className="text-lg font-bold text-foreground">Gift a Wristband → Get a Referral → Feed 11 People</h3>
+            <p className="text-xs text-muted-foreground mt-1">Waterproof nylon • Debossed • One-size-fits-all • Ships worldwide</p>
           </div>
         </motion.div>
       </section>
@@ -269,11 +285,10 @@ export default function NetworkMarketers() {
                 <Share2 className="w-3 h-3 mr-1" /> VIRAL CLIP LIBRARY
               </Badge>
               <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                Repost These <span className="text-primary">Viral Clips</span> + Add Your CTA
+                Repost These <span className="text-primary">Viral Clips</span> & Look Like a Hero
               </h2>
               <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                We give you a library of neuroscience & gratitude clips proven to go viral.
-                Just add your "FREE wristband" CTA and watch the leads pour in.
+                Share neuroscience & gratitude content. Your audience sees you as a caring, generous human — not a salesy agent.
               </p>
             </div>
 
@@ -298,7 +313,7 @@ export default function NetworkMarketers() {
             <div className="mt-6 bg-primary/5 border border-primary/20 rounded-xl p-4 max-w-lg mx-auto">
               <p className="text-xs font-bold text-primary uppercase tracking-wider mb-1">💬 Your CTA on Every Clip</p>
               <p className="text-sm text-foreground italic">
-                "Want a FREE 'I Am Blessed AF' wristband? Drop a 🙏 in the comments or DM me 'BLESSED' — I'll send you one, no strings!"
+                "DM me 'BLESSED' and I'll send you a FREE gratitude wristband — it's backed by neuroscience and feeds 11 people. No strings attached. 🙏"
               </p>
             </div>
           </motion.div>
@@ -313,10 +328,10 @@ export default function NetworkMarketers() {
               <Star className="w-3 h-3 mr-1" /> REAL RESULTS
             </Badge>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-              Network Marketers Who <span className="text-primary">Switched</span> the Strategy
+              Realtors Who <span className="text-primary">Activated</span> Their Lists
             </h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              From cold DMs to warm conversations — powered by a free wristband.
+              From dead databases to flooded DMs — powered by a $0 wristband gift.
             </p>
           </div>
 
@@ -365,10 +380,10 @@ export default function NetworkMarketers() {
         <div className="max-w-3xl mx-auto px-4 py-14">
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2">
-              Your Current Strategy is <span className="text-primary">Burned Out</span>
+              Your Contact List is <span className="text-primary">Dying</span>
             </h2>
             <p className="text-sm text-muted-foreground text-center mb-8 max-w-md mx-auto">
-              If you're still cold DM'ing, posting product selfies, and hoping people reach out... you're leaving money on the table.
+              Hundreds of past clients sitting in your CRM collecting dust. Here's why your current re-engagement strategy isn't working.
             </p>
             <div className="grid md:grid-cols-2 gap-3">
               {PROBLEMS.map((p, i) => (
@@ -395,10 +410,10 @@ export default function NetworkMarketers() {
       <section className="max-w-3xl mx-auto px-4 py-16">
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
           <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2">
-            The <span className="text-primary">Gift-First</span> Strategy
+            The <span className="text-primary">Gift-First</span> Realtor Strategy
           </h2>
           <p className="text-sm text-muted-foreground text-center mb-10">
-            4 steps to turn strangers into warm prospects — without pitching
+            4 steps to reactivate your list, spike referrals & look like a hero
           </p>
           <div className="space-y-4">
             {HOW_STEPS.map((step, i) => (
@@ -437,10 +452,10 @@ export default function NetworkMarketers() {
                 <Brain className="w-3 h-3 mr-1" /> BACKED BY SCIENCE
               </Badge>
               <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                Why <span className="text-primary">Gratitude Content</span> Goes Viral
+                Why <span className="text-primary">Gratitude Gifts</span> Beat Closing Gifts
               </h2>
               <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                Neuroscience proves gratitude releases serotonin & dopamine. People WANT this content — and they'll engage with yours.
+                Neuroscience proves gratitude releases serotonin & dopamine. A daily wristband reminder keeps YOU top-of-mind.
               </p>
             </div>
 
@@ -486,7 +501,7 @@ export default function NetworkMarketers() {
             What You Get — <span className="text-primary">100% FREE</span>
           </h2>
           <p className="text-sm text-muted-foreground text-center mb-8">
-            Total value: $7,183+ — yours at zero cost when you join as one of the first 100 marketers.
+            Total value: $4,683+ — yours at zero cost when you enroll as one of the first 100 realtors.
           </p>
           <Card className="border-primary/20 overflow-hidden">
             <CardContent className="p-0">
@@ -517,17 +532,17 @@ export default function NetworkMarketers() {
               Every Wristband You Gift = <span className="text-primary">11 Meals Donated</span>
             </h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto mb-4 leading-relaxed">
-              Your prospect gets a free wristband. 11 people get fed. And you get a warm lead.
-              That's a triple win your audience will rave about.
+              Your past client gets a beautiful gift. 11 people get fed. And you get a referral-ready relationship.
+              That's a triple win your SOI will rave about.
             </p>
             <div className="flex items-center justify-center gap-6">
               <div className="text-center">
-                <p className="text-3xl font-black text-foreground">50</p>
-                <p className="text-[10px] text-muted-foreground font-medium uppercase">Wristbands/month</p>
+                <p className="text-3xl font-black text-foreground">48</p>
+                <p className="text-[10px] text-muted-foreground font-medium uppercase">Wristbands/box</p>
               </div>
               <ArrowRight className="w-5 h-5 text-primary" />
               <div className="text-center">
-                <p className="text-3xl font-black text-primary">550</p>
+                <p className="text-3xl font-black text-primary">528</p>
                 <p className="text-[10px] text-muted-foreground font-medium uppercase">Meals donated</p>
               </div>
             </div>
@@ -540,13 +555,13 @@ export default function NetworkMarketers() {
         <motion.div className="max-w-md mx-auto" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <div className="text-center mb-6">
             <Badge className="mb-3 bg-primary/10 text-primary border-primary/20 text-xs font-bold">
-              <Rocket className="w-3 h-3 mr-1" /> FIRST 100 MARKETERS ONLY
+              <Rocket className="w-3 h-3 mr-1" /> FIRST 100 REALTORS ONLY
             </Badge>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
               Reserve Your <span className="text-primary">$1,500 Box</span> + 3 FREE Wristbands
             </h2>
             <p className="text-sm text-muted-foreground">
-              Clip library, DM scripts, wristband gifting box — all FREE. Start getting warm leads today.
+              Reactivate your list, spike referrals, and become known for your kind heart — all for $0.
             </p>
           </div>
 
@@ -559,7 +574,7 @@ export default function NetworkMarketers() {
               <CheckCircle2 className="w-12 h-12 text-primary mx-auto mb-3" />
               <h3 className="text-lg font-bold text-foreground mb-1">You're In! 🎉</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Check your email for your clip library, DM scripts & wristband gifting link.
+                Your 3 FREE wristbands are being prepared. Check your email for your clip library & list reactivation scripts.
               </p>
               <Button
                 onClick={() => window.open("/FREE-neuro-hacker-wristband", "_blank")}
@@ -584,18 +599,18 @@ export default function NetworkMarketers() {
                 <Input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 (555) 123-4567" className="h-11" />
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Your Network/Product (optional)</label>
-                <Input value={niche} onChange={(e) => setNiche(e.target.value)} placeholder="e.g. Health & Wellness, Beauty, Fitness" className="h-11" />
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Brokerage / Market (optional)</label>
+                <Input value={niche} onChange={(e) => setNiche(e.target.value)} placeholder="e.g. Keller Williams, Luxury, First-Time Buyers" className="h-11" />
               </div>
               <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base h-12 rounded-xl gap-2 btn-glow"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base h-auto min-h-[48px] py-3 rounded-xl gap-2 btn-glow"
               >
                 {submitting ? (
                   <span className="flex items-center gap-2">
                     <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                    Enrolling...
+                    Reserving...
                   </span>
                 ) : (
                   <>YES! Reserve My Box + 3 FREE Wristbands <ArrowRight className="w-5 h-5" /></>
@@ -603,8 +618,8 @@ export default function NetworkMarketers() {
               </Button>
               <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground">
                 <span className="flex items-center gap-1"><Shield className="w-3 h-3" /> No credit card</span>
-                <span className="flex items-center gap-1"><Zap className="w-3 h-3" /> Instant access</span>
-                <span className="flex items-center gap-1"><Users className="w-3 h-3" /> Works with any network</span>
+                <span className="flex items-center gap-1"><Zap className="w-3 h-3" /> 3 FREE wristbands</span>
+                <span className="flex items-center gap-1"><Users className="w-3 h-3" /> First 100 only</span>
               </div>
             </form>
           )}
@@ -637,14 +652,14 @@ export default function NetworkMarketers() {
       <section className="bg-foreground">
         <div className="max-w-3xl mx-auto px-4 py-14 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-background mb-3">
-            Stop Pitching. Start <span className="text-primary">Gifting.</span>
+            Stop Sending Market Updates. Start <span className="text-primary">Gifting.</span>
           </h2>
           <p className="text-sm text-background/70 max-w-md mx-auto mb-6">
-            While other reps send cold DMs that get ignored, you'll be the one giving a real,
-            science-backed gift that opens doors and builds your empire.
+            While other agents send boring emails that get deleted, you'll be the one giving a real,
+            science-backed gift that reactivates relationships and generates referrals on autopilot.
           </p>
           <Button size="lg" onClick={scrollToEnroll} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2">
-            Get My FREE Strategy Kit <ArrowRight className="w-5 h-5" />
+            Reserve My Box + 3 FREE Wristbands <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
       </section>

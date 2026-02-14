@@ -37,6 +37,7 @@ import SmartWristband from "./pages/SmartWristband";
 import ReserveSmartWristband from "./pages/ReserveSmartWristband";
 import FreeNeuroHackerWristband from "./pages/FreeNeuroHackerWristband";
 import NetworkMarketers from "./pages/NetworkMarketers";
+import RealtorsListActivation from "./pages/RealtorsListActivation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -92,6 +93,7 @@ const App = () => (
           <Route path="/neuro-hacker-waitlist" element={<SmartWristband />} />
           <Route path="/FREE-neuro-hacker-wristband" element={<FreeNeuroHackerWristband />} />
           <Route path="/network-marketers" element={<NetworkMarketers />} />
+          <Route path="/realtors-list-activation" element={<RealtorsListActivation />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
