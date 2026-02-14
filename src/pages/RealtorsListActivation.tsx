@@ -40,9 +40,9 @@ import coachDianaImg from "@/assets/coach-diana.jpg";
 
 /* ─── Data ─── */
 const STATS = [
-  { value: "48", label: "Wristbands Per Box", icon: Package },
-  { value: "$1,500", label: "Total Box Value", icon: Gift },
-  { value: "3 FREE", label: "For First 100 Realtors", icon: Star },
+  { value: "$3,300", label: "FREE Marketing Credit", icon: Gift },
+  { value: "2.7x", label: "Lead Capture Increase", icon: TrendingUp },
+  { value: "7", label: "Inc 5000 Companies", icon: Star },
   { value: "11", label: "Meals per Wristband", icon: Heart },
 ];
 
@@ -122,11 +122,13 @@ const PROOF_POINTS = [
 ];
 
 const VALUE_STACK = [
-  { item: "Reserved box of 48 wristbands ($33 each)", value: "$1,584" },
-  { item: "3 FREE wristbands for your list (first 100 realtors)", value: "$99" },
+  { item: "Full branded funnel (customized with YOUR branding)", value: "$2,500" },
+  { item: "List & past-client reactivation system", value: "$1,500" },
   { item: "Library of viral neuroscience clips to repost", value: "$2,000" },
   { item: "Text/DM scripts for list reactivation", value: "$500" },
   { item: "Open house gifting strategy playbook", value: "$500" },
+  { item: "Reserved box of 48 wristbands ($33 each)", value: "$1,584" },
+  { item: "3 FREE wristbands shipped to you (first 100)", value: "$99" },
   { item: "11 meals donated per wristband (social proof)", value: "Priceless" },
 ];
 
@@ -198,15 +200,14 @@ export default function RealtorsListActivation() {
               <Home className="w-3 h-3 mr-1" /> ATTENTION: REALTORS & REAL ESTATE TEAMS
             </Badge>
             <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
-              Reactivate Your Dead Contact List{" "}
-              <span className="text-primary">& Become the Hero</span>
+              Get a FREE{" "}
+              <span className="text-primary">$3,300 Marketing Credit</span>
               <br className="hidden md:block" />
-              With a Kind Heart 💝
+              To Reactivate Your List 💝
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6 leading-relaxed">
-              We've <strong className="text-foreground">reserved a box of 48 wristbands</strong> valued at{" "}
-              <strong className="text-foreground">$1,500</strong> for you. Gift them to past clients, post viral gratitude clips,
-              and watch your <strong className="text-foreground">referrals explode</strong> — while feeding 11 people per wristband.
+              The <strong className="text-foreground">same strategy we used to increase 2.7x lead capture for 7 Inc 5000 companies.</strong>{" "}
+              A full funnel — <strong className="text-foreground">customized with YOUR branding</strong> — to reactivate your contact list, re-engage past clients & spike referrals on autopilot.
             </p>
           </motion.div>
 
@@ -234,12 +235,12 @@ export default function RealtorsListActivation() {
             transition={{ delay: 0.2 }}
           >
             <Package className="w-8 h-8 text-primary mx-auto mb-2" />
-            <p className="text-sm font-bold text-foreground mb-1">🎁 YOUR RESERVED BOX</p>
+            <p className="text-sm font-bold text-foreground mb-1">🎁 YOUR $3,300 MARKETING CREDIT</p>
             <p className="text-xs text-muted-foreground mb-2">
-              4 dozen wristbands × $33 each = <strong className="text-foreground">$1,500 value</strong>
+              Full branded funnel + wristband box + reactivation system = <strong className="text-foreground">$3,300 value</strong>
             </p>
             <Badge className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1">
-              First 100 Realtors → 3 FREE Wristbands Shipped to You
+              Same Strategy → 2.7x Lead Capture for 7 Inc 5000 Companies
             </Badge>
           </motion.div>
 
@@ -249,10 +250,10 @@ export default function RealtorsListActivation() {
               onClick={scrollToEnroll}
               className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2 btn-glow"
             >
-              YES! Reserve My Box + 3 FREE Wristbands <ArrowRight className="w-5 h-5" />
+              YES! Claim My FREE $3,300 Marketing Credit <ArrowRight className="w-5 h-5" />
             </Button>
             <p className="text-xs text-muted-foreground mt-2">
-              100% free to enroll. Limited to first 100 realtors.
+              100% free. Same strategy behind 7 Inc 5000 companies. No credit card required.
             </p>
           </motion.div>
         </div>
@@ -501,7 +502,7 @@ export default function RealtorsListActivation() {
             What You Get — <span className="text-primary">100% FREE</span>
           </h2>
           <p className="text-sm text-muted-foreground text-center mb-8">
-            Total value: $4,683+ — yours at zero cost when you enroll as one of the first 100 realtors.
+            $3,300+ marketing credit — yours at zero cost. Same system behind 2.7x lead capture for 7 Inc 5000 companies.
           </p>
           <Card className="border-primary/20 overflow-hidden">
             <CardContent className="p-0">
@@ -558,10 +559,10 @@ export default function RealtorsListActivation() {
               <Rocket className="w-3 h-3 mr-1" /> FIRST 100 REALTORS ONLY
             </Badge>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-              Reserve Your <span className="text-primary">$1,500 Box</span> + 3 FREE Wristbands
+              Claim Your FREE <span className="text-primary">$3,300 Marketing Credit</span>
             </h2>
             <p className="text-sm text-muted-foreground">
-              Reactivate your list, spike referrals, and become known for your kind heart — all for $0.
+              Full branded funnel to reactivate your list & past clients. Same strategy behind 2.7x lead capture for 7 Inc 5000 companies.
             </p>
           </div>
 
@@ -613,7 +614,7 @@ export default function RealtorsListActivation() {
                     Reserving...
                   </span>
                 ) : (
-                  <>YES! Reserve My Box + 3 FREE Wristbands <ArrowRight className="w-5 h-5" /></>
+                  <>YES! Claim My FREE $3,300 Marketing Credit <ArrowRight className="w-5 h-5" /></>
                 )}
               </Button>
               <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground">
@@ -659,7 +660,7 @@ export default function RealtorsListActivation() {
             science-backed gift that reactivates relationships and generates referrals on autopilot.
           </p>
           <Button size="lg" onClick={scrollToEnroll} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2">
-            Reserve My Box + 3 FREE Wristbands <ArrowRight className="w-5 h-5" />
+            Claim My FREE $3,300 Credit <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
       </section>

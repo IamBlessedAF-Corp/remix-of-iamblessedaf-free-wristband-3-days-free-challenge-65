@@ -35,9 +35,9 @@ import coachDianaImg from "@/assets/coach-diana.jpg";
 
 /* ─── Data ─── */
 const STATS = [
-  { value: "48", label: "Wristbands Per Box", icon: Gift },
-  { value: "$1,500", label: "Reserved Box Value", icon: TrendingUp },
-  { value: "3 FREE", label: "For First 100 Experts", icon: Star },
+  { value: "$3,300", label: "FREE Marketing Credit", icon: Gift },
+  { value: "2.7x", label: "Lead Capture Increase", icon: TrendingUp },
+  { value: "7", label: "Inc 5000 Companies", icon: Star },
   { value: "11", label: "Meals per Wristband", icon: Heart },
 ];
 
@@ -117,13 +117,14 @@ const PROOF_POINTS = [
 ];
 
 const VALUE_STACK = [
-  { item: "Reserved box of 48 wristbands ($33 each)", value: "$1,584" },
-  { item: "3 FREE wristbands for your list (first 100 experts)", value: "$99" },
-  { item: "Custom-branded wristband funnel page", value: "$2,500" },
+  { item: "Full branded funnel (customized with YOUR branding)", value: "$2,500" },
+  { item: "List & past-client reactivation system", value: "$1,500" },
   { item: "3-day gratitude challenge automation", value: "$1,500" },
   { item: "Viral SMS/WhatsApp loop system", value: "$3,000" },
   { item: "Neuroscience credibility framework", value: "$1,000" },
   { item: "Done-for-you lead capture integration", value: "$2,000" },
+  { item: "Reserved box of 48 wristbands ($33 each)", value: "$1,584" },
+  { item: "3 FREE wristbands shipped to you (first 100)", value: "$99" },
 ];
 
 const FAQS = [
@@ -186,15 +187,14 @@ export default function ExpertsLeads() {
               <Sparkles className="w-3 h-3 mr-1" /> ATTENTION: COACHES, EXPERTS & CONSULTANTS
             </Badge>
             <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
-              We've Reserved a Box of 48 Wristbands{" "}
-              <span className="text-primary">Valued at $1,500</span>
+              Get a FREE{" "}
+              <span className="text-primary">$3,300 Marketing Credit</span>
               <br />
-              For Your Practice 💝
+              To Reactivate Your List 🚀
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6 leading-relaxed">
-              Join a <strong className="text-foreground">pay-it-forward gratitude movement</strong> backed
-              by neuroscience PhDs. Gift wristbands to prospects, repost viral clips & look like a hero.
-              <strong className="text-foreground"> First 100 experts: 3 FREE wristbands shipped to you.</strong>
+              The <strong className="text-foreground">same strategy we used to increase 2.7x lead capture for 7 Inc 5000 companies.</strong>{" "}
+              A full funnel — <strong className="text-foreground">customized with YOUR branding</strong> — designed to reactivate your list, re-engage past clients & capture warm leads on autopilot.
             </p>
           </motion.div>
 
@@ -220,10 +220,10 @@ export default function ExpertsLeads() {
               onClick={scrollToEnroll}
               className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2 btn-glow"
             >
-              YES! Reserve My Box + 3 FREE Wristbands <ArrowRight className="w-5 h-5" />
+              YES! Claim My FREE $3,300 Marketing Credit <ArrowRight className="w-5 h-5" />
             </Button>
             <p className="text-xs text-muted-foreground mt-2">
-              100% free. Limited to first 100 experts. No credit card required.
+              100% free. Same strategy behind 7 Inc 5000 companies. No credit card required.
             </p>
           </motion.div>
         </div>
@@ -448,7 +448,7 @@ export default function ExpertsLeads() {
               What You Get — <span className="text-primary">100% FREE</span>
             </h2>
             <p className="text-sm text-muted-foreground text-center mb-8">
-              Total value: $11,684+ — yours at zero cost when you join as one of the first 100 experts.
+              $3,300+ marketing credit — yours at zero cost. Same system behind 2.7x lead capture for 7 Inc 5000 companies.
             </p>
             <Card className="border-primary/20 overflow-hidden">
               <CardContent className="p-0">
@@ -505,10 +505,10 @@ export default function ExpertsLeads() {
                 <Rocket className="w-3 h-3 mr-1" /> LIMITED SPOTS
               </Badge>
               <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                Enroll Now — <span className="text-primary">Reserve Your Box</span>
+                Claim Your FREE <span className="text-primary">$3,300 Marketing Credit</span>
               </h2>
               <p className="text-sm text-muted-foreground">
-                Join the gratitude movement. First 100 experts get 3 FREE wristbands + a reserved box of 48 ($1,500 value).
+                Full branded funnel to reactivate your list & past clients. Same strategy behind 2.7x lead capture for 7 Inc 5000 companies.
               </p>
             </div>
 
@@ -549,7 +549,7 @@ export default function ExpertsLeads() {
                       Enrolling...
                     </span>
                   ) : (
-                    <>YES! Reserve My Box + 3 FREE Wristbands <ArrowRight className="w-5 h-5" /></>
+                    <>YES! Claim My FREE $3,300 Marketing Credit <ArrowRight className="w-5 h-5" /></>
                   )}
                 </Button>
                 <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground">
@@ -634,7 +634,7 @@ export default function ExpertsLeads() {
             a real, science-backed gift that triggers reciprocity and transforms lives.
           </p>
           <Button size="lg" onClick={scrollToEnroll} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2">
-            Enroll Now — 100% FREE <ArrowRight className="w-5 h-5" />
+            Claim My FREE $3,300 Credit <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
       </section>

@@ -44,9 +44,9 @@ import coachDianaImg from "@/assets/coach-diana.jpg";
 
 /* ─── Data ─── */
 const STATS = [
-  { value: "48", label: "Wristbands Per Box", icon: Gift },
-  { value: "$1,500", label: "Reserved Box Value", icon: TrendingUp },
-  { value: "3 FREE", label: "For First 100 Marketers", icon: Star },
+  { value: "$3,300", label: "FREE Marketing Credit", icon: Gift },
+  { value: "2.7x", label: "Lead Capture Increase", icon: TrendingUp },
+  { value: "7", label: "Inc 5000 Companies", icon: Star },
   { value: "11", label: "Meals per Wristband", icon: Heart },
 ];
 
@@ -126,13 +126,14 @@ const PROOF_POINTS = [
 ];
 
 const VALUE_STACK = [
-  { item: "Reserved box of 48 wristbands ($33 each)", value: "$1,584" },
-  { item: "3 FREE wristbands for your prospects (first 100 marketers)", value: "$99" },
-  { item: "Unlimited FREE wristbands to gift prospects", value: "$500+" },
+  { item: "Full branded funnel (customized with YOUR branding)", value: "$2,500" },
+  { item: "List & past-client reactivation system", value: "$1,500" },
   { item: "Library of viral neuroscience clips to repost", value: "$2,000" },
   { item: "Automated email & phone capture system", value: "$1,500" },
   { item: "DM scripts & conversation starters", value: "$500" },
   { item: "Warm follow-up sequence templates", value: "$1,000" },
+  { item: "Reserved box of 48 wristbands ($33 each)", value: "$1,584" },
+  { item: "3 FREE wristbands shipped to you (first 100)", value: "$99" },
   { item: "11 meals donated per lead (social proof)", value: "Priceless" },
 ];
 
@@ -259,16 +260,15 @@ export default function NetworkMarketers() {
               <Sparkles className="w-3 h-3 mr-1" /> ATTENTION: NETWORK MARKETERS & SOCIAL SELLERS
             </Badge>
             <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
-              We've Reserved a Box of 48 Wristbands{" "}
-              <span className="text-primary">Valued at $1,500</span>
+              Get a FREE{" "}
+              <span className="text-primary">$3,300 Marketing Credit</span>
               <br className="hidden md:block" />
-              For Your Business 🔥
+              To Reactivate Your List 🔥
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6 leading-relaxed">
-              Repost <strong className="text-foreground">viral neuroscience clips</strong>, gift a{" "}
-              <strong className="text-foreground">FREE physical wristband</strong> from your reserved box, capture emails & phone numbers —
-              and start <strong className="text-foreground">real conversations that close sales.</strong>{" "}
-              <strong className="text-foreground">First 100 marketers: 3 FREE wristbands shipped to you.</strong>
+              The <strong className="text-foreground">same strategy we used to increase 2.7x lead capture for 7 Inc 5000 companies.</strong>{" "}
+              A full funnel — <strong className="text-foreground">customized with YOUR branding</strong> — to reactivate your list, re-engage past clients & start{" "}
+              <strong className="text-foreground">real conversations that close sales.</strong>
             </p>
           </motion.div>
 
@@ -294,10 +294,10 @@ export default function NetworkMarketers() {
               onClick={scrollToEnroll}
               className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2 btn-glow"
             >
-              YES! Reserve My Box + 3 FREE Wristbands <ArrowRight className="w-5 h-5" />
+              YES! Claim My FREE $3,300 Marketing Credit <ArrowRight className="w-5 h-5" />
             </Button>
             <p className="text-xs text-muted-foreground mt-2">
-              100% free. First 100 marketers only. Works with any network or product.
+              100% free. Same strategy behind 7 Inc 5000 companies. Works with any network or product.
             </p>
           </motion.div>
         </div>
@@ -645,7 +645,7 @@ export default function NetworkMarketers() {
             What You Get — <span className="text-primary">100% FREE</span>
           </h2>
           <p className="text-sm text-muted-foreground text-center mb-8">
-            Total value: $7,183+ — yours at zero cost when you join as one of the first 100 marketers.
+            $3,300+ marketing credit — yours at zero cost. Same system behind 2.7x lead capture for 7 Inc 5000 companies.
           </p>
           <Card className="border-primary/20 overflow-hidden">
             <CardContent className="p-0">
@@ -702,10 +702,10 @@ export default function NetworkMarketers() {
               <Rocket className="w-3 h-3 mr-1" /> FIRST 100 MARKETERS ONLY
             </Badge>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-              Reserve Your <span className="text-primary">$1,500 Box</span> + 3 FREE Wristbands
+              Claim Your FREE <span className="text-primary">$3,300 Marketing Credit</span>
             </h2>
             <p className="text-sm text-muted-foreground">
-              Clip library, DM scripts, wristband gifting box — all FREE. Start getting warm leads today.
+              Full branded funnel to reactivate your list & past clients. Same strategy behind 2.7x lead capture for 7 Inc 5000 companies.
             </p>
           </div>
 
@@ -757,7 +757,7 @@ export default function NetworkMarketers() {
                     Enrolling...
                   </span>
                 ) : (
-                  <>YES! Reserve My Box + 3 FREE Wristbands <ArrowRight className="w-5 h-5" /></>
+                  <>YES! Claim My FREE $3,300 Marketing Credit <ArrowRight className="w-5 h-5" /></>
                 )}
               </Button>
               <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground">
@@ -803,7 +803,7 @@ export default function NetworkMarketers() {
             science-backed gift that opens doors and builds your empire.
           </p>
           <Button size="lg" onClick={scrollToEnroll} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2">
-            Get My FREE Strategy Kit <ArrowRight className="w-5 h-5" />
+            Claim My FREE $3,300 Credit <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
       </section>
