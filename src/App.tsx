@@ -33,6 +33,7 @@ import ExpertsLeads from "./pages/ExpertsLeads";
 import ExpertsLeadsAdmin from "./pages/ExpertsLeadsAdmin";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import SmartWristband from "./pages/SmartWristband";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -83,6 +84,7 @@ const App = () => (
           <Route path="/admin/experts" element={<ExpertsLeadsAdmin />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/Reserve-your-Neuro-Hack-Wristband-SMART" element={<SmartWristband />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
