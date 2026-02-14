@@ -158,6 +158,22 @@ const SmartWristband = () => {
               />
             </div>
           </div>
+          {/* NFC Icon Badge */}
+          <div className="flex justify-center mt-4">
+            <div className="flex items-center gap-2 bg-destructive/10 border border-destructive/30 rounded-full px-4 py-2">
+              <svg viewBox="0 0 100 100" className="w-8 h-8 text-destructive" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="50" cy="50" r="46" />
+                <path d="M58 28c2-1 4-1 5 1l0 42c0 2-2 4-4 3" />
+                <path d="M42 72c-2 1-4 1-5-1l0-42c0-2 2-4 4-3" />
+                <path d="M42 52l16-12" />
+                <path d="M26 44c-2-2-3-4-3-7" />
+                <path d="M22 48c-4-4-6-8-6-14" />
+                <path d="M74 56c2 2 3 4 3 7" />
+                <path d="M78 52c4 4 6 8 6 14" />
+              </svg>
+              <span className="text-sm font-black text-destructive uppercase tracking-wide">NFC TAP Technology</span>
+            </div>
+          </div>
         </motion.div>
 
         {/* ── Reserve CTA ── */}
