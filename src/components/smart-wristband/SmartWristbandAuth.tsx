@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Mail, Lock, User, Loader2, LogIn, CheckCircle, Users } from "lucide-react";
+import { Mail, Lock, User, Loader2, CheckCircle, Users, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,7 @@ const SmartWristbandAuth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
+  const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [joined, setJoined] = useState(false);
 
@@ -45,11 +46,18 @@ const SmartWristbandAuth = () => {
         <p className="text-sm text-muted-foreground mb-3">
           We'll notify you the moment the mPFC Neuro-Hacker Wristband SMART launches on Kickstarter.
         </p>
-        <a href="/Reserve-a-SMART-wristband">
-          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl gap-2">
-            🚀 Reserve with $11 NOW — Lock 77% OFF
-          </Button>
-        </a>
+        <div className="space-y-2">
+          <a href="/FREE-neuro-hacker-wristband">
+            <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl gap-2">
+              🎁 Claim Your FREE Prototype Wristband
+            </Button>
+          </a>
+          <a href="/Reserve-a-SMART-wristband">
+            <Button variant="outline" className="w-full font-bold rounded-xl gap-2 mt-2">
+              🚀 Or Reserve SMART with $11 — Lock 77% OFF
+            </Button>
+          </a>
+        </div>
       </div>
     );
   }
@@ -63,9 +71,8 @@ const SmartWristbandAuth = () => {
         if (error) {
           toast.error(typeof error === "object" && "message" in error ? (error as any).message : "Signup failed");
         } else {
-          // Join waitlist immediately
-          await joinWaitlist(email, firstName);
-          toast.success("You're on the waitlist! Check your email 🎉");
+          await joinWaitlist(email, firstName, undefined, phone || undefined);
+          toast.success("You're on the waitlist! Check your email 🎉" + (phone ? " & phone 📱" : ""));
         }
       } else {
         const { error } = await signInWithEmail(email, password);
@@ -117,13 +124,22 @@ const SmartWristbandAuth = () => {
       {/* Email form */}
       <form onSubmit={handleEmailAuth} className="space-y-3">
         {mode === "signup" && (
-          <div>
-            <Label className="text-xs text-muted-foreground">First Name</Label>
-            <div className="relative mt-1">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Your first name" className="pl-9" required />
+          <>
+            <div>
+              <Label className="text-xs text-muted-foreground">First Name</Label>
+              <div className="relative mt-1">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Your first name" className="pl-9" required />
+              </div>
             </div>
-          </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">Phone <span className="text-muted-foreground/60">(optional — get a text when we launch 📱)</span></Label>
+              <div className="relative mt-1">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 (555) 123-4567" className="pl-9" />
+              </div>
+            </div>
+          </>
         )}
         <div>
           <Label className="text-xs text-muted-foreground">Email</Label>
