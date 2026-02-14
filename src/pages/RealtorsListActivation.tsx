@@ -55,11 +55,6 @@ const HOW_STEPS = [
     desc: "Our proven reactivation system re-engages your existing contacts with personalized outreach. Average 76% response rate vs. 3% for market update emails.",
   },
   {
-    icon: Share2,
-    title: "Repost Viral Content & Attract New Leads",
-    desc: "Share value-driven content that positions you as a caring, generous expert — not a salesy agent. Your CTA drives traffic to YOUR funnel.",
-  },
-  {
     icon: Rocket,
     title: "Spike Referrals on Autopilot",
     desc: "When you lead with value, people think of YOU when asked 'who's your realtor?' Referrals come naturally from a place of trust.",
@@ -106,9 +101,9 @@ const TESTIMONIALS = [
 ];
 
 const VALUE_STACK = [
+  { item: "The same proven system Inc 5000 companies paid $25,000 for", value: "$9,700" },
   { item: "Full branded funnel (customized with YOUR branding)", value: "$2,500" },
   { item: "List & past-client reactivation system", value: "$1,500" },
-  { item: "Library of viral content to repost", value: "$2,000" },
   { item: "Text/DM scripts for list reactivation", value: "$500" },
   { item: "Open house lead capture strategy", value: "$500" },
   { item: "Automated follow-up sequences", value: "$1,000" },
@@ -311,7 +306,7 @@ export default function RealtorsListActivation() {
               The <span className="text-primary">Value-First</span> Realtor Strategy
             </h2>
             <p className="text-sm text-muted-foreground text-center mb-10">
-              4 steps to reactivate your list, spike referrals & look like a hero
+              3 steps to reactivate your list, spike referrals & look like a hero
             </p>
             <div className="space-y-4">
               {HOW_STEPS.map((step, i) => (
