@@ -170,7 +170,7 @@ const Offer111 = () => {
                 <OfferTimer />
                 {showExitBanners && <UrgencyBanner />}
                 <div className="h-3" />
-                  <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
+                  <Button onClick={handleCheckout} disabled={loading} className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight">
                     {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
                     {loading ? "Creating checkout…" : friendName ? `YES! Claim My FREE Custom Shirt for ${friendName} NOW!` : "YES! Claim My FREE Custom Shirt NOW!"}
                     {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
@@ -204,7 +204,7 @@ const Offer111 = () => {
                     <OfferTimer />
                     {showExitBanners && <UrgencyBanner />}
                     <div className="h-3" />
-                    <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
+                    <Button onClick={handleCheckout} disabled={loading} className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight">
                       {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
                       {loading ? "Creating checkout…" : friendName ? `YES! Claim My FREE Custom Shirt for ${friendName} NOW!` : "YES! Claim My FREE Custom Shirt NOW!"}
                       {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
@@ -253,7 +253,7 @@ const Offer111 = () => {
                 <OfferTimer />
                 {showExitBanners && <UrgencyBanner />}
                 <div className="h-3" />
-                <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
+                <Button onClick={handleCheckout} disabled={loading} className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight">
                   {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
                   {loading ? "Creating checkout…" : friendName ? `YES! Claim My FREE Custom Shirt for ${friendName} NOW!` : "YES! Claim My FREE Custom Shirt NOW!"}
                   {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
@@ -277,7 +277,7 @@ const Offer111 = () => {
                 <OfferTimer />
                 {showExitBanners && <UrgencyBanner />}
                 <div className="h-3" />
-                <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
+                <Button onClick={handleCheckout} disabled={loading} className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight">
                   {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
                   {loading ? "Creating checkout…" : friendName ? `YES! Claim My FREE Custom Shirt for ${friendName} NOW!` : "YES! Claim My FREE Custom Shirt NOW!"}
                   {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
@@ -301,7 +301,7 @@ const Offer111 = () => {
                 <OfferTimer />
                 {showExitBanners && <UrgencyBanner />}
                 <div className="h-3" />
-                <Button onClick={handleCheckout} disabled={loading} className="w-full h-16 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none">
+                <Button onClick={handleCheckout} disabled={loading} className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight">
                   {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
                   {loading ? "Creating checkout…" : friendName ? `YES! Feed 11 People & Claim My Pack for ${friendName}!` : "YES! Feed 11 People & Claim My Pack!"}
                   {!loading && <ArrowRight className="w-5 h-5 ml-2" />}

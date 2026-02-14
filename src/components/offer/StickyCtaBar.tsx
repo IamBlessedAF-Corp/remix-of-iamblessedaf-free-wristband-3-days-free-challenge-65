@@ -71,7 +71,7 @@ const StickyCtaBar = ({
             );
           }}
           disabled={loading}
-          className="flex-1 h-12 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl btn-glow animate-pulse-glow disabled:opacity-70 disabled:animate-none"
+          className="flex-1 min-h-[48px] h-auto py-2 px-3 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl btn-glow animate-pulse-glow disabled:opacity-70 disabled:animate-none text-center leading-tight"
         >
           {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
           {loading ? "Processing…" : label}
