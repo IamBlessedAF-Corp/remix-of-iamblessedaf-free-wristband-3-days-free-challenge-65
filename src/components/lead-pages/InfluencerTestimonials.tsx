@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ExternalLink, Play, Users } from "lucide-react";
+import { ExternalLink, Play, Users, Instagram } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import joedavincyImg from "@/assets/testimonial-joedavincy.jpeg";
 import davenmichaelsImg from "@/assets/testimonial-davenmichaels.jpeg";
@@ -11,6 +11,7 @@ const INFLUENCERS = [
     name: "Joe Da Vincy Cury",
     handle: "@joedavincy",
     followers: "322K",
+    verified: true,
     title: "Growth Hacker × 7 Inc 5000 Companies",
     img: joedavincyImg,
     videoUrl: "https://www.instagram.com/p/CNaP-mCnhts",
@@ -20,6 +21,7 @@ const INFLUENCERS = [
     name: "Daven Michaels",
     handle: "@davenmichaels",
     followers: "1M",
+    verified: false,
     title: "NY Times Best Selling Author · Founder #123Employee",
     img: davenmichaelsImg,
     videoUrl: "https://www.instagram.com/tv/CNaUL6wJ1ib/",
@@ -29,6 +31,7 @@ const INFLUENCERS = [
     name: "Rudy Treminio",
     handle: "@elpatronn10x",
     followers: "990K",
+    verified: true,
     title: "Entrepreneur · CEO · Author",
     img: elpatronnImg,
     videoUrl: "https://www.instagram.com/tv/CNaUL6wJ1ib/",
@@ -38,6 +41,7 @@ const INFLUENCERS = [
     name: "Jeff Lerner",
     handle: "@jefflernerofficial",
     followers: "104K",
+    verified: true,
     title: "Digital Entrepreneur · Educator",
     img: jefflernerImg,
     videoUrl: "https://www.instagram.com/p/CNaP-mCnhts",
@@ -48,59 +52,69 @@ const INFLUENCERS = [
 const InfluencerTestimonials = () => {
   return (
     <section className="max-w-3xl mx-auto px-4 py-14">
-      <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-        <div className="text-center mb-10">
-          <Badge className="mb-3 bg-primary/10 text-primary border-primary/20 text-xs font-bold">
-            <Users className="w-3 h-3 mr-1" /> ENDORSED BY INDUSTRY LEADERS
-          </Badge>
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-            Trusted by <span className="text-primary">2M+ Combined Followers</span>
-          </h2>
-          <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            Top entrepreneurs and growth hackers are already using this strategy.
-          </p>
-        </div>
+      <div className="text-center mb-10">
+        <Badge className="mb-3 bg-primary/10 text-primary border-primary/20 text-xs font-bold">
+          <Users className="w-3 h-3 mr-1" /> ENDORSED BY INDUSTRY LEADERS
+        </Badge>
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+          Trusted by <span className="text-primary">2M+ Combined Followers</span>
+        </h2>
+        <p className="text-sm text-muted-foreground max-w-md mx-auto">
+          Top entrepreneurs and growth hackers are already using this strategy.
+        </p>
+      </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
-          {INFLUENCERS.map((inf, i) => (
-            <motion.a
-              key={i}
-              href={inf.videoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group bg-card border border-border/40 rounded-2xl p-4 hover:border-primary/30 transition-all hover:shadow-lg block"
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <img
-                  src={inf.img}
-                  alt={inf.name}
-                  className="w-14 h-14 rounded-full object-cover border-2 border-primary/20 shrink-0"
-                  loading="lazy"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-foreground truncate">{inf.name}</p>
-                  <p className="text-[10px] text-primary font-semibold">{inf.handle} · {inf.followers} followers</p>
-                  <p className="text-[10px] text-muted-foreground truncate">{inf.title}</p>
-                </div>
+      <div className="space-y-6">
+        {INFLUENCERS.map((inf, i) => (
+          <motion.div
+            key={i}
+            className="bg-card border border-border/40 rounded-2xl overflow-hidden"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay: i * 0.1, duration: 0.4 }}
+          >
+            {/* Instagram profile screenshot */}
+            <div className="relative">
+              <img
+                src={inf.img}
+                alt={`${inf.name} Instagram profile`}
+                className="w-full h-auto object-cover"
+                loading="lazy"
+              />
+              {/* Gradient overlay at bottom for readability */}
+              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-card to-transparent" />
+            </div>
+
+            {/* Quote + CTA */}
+            <div className="px-5 pb-5 -mt-2 relative z-10">
+              <div className="flex items-center gap-2 mb-3">
+                <Instagram className="w-4 h-4 text-primary shrink-0" />
+                <span className="text-xs font-bold text-foreground">{inf.name}</span>
+                {inf.verified && (
+                  <span className="text-[10px] text-primary">✓ Verified</span>
+                )}
+                <span className="text-[10px] text-muted-foreground ml-auto">{inf.followers} followers</span>
               </div>
 
-              <p className="text-xs text-muted-foreground leading-relaxed italic mb-3">
+              <p className="text-sm text-muted-foreground leading-relaxed italic mb-4">
                 "{inf.quote}"
               </p>
 
-              <div className="flex items-center gap-1.5 text-primary text-[10px] font-bold uppercase tracking-wider group-hover:underline">
-                <Play className="w-3 h-3" />
+              <a
+                href={inf.videoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold px-4 py-2.5 rounded-xl transition-colors"
+              >
+                <Play className="w-3.5 h-3.5" />
                 Watch Video Testimonial
-                <ExternalLink className="w-3 h-3 ml-auto opacity-50 group-hover:opacity-100" />
-              </div>
-            </motion.a>
-          ))}
-        </div>
-      </motion.div>
+                <ExternalLink className="w-3 h-3 opacity-60" />
+              </a>
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </section>
   );
 };
