@@ -1,18 +1,25 @@
 import { motion } from "framer-motion";
 import AuthorAvatar from "@/components/offer/AuthorAvatar";
+import MpfcTooltip from "@/components/offer/MpfcTooltip";
+import { ReactNode } from "react";
 
-const QUOTES = [
+interface Quote {
+  text: ReactNode;
+  author: "huberman" | "tony-robbins" | "joe-dispenza";
+}
+
+const QUOTES: Quote[] = [
   {
-    text: "Received gratitude activates mPFC circuits → serotonin + dopamine surge. This is the fastest documented neural rewire protocol.",
-    author: "huberman" as const,
+    text: <>Received gratitude activates <MpfcTooltip /> circuits → serotonin + dopamine surge. This is the fastest documented neural rewire protocol.</>,
+    author: "huberman",
   },
   {
     text: "Repetitive 'I Am' identity encoding with emotional charge → permanent self-concept modification. Measurable within 21 days.",
-    author: "tony-robbins" as const,
+    author: "tony-robbins",
   },
   {
     text: "Frequency shift: shame (20Hz) → joy (540Hz). That's a 27× multiplier. Gratitude is the highest-ROI emotional input.",
-    author: "joe-dispenza" as const,
+    author: "joe-dispenza",
   },
 ];
 

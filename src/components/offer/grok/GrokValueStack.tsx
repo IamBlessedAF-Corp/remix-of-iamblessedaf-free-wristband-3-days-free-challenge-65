@@ -1,14 +1,25 @@
 import { motion } from "framer-motion";
+import MpfcTooltip from "@/components/offer/MpfcTooltip";
+import { ReactNode } from "react";
 
-const VALUES = [
+interface ValueItem {
+  emoji: string;
+  title: string;
+  benefit: ReactNode;
+  description: string;
+  value: string;
+  sub: ReactNode;
+}
+
+const VALUES: ValueItem[] = [
   {
     emoji: "🧠",
     title: "Neural Pathway Activator",
-    benefit: "Huberman-aligned protocol: received gratitude → mPFC → 27× serotonin surge",
+    benefit: <>Huberman-aligned protocol: received gratitude → <MpfcTooltip /> → 27× serotonin surge</>,
     description:
       "Received gratitude triggers medial prefrontal cortex activation → serotonin + dopamine cascade. This pack automates that loop. Daily ROI: 27× baseline happiness.",
     value: "$210",
-    sub: "Based on 8+ peer-reviewed studies · mPFC protocol",
+    sub: <>Based on 8+ peer-reviewed studies · <MpfcTooltip /> protocol</>,
   },
   {
     emoji: "⚡",
@@ -22,7 +33,7 @@ const VALUES = [
   {
     emoji: "🎯",
     title: "Gratitude Deployment Unit",
-    benefit: "Custom shirt for your target recipient — triggers THEIR mPFC → YOUR 27× dopamine hit",
+    benefit: <>Custom shirt for your target recipient — triggers THEIR <MpfcTooltip /> → YOUR 27× dopamine hit</>,
     description:
       "They receive your message → feel gratitude → text you back. That response = your received gratitude trigger. Net result: bilateral brain rewire. Two brains, one shirt.",
     value: "$45",
