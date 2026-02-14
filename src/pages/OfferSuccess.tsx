@@ -47,7 +47,13 @@ const OfferSuccess = () => {
   const pendingNextUrl = useRef<string | undefined>(undefined);
   const [showSpinWheel, setShowSpinWheel] = useState(false);
   const isWristband22 = tier === "wristband-22";
-  const spinLogic = useSpinLogic(isWristband22 ? 2 : 1);
+  
+  // Get friend name from localStorage (preloaded from gratitude challenge)
+  const friendName = typeof window !== "undefined" 
+    ? JSON.parse(localStorage.getItem("gratitude_challenge_setup") || "{}")?.friend_1_name || ""
+    : "";
+  
+  const spinLogic = useSpinLogic(isWristband22 ? 2 : 1, friendName);
 
 
   // Fetch user's referral URL

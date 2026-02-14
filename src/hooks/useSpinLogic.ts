@@ -9,7 +9,7 @@ export interface SpinSegment {
   color: string;
 }
 
-export const SEGMENTS: SpinSegment[] = [
+export const BASE_SEGMENTS: SpinSegment[] = [
   { label: "FREE Neuro-Hacker Wristband", shortLabel: "Wristband", emoji: "🎁", color: "hsl(0, 100%, 50%)" },
   { label: "10 Blessed Coins", shortLabel: "10 BC", emoji: "🪙", color: "hsl(45, 90%, 50%)" },
   { label: "5 Hearts", shortLabel: "5 Hearts", emoji: "💚", color: "hsl(140, 70%, 45%)" },
@@ -20,12 +20,12 @@ export const SEGMENTS: SpinSegment[] = [
   { label: "FREE Neuro-Hacker Wristband", shortLabel: "Wristband", emoji: "🎁", color: "hsl(350, 90%, 50%)" },
 ];
 
-// Always land on index 0 → "FREE Wristband"
+// Always land on index 0 → varies based on spin
 const WINNING_INDEX = 0;
-const SEGMENT_ANGLE = 360 / SEGMENTS.length;
+const SEGMENT_ANGLE = 360 / BASE_SEGMENTS.length;
 const EXTRA_SPINS = 6; // Full rotations before landing
 
-export function useSpinLogic(totalSpins: number = 1) {
+export function useSpinLogic(totalSpins: number = 1, friendName: string = "") {
   const [isSpinning, setIsSpinning] = useState(false);
   const [hasWon, setHasWon] = useState(false);
   const [showWheel, setShowWheel] = useState(false);
@@ -33,6 +33,25 @@ export function useSpinLogic(totalSpins: number = 1) {
   const [alreadyClaimed, setAlreadyClaimed] = useState(false);
   const [spinCount, setSpinCount] = useState(0);
   const maxSpins = Math.max(1, totalSpins);
+
+  // Create segments with first spin targeting custom shirt
+  const createSegments = useCallback(() => {
+    const shirtLabel = friendName 
+      ? `FREE Custom Shirt for ${friendName}` 
+      : "FREE Custom Shirt";
+    
+    return [
+      { 
+        label: shirtLabel, 
+        shortLabel: "👕 Shirt", 
+        emoji: "👕", 
+        color: "hsl(280, 85%, 55%)" // Purple for shirt
+      },
+      ...BASE_SEGMENTS.slice(1),
+    ];
+  }, [friendName]);
+
+  const segments = createSegments();
 
   // Check localStorage on mount
   useEffect(() => {
@@ -97,7 +116,7 @@ export function useSpinLogic(totalSpins: number = 1) {
   }, [isSpinning]);
 
   return {
-    segments: SEGMENTS,
+    segments,
     isSpinning,
     hasWon,
     showWheel,
