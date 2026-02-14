@@ -614,7 +614,7 @@ export default function FunnelMap() {
                       <span className="text-sm font-black uppercase tracking-wider text-orange-400">Engine Ignition — Paid Amplification</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-muted-foreground">$9K total budget</span>
+                      <span className="text-[10px] text-muted-foreground">$9K budget + Waitlist + Reserve</span>
                       <ChevronDown className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </div>
@@ -694,18 +694,54 @@ export default function FunnelMap() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap mb-1">
                             <Rocket className="w-3.5 h-3.5 text-orange-500 shrink-0" />
-                            <h3 className="text-sm font-bold text-foreground">Kickstarter mPFC Neuro-Hacker Wristband SMART</h3>
+                            <h3 className="text-sm font-bold text-foreground">Waitlist — mPFC SMART Wristband</h3>
                           </div>
                           <p className="text-[11px] text-muted-foreground mb-2">
-                            Reserve with <strong className="text-primary">$11</strong> and secure a <strong className="text-foreground">77% OFF</strong>. Regular price <span className="line-through">$99</span> → <strong className="text-primary">$33</strong> with early-bird discount.
+                            Join the <strong className="text-foreground">waitlist</strong> for the mPFC Neuro-Hacker Wristband SMART. Email capture + welcome email via Resend. Social proof counter shows live waitlist count.
                           </p>
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <div className="flex items-center gap-1 bg-accent border border-primary/10 rounded-full px-2 py-0.5">
                               <Zap className="w-3 h-3 text-orange-500" />
-                              <span className="text-[10px] font-medium text-accent-foreground">Reserve with $11 NOW → 77% OFF</span>
+                              <span className="text-[10px] font-medium text-accent-foreground">Waitlist capture → welcome email → social proof</span>
                             </div>
                             <a
                               href="/Reserve-your-Neuro-Hack-Wristband-SMART"
+                              className="text-[10px] font-bold text-primary underline hover:text-primary/80"
+                            >
+                              View Page →
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-center py-0.5">
+                      <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
+                    </div>
+
+                    {/* Reserve SMART Wristband */}
+                    <div className="relative rounded-xl bg-card border border-border/40 p-3 md:p-4">
+                      <div className="flex items-stretch gap-3">
+                        <div className="flex flex-col items-center shrink-0">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black border-2 border-orange-500/30 bg-orange-500/10 text-orange-500">
+                            🔥4
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <Rocket className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                            <h3 className="text-sm font-bold text-foreground">Reserve — $11 Early Bird Deposit</h3>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground mb-2">
+                            Reserve with <strong className="text-primary">$11</strong> and secure a <strong className="text-foreground">77% OFF</strong>. Regular price <span className="line-through">$99</span> → <strong className="text-primary">$33</strong>. A/B test: $1 variant via <code className="text-[9px]">?variant=1</code>.
+                          </p>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <div className="flex items-center gap-1 bg-accent border border-primary/10 rounded-full px-2 py-0.5">
+                              <Zap className="w-3 h-3 text-orange-500" />
+                              <span className="text-[10px] font-medium text-accent-foreground">Stripe checkout → 77% OFF lock</span>
+                            </div>
+                            <a
+                              href="/Reserve-a-SMART-wristband"
                               className="text-[10px] font-bold text-primary underline hover:text-primary/80"
                             >
                               View Page →
