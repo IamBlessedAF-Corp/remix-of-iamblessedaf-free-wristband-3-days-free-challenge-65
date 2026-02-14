@@ -37,6 +37,7 @@ import wristbandImg from "@/assets/product-wristbands-new.avif";
 import coachSarahImg from "@/assets/coach-sarah.jpg";
 import coachMarcusImg from "@/assets/coach-marcus.jpg";
 import coachDianaImg from "@/assets/coach-diana.jpg";
+import InfluencerTestimonials from "@/components/lead-pages/InfluencerTestimonials";
 
 /* ─── Data ─── */
 const STATS = [
@@ -375,6 +376,9 @@ export default function RealtorsListActivation() {
           </div>
         </motion.div>
       </section>
+
+      {/* ═══ INFLUENCER ENDORSEMENTS ═══ */}
+      <InfluencerTestimonials />
 
       {/* ═══ PROBLEM ═══ */}
       <section className="bg-card border-y border-border/30">
