@@ -5,6 +5,10 @@ import {
   ArrowRight,
   Brain,
   CheckCircle2,
+  Download,
+  ExternalLink,
+  Eye,
+  Film,
   Gift,
   Heart,
   Rocket,
@@ -19,6 +23,8 @@ import {
   Share2,
   MessageCircle,
   Phone,
+  Play,
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -146,6 +152,61 @@ const CLIP_IDEAS = [
   "✨ \"Why giving compliments literally changes your brain chemistry\"",
 ];
 
+const CLIP_LIBRARY = [
+  {
+    title: "Brain Hack: 27x Happier in 3 Minutes",
+    platform: "TikTok / Reels",
+    duration: "0:47",
+    views: "2.4M+",
+    hook: "\"Your brain has a hidden cheat code for happiness...\"",
+    ctaOverlay: "FREE Wristband — Link in Bio 🧠",
+    downloadHint: "DM us 'CLIP1' to get this clip + CTA overlay",
+  },
+  {
+    title: "Huberman's #1 Dopamine Hack (No Supplements)",
+    platform: "TikTok / Reels / Shorts",
+    duration: "0:58",
+    views: "1.8M+",
+    hook: "\"Dr. Huberman says stop taking dopamine supplements...\"",
+    ctaOverlay: "Get a FREE Gratitude Wristband 🎁",
+    downloadHint: "DM us 'CLIP2' to get this clip + CTA overlay",
+  },
+  {
+    title: "Why Billionaires Practice Gratitude (Not Hustle)",
+    platform: "Reels / YouTube Shorts",
+    duration: "1:02",
+    views: "950K+",
+    hook: "\"Elon, Oprah, and Jeff Bezos all do this ONE thing...\"",
+    ctaOverlay: "Claim Your FREE Wristband ⬇️",
+    downloadHint: "DM us 'CLIP3' to get this clip + CTA overlay",
+  },
+  {
+    title: "The Compliment That Rewires Your Brain",
+    platform: "TikTok / Facebook",
+    duration: "0:34",
+    views: "3.1M+",
+    hook: "\"Give someone a genuine compliment and watch what happens to YOUR brain...\"",
+    ctaOverlay: "FREE 'I Am Blessed AF' Wristband 🙏",
+    downloadHint: "DM us 'CLIP4' to get this clip + CTA overlay",
+  },
+  {
+    title: "Stanford Study: Gratitude vs Meditation",
+    platform: "All Platforms",
+    duration: "0:52",
+    views: "1.2M+",
+    hook: "\"Stanford just proved gratitude beats meditation...\"",
+    ctaOverlay: "Link in Bio → FREE Wristband 🔗",
+    downloadHint: "DM us 'CLIP5' to get this clip + CTA overlay",
+  },
+];
+
+const CTA_OVERLAYS = [
+  { name: "Free Wristband CTA", file: "cta-free-wristband.png", desc: "Clean bottom-bar overlay: \"FREE 'I Am Blessed AF' Wristband — Link in Bio\"" },
+  { name: "Gift a Friend CTA", file: "cta-gift-friend.png", desc: "Social proof overlay: \"DM me 'BLESSED' for a FREE wristband 🙏\"" },
+  { name: "Science Hook CTA", file: "cta-science-hook.png", desc: "Authority overlay: \"Backed by Stanford Neuroscience — Get Yours FREE\"" },
+  { name: "Gratitude Challenge CTA", file: "cta-gratitude-challenge.png", desc: "Engagement overlay: \"Join the 21-Day Gratitude Challenge — FREE wristband\"" },
+];
+
 export default function NetworkMarketers() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -169,7 +230,7 @@ export default function NetworkMarketers() {
       });
       if (error) throw error;
 
-      supabase.functions.invoke("send-expert-welcome", {
+      supabase.functions.invoke("send-network-marketer-welcome", {
         body: { email, name, niche: niche || "Network Marketing" },
       }).catch(console.error);
 
@@ -305,7 +366,105 @@ export default function NetworkMarketers() {
         </div>
       </section>
 
-      {/* ═══ TESTIMONIALS ═══ */}
+      {/* ═══ CLIP LIBRARY ═══ */}
+      <section id="clip-library" className="max-w-3xl mx-auto px-4 py-14">
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+          <div className="text-center mb-8">
+            <Badge className="mb-3 bg-primary/10 text-primary border-primary/20 text-xs font-bold">
+              <Film className="w-3 h-3 mr-1" /> CLIP LIBRARY — READY TO REPOST
+            </Badge>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+              Your <span className="text-primary">Viral Clip Arsenal</span>
+            </h2>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              Proven clips with millions of views. Download, add your CTA overlay, and repost. We've done the hard work — you just hit "share."
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {CLIP_LIBRARY.map((clip, i) => (
+              <motion.div
+                key={i}
+                className="bg-card border border-border/40 rounded-xl overflow-hidden"
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+              >
+                <div className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <Play className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-bold text-foreground mb-1">{clip.title}</h4>
+                      <p className="text-xs text-muted-foreground italic mb-2">Hook: {clip.hook}</p>
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <span className="inline-flex items-center gap-1 text-[10px] bg-primary/10 text-primary rounded-full px-2 py-0.5 font-semibold">
+                          <Eye className="w-3 h-3" /> {clip.views}
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-[10px] bg-accent text-accent-foreground rounded-full px-2 py-0.5 font-semibold">
+                          <Clock className="w-3 h-3" /> {clip.duration}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground font-medium">{clip.platform}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3 bg-primary/5 border border-primary/10 rounded-lg px-3 py-2 flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] font-bold text-primary uppercase tracking-wider">CTA Overlay</p>
+                      <p className="text-xs text-foreground">{clip.ctaOverlay}</p>
+                    </div>
+                    <Badge variant="outline" className="text-[10px] shrink-0">
+                      <Download className="w-3 h-3 mr-1" /> {clip.downloadHint.split("'")[1]}
+                    </Badge>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* CTA Overlay Templates */}
+          <div className="mt-10">
+            <h3 className="text-lg font-bold text-foreground text-center mb-2">
+              📐 CTA Overlay Templates
+            </h3>
+            <p className="text-xs text-muted-foreground text-center mb-5">
+              Download these ready-made overlays. Add to your clips in CapCut, InShot, or Canva — takes 30 seconds.
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              {CTA_OVERLAYS.map((overlay, i) => (
+                <motion.a
+                  key={i}
+                  href={`/cta-overlays/${overlay.file}`}
+                  download
+                  className="bg-card border border-border/40 rounded-xl p-4 text-center hover:border-primary/40 transition-colors group"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                >
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2 group-hover:bg-primary/20 transition-colors">
+                    <Download className="w-5 h-5 text-primary" />
+                  </div>
+                  <p className="text-xs font-bold text-foreground mb-0.5">{overlay.name}</p>
+                  <p className="text-[10px] text-muted-foreground leading-snug">{overlay.desc}</p>
+                </motion.a>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <p className="text-xs text-muted-foreground mb-3">
+              Need custom clips for your niche? DM us on Instagram <strong className="text-foreground">@iamblessedaf</strong> and we'll create them for you.
+            </p>
+            <Button variant="outline" className="gap-2 rounded-xl" onClick={() => window.open("https://instagram.com/iamblessedaf", "_blank")}>
+              <ExternalLink className="w-4 h-4" /> Follow @iamblessedaf for Fresh Clips
+            </Button>
+          </div>
+        </motion.div>
+      </section>
+
       <section className="max-w-3xl mx-auto px-4 py-14">
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
           <div className="text-center mb-10">
