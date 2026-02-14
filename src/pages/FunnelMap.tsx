@@ -49,6 +49,14 @@ const PRE_FUNNEL_STEPS = [
     touchpoints: ["📱 Sticky CTA bar with confetti on first referral copy", "🏆 4-tier identity badges (New → Super Clipper)", "📊 Personal analytics tab on /clipper-dashboard", "🪙 BC rewards: 100 BC/clip"],
     dashboard: "Each clipper gets /clipper-dashboard with Weekly Snapshot, My Clips milestones, Analytics tab, and direct access to Rewards Store."
   },
+  {
+    id: 0.3, route: "/network-marketers", name: "Network Marketers", sells: "Gift-first strategy for social sellers", defaultConv: 0.42, icon: Share2,
+    vitality: "Repost viral clips + gift wristband → warm DMs", kFactor: "K=3.5",
+    subtitle: "Network marketers gift FREE wristbands via DMs/comments, repost viral neuroscience clips with CTA overlays. Captures email + phone from prospects automatically.",
+    emotional: "🎁 'Stop cold DM'ing — start gifting'",
+    touchpoints: ["📱 Viral clip library with CTA overlays", "💬 Copy-paste DM scripts", "📧 Auto email + phone capture", "🍽️ 11 meals per lead (social proof)"],
+    dashboard: "Leads tracked in /admin/experts with source_page='network-marketers' filter."
+  },
 ];
 
 /* ─── Funnel Stages (Cold → Fidelización → Ascensión) ─── */
