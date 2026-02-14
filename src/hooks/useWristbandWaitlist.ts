@@ -18,25 +18,25 @@ export function useWristbandWaitlist() {
   const displayCount = (() => {
     if (realCount === null) return SEED;
     if (realCount >= 999) return realCount;
-    // Increment seed by visits
     const visits = parseInt(localStorage.getItem("wristband-visits") || "0");
     localStorage.setItem("wristband-visits", String(visits + 1));
     return SEED + Math.floor(visits * GROWTH_RATE * 10) + realCount;
   })();
 
-  const joinWaitlist = async (email: string, firstName?: string, userId?: string) => {
+  const joinWaitlist = async (email: string, firstName?: string, userId?: string, phone?: string) => {
     setLoading(true);
     try {
       const { error } = await supabase.from("smart_wristband_waitlist" as any).insert({
         email,
         first_name: firstName || null,
         user_id: userId || null,
+        phone: phone || null,
       });
       if (error) throw error;
 
-      // Send welcome email (fire and forget)
+      // Send welcome email + SMS (fire and forget)
       supabase.functions.invoke("send-wristband-welcome", {
-        body: { email, firstName: firstName || email.split("@")[0] },
+        body: { email, firstName: firstName || email.split("@")[0], phone: phone || null },
       });
 
       setRealCount((c) => (c ?? 0) + 1);

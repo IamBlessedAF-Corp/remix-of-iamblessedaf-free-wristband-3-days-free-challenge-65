@@ -35,6 +35,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import SmartWristband from "./pages/SmartWristband";
 import ReserveSmartWristband from "./pages/ReserveSmartWristband";
+import FreeNeuroHackerWristband from "./pages/FreeNeuroHackerWristband";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -87,6 +88,8 @@ const App = () => (
           <Route path="/terms" element={<Terms />} />
           <Route path="/Reserve-your-Neuro-Hack-Wristband-SMART" element={<SmartWristband />} />
           <Route path="/Reserve-a-SMART-wristband" element={<ReserveSmartWristband />} />
+          <Route path="/neuro-hacker-waitlist" element={<SmartWristband />} />
+          <Route path="/FREE-neuro-hacker-wristband" element={<FreeNeuroHackerWristband />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

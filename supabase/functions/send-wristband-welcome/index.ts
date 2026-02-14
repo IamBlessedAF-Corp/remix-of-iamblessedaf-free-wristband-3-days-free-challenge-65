@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { email, firstName } = await req.json();
+    const { email, firstName, phone } = await req.json();
     if (!email) throw new Error("Email is required");
 
     const resendKey = Deno.env.get("RESEND_API_KEY");
@@ -19,6 +19,7 @@ serve(async (req) => {
 
     const name = firstName || "Future Neuro-Hacker";
 
+    // Send welcome email
     const html = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px 20px;">
         <div style="text-align: center; margin-bottom: 24px;">
@@ -40,11 +41,16 @@ serve(async (req) => {
           <li>🎁 Exclusive waitlist-only bonuses</li>
         </ul>
         <p style="font-size: 16px; line-height: 1.6; color: #333;">
-          The world's first <strong>zero-battery smart wearable neuro-hack</strong> is almost here.
+          <strong>While you wait</strong> — we want to send you a <strong>FREE prototype wristband</strong> (without the NFC) so you can start your neuro-hacker journey today! 🎁
         </p>
         <div style="text-align: center; margin: 32px 0;">
-          <a href="https://iamblessedaf.com/Reserve-a-SMART-wristband" style="background: #dc2626; color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 900; font-size: 16px; display: inline-block;">
-            🚀 Reserve with $11 — Lock 77% OFF
+          <a href="https://iamblessedaf.com/FREE-neuro-hacker-wristband" style="background: #dc2626; color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 900; font-size: 16px; display: inline-block;">
+            🎁 Claim Your FREE Wristband NOW
+          </a>
+        </div>
+        <div style="text-align: center; margin: 16px 0;">
+          <a href="https://iamblessedaf.com/Reserve-a-SMART-wristband" style="background: #333; color: white; padding: 12px 28px; border-radius: 12px; text-decoration: none; font-weight: 900; font-size: 14px; display: inline-block;">
+            🚀 Or Reserve SMART with $11 — Lock 77% OFF
           </a>
         </div>
         <p style="font-size: 13px; color: #888; text-align: center;">
@@ -54,7 +60,7 @@ serve(async (req) => {
       </div>
     `;
 
-    const res = await fetch("https://api.resend.com/emails", {
+    const emailRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -68,10 +74,48 @@ serve(async (req) => {
       }),
     });
 
-    if (!res.ok) {
-      const err = await res.text();
+    if (!emailRes.ok) {
+      const err = await emailRes.text();
       console.error("Resend error:", err);
-      throw new Error("Failed to send email");
+    }
+
+    // Send SMS if phone provided
+    if (phone) {
+      try {
+        const twilioSid = Deno.env.get("TWILIO_ACCOUNT_SID");
+        const twilioToken = Deno.env.get("TWILIO_AUTH_TOKEN");
+        const messagingServiceSid = Deno.env.get("TWILIO_MESSAGING_SERVICE_SID_TRANSACTIONAL");
+
+        if (twilioSid && twilioToken && messagingServiceSid) {
+          const smsBody = `🧠 Hey ${name}! You're on the mPFC SMART Wristband waitlist!\n\n🎁 While you wait — claim your FREE prototype wristband (no NFC) here:\nhttps://iamblessedaf.com/FREE-neuro-hacker-wristband\n\nWe'll text you the moment our Kickstarter goes LIVE so you can lock 77% OFF!\n\n— IamBlessedAF`;
+
+          const formData = new URLSearchParams();
+          formData.append("MessagingServiceSid", messagingServiceSid);
+          formData.append("To", phone);
+          formData.append("Body", smsBody);
+
+          const smsRes = await fetch(
+            `https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                Authorization: `Basic ${btoa(`${twilioSid}:${twilioToken}`)}`,
+              },
+              body: formData.toString(),
+            }
+          );
+
+          if (!smsRes.ok) {
+            const smsErr = await smsRes.text();
+            console.error("Twilio SMS error:", smsErr);
+          } else {
+            console.log("SMS sent to", phone);
+          }
+        }
+      } catch (smsError) {
+        console.error("SMS send failed:", smsError);
+      }
     }
 
     return new Response(JSON.stringify({ success: true }), {
