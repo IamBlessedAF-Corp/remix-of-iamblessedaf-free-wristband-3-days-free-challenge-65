@@ -678,6 +678,42 @@ export default function FunnelMap() {
                         </div>
                       </div>
                     </div>
+
+                    <div className="flex justify-center py-0.5">
+                      <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
+                    </div>
+
+                    {/* Kickstarter mPFC Wristband SMART */}
+                    <div className="relative rounded-xl bg-card border border-border/40 p-3 md:p-4">
+                      <div className="flex items-stretch gap-3">
+                        <div className="flex flex-col items-center shrink-0">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black border-2 border-orange-500/30 bg-orange-500/10 text-orange-500">
+                            🔥3
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <Rocket className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                            <h3 className="text-sm font-bold text-foreground">Kickstarter mPFC Neuro-Hacker Wristband SMART</h3>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground mb-2">
+                            Reserve with <strong className="text-primary">$11</strong> and secure a <strong className="text-foreground">77% OFF</strong>. Regular price <span className="line-through">$99</span> → <strong className="text-primary">$33</strong> with early-bird discount.
+                          </p>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <div className="flex items-center gap-1 bg-accent border border-primary/10 rounded-full px-2 py-0.5">
+                              <Zap className="w-3 h-3 text-orange-500" />
+                              <span className="text-[10px] font-medium text-accent-foreground">Reserve with $11 NOW → 77% OFF</span>
+                            </div>
+                            <a
+                              href="/Reserve-your-Neuro-Hack-Wristband-SMART"
+                              className="text-[10px] font-bold text-primary underline hover:text-primary/80"
+                            >
+                              View Page →
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CollapsibleContent>
               </Collapsible>
