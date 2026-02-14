@@ -126,7 +126,7 @@ const OfferMonthly = () => {
               <Button
                 onClick={handleCheckout}
                 disabled={loading}
-                className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none"
+                className="w-full min-h-[56px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight"
               >
                 {loading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Repeat className="w-5 h-5 mr-2" />}
                 {loading ? "Creating checkout…" : "YES! Lock In My Daily Brain Rewire — $11/mo"}
