@@ -135,7 +135,7 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
         <UrgencyBanner variant="wristbands" />
         <Button
           onClick={onCheckout}
-          className="w-full h-16 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl px-4"
+          className="w-full min-h-[64px] h-auto py-3 px-4 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl text-center leading-tight"
         >
           <Gift className="w-5 h-5 mr-2 flex-shrink-0" />
           <span>Claim My FREE Neuro-Hacker Wristband</span>
