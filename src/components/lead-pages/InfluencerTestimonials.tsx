@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ExternalLink, Play, Users, Instagram } from "lucide-react";
+import { Users, Instagram } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import joedavincyImg from "@/assets/testimonial-joedavincy.jpeg";
 import davenmichaelsImg from "@/assets/testimonial-davenmichaels.jpeg";
@@ -14,7 +14,7 @@ const INFLUENCERS = [
     verified: true,
     title: "Growth Hacker × 7 Inc 5000 Companies",
     img: joedavincyImg,
-    videoUrl: "https://www.instagram.com/p/CNaP-mCnhts",
+    embedUrl: "https://www.instagram.com/p/CNaP-mCnhts/embed",
     quote: "This movement is about to change the game. The gratitude wristband isn't just merch — it's a conversation starter, a brand builder, and a lead magnet all in one.",
   },
   {
@@ -24,7 +24,7 @@ const INFLUENCERS = [
     verified: false,
     title: "NY Times Best Selling Author · Founder #123Employee",
     img: davenmichaelsImg,
-    videoUrl: "https://www.instagram.com/tv/CNaUL6wJ1ib/",
+    embedUrl: "https://www.instagram.com/tv/CNaUL6wJ1ib/embed",
     quote: "I've seen thousands of marketing strategies. This one stands out because it leads with genuine value — a real gift that creates real reciprocity. Brilliant execution.",
   },
   {
@@ -34,7 +34,7 @@ const INFLUENCERS = [
     verified: true,
     title: "Entrepreneur · CEO · Author",
     img: elpatronnImg,
-    videoUrl: "https://www.instagram.com/tv/CNaUL6wJ1ib/",
+    embedUrl: "https://www.instagram.com/tv/CNaUL6wJ1ib/embed",
     quote: "If there's money to be made, I can sell it — but this? This SELLS ITSELF. You gift the wristband, the gratitude does the selling for you. My team went crazy with this.",
   },
   {
@@ -44,8 +44,8 @@ const INFLUENCERS = [
     verified: true,
     title: "Digital Entrepreneur · Educator",
     img: jefflernerImg,
-    videoUrl: "https://www.instagram.com/p/CNaP-mCnhts",
-    quote: "The principle is simple: give first, build trust, then the business follows. This wristband strategy is the physical embodiment of that principle at scale.",
+    embedUrl: "https://www.instagram.com/p/CNaP-mCnhts/embed",
+    quote: "The principle is simple: give first, build trust, then the business follows. This strategy is the physical embodiment of that principle at scale.",
   },
 ];
 
@@ -82,12 +82,11 @@ const InfluencerTestimonials = () => {
                 className="w-full h-auto object-cover"
                 loading="lazy"
               />
-              {/* Gradient overlay at bottom for readability */}
               <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-card to-transparent" />
             </div>
 
-            {/* Quote + CTA */}
-            <div className="px-5 pb-5 -mt-2 relative z-10">
+            {/* Quote */}
+            <div className="px-5 pb-4 -mt-2 relative z-10">
               <div className="flex items-center gap-2 mb-3">
                 <Instagram className="w-4 h-4 text-primary shrink-0" />
                 <span className="text-xs font-bold text-foreground">{inf.name}</span>
@@ -100,17 +99,21 @@ const InfluencerTestimonials = () => {
               <p className="text-sm text-muted-foreground leading-relaxed italic mb-4">
                 "{inf.quote}"
               </p>
+            </div>
 
-              <a
-                href={inf.videoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold px-4 py-2.5 rounded-xl transition-colors"
-              >
-                <Play className="w-3.5 h-3.5" />
-                Watch Video Testimonial
-                <ExternalLink className="w-3 h-3 opacity-60" />
-              </a>
+            {/* Embedded Instagram video */}
+            <div className="px-5 pb-5">
+              <div className="rounded-xl overflow-hidden border border-border/30">
+                <iframe
+                  src={inf.embedUrl}
+                  className="w-full border-0"
+                  style={{ minHeight: "480px" }}
+                  loading="lazy"
+                  allowTransparency
+                  allow="encrypted-media"
+                  title={`${inf.name} video testimonial`}
+                />
+              </div>
             </div>
           </motion.div>
         ))}
