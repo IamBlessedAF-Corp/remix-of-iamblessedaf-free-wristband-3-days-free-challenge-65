@@ -614,7 +614,7 @@ export default function FunnelMap() {
                       <span className="text-sm font-black uppercase tracking-wider text-orange-400">Engine Ignition — Paid Amplification</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-muted-foreground">$9K budget + Waitlist + Reserve</span>
+                      <span className="text-[10px] text-muted-foreground">$9K budget + Waitlist + Reserve + FREE prototype</span>
                       <ChevronDown className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </div>
@@ -697,15 +697,15 @@ export default function FunnelMap() {
                             <h3 className="text-sm font-bold text-foreground">Waitlist — mPFC SMART Wristband</h3>
                           </div>
                           <p className="text-[11px] text-muted-foreground mb-2">
-                            Join the <strong className="text-foreground">waitlist</strong> for the mPFC Neuro-Hacker Wristband SMART. Email capture + welcome email via Resend. Social proof counter shows live waitlist count.
+                            Join the <strong className="text-foreground">waitlist</strong> for the mPFC Neuro-Hacker Wristband SMART. Email + SMS capture + welcome notifications via Resend & Twilio. Social proof counter shows live waitlist count.
                           </p>
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <div className="flex items-center gap-1 bg-accent border border-primary/10 rounded-full px-2 py-0.5">
                               <Zap className="w-3 h-3 text-orange-500" />
-                              <span className="text-[10px] font-medium text-accent-foreground">Waitlist capture → welcome email → social proof</span>
+                              <span className="text-[10px] font-medium text-accent-foreground">Waitlist capture → email + SMS → social proof</span>
                             </div>
                             <a
-                              href="/Reserve-your-Neuro-Hack-Wristband-SMART"
+                              href="/neuro-hacker-waitlist"
                               className="text-[10px] font-bold text-primary underline hover:text-primary/80"
                             >
                               View Page →
@@ -742,6 +742,42 @@ export default function FunnelMap() {
                             </div>
                             <a
                               href="/Reserve-a-SMART-wristband"
+                              className="text-[10px] font-bold text-primary underline hover:text-primary/80"
+                            >
+                              View Page →
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-center py-0.5">
+                      <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
+                    </div>
+
+                    {/* FREE Prototype Wristband */}
+                    <div className="relative rounded-xl bg-card border border-border/40 p-3 md:p-4">
+                      <div className="flex items-stretch gap-3">
+                        <div className="flex flex-col items-center shrink-0">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black border-2 border-orange-500/30 bg-orange-500/10 text-orange-500">
+                            🔥5
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <Gift className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                            <h3 className="text-sm font-bold text-foreground">FREE Prototype Wristband</h3>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground mb-2">
+                            While waitlist users wait for SMART, send them a <strong className="text-foreground">FREE non-NFC prototype</strong>. Bridge page from waitlist welcome email/SMS.
+                          </p>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <div className="flex items-center gap-1 bg-accent border border-primary/10 rounded-full px-2 py-0.5">
+                              <Zap className="w-3 h-3 text-orange-500" />
+                              <span className="text-[10px] font-medium text-accent-foreground">Waitlist bridge → free prototype → main funnel</span>
+                            </div>
+                            <a
+                              href="/FREE-neuro-hacker-wristband"
                               className="text-[10px] font-bold text-primary underline hover:text-primary/80"
                             >
                               View Page →

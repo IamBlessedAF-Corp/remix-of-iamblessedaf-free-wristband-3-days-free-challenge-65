@@ -3,6 +3,7 @@ import { Rocket, Loader2 } from "lucide-react";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useWristbandWaitlist } from "@/hooks/useWristbandWaitlist";
+import { useReservationCount } from "@/hooks/useReservationCount";
 import { Button } from "@/components/ui/button";
 import MpfcTooltip from "@/components/offer/MpfcTooltip";
 import logoImg from "@/assets/logo.png";
@@ -29,7 +30,8 @@ const ReserveSmartWristband = () => {
   });
 
   const { startCheckout, loading } = useStripeCheckout();
-  const { count } = useWristbandWaitlist();
+  const { count: waitlistCount } = useWristbandWaitlist();
+  const { count: reservationCount } = useReservationCount();
 
   const variant = new URLSearchParams(window.location.search).get("variant");
   const isOneVariant = variant === "1";
@@ -56,19 +58,27 @@ const ReserveSmartWristband = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
         >
-          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2">
-            <div className="flex -space-x-2">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="w-6 h-6 rounded-full bg-primary/30 border-2 border-background" />
-              ))}
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2">
+              <div className="flex -space-x-2">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="w-6 h-6 rounded-full bg-primary/30 border-2 border-background" />
+                ))}
+              </div>
+              <span className="text-sm font-bold text-foreground">
+                {waitlistCount.toLocaleString()}+ on waitlist
+              </span>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+              </span>
             </div>
-            <span className="text-sm font-bold text-foreground">
-              {count.toLocaleString()}+ people on the waitlist
-            </span>
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-            </span>
+            <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-2">
+              <Rocket className="w-4 h-4 text-emerald-500" />
+              <span className="text-sm font-bold text-foreground">
+                {reservationCount.toLocaleString()} reserved
+              </span>
+            </div>
           </div>
         </motion.div>
 
