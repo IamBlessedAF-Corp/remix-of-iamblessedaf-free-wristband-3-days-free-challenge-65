@@ -24,6 +24,7 @@ import coachSarahImg from "@/assets/coach-sarah.jpg";
 import coachMarcusImg from "@/assets/coach-marcus.jpg";
 import coachDianaImg from "@/assets/coach-diana.jpg";
 import InfluencerTestimonials from "@/components/lead-pages/InfluencerTestimonials";
+import LeadPageCountdown from "@/components/lead-pages/LeadPageCountdown";
 
 /* ─── Data ─── */
 const STATS = [
@@ -206,6 +207,10 @@ export default function ExpertsLeads() {
               100% free. Same strategy behind 7 Inc 5000 companies. No credit card required.
             </p>
           </motion.div>
+
+          <motion.div className="mt-8 max-w-md mx-auto" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+            <LeadPageCountdown />
+          </motion.div>
         </div>
       </section>
 
@@ -349,7 +354,7 @@ export default function ExpertsLeads() {
           <Card className="border-primary/20 overflow-hidden">
             <CardContent className="p-0">
               {VALUE_STACK.map((v, i) => (
-                <div key={i} className={`flex items-center justify-between px-5 py-3.5 ${i < VALUE_STACK.length - 1 ? "border-b border-border/30" : ""}`}>
+                <div key={i} className="flex items-center justify-between px-5 py-3.5 border-b border-border/30">
                   <div className="flex items-center gap-2.5">
                     <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
                     <span className="text-sm font-medium text-foreground">{v.item}</span>
@@ -357,6 +362,10 @@ export default function ExpertsLeads() {
                   <span className="text-sm font-bold text-muted-foreground line-through">{v.value}</span>
                 </div>
               ))}
+              <div className="flex items-center justify-between px-5 py-3.5 border-b border-border/30">
+                <span className="text-sm font-bold text-foreground">Total Value</span>
+                <span className="text-lg font-black text-muted-foreground line-through">$18,200</span>
+              </div>
               <div className="bg-primary/5 px-5 py-4 flex items-center justify-between">
                 <span className="text-base font-bold text-foreground">Your Price Today</span>
                 <span className="text-2xl font-black text-primary">$0</span>
