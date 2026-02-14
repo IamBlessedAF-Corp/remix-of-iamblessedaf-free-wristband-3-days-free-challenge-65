@@ -1,10 +1,17 @@
 import { motion } from "framer-motion";
+import { ReactNode } from "react";
 import AuthorAvatar from "@/components/offer/AuthorAvatar";
+import MpfcTooltip from "@/components/offer/MpfcTooltip";
 
-const QUOTES = [
+interface Quote {
+  text: ReactNode;
+  author: "huberman" | "tony-robbins" | "joe-dispenza";
+}
+
+const QUOTES: Quote[] = [
   {
-    text: "The most potent form of gratitude isn't giving thanks — it's receiving genuine appreciation. That's where the brain truly transforms.",
-    author: "huberman" as const,
+    text: <>The most potent form of gratitude isn't giving thanks — it's receiving genuine appreciation. That's where the <MpfcTooltip /> truly transforms.</>,
+    author: "huberman",
   },
   {
     text: "Whatever you consistently attach to 'I Am' with strong emotion — you will eventually become.",

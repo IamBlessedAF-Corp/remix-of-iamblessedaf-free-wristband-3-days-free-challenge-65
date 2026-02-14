@@ -13,7 +13,7 @@ const MpfcTooltip = () => (
     <HoverCardTrigger asChild>
       <button
         type="button"
-        className="inline font-bold text-destructive underline decoration-destructive underline-offset-2 cursor-pointer hover:opacity-80 transition-opacity"
+        className="inline font-bold text-destructive underline decoration-destructive underline-offset-2 cursor-pointer hover:opacity-80 transition-all animate-pulse hover:animate-none hover:drop-shadow-[0_0_6px_hsl(var(--destructive)/0.5)]"
       >
         mPFC
       </button>

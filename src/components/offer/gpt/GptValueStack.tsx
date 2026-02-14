@@ -1,6 +1,16 @@
 import { motion } from "framer-motion";
+import { ReactNode } from "react";
+import MpfcTooltip from "@/components/offer/MpfcTooltip";
 
-const VALUES = [
+interface ValueItem {
+  emoji: string;
+  title: string;
+  benefit: string;
+  description: ReactNode;
+  sub: string;
+}
+
+const VALUES: ValueItem[] = [
   {
     emoji: "💌",
     title: "A Gift That Makes Them Cry (Happy Tears)",
@@ -37,8 +47,7 @@ const VALUES = [
     emoji: "🎨",
     title: "Your Creative Gratitude Legacy",
     benefit: "Co-designed with a PhD neuroscientist — 7+ years of research behind every detail",
-    description:
-      "This isn't random merch. Every word, every design choice is crafted to trigger the gratitude circuits in your brain. You're not buying a product — you're starting a movement.",
+    description: <>This isn't random merch. Every word, every design choice is crafted to trigger your <MpfcTooltip /> gratitude circuits. You're not buying a product — you're starting a movement.</>,
     sub: "Based on 8+ peer-reviewed studies",
   },
 ];
