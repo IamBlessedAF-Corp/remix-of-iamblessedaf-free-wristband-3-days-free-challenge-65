@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { FlaskConical, ChevronDown, BookOpen } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import MpfcTooltip from "@/components/offer/MpfcTooltip";
 import logo from "@/assets/logo.png";
 
 const STUDIES = [
@@ -72,12 +73,12 @@ const GratitudeEngineLoop = ({ delay = 0.4, className = "" }: GratitudeEngineLoo
           .
         </p>
          <p className="text-xs text-muted-foreground leading-relaxed">
-           The <strong className="text-foreground">Neuro-Hack</strong> to spike{" "}
-           <strong className="text-primary">Dopamine & Serotonin</strong> (Overall Well-Being) — pre-built into a{" "}
-           <strong className="text-foreground">trigger</strong>,{" "}
-           <strong className="text-foreground">habit-forming system</strong> &{" "}
-           <strong className="text-primary">brand</strong>.
-         </p>
+            The <strong className="text-foreground">Neuro-Hack</strong> to spike{" "}
+            <strong className="text-primary">Dopamine & Serotonin</strong> via <MpfcTooltip /> activation — pre-built into a{" "}
+            <strong className="text-foreground">trigger</strong>,{" "}
+            <strong className="text-foreground">habit-forming system</strong> &{" "}
+            <strong className="text-primary">brand</strong>.
+          </p>
          <p className="text-xs text-primary font-bold leading-relaxed mt-2">
            🎰 Because you're gifting 2 Neuro-Hacker Wristbands to 2 friends — you earn <span className="underline">2 bonus spins</span> on the reward wheel after checkout!
          </p>
