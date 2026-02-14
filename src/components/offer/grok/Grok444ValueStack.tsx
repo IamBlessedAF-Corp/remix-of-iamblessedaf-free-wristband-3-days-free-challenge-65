@@ -1,6 +1,15 @@
 import { motion } from "framer-motion";
+import MpfcTooltip from "@/components/offer/MpfcTooltip";
+import { ReactNode } from "react";
 
-const VALUES = [
+interface ValueItem {
+  emoji: string;
+  title: string;
+  description: ReactNode;
+  sub: string;
+}
+
+const VALUES: ValueItem[] = [
   {
     emoji: "🖤",
     title: "5× Black 'Brain Hack' Shirts — Value: $225",
@@ -32,8 +41,7 @@ const VALUES = [
   {
     emoji: "🧠",
     title: "Full Brain Hack Protocol — Value: $333",
-    description:
-      "Huberman's research: 5 shirts + 14 bands = daily mPFC activation. Total value: $888+. You pay $444 — 50% off.",
+    description: <>Huberman's research: 5 shirts + 14 bands = daily <MpfcTooltip /> activation. Total value: $888+. You pay $444 — 50% off.</>,
     sub: "Based on 8+ peer-reviewed studies",
   },
 ];
