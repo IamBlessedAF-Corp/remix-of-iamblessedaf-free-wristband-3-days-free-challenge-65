@@ -157,7 +157,7 @@ const Index = () => {
           >
             <Button
               onClick={handleClaim}
-              className="w-full h-14 text-base md:text-lg font-bold btn-glow px-4"
+              className="w-full min-h-[56px] h-auto py-3 text-base md:text-lg font-bold btn-glow px-4 text-center leading-tight"
             >
               <Sparkles className="w-5 h-5 mr-2 flex-shrink-0" />
               Claim My FREE Neuro-Hacker Wristband & Join
