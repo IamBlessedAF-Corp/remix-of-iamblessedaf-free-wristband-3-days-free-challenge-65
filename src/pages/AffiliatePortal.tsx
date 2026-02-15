@@ -21,6 +21,7 @@ import EmbeddedClipperDashboard from "@/components/portal/EmbeddedClipperDashboa
 import ContentVault from "@/components/portal/ContentVault";
 import AffiliateCreditTracker from "@/components/portal/AffiliateCreditTracker";
 import PortalAccountSettings from "@/components/portal/PortalAccountSettings";
+import PortalNotificationBell from "@/components/portal/PortalNotificationBell";
 import logoImg from "@/assets/logo.png";
 
 type Tab = "dashboard" | "leaderboard" | "referrals" | "missions" | "store" | "clip" | "repost" | "account";
@@ -127,15 +128,18 @@ const AffiliatePortal = () => {
             <img src={logoImg} alt="Logo" className="h-7" />
             <span className="text-sm font-bold text-foreground hidden sm:inline">Affiliate Portal</span>
           </div>
-          <Button
-            onClick={() => signOut()}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <LogOut className="w-4 h-4 mr-1.5" />
-            <span className="hidden sm:inline">Sign Out</span>
-          </Button>
+          <div className="flex items-center gap-1">
+            <PortalNotificationBell userId={user.id} />
+            <Button
+              onClick={() => signOut()}
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <LogOut className="w-4 h-4 mr-1.5" />
+              <span className="hidden sm:inline">Sign Out</span>
+            </Button>
+          </div>
         </div>
       </header>
 
