@@ -77,3 +77,6 @@ verify_jwt = false
 
 [functions.send-weekly-digest]
 verify_jwt = false
+
+[functions.send-email-otp]
+verify_jwt = false
