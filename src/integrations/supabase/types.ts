@@ -747,6 +747,33 @@ export type Database = {
         }
         Relationships: []
       }
+      repost_logs: {
+        Row: {
+          clip_id: string
+          clip_title: string | null
+          created_at: string
+          id: string
+          referral_link: string | null
+          user_id: string
+        }
+        Insert: {
+          clip_id: string
+          clip_title?: string | null
+          created_at?: string
+          id?: string
+          referral_link?: string | null
+          user_id: string
+        }
+        Update: {
+          clip_id?: string
+          clip_title?: string | null
+          created_at?: string
+          id?: string
+          referral_link?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       scheduled_gratitude_messages: {
         Row: {
           created_at: string | null

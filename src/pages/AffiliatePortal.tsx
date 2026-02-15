@@ -192,7 +192,7 @@ const AffiliatePortal = () => {
             )}
             {activeTab === "missions" && <PortalMissions />}
             {activeTab === "clip" && <EmbeddedClipperDashboard userId={user.id} />}
-            {activeTab === "repost" && <ContentVault referralCode={portalData.profile?.referral_code} />}
+            {activeTab === "repost" && <ContentVault referralCode={portalData.profile?.referral_code} userId={user.id} />}
             {activeTab === "store" && (
               <PortalRewardsStore userId={user.id} balance={portalData.wallet?.balance ?? 0} />
             )}
