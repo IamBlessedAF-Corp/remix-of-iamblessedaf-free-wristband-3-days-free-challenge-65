@@ -79,6 +79,7 @@ export default function CreditREAgent() {
       supabase.functions.invoke("send-expert-welcome", { body: { email, name, niche: niche || "Real Estate" } }).catch(console.error);
       setEnrolled(true);
       toast.success("🎉 You're in! Check your email for next steps.");
+      setTimeout(() => { window.location.href = "/3300us-Credit-Portal"; }, 2000);
     } catch { toast.error("Something went wrong. Please try again."); } finally { setSubmitting(false); }
   };
 

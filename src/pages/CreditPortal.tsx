@@ -1,46 +1,81 @@
-// /3300us-Credit — Portal affiliate conversion page
-// Converts portal users into affiliates by reposting gratitude & neuroscience clips
+// /3300us-Credit — Unified affiliate onboarding hub
+// Users choose their role, then get redirected to the specific funnel page
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  ArrowRight, CheckCircle, Gift, Sparkles, Star, TrendingUp, Zap, Share2, Brain, Heart, Video, Users,
+  ArrowRight, Sparkles, Gift, TrendingUp, Star, Brain, Heart, Video, Users,
+  Briefcase, Home, Share2, Target, Scissors, UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import logoImg from "@/assets/logo.png";
 import InfluencerTestimonials from "@/components/lead-pages/InfluencerTestimonials";
 import LeadPageCountdown from "@/components/lead-pages/LeadPageCountdown";
 
-const MISSION_STEPS = [
-  { icon: Video, title: "Pick a Clip from the Vault", desc: "Choose from viral gratitude & neuroscience clips featuring Tony Robbins, Huberman, Joe Dispenza & more." },
-  { icon: Share2, title: "Repost With Your Referral Link", desc: "Post on TikTok, Reels, or Shorts with #IamBlessedAF and your unique referral link in bio." },
-  { icon: Brain, title: "Hack Everyone's Brain With Gratitude", desc: "Every view activates the mPFC — the brain region that releases serotonin & dopamine. You're literally making people happier." },
-  { icon: Heart, title: "Help the Mission & Earn", desc: "Every clip drives free wristband claims, challenge signups & donations. You earn $2.22–$1,111 per clip + Blessed Coins." },
+const AFFILIATE_ROLES = [
+  {
+    id: "expert",
+    label: "Expert / Coach / Consultant",
+    desc: "Coaches, consultants, speakers, course creators",
+    icon: Briefcase,
+    route: "/3300us-Credit-Expert",
+  },
+  {
+    id: "realtor",
+    label: "Real Estate Agent",
+    desc: "Realtors, brokers, real estate teams",
+    icon: Home,
+    route: "/3300us-Credit-RE-Agent",
+  },
+  {
+    id: "network-marketer",
+    label: "Network Marketer",
+    desc: "MLM reps, direct sales, social sellers",
+    icon: Users,
+    route: "/3300us-Credit-N-Marketer",
+  },
+  {
+    id: "affiliate-marketer",
+    label: "Affiliate Marketer",
+    desc: "Media buyers, content affiliates, digital marketers",
+    icon: Target,
+    route: "/3300us-Credit-Affiliate-Marketer",
+  },
+  {
+    id: "clipper",
+    label: "Content Clipper",
+    desc: "Clip & repost gratitude content, earn $2.22–$1,111 per clip",
+    icon: Scissors,
+    route: "/3300us-Credit-Clipper",
+  },
+  {
+    id: "other",
+    label: "Other / Not Sure Yet",
+    desc: "Entrepreneurs, influencers, or just exploring",
+    icon: UserPlus,
+    route: "/3300us-Credit-Clipper",
+  },
+];
+
+const STATS = [
+  { value: "$3,300", label: "FREE Credit", icon: Gift },
+  { value: "2.7x", label: "Lead Capture", icon: TrendingUp },
+  { value: "7", label: "Inc 5000 Companies", icon: Star },
 ];
 
 const WHY_JOIN = [
-  "You already believe in the mission — now amplify it",
-  "Get paid $2.22+ for every clip, even at 1K views",
   "FREE $3,300 marketing credit from Joe Da Vincy",
-  "Access the Content Vault — no original content needed",
-  "Earn Blessed Coins for the Rewards Store",
+  "Same system Inc 5000 companies paid $25,000 for",
+  "Custom branded funnel — YOUR branding, YOUR offers",
+  "Reactivate your list & past clients on autopilot",
+  "Earn Blessed Coins + climb the leaderboard",
   "Help donate meals & spread gratitude globally",
 ];
 
 export default function CreditPortal() {
-  const { user } = useAuth();
   const navigate = useNavigate();
-
-  const handleGetStarted = () => {
-    if (user) {
-      navigate("/clipper-dashboard");
-    } else {
-      navigate("/3300us-Credit-Clipper");
-    }
-  };
+  const [hoveredRole, setHoveredRole] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,29 +86,27 @@ export default function CreditPortal() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <img src={logoImg} alt="I am Blessed AF" className="h-10 mx-auto mb-5" />
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1">
-              <Sparkles className="w-3 h-3 mr-1" /> AMBASSADOR OPPORTUNITY
+              <Sparkles className="w-3 h-3 mr-1" /> AFFILIATE PROGRAM
             </Badge>
             <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
-              Become a <span className="text-primary">Gratitude Affiliate</span>
+              Get a FREE <span className="text-primary">$3,300 Marketing Credit</span>
               <br />
-              Help the Mission. Get Paid. 🧠
+              Choose Your Path 🚀
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-4 leading-relaxed">
-              Repost <strong className="text-foreground">viral gratitude & neuroscience clips</strong> from our Content Vault.
-              Every clip you post <strong className="text-foreground">hacks viewers' brains with gratitude</strong> — activating the mPFC
-              and releasing happiness chemicals. You earn <strong className="text-primary">$2.22–$1,111 per clip</strong> while helping the mission.
-            </p>
-            <p className="text-sm text-muted-foreground mb-6">
-              Plus: <strong className="text-primary">FREE $3,300 marketing credit</strong> from Joe Da Vincy — the same system Inc 5000 companies paid $25,000 for.
+              The <strong className="text-foreground">same proven system Inc 5000 companies paid $25,000 for</strong> — 
+              customized for <strong className="text-foreground">YOUR industry</strong>. 
+              Pick your role below and get started in minutes.
             </p>
           </motion.div>
 
-          <motion.div className="grid grid-cols-3 gap-3 mb-8" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-            {[
-              { value: "$3,300", label: "FREE Credit", icon: Gift },
-              { value: "$2.22+", label: "Per Clip", icon: TrendingUp },
-              { value: "🧠", label: "Hack Brains", icon: Brain },
-            ].map((s, i) => (
+          <motion.div
+            className="grid grid-cols-3 gap-3 mb-8"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            {STATS.map((s, i) => (
               <div key={i} className="bg-card border border-border/40 rounded-xl p-3 text-center">
                 <s.icon className="w-5 h-5 text-primary mx-auto mb-1" />
                 <p className="text-2xl font-black text-foreground">{s.value}</p>
@@ -82,43 +115,60 @@ export default function CreditPortal() {
             ))}
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-            <Button size="lg" onClick={handleGetStarted} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2 btn-glow">
-              {user ? "Open Clipper Dashboard" : "Start Clipping & Earning"} <ArrowRight className="w-5 h-5" />
-            </Button>
-            <p className="text-xs text-muted-foreground mt-2">100% free · No followers required · We give you everything you need</p>
-          </motion.div>
-
-          <motion.div className="mt-8 max-w-md mx-auto" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+          <motion.div
+            className="mt-4 max-w-md mx-auto"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
             <LeadPageCountdown />
           </motion.div>
         </div>
       </section>
 
-      {/* How It Works */}
+      {/* Role Picker */}
       <section className="bg-card border-y border-border/30">
         <div className="max-w-3xl mx-auto px-4 py-14">
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2">
-              How You <span className="text-primary">Help & Earn</span>
+              I Am a <span className="text-primary">_______</span>
             </h2>
             <p className="text-sm text-muted-foreground text-center mb-10">
-              4 steps to spread gratitude, hack brains & get paid
+              Select your role to get a funnel customized for YOUR industry
             </p>
-            <div className="space-y-4">
-              {MISSION_STEPS.map((step, i) => (
-                <motion.div key={i} className="flex items-start gap-4 bg-background border border-border/40 rounded-xl p-5" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <step.icon className="w-6 h-6 text-primary" />
+
+            <div className="grid sm:grid-cols-2 gap-3">
+              {AFFILIATE_ROLES.map((role, i) => (
+                <motion.button
+                  key={role.id}
+                  onClick={() => navigate(role.route)}
+                  onMouseEnter={() => setHoveredRole(role.id)}
+                  onMouseLeave={() => setHoveredRole(null)}
+                  className={`flex items-start gap-4 bg-background border rounded-xl p-5 text-left transition-all duration-200 ${
+                    hoveredRole === role.id
+                      ? "border-primary shadow-lg shadow-primary/10 scale-[1.02]"
+                      : "border-border/40 hover:border-primary/50"
+                  }`}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.06 }}
+                >
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                    hoveredRole === role.id ? "bg-primary text-primary-foreground" : "bg-primary/10"
+                  }`}>
+                    <role.icon className={`w-6 h-6 ${hoveredRole === role.id ? "text-primary-foreground" : "text-primary"}`} />
                   </div>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[10px] font-bold text-primary bg-primary/10 rounded-full px-2 py-0.5">STEP {i + 1}</span>
+                      <h3 className="text-sm font-bold text-foreground">{role.label}</h3>
+                      <ArrowRight className={`w-4 h-4 text-primary shrink-0 transition-transform ${
+                        hoveredRole === role.id ? "translate-x-1" : ""
+                      }`} />
                     </div>
-                    <h3 className="text-base font-bold text-foreground mb-1">{step.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{role.desc}</p>
                   </div>
-                </motion.div>
+                </motion.button>
               ))}
             </div>
           </motion.div>
@@ -129,12 +179,19 @@ export default function CreditPortal() {
       <section className="max-w-3xl mx-auto px-4 py-14">
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
           <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-8">
-            Why Become a <span className="text-primary">Gratitude Affiliate</span>?
+            Why Join the <span className="text-primary">Gratitude Affiliate</span> Program?
           </h2>
           <div className="grid md:grid-cols-2 gap-3">
             {WHY_JOIN.map((reason, i) => (
-              <motion.div key={i} className="flex items-start gap-3 bg-card border border-border/40 rounded-xl p-4" initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }}>
-                <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <motion.div
+                key={i}
+                className="flex items-start gap-3 bg-card border border-border/40 rounded-xl p-4"
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.06 }}
+              >
+                <Heart className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <p className="text-sm text-foreground">{reason}</p>
               </motion.div>
             ))}
@@ -149,14 +206,18 @@ export default function CreditPortal() {
       <section className="bg-foreground">
         <div className="max-w-3xl mx-auto px-4 py-14 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-background mb-3">
-            Help the Mission. <span className="text-primary">Get Paid.</span>
+            Ready to Get Your FREE <span className="text-primary">$3,300 Credit</span>?
           </h2>
           <p className="text-sm text-background/70 max-w-md mx-auto mb-6">
-            Every clip you post spreads gratitude, activates happiness chemicals in viewers' brains,
-            and earns you money. It's the ultimate win-win-win.
+            Pick your role above and get a custom-branded funnel in 48 hours.
+            Same system behind 2.7x lead capture for 7 Inc 5000 companies.
           </p>
-          <Button size="lg" onClick={handleGetStarted} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2">
-            {user ? "Open Clipper Dashboard" : "Start Clipping & Earning"} <ArrowRight className="w-5 h-5" />
+          <Button
+            size="lg"
+            onClick={() => document.querySelector('.bg-card.border-y')?.scrollIntoView({ behavior: 'smooth' })}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2"
+          >
+            Choose My Role & Get Started <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
       </section>
@@ -164,7 +225,9 @@ export default function CreditPortal() {
       <footer className="border-t border-border/30 bg-card">
         <div className="max-w-3xl mx-auto px-4 py-6 text-center">
           <img src={logoImg} alt="Logo" className="h-6 mx-auto mb-2 opacity-50" />
-          <p className="text-[10px] text-muted-foreground">© {new Date().getFullYear()} I am Blessed AF™ — All rights reserved.</p>
+          <p className="text-[10px] text-muted-foreground">
+            © {new Date().getFullYear()} I am Blessed AF™ — All rights reserved.
+          </p>
         </div>
       </footer>
     </div>

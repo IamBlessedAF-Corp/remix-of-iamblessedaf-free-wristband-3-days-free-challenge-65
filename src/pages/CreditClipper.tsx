@@ -35,7 +35,7 @@ const CreditClipper = () => {
   const openSignup = () => setShowSignupModal(true);
   const handleSignupSuccess = () => {
     setShowSignupModal(false);
-    window.location.href = "/clipper-dashboard";
+    window.location.href = "/3300us-Credit-Portal";
   };
 
   return (

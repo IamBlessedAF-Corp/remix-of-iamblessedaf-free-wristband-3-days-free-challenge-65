@@ -79,6 +79,7 @@ export default function CreditNMarketer() {
       supabase.functions.invoke("send-network-marketer-welcome", { body: { email, name, niche: niche || "Network Marketing" } }).catch(console.error);
       setEnrolled(true);
       toast.success("🎉 You're in! Check your email for your funnel access & DM scripts.");
+      setTimeout(() => { window.location.href = "/3300us-Credit-Portal"; }, 2000);
     } catch { toast.error("Something went wrong. Please try again."); } finally { setSubmitting(false); }
   };
 
