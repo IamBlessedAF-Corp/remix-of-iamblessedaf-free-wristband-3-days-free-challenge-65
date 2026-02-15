@@ -61,9 +61,11 @@ const TIERS: Tier[] = [
 interface AffiliateCreditTrackerProps {
   referralCode?: string;
   userId?: string;
+  userEmail?: string;
+  displayName?: string;
 }
 
-export default function AffiliateCreditTracker({ referralCode, userId }: AffiliateCreditTrackerProps) {
+export default function AffiliateCreditTracker({ referralCode, userId, userEmail, displayName }: AffiliateCreditTrackerProps) {
   const [wristbandCount, setWristbandCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const prevTierRef = useRef<string | null>(null);
@@ -109,6 +111,22 @@ export default function AffiliateCreditTracker({ referralCode, userId }: Affilia
         description: `You've earned $${currentTier.credit.toLocaleString()} in marketing credit!`,
         duration: 6000,
       });
+
+      // Send milestone email notification
+      if (userEmail) {
+        supabase.functions.invoke("send-tier-milestone-email", {
+          body: {
+            email: userEmail,
+            name: displayName || undefined,
+            tier: currentTier.id,
+            credit: currentTier.credit,
+            wristbands: currentTier.wristbands,
+          },
+        }).then(({ error }) => {
+          if (error) console.error("Tier email failed:", error);
+          else console.log("Tier milestone email sent for:", currentTier.id);
+        });
+      }
     }
 
     localStorage.setItem("affiliate-last-tier", currentTier.id);

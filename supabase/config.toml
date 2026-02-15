@@ -71,3 +71,6 @@ verify_jwt = false
 
 [functions.send-wristband-welcome]
 verify_jwt = false
+
+[functions.send-tier-milestone-email]
+verify_jwt = false

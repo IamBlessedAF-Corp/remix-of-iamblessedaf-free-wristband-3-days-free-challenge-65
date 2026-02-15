@@ -174,6 +174,8 @@ const AffiliatePortal = () => {
                 <AffiliateCreditTracker
                   referralCode={portalData.profile?.referral_code}
                   userId={user.id}
+                  userEmail={user.email || ""}
+                  displayName={portalData.profile?.display_name || undefined}
                 />
                 <PortalDashboard
                   profile={portalData.profile}
