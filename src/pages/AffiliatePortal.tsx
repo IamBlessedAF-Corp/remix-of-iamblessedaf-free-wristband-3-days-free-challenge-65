@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Trophy, Share2, ShoppingBag, Target, Scissors, Video,
-  LogOut, Loader2, ArrowRight,
+  LogOut, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,6 +17,8 @@ import PortalRewardsStore from "@/components/portal/PortalRewardsStore";
 import PortalMissions from "@/components/portal/PortalMissions";
 import PortalActivityFeed from "@/components/portal/PortalActivityFeed";
 import ShareMilestoneTracker from "@/components/viral/ShareMilestoneTracker";
+import EmbeddedClipperDashboard from "@/components/portal/EmbeddedClipperDashboard";
+import ContentVault from "@/components/portal/ContentVault";
 import logoImg from "@/assets/logo.png";
 
 type Tab = "dashboard" | "leaderboard" | "referrals" | "missions" | "store" | "clip" | "repost";
@@ -189,8 +191,8 @@ const AffiliatePortal = () => {
               />
             )}
             {activeTab === "missions" && <PortalMissions />}
-            {activeTab === "clip" && <ClipTabPlaceholder />}
-            {activeTab === "repost" && <RepostTabPlaceholder />}
+            {activeTab === "clip" && <EmbeddedClipperDashboard userId={user.id} />}
+            {activeTab === "repost" && <ContentVault referralCode={portalData.profile?.referral_code} />}
             {activeTab === "store" && (
               <PortalRewardsStore userId={user.id} balance={portalData.wallet?.balance ?? 0} />
             )}
@@ -200,47 +202,5 @@ const AffiliatePortal = () => {
     </div>
   );
 };
-
-/* ─── Placeholder tabs for Phase 2 ─── */
-
-const ClipTabPlaceholder = () => (
-  <div className="text-center py-16 space-y-4">
-    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
-      <Scissors className="w-8 h-8 text-primary" />
-    </div>
-    <h3 className="text-xl font-bold text-foreground">Clip Gratitude Content & Earn</h3>
-    <p className="text-sm text-muted-foreground max-w-md mx-auto">
-      Pick viral gratitude & neuroscience clips, add your CTA overlay, post on TikTok/Reels/Shorts.
-      Earn <strong className="text-primary">$2.22–$1,111 per clip</strong>.
-    </p>
-    <Button
-      onClick={() => window.location.href = "/clipper-dashboard"}
-      className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl gap-2"
-    >
-      Open Full Clipper Dashboard <ArrowRight className="w-4 h-4" />
-    </Button>
-  </div>
-);
-
-const RepostTabPlaceholder = () => (
-  <div className="text-center py-16 space-y-4">
-    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
-      <Video className="w-8 h-8 text-primary" />
-    </div>
-    <h3 className="text-xl font-bold text-foreground">Repost Gratitude Content & Earn</h3>
-    <p className="text-sm text-muted-foreground max-w-md mx-auto">
-      Access the <strong className="text-foreground">Content Vault</strong> — ready-to-repost clips featuring
-      Tony Robbins, Huberman, Joe Dispenza & more. Just repost with your referral link and earn.
-    </p>
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-lg mx-auto mt-6">
-      {["Gratitude Science", "Neuroscience Hacks", "Morning Routines", "Dopamine Reset", "Mindset Shifts", "Success Stories"].map((topic, i) => (
-        <div key={i} className="bg-card border border-border/40 rounded-xl p-3 text-center">
-          <p className="text-xs font-bold text-foreground">{topic}</p>
-          <p className="text-[10px] text-muted-foreground mt-0.5">Coming soon</p>
-        </div>
-      ))}
-    </div>
-  </div>
-);
 
 export default AffiliatePortal;
