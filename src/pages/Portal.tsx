@@ -91,11 +91,11 @@ const Portal = () => {
             You're signed in but don't have a creator profile yet. Visit the contest page to set up your ambassador profile.
           </p>
           <div className="flex gap-3">
-            <Button
-              onClick={() => window.location.href = "/make-2500-with-1-ai-clip"}
+           <Button
+              onClick={() => window.location.href = "/3300us-Credit"}
               className="flex-1 h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl"
             >
-              Create Profile
+              Become an Affiliate
             </Button>
             <Button
               onClick={() => signOut()}
