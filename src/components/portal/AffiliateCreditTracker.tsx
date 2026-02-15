@@ -1,9 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Gift, Trophy, Lock, Unlock, TrendingUp, Star, Crown } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import confetti from "canvas-confetti";
+import { toast } from "sonner";
 
 interface Tier {
   id: string;
@@ -62,18 +66,54 @@ interface AffiliateCreditTrackerProps {
 export default function AffiliateCreditTracker({ referralCode, userId }: AffiliateCreditTrackerProps) {
   const [wristbandCount, setWristbandCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const prevTierRef = useRef<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!referralCode) { setLoading(false); return; }
-    const fetch = async () => {
+    const fetchData = async () => {
       const { data } = await supabase.rpc("get_affiliate_wristband_count", {
         p_referral_code: referralCode,
       });
       setWristbandCount((data as number) ?? 0);
       setLoading(false);
     };
-    fetch();
+    fetchData();
   }, [referralCode]);
+
+  // Detect tier changes and celebrate
+  useEffect(() => {
+    const currentTierIdx = TIERS.reduce(
+      (acc, tier, i) => (wristbandCount >= tier.wristbands ? i : acc), 0
+    );
+    const currentTier = TIERS[currentTierIdx];
+    const savedTier = localStorage.getItem("affiliate-last-tier");
+
+    if (savedTier && savedTier !== currentTier.id && currentTierIdx > 0) {
+      // Tier upgraded! Fire celebration
+      const tierColors: Record<string, string[]> = {
+        silver: ["#94a3b8", "#cbd5e1", "#64748b"],
+        gold: ["#f59e0b", "#fbbf24", "#d97706"],
+        diamond: ["#a855f7", "#7c3aed", "#c084fc", "#f59e0b"],
+      };
+      const colors = tierColors[currentTier.id] || ["#f59e0b"];
+      
+      confetti({
+        particleCount: currentTier.id === "diamond" ? 150 : currentTier.id === "gold" ? 100 : 60,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors,
+      });
+
+      toast.success(`🎉 ${currentTier.name} Unlocked!`, {
+        description: `You've earned $${currentTier.credit.toLocaleString()} in marketing credit!`,
+        duration: 6000,
+      });
+    }
+
+    localStorage.setItem("affiliate-last-tier", currentTier.id);
+    prevTierRef.current = currentTier.id;
+  }, [wristbandCount]);
 
   // Determine current tier and next tier
   const currentTierIdx = TIERS.reduce(
@@ -214,6 +254,15 @@ export default function AffiliateCreditTracker({ referralCode, userId }: Affilia
           <TrendingUp className="w-5 h-5 text-primary shrink-0" />
         </div>
       )}
+
+      {/* Diamond Ambassador link */}
+      <Button
+        variant="outline"
+        onClick={() => navigate("/diamond-ambassador")}
+        className="w-full gap-2 border-border/40 text-muted-foreground hover:text-foreground"
+      >
+        <Crown className="w-4 h-4" /> View Diamond Ambassador Perks
+      </Button>
     </div>
   );
 }
