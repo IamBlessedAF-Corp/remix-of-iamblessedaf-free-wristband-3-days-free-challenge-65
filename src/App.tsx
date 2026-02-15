@@ -42,6 +42,7 @@ import CreditREAgent from "./pages/CreditREAgent";
 import CreditAffiliateMarketer from "./pages/CreditAffiliateMarketer";
 import CreditClipper from "./pages/CreditClipper";
 import CreditPortal from "./pages/CreditPortal";
+import AffiliatePortal from "./pages/AffiliatePortal";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -95,14 +96,19 @@ const App = () => (
           <Route path="/neuro-hacker-waitlist" element={<SmartWristband />} />
           <Route path="/FREE-neuro-hacker-wristband" element={<FreeNeuroHackerWristband />} />
 
-          {/* ═══ New $3,300 Credit Funnels ═══ */}
+          {/* ═══ $3,300 Credit Funnels ═══ */}
+          <Route path="/3300us-Credit" element={<CreditPortal />} />
           <Route path="/3300us-Credit-Expert" element={<CreditExpert />} />
           <Route path="/3300us-Credit-N-Marketer" element={<CreditNMarketer />} />
           <Route path="/3300us-Credit-RE-Agent" element={<CreditREAgent />} />
           <Route path="/3300us-Credit-Affiliate-Marketer" element={<CreditAffiliateMarketer />} />
           <Route path="/3300us-Credit-Marketer" element={<CreditAffiliateMarketer />} />
           <Route path="/3300us-Credit-Clipper" element={<CreditClipper />} />
-          <Route path="/3300us-Credit" element={<CreditPortal />} />
+
+          {/* ═══ Unified Affiliate Portal (same page, multiple aliases) ═══ */}
+          <Route path="/3300us-Credit-Portal" element={<AffiliatePortal />} />
+          <Route path="/affiliate-dashboard" element={<AffiliatePortal />} />
+          <Route path="/affiliate-portal" element={<AffiliatePortal />} />
 
           {/* Legacy redirects */}
           <Route path="/experts-leads" element={<Navigate to="/3300us-Credit-Expert" replace />} />
