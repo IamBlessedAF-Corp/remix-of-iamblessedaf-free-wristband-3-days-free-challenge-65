@@ -1,0 +1,2 @@
+ALTER TABLE public.otp_codes DROP CONSTRAINT otp_codes_purpose_check;
+ALTER TABLE public.otp_codes ADD CONSTRAINT otp_codes_purpose_check CHECK (purpose = ANY (ARRAY['login', '2fa', 'password_reset', 'email_verify']));
