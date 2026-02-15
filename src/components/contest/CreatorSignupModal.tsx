@@ -109,17 +109,34 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
         return;
       }
 
-      // OTP verified — create account (auto-confirmed)
+      // OTP verified — create account
       const { error: signupErr } = await signUpWithEmail(email, password, firstName);
       if (signupErr) {
-        toast({ variant: "destructive", title: "Signup failed", description: (signupErr as any).message });
+        // If user already exists, try signing in directly
+        if (signupErr.message?.includes("already registered") || signupErr.message?.includes("already exists")) {
+          const { error: signInErr } = await signInWithEmail(email, password);
+          if (signInErr) {
+            toast({ variant: "destructive", title: "Sign-in failed", description: (signInErr as any).message });
+          } else {
+            toast({ title: "✅ Welcome back!", description: "Signed in successfully." });
+            onSuccess();
+          }
+        } else {
+          toast({ variant: "destructive", title: "Signup failed", description: (signupErr as any).message });
+        }
       } else {
-        // Send welcome email
-        try {
-          await supabase.functions.invoke("send-welcome-email", { body: { email, name: firstName } });
-        } catch (_) {}
-        toast({ title: "✅ Account created!", description: "Welcome to the community!" });
-        onSuccess();
+        // Account created — now sign in to get a session
+        const { error: signInErr } = await signInWithEmail(email, password);
+        if (signInErr) {
+          toast({ variant: "destructive", title: "Account created but sign-in failed", description: "Please sign in manually." });
+        } else {
+          // Send welcome email (fire & forget)
+          try {
+            await supabase.functions.invoke("send-welcome-email", { body: { email, name: firstName } });
+          } catch (_) {}
+          toast({ title: "✅ Account created!", description: "Welcome to the community!" });
+          onSuccess();
+        }
       }
     } catch (e) {
       toast({ variant: "destructive", title: "Error", description: "Something went wrong" });

@@ -44,7 +44,10 @@ export function useClipperDashboard(userId: string | undefined) {
   });
 
   const fetchStats = useCallback(async () => {
-    if (!userId) return;
+    if (!userId) {
+      setStats((s) => ({ ...s, loading: false }));
+      return;
+    }
 
     try {
       const thisWeekStart = getWeekStart(0);
