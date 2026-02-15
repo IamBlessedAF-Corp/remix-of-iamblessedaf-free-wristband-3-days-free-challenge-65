@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Offer22 from "./pages/Offer22";
 import Challenge from "./pages/Challenge";
 import ChallengeThanks from "./pages/ChallengeThanks";
@@ -29,16 +29,19 @@ import Experts from "./pages/Experts";
 import ScriptsReview from "./pages/ScriptsReview";
 import GratitudeClippers from "./pages/GratitudeClippers";
 import FunnelMap from "./pages/FunnelMap";
-import ExpertsLeads from "./pages/ExpertsLeads";
 import ExpertsLeadsAdmin from "./pages/ExpertsLeadsAdmin";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import SmartWristband from "./pages/SmartWristband";
 import ReserveSmartWristband from "./pages/ReserveSmartWristband";
 import FreeNeuroHackerWristband from "./pages/FreeNeuroHackerWristband";
-import NetworkMarketers from "./pages/NetworkMarketers";
-import RealtorsListActivation from "./pages/RealtorsListActivation";
 import NotFound from "./pages/NotFound";
+import CreditExpert from "./pages/CreditExpert";
+import CreditNMarketer from "./pages/CreditNMarketer";
+import CreditREAgent from "./pages/CreditREAgent";
+import CreditAffiliateMarketer from "./pages/CreditAffiliateMarketer";
+import CreditClipper from "./pages/CreditClipper";
+import CreditPortal from "./pages/CreditPortal";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -84,7 +87,6 @@ const App = () => (
           <Route path="/scripts-review" element={<ScriptsReview />} />
           <Route path="/Gratitude-Clippers" element={<GratitudeClippers />} />
           <Route path="/Traffic-Funnel" element={<FunnelMap />} />
-          <Route path="/experts-leads" element={<ExpertsLeads />} />
           <Route path="/admin/experts" element={<ExpertsLeadsAdmin />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
@@ -92,8 +94,21 @@ const App = () => (
           <Route path="/Reserve-a-SMART-wristband" element={<ReserveSmartWristband />} />
           <Route path="/neuro-hacker-waitlist" element={<SmartWristband />} />
           <Route path="/FREE-neuro-hacker-wristband" element={<FreeNeuroHackerWristband />} />
-          <Route path="/network-marketers" element={<NetworkMarketers />} />
-          <Route path="/realtors-list-activation" element={<RealtorsListActivation />} />
+
+          {/* ═══ New $3,300 Credit Funnels ═══ */}
+          <Route path="/3300us-Credit-Expert" element={<CreditExpert />} />
+          <Route path="/3300us-Credit-N-Marketer" element={<CreditNMarketer />} />
+          <Route path="/3300us-Credit-RE-Agent" element={<CreditREAgent />} />
+          <Route path="/3300us-Credit-Affiliate-Marketer" element={<CreditAffiliateMarketer />} />
+          <Route path="/3300us-Credit-Marketer" element={<CreditAffiliateMarketer />} />
+          <Route path="/3300us-Credit-Clipper" element={<CreditClipper />} />
+          <Route path="/3300us-Credit" element={<CreditPortal />} />
+
+          {/* Legacy redirects */}
+          <Route path="/experts-leads" element={<Navigate to="/3300us-Credit-Expert" replace />} />
+          <Route path="/network-marketers" element={<Navigate to="/3300us-Credit-N-Marketer" replace />} />
+          <Route path="/realtors-list-activation" element={<Navigate to="/3300us-Credit-RE-Agent" replace />} />
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
