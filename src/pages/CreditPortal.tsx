@@ -57,6 +57,27 @@ const AFFILIATE_ROLES = [
     route: "/3300us-Credit-Influencer",
   },
   {
+    id: "podcast-host",
+    label: "Podcast Host",
+    desc: "Monetize episodes with guest segments, show notes & referral links",
+    icon: Share2,
+    route: "/3300us-Credit-Podcast-Host",
+  },
+  {
+    id: "gym-owner",
+    label: "Gym Owner",
+    desc: "Boost member retention with gratitude challenges & earn on sales",
+    icon: Heart,
+    route: "/3300us-Credit-Gym-Owner",
+  },
+  {
+    id: "health-coach",
+    label: "Health Coach",
+    desc: "Add science-backed gratitude protocols to your coaching programs",
+    icon: Brain,
+    route: "/3300us-Credit-Health-Coach",
+  },
+  {
     id: "other",
     label: "Other / Not Sure Yet",
     desc: "Entrepreneurs or just exploring — we'll help you find your path",

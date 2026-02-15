@@ -8,6 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
+import thumbBrainRewire from "@/assets/vault-thumb-brain-rewire.jpg";
+import thumbNeuro from "@/assets/vault-thumb-neuro-thankyou.jpg";
+import thumbMorning from "@/assets/vault-thumb-morning.jpg";
+import thumbDopamine from "@/assets/vault-thumb-dopamine.jpg";
+import thumbSuccess from "@/assets/vault-thumb-success.jpg";
+import thumbMindset from "@/assets/vault-thumb-mindset.jpg";
+
 type Category = "all" | "gratitude" | "neuroscience" | "mindset" | "morning" | "dopamine" | "success";
 
 interface VaultClip {
@@ -32,18 +39,18 @@ const CATEGORIES: { id: Category; label: string }[] = [
 ];
 
 const PLACEHOLDER_CLIPS: VaultClip[] = [
-  { id: "1", title: "Why Gratitude Rewires Your Brain in 21 Days", category: "gratitude", thumbnail: "🧠", duration: "0:58", views: "2.4M", reposts: 847, previewUrl: "#" },
-  { id: "2", title: "The Neuroscience Behind 'Thank You'", category: "neuroscience", thumbnail: "🔬", duration: "1:12", views: "1.8M", reposts: 623, previewUrl: "#" },
-  { id: "3", title: "Morning Gratitude = 31% More Productive", category: "morning", thumbnail: "☀️", duration: "0:45", views: "3.1M", reposts: 1204, previewUrl: "#" },
-  { id: "4", title: "Dopamine Detox: Reset Your Reward System", category: "dopamine", thumbnail: "⚡", duration: "1:30", views: "5.2M", reposts: 2103, previewUrl: "#" },
-  { id: "5", title: "How Billionaires Use Gratitude Journals", category: "success", thumbnail: "💰", duration: "0:52", views: "1.1M", reposts: 412, previewUrl: "#" },
-  { id: "6", title: "Reframe Negative Thoughts in 60 Seconds", category: "mindset", thumbnail: "🔄", duration: "1:01", views: "4.7M", reposts: 1856, previewUrl: "#" },
-  { id: "7", title: "Huberman: Gratitude Changes Brain Chemistry", category: "neuroscience", thumbnail: "🧪", duration: "1:15", views: "6.3M", reposts: 3201, previewUrl: "#" },
-  { id: "8", title: "5-Minute Morning Hack Tony Robbins Swears By", category: "morning", thumbnail: "🌅", duration: "0:47", views: "2.9M", reposts: 998, previewUrl: "#" },
-  { id: "9", title: "Why Saying 'I Am Blessed' Activates Your RAS", category: "gratitude", thumbnail: "✨", duration: "0:39", views: "1.5M", reposts: 567, previewUrl: "#" },
-  { id: "10", title: "Joe Dispenza: Rewire Your Identity in 7 Days", category: "mindset", thumbnail: "🧬", duration: "1:22", views: "8.1M", reposts: 4102, previewUrl: "#" },
-  { id: "11", title: "The $33 Wristband That Feeds 111 People", category: "success", thumbnail: "🙏", duration: "0:55", views: "920K", reposts: 345, previewUrl: "#" },
-  { id: "12", title: "Dopamine Stacking: The Gratitude Loop", category: "dopamine", thumbnail: "🔋", duration: "1:08", views: "3.4M", reposts: 1432, previewUrl: "#" },
+  { id: "1", title: "Why Gratitude Rewires Your Brain in 21 Days", category: "gratitude", thumbnail: thumbBrainRewire, duration: "0:58", views: "2.4M", reposts: 847, previewUrl: "https://www.tiktok.com/@iamblessedaf" },
+  { id: "2", title: "The Neuroscience Behind 'Thank You'", category: "neuroscience", thumbnail: thumbNeuro, duration: "1:12", views: "1.8M", reposts: 623, previewUrl: "https://www.tiktok.com/@iamblessedaf" },
+  { id: "3", title: "Morning Gratitude = 31% More Productive", category: "morning", thumbnail: thumbMorning, duration: "0:45", views: "3.1M", reposts: 1204, previewUrl: "https://www.tiktok.com/@iamblessedaf" },
+  { id: "4", title: "Dopamine Detox: Reset Your Reward System", category: "dopamine", thumbnail: thumbDopamine, duration: "1:30", views: "5.2M", reposts: 2103, previewUrl: "https://www.tiktok.com/@iamblessedaf" },
+  { id: "5", title: "How Billionaires Use Gratitude Journals", category: "success", thumbnail: thumbSuccess, duration: "0:52", views: "1.1M", reposts: 412, previewUrl: "https://www.tiktok.com/@iamblessedaf" },
+  { id: "6", title: "Reframe Negative Thoughts in 60 Seconds", category: "mindset", thumbnail: thumbMindset, duration: "1:01", views: "4.7M", reposts: 1856, previewUrl: "https://www.tiktok.com/@iamblessedaf" },
+  { id: "7", title: "Huberman: Gratitude Changes Brain Chemistry", category: "neuroscience", thumbnail: thumbNeuro, duration: "1:15", views: "6.3M", reposts: 3201, previewUrl: "https://www.tiktok.com/@iamblessedaf" },
+  { id: "8", title: "5-Minute Morning Hack Tony Robbins Swears By", category: "morning", thumbnail: thumbMorning, duration: "0:47", views: "2.9M", reposts: 998, previewUrl: "https://www.tiktok.com/@iamblessedaf" },
+  { id: "9", title: "Why Saying 'I Am Blessed' Activates Your RAS", category: "gratitude", thumbnail: thumbBrainRewire, duration: "0:39", views: "1.5M", reposts: 567, previewUrl: "https://www.tiktok.com/@iamblessedaf" },
+  { id: "10", title: "Joe Dispenza: Rewire Your Identity in 7 Days", category: "mindset", thumbnail: thumbMindset, duration: "1:22", views: "8.1M", reposts: 4102, previewUrl: "https://www.tiktok.com/@iamblessedaf" },
+  { id: "11", title: "The $33 Wristband That Feeds 111 People", category: "success", thumbnail: thumbSuccess, duration: "0:55", views: "920K", reposts: 345, previewUrl: "https://www.tiktok.com/@iamblessedaf" },
+  { id: "12", title: "Dopamine Stacking: The Gratitude Loop", category: "dopamine", thumbnail: thumbDopamine, duration: "1:08", views: "3.4M", reposts: 1432, previewUrl: "https://www.tiktok.com/@iamblessedaf" },
 ];
 
 interface ContentVaultProps {
@@ -83,7 +90,6 @@ const ContentVault = ({ referralCode, userId }: ContentVaultProps) => {
     toast.success("Caption + referral link copied!");
     setTimeout(() => setCopiedId(null), 2000);
 
-    // Log repost to DB
     if (userId) {
       await supabase.from("repost_logs").insert({
         user_id: userId,
@@ -161,10 +167,15 @@ const ContentVault = ({ referralCode, userId }: ContentVaultProps) => {
             className="bg-card border border-border/40 rounded-xl overflow-hidden hover:border-primary/30 transition-all group"
           >
             {/* Thumbnail area */}
-            <div className="relative bg-secondary/30 h-28 flex items-center justify-center">
-              <span className="text-4xl">{clip.thumbnail}</span>
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
-                <Play className="w-10 h-10 text-white opacity-0 group-hover:opacity-80 transition-opacity" />
+            <div className="relative h-32 overflow-hidden">
+              <img
+                src={clip.thumbnail}
+                alt={clip.title}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-all flex items-center justify-center">
+                <Play className="w-10 h-10 text-white opacity-0 group-hover:opacity-90 transition-opacity drop-shadow-lg" />
               </div>
               <Badge className="absolute top-2 right-2 bg-black/60 text-white text-[10px] border-0">
                 {clip.duration}
@@ -195,7 +206,7 @@ const ContentVault = ({ referralCode, userId }: ContentVaultProps) => {
                   size="sm"
                   variant="outline"
                   className="h-8 text-xs rounded-lg gap-1"
-                  onClick={() => toast.info("Preview coming soon — clips are being uploaded!")}
+                  onClick={() => window.open(clip.previewUrl, "_blank")}
                 >
                   <ExternalLink className="w-3 h-3" />
                 </Button>

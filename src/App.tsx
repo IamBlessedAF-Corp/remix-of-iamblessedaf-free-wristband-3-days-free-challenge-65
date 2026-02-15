@@ -42,6 +42,9 @@ import CreditREAgent from "./pages/CreditREAgent";
 import CreditAffiliateMarketer from "./pages/CreditAffiliateMarketer";
 import CreditClipper from "./pages/CreditClipper";
 import CreditInfluencer from "./pages/CreditInfluencer";
+import CreditPodcastHost from "./pages/CreditPodcastHost";
+import CreditGymOwner from "./pages/CreditGymOwner";
+import CreditHealthCoach from "./pages/CreditHealthCoach";
 import CreditPortal from "./pages/CreditPortal";
 import AffiliatePortal from "./pages/AffiliatePortal";
 
@@ -106,6 +109,9 @@ const App = () => (
           <Route path="/3300us-Credit-Marketer" element={<CreditAffiliateMarketer />} />
           <Route path="/3300us-Credit-Clipper" element={<CreditClipper />} />
           <Route path="/3300us-Credit-Influencer" element={<CreditInfluencer />} />
+          <Route path="/3300us-Credit-Podcast-Host" element={<CreditPodcastHost />} />
+          <Route path="/3300us-Credit-Gym-Owner" element={<CreditGymOwner />} />
+          <Route path="/3300us-Credit-Health-Coach" element={<CreditHealthCoach />} />
 
           {/* ═══ Unified Affiliate Portal (same page, multiple aliases) ═══ */}
           <Route path="/3300us-Credit-Portal" element={<AffiliatePortal />} />
