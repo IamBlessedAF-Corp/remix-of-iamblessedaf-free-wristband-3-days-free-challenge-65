@@ -19,6 +19,7 @@ import PortalActivityFeed from "@/components/portal/PortalActivityFeed";
 import ShareMilestoneTracker from "@/components/viral/ShareMilestoneTracker";
 import EmbeddedClipperDashboard from "@/components/portal/EmbeddedClipperDashboard";
 import ContentVault from "@/components/portal/ContentVault";
+import AffiliateCreditTracker from "@/components/portal/AffiliateCreditTracker";
 import logoImg from "@/assets/logo.png";
 
 type Tab = "dashboard" | "leaderboard" | "referrals" | "missions" | "store" | "clip" | "repost";
@@ -168,6 +169,10 @@ const AffiliatePortal = () => {
           >
             {activeTab === "dashboard" && (
               <div className="space-y-6">
+                <AffiliateCreditTracker
+                  referralCode={portalData.profile?.referral_code}
+                  userId={user.id}
+                />
                 <PortalDashboard
                   profile={portalData.profile}
                   wallet={portalData.wallet}

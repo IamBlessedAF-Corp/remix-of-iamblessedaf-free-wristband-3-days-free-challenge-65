@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_tiers: {
+        Row: {
+          created_at: string
+          credit_amount: number
+          current_tier: string
+          id: string
+          tier_unlocked_at: string | null
+          updated_at: string
+          user_id: string
+          wristbands_distributed: number
+        }
+        Insert: {
+          created_at?: string
+          credit_amount?: number
+          current_tier?: string
+          id?: string
+          tier_unlocked_at?: string | null
+          updated_at?: string
+          user_id: string
+          wristbands_distributed?: number
+        }
+        Update: {
+          created_at?: string
+          credit_amount?: number
+          current_tier?: string
+          id?: string
+          tier_unlocked_at?: string | null
+          updated_at?: string
+          user_id?: string
+          wristbands_distributed?: number
+        }
+        Relationships: []
+      }
       bc_redemptions: {
         Row: {
           cost_bc: number
@@ -655,6 +688,7 @@ export type Database = {
           currency: string
           customer_email: string | null
           id: string
+          referral_code: string | null
           status: string
           stripe_customer_id: string | null
           stripe_session_id: string
@@ -666,6 +700,7 @@ export type Database = {
           currency?: string
           customer_email?: string | null
           id?: string
+          referral_code?: string | null
           status?: string
           stripe_customer_id?: string | null
           stripe_session_id: string
@@ -677,6 +712,7 @@ export type Database = {
           currency?: string
           customer_email?: string | null
           id?: string
+          referral_code?: string | null
           status?: string
           stripe_customer_id?: string | null
           stripe_session_id?: string
@@ -1077,6 +1113,10 @@ export type Database = {
       confirm_blessing: { Args: { token: string }; Returns: Json }
       generate_referral_code: { Args: never; Returns: string }
       generate_short_code: { Args: never; Returns: string }
+      get_affiliate_wristband_count: {
+        Args: { p_referral_code: string }
+        Returns: number
+      }
       get_global_blessing_count: { Args: never; Returns: number }
       get_smart_reservation_count: { Args: never; Returns: number }
       get_total_meals_donated: { Args: never; Returns: number }

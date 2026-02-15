@@ -14,6 +14,7 @@ import thumbMorning from "@/assets/vault-thumb-morning.jpg";
 import thumbDopamine from "@/assets/vault-thumb-dopamine.jpg";
 import thumbSuccess from "@/assets/vault-thumb-success.jpg";
 import thumbMindset from "@/assets/vault-thumb-mindset.jpg";
+import TopPerformingClips from "@/components/portal/TopPerformingClips";
 
 type Category = "all" | "gratitude" | "neuroscience" | "mindset" | "morning" | "dopamine" | "success";
 
@@ -215,6 +216,9 @@ const ContentVault = ({ referralCode, userId }: ContentVaultProps) => {
           </motion.div>
         ))}
       </div>
+
+      {/* Top Performing Clips */}
+      <TopPerformingClips />
 
       {/* Your referral link */}
       <div className="bg-card border border-border/40 rounded-xl p-4 text-center space-y-2">
