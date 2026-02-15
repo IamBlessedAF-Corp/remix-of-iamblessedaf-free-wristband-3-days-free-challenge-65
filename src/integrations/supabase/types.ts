@@ -447,6 +447,7 @@ export type Database = {
         Row: {
           blessings_confirmed: number
           created_at: string
+          digest_opted_out: boolean
           display_name: string | null
           email: string
           id: string
@@ -460,6 +461,7 @@ export type Database = {
         Insert: {
           blessings_confirmed?: number
           created_at?: string
+          digest_opted_out?: boolean
           display_name?: string | null
           email: string
           id?: string
@@ -473,6 +475,7 @@ export type Database = {
         Update: {
           blessings_confirmed?: number
           created_at?: string
+          digest_opted_out?: boolean
           display_name?: string | null
           email?: string
           id?: string

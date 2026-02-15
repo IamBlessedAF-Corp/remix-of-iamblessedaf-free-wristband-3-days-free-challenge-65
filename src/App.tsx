@@ -48,6 +48,7 @@ import CreditHealthCoach from "./pages/CreditHealthCoach";
 import CreditPortal from "./pages/CreditPortal";
 import AffiliatePortal from "./pages/AffiliatePortal";
 import DiamondAmbassador from "./pages/DiamondAmbassador";
+import UnsubscribeDigest from "./pages/UnsubscribeDigest";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -119,6 +120,7 @@ const App = () => (
           <Route path="/affiliate-dashboard" element={<AffiliatePortal />} />
           <Route path="/affiliate-portal" element={<AffiliatePortal />} />
           <Route path="/diamond-ambassador" element={<DiamondAmbassador />} />
+          <Route path="/unsubscribe-digest" element={<UnsubscribeDigest />} />
 
           {/* Legacy redirects */}
           <Route path="/experts-leads" element={<Navigate to="/3300us-Credit-Expert" replace />} />

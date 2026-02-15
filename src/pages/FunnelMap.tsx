@@ -158,10 +158,10 @@ const ASCENSION_STEPS = [
   {
     id: 11, route: "/offer/4444", name: "$4,444 Ambassador", sells: "44,444 meals ($4,444)", defaultConv: 0.004, icon: Crown,
     vitality: "Portal unlock celebration", price: 4444,
-    subtitle: "Terminal tier. Full Ambassador status. 44,444 meals. Portal unlock with confetti + 2,000 XP celebration. Access to all 12 earning methods.",
+    subtitle: "Terminal tier. Full Ambassador status. 44,444 meals. Portal unlock with confetti + 2,000 XP celebration. Access to all 12 earning methods. Diamond Ambassador perks at 1,000 wristbands.",
     emotional: "💎 'Welcome to the inner circle — you ARE the movement'",
-    touchpoints: ["🎉 Confetti celebration + 2,000 XP", "🏛️ Full Portal access unlock", "🪙 BC wallet + leaderboard", "📱 12-method earn hierarchy"],
-    dashboard: "Full /portal dashboard: BC wallet, missions, leaderboard, referral hub, rewards store, social share templates, activity feed."
+    touchpoints: ["🎉 Confetti celebration + 2,000 XP", "🏛️ Full Portal access unlock", "🪙 BC wallet + leaderboard", "📱 12-method earn hierarchy", "🔔 Push notifications + notification bell", "📧 Weekly digest email + tier milestone emails", "⚙️ Account settings with role switching", "💎 Diamond Ambassador page at 1,000 wristbands"],
+    dashboard: "Full /portal dashboard: BC wallet, missions, leaderboard, referral hub, rewards store, social share templates, activity feed, notification bell, account settings, clipper dashboard, Diamond Ambassador perks."
   },
 ];
 
