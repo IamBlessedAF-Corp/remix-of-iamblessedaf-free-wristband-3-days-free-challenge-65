@@ -50,11 +50,18 @@ const AFFILIATE_ROLES = [
     route: "/3300us-Credit-Clipper",
   },
   {
+    id: "influencer",
+    label: "Influencer / Content Creator",
+    desc: "Repost viral clips from our Content Vault with your referral link",
+    icon: Video,
+    route: "/3300us-Credit-Influencer",
+  },
+  {
     id: "other",
     label: "Other / Not Sure Yet",
-    desc: "Entrepreneurs, influencers, or just exploring",
+    desc: "Entrepreneurs or just exploring — we'll help you find your path",
     icon: UserPlus,
-    route: "/3300us-Credit-Clipper",
+    route: "/3300us-Credit-Influencer",
   },
 ];
 

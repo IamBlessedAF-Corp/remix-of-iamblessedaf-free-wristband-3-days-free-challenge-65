@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  Video, Play, Copy, Check, ExternalLink, Eye, TrendingUp, Filter,
+  Video, Play, Copy, Check, ExternalLink, Eye, TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 type Category = "all" | "gratitude" | "neuroscience" | "mindset" | "morning" | "dopamine" | "success";
 
@@ -47,11 +48,25 @@ const PLACEHOLDER_CLIPS: VaultClip[] = [
 
 interface ContentVaultProps {
   referralCode?: string;
+  userId?: string;
 }
 
-const ContentVault = ({ referralCode }: ContentVaultProps) => {
+const ContentVault = ({ referralCode, userId }: ContentVaultProps) => {
   const [activeCategory, setActiveCategory] = useState<Category>("all");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [userRepostCount, setUserRepostCount] = useState(0);
+
+  useEffect(() => {
+    if (!userId) return;
+    const fetchCount = async () => {
+      const { count } = await supabase
+        .from("repost_logs")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId);
+      setUserRepostCount(count ?? 0);
+    };
+    fetchCount();
+  }, [userId]);
 
   const filtered = activeCategory === "all"
     ? PLACEHOLDER_CLIPS
@@ -61,15 +76,25 @@ const ContentVault = ({ referralCode }: ContentVaultProps) => {
     ? `https://iamblessedaf.com/go/${referralCode}`
     : "https://iamblessedaf.com/offer/111";
 
-  const handleCopyLink = (clipId: string) => {
+  const handleCopyLink = async (clip: VaultClip) => {
     const text = `Check this out 🙏 ${referralLink}`;
     navigator.clipboard.writeText(text);
-    setCopiedId(clipId);
+    setCopiedId(clip.id);
     toast.success("Caption + referral link copied!");
     setTimeout(() => setCopiedId(null), 2000);
+
+    // Log repost to DB
+    if (userId) {
+      await supabase.from("repost_logs").insert({
+        user_id: userId,
+        clip_id: clip.id,
+        clip_title: clip.title,
+        referral_link: referralLink,
+      });
+      setUserRepostCount((prev) => prev + 1);
+    }
   };
 
-  // Stats
   const totalReposts = PLACEHOLDER_CLIPS.reduce((s, c) => s + c.reposts, 0);
 
   return (
@@ -79,7 +104,7 @@ const ContentVault = ({ referralCode }: ContentVaultProps) => {
         {[
           { label: "Available Clips", value: PLACEHOLDER_CLIPS.length, icon: Video },
           { label: "Total Reposts", value: totalReposts.toLocaleString(), icon: TrendingUp },
-          { label: "Your Reposts", value: "0", icon: Eye },
+          { label: "Your Reposts", value: userRepostCount.toString(), icon: Eye },
         ].map((stat, i) => (
           <div key={i} className="bg-card border border-border/40 rounded-xl p-3 text-center">
             <stat.icon className="w-4 h-4 text-primary mx-auto mb-1" />
@@ -160,7 +185,7 @@ const ContentVault = ({ referralCode }: ContentVaultProps) => {
               <div className="flex gap-2">
                 <Button
                   size="sm"
-                  onClick={() => handleCopyLink(clip.id)}
+                  onClick={() => handleCopyLink(clip)}
                   className="flex-1 h-8 text-xs bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg gap-1"
                 >
                   {copiedId === clip.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
