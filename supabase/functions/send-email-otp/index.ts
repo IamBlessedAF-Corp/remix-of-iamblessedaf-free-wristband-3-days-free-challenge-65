@@ -68,12 +68,20 @@ Deno.serve(async (req: Request) => {
       const otpCode = generateOtp();
       const expiresAt = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString();
 
-      await supabase.from("otp_codes").insert({
+      const { error: insertError } = await supabase.from("otp_codes").insert({
         phone: normalizedEmail, // reusing phone column for email
         code: otpCode,
         purpose,
         expires_at: expiresAt,
       });
+
+      if (insertError) {
+        console.error("[send-email-otp] Insert failed:", JSON.stringify(insertError));
+        return new Response(
+          JSON.stringify({ error: "Failed to store verification code. Please try again." }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
 
       // Send via Resend
       const resendRes = await fetch("https://api.resend.com/emails", {
