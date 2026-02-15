@@ -39,10 +39,11 @@ const handler = async (req: Request): Promise<Response> => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    // Get all affiliate profiles
+    // Get all affiliate profiles (exclude opted-out)
     const { data: profiles, error: pErr } = await supabase
       .from("creator_profiles")
-      .select("user_id, display_name, email, referral_code, blessings_confirmed");
+      .select("user_id, display_name, email, referral_code, blessings_confirmed, digest_opted_out")
+      .or("digest_opted_out.is.null,digest_opted_out.eq.false");
 
     if (pErr) throw pErr;
     if (!profiles || profiles.length === 0) {
@@ -174,6 +175,8 @@ const handler = async (req: Request): Promise<Response> => {
     <div class="signature">
       — The IamBlessedAF Team<br/>
       <span style="font-size:11px;">Sent every Monday. You're receiving this as a Gratitude Affiliate.</span>
+      <br/><br/>
+      <a href="https://funnel-architect-ai-30.lovable.app/unsubscribe-digest?uid=${profile.user_id}" style="color:#666;font-size:10px;text-decoration:underline;">Unsubscribe from weekly digest</a>
     </div>
   </div>
 </body>

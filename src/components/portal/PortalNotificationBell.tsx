@@ -35,9 +35,34 @@ export default function PortalNotificationBell({ userId }: PortalNotificationBel
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const [hasNew, setHasNew] = useState(false);
+  const [pushEnabled, setPushEnabled] = useState(false);
+
+  // Check if push is supported and already granted
+  useEffect(() => {
+    if ("Notification" in window) {
+      setPushEnabled(Notification.permission === "granted");
+    }
+  }, []);
+
+  const requestPushPermission = async () => {
+    if (!("Notification" in window)) return;
+    const perm = await Notification.requestPermission();
+    setPushEnabled(perm === "granted");
+    if (perm === "granted") {
+      new Notification("🙏 Notifications Enabled!", {
+        body: "You'll get alerts for BC earned, referrals, and tier milestones.",
+        icon: "/favicon.png",
+      });
+    }
+  };
+
+  const sendPushNotification = useCallback((title: string, body: string) => {
+    if (pushEnabled && document.hidden) {
+      new Notification(title, { body, icon: "/favicon.png" });
+    }
+  }, [pushEnabled]);
 
   const fetchNotifications = useCallback(async () => {
-    // Fetch recent portal_activity for this user + global milestones
     const { data } = await supabase
       .from("portal_activity")
       .select("id, event_type, display_text, icon_name, created_at")
@@ -62,21 +87,25 @@ export default function PortalNotificationBell({ userId }: PortalNotificationBel
       else if (diffMin < 1440) time = `${Math.floor(diffMin / 60)}h ago`;
       else time = `${Math.floor(diffMin / 1440)}d ago`;
 
-      return {
-        id: row.id,
-        icon,
-        text: row.display_text,
-        time,
-        read: false,
-      };
+      return { id: row.id, icon, text: row.display_text, time, read: false };
     });
 
     // Check for new notifications since last viewed
     const lastSeen = localStorage.getItem("notif-last-seen") || "0";
-    const newCount = data.filter((r) => new Date(r.created_at).getTime() > parseInt(lastSeen)).length;
-    setHasNew(newCount > 0);
+    const newItems = data.filter((r) => new Date(r.created_at).getTime() > parseInt(lastSeen));
+    setHasNew(newItems.length > 0);
+
+    // Send push for newest unseen items
+    if (newItems.length > 0 && newItems.length <= 3) {
+      newItems.forEach((item) => {
+        sendPushNotification("🙏 IamBlessedAF", item.display_text);
+      });
+    } else if (newItems.length > 3) {
+      sendPushNotification("🙏 IamBlessedAF", `You have ${newItems.length} new notifications`);
+    }
+
     setNotifications(mapped);
-  }, []);
+  }, [sendPushNotification]);
 
   useEffect(() => {
     fetchNotifications();
@@ -125,9 +154,21 @@ export default function PortalNotificationBell({ userId }: PortalNotificationBel
             >
               <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
                 <h3 className="text-sm font-bold text-foreground">Notifications</h3>
-                <Button variant="ghost" size="sm" onClick={() => setOpen(false)} className="h-6 w-6 p-0">
-                  <X className="w-3.5 h-3.5" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  {!pushEnabled && "Notification" in window && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={requestPushPermission}
+                      className="h-6 text-[10px] text-primary hover:text-primary/80 px-2"
+                    >
+                      🔔 Enable Push
+                    </Button>
+                  )}
+                  <Button variant="ghost" size="sm" onClick={() => setOpen(false)} className="h-6 w-6 p-0">
+                    <X className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
               </div>
 
               <div className="overflow-y-auto max-h-72">
