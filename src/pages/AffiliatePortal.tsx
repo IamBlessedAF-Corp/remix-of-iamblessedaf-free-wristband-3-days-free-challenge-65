@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Trophy, Share2, ShoppingBag, Target, Scissors, Video,
-  LogOut, Loader2,
+  LogOut, Loader2, Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,9 +20,10 @@ import ShareMilestoneTracker from "@/components/viral/ShareMilestoneTracker";
 import EmbeddedClipperDashboard from "@/components/portal/EmbeddedClipperDashboard";
 import ContentVault from "@/components/portal/ContentVault";
 import AffiliateCreditTracker from "@/components/portal/AffiliateCreditTracker";
+import PortalAccountSettings from "@/components/portal/PortalAccountSettings";
 import logoImg from "@/assets/logo.png";
 
-type Tab = "dashboard" | "leaderboard" | "referrals" | "missions" | "store" | "clip" | "repost";
+type Tab = "dashboard" | "leaderboard" | "referrals" | "missions" | "store" | "clip" | "repost" | "account";
 
 const TABS: { id: Tab; label: string; icon: any }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -32,6 +33,7 @@ const TABS: { id: Tab; label: string; icon: any }[] = [
   { id: "clip", label: "Clip & Earn", icon: Scissors },
   { id: "repost", label: "Repost & Earn", icon: Video },
   { id: "store", label: "Store", icon: ShoppingBag },
+  { id: "account", label: "Account", icon: Settings },
 ];
 
 const AffiliatePortal = () => {
@@ -200,6 +202,13 @@ const AffiliatePortal = () => {
             {activeTab === "repost" && <ContentVault referralCode={portalData.profile?.referral_code} userId={user.id} />}
             {activeTab === "store" && (
               <PortalRewardsStore userId={user.id} balance={portalData.wallet?.balance ?? 0} />
+            )}
+            {activeTab === "account" && (
+              <PortalAccountSettings
+                userId={user.id}
+                userEmail={user.email || ""}
+                profile={portalData.profile}
+              />
             )}
           </motion.div>
         </AnimatePresence>
