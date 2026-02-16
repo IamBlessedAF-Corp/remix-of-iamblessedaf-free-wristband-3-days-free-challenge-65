@@ -354,7 +354,7 @@ const Offer111 = () => {
                 open={showDownsell}
                 onClose={() => setShowDownsell(false)}
                 onAccept={() => { setShowDownsell(false); navigate("/offer/11mo"); }}
-                onDecline={() => { setShowDownsell(false); navigate("/offer/444"); }}
+                onDecline={() => { setShowDownsell(false); navigate("/Congrats-Neuro-Hacker"); }}
                 onTrack={track}
               />
             </>
