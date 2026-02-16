@@ -7,8 +7,6 @@ import {
   LogOut, Loader2, Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { usePortalData } from "@/hooks/usePortalData";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
@@ -24,8 +22,6 @@ import ContentVault from "@/components/portal/ContentVault";
 import AffiliateCreditTracker from "@/components/portal/AffiliateCreditTracker";
 import PortalAccountSettings from "@/components/portal/PortalAccountSettings";
 import PortalNotificationBell from "@/components/portal/PortalNotificationBell";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import logoImg from "@/assets/logo.png";
 
 type Tab = "dashboard" | "leaderboard" | "referrals" | "missions" | "store" | "clip" | "repost" | "account";
@@ -44,11 +40,9 @@ const TABS: { id: Tab; label: string; icon: any }[] = [
 const AffiliatePortal = () => {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
   const [showAuth, setShowAuth] = useState(false);
-  const [onboardName, setOnboardName] = useState("");
-  const [onboardCode, setOnboardCode] = useState("");
-  const [onboardSaving, setOnboardSaving] = useState(false);
   const { user, loading: authLoading, signOut } = useAuth();
   const portalData = usePortalData();
+
   if (authLoading || portalData.loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -96,97 +90,7 @@ const AffiliatePortal = () => {
     );
   }
 
-  const handleCreateProfile = async () => {
-    if (!user) return;
-    const code = onboardCode.trim().toUpperCase();
-    const name = onboardName.trim();
-    if (!code || code.length < 3) {
-      toast.error("Please enter a valid referral code (at least 3 characters).");
-      return;
-    }
-    setOnboardSaving(true);
-    try {
-      const { data, error } = await supabase
-        .from("creator_profiles")
-        .insert({
-          user_id: user.id,
-          email: user.email || "",
-          referral_code: code,
-          display_name: name || null,
-        })
-        .select("*")
-        .single();
-      if (error) {
-        if (error.code === "23505") {
-          toast.error("That referral code is already taken. Try another one.");
-        } else {
-          toast.error(error.message);
-        }
-      } else {
-        toast.success("Profile created! Welcome to the portal.");
-        window.location.reload();
-      }
-    } catch {
-      toast.error("Something went wrong. Try again.");
-    } finally {
-      setOnboardSaving(false);
-    }
-  };
-
-  if (!portalData.profile) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
-        <motion.div
-          className="max-w-md w-full text-center space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <img src={logoImg} alt="Logo" className="h-12 mx-auto" />
-          <h1 className="text-2xl font-bold text-foreground">Set Up Your Profile</h1>
-          <p className="text-muted-foreground text-sm">
-            Choose your unique referral code — this is what people will use to find you.
-          </p>
-          <div className="text-left space-y-4">
-            <div>
-              <Label htmlFor="onboard-name" className="text-xs text-muted-foreground">Display Name (optional)</Label>
-              <Input
-                id="onboard-name"
-                value={onboardName}
-                onChange={(e) => setOnboardName(e.target.value)}
-                placeholder="Your name"
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label htmlFor="onboard-code" className="text-xs text-muted-foreground">Referral Code *</Label>
-              <Input
-                id="onboard-code"
-                value={onboardCode}
-                onChange={(e) => setOnboardCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))}
-                placeholder="e.g. BLESSED123"
-                className="mt-1 font-mono uppercase"
-                maxLength={20}
-              />
-              <p className="text-[11px] text-muted-foreground mt-1">Letters & numbers only. This cannot be changed later.</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <Button
-              onClick={handleCreateProfile}
-              disabled={onboardSaving || !onboardCode.trim()}
-              className="flex-1 h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl"
-            >
-              {onboardSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              {onboardSaving ? "Creating..." : "Create Profile"}
-            </Button>
-            <Button onClick={() => signOut()} variant="outline" className="h-11 rounded-xl">
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
+  // Profile is now auto-created in usePortalData, so no intermediate gate needed
 
   return (
     <div className="min-h-screen bg-background">
