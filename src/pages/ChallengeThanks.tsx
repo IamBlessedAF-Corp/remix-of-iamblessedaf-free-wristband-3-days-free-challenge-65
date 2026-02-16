@@ -174,7 +174,7 @@ const ChallengeThanks = () => {
           <p className="text-muted-foreground mb-6">
             Join the free challenge to get your unique referral link.
           </p>
-          <Button onClick={() => navigate("/challenge")}>
+          <Button onClick={() => navigate("/")}>
             Join the Free Challenge
           </Button>
         </div>
