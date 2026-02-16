@@ -228,7 +228,7 @@ const Offer111Gpt = () => {
             open={showDownsell}
             onClose={() => setShowDownsell(false)}
             onAccept={() => { setShowDownsell(false); navigate("/offer/11mo"); }}
-            onDecline={() => { setShowDownsell(false); navigate("/Congrats-Neuro-Hacker"); }}
+            onDecline={() => { setShowDownsell(false); navigate("/Congrats-Neuro-Hacker?next=/offer/444"); }}
           />
 
         </div>

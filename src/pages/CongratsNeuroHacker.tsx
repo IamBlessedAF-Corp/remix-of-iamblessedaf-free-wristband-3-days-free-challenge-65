@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import confetti from "canvas-confetti";
 import logoImg from "@/assets/logo.png";
@@ -45,6 +46,8 @@ const buildCaptions = (friendName: string, referralLink: string) => [
 
 export default function CongratsNeuroHacker() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const nextRoute = searchParams.get("next") || "/portal";
   const [referralCode, setReferralCode] = useState<string>("");
   const [friendName, setFriendName] = useState("mybff");
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
@@ -387,9 +390,9 @@ export default function CongratsNeuroHacker() {
                 asChild
                 className="w-full h-14 text-base font-black bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl gap-2"
               >
-                <a href="/portal">
+                <a href={nextRoute}>
                   <Gift className="w-5 h-5" />
-                  Enter Your Portal
+                  {nextRoute === "/portal" ? "Enter Your Portal" : "Continue Your Journey"}
                   <ArrowRight className="w-5 h-5" />
                 </a>
               </Button>
@@ -404,10 +407,10 @@ export default function CongratsNeuroHacker() {
               👆 Copy any caption above to unlock your <strong>$363 bonus</strong>
             </p>
             <a
-              href="/portal"
+              href={nextRoute}
               className="text-xs text-muted-foreground/60 hover:text-muted-foreground underline"
             >
-              Maybe later → Go to Portal
+              Maybe later → {nextRoute === "/portal" ? "Go to Portal" : "Skip to next offer"}
             </a>
           </div>
         )}
