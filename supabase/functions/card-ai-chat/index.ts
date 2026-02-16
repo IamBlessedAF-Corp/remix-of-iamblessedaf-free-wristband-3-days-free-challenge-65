@@ -19,12 +19,38 @@ const InputSchema = z.object({
   })).max(5).optional(),
 });
 
+// Rate limiter: 20 requests per minute per user
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 20;
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const attempts = (rateLimitMap.get(key) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  if (attempts.length >= RATE_LIMIT_MAX) { rateLimitMap.set(key, attempts); return true; }
+  attempts.push(now); rateLimitMap.set(key, attempts); return false;
+}
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, a] of rateLimitMap.entries()) {
+    const r = a.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+    if (r.length === 0) rateLimitMap.delete(k); else rateLimitMap.set(k, r);
+  }
+}, RATE_LIMIT_WINDOW_MS);
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    if (!LOVABLE_API_KEY) {
+      console.error("[card-ai-chat] LOVABLE_API_KEY not configured");
+      return new Response(
+        JSON.stringify({ error: "Service temporarily unavailable" }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -40,10 +66,18 @@ serve(async (req) => {
     if (claimsError || !claimsData?.claims?.sub) {
       return new Response(JSON.stringify({ error: "Invalid token" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-    const userId = claimsData.claims.sub;
+    const userId = claimsData.claims.sub as string;
     const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle();
     if (!roleData) {
       return new Response(JSON.stringify({ error: "Admin access required" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // Rate limit per user
+    if (isRateLimited(userId)) {
+      return new Response(
+        JSON.stringify({ error: "Too many requests. Please try again shortly." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     // Validate input
@@ -261,7 +295,7 @@ ${projectContext.slice(0, 3000)}
   } catch (e) {
     console.error("card-ai-chat error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
+      JSON.stringify({ error: "Something went wrong. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

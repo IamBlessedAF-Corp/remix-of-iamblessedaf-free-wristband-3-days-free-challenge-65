@@ -9,7 +9,38 @@ const corsHeaders = {
 const OTP_LENGTH = 6;
 const OTP_EXPIRY_MINUTES = 10;
 const MAX_ATTEMPTS = 5;
-const RATE_LIMIT_SECONDS = 60; // 1 OTP per minute per phone
+const RATE_LIMIT_SECONDS = 60;
+
+// IP-based rate limiter: max 10 OTP requests per hour per IP
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 3600_000; // 1 hour
+const RATE_LIMIT_MAX_PER_IP = 10;
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const attempts = (rateLimitMap.get(key) || []).filter(
+    (t) => now - t < RATE_LIMIT_WINDOW_MS
+  );
+  if (attempts.length >= RATE_LIMIT_MAX_PER_IP) {
+    rateLimitMap.set(key, attempts);
+    return true;
+  }
+  attempts.push(now);
+  rateLimitMap.set(key, attempts);
+  return false;
+}
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, attempts] of rateLimitMap.entries()) {
+    const recent = attempts.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+    if (recent.length === 0) rateLimitMap.delete(key);
+    else rateLimitMap.set(key, recent);
+  }
+}, 300_000);
+
+// Phone validation: E.164 format, 10-15 digits
+const PHONE_REGEX = /^\+[1-9]\d{9,14}$/;
 
 function generateOtp(): string {
   const digits = "0123456789";
@@ -27,6 +58,19 @@ Deno.serve(async (req: Request) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // IP-based rate limiting
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("cf-connecting-ip") ||
+    "unknown";
+
+  if (isRateLimited(ip)) {
+    return new Response(
+      JSON.stringify({ error: "Too many requests. Please try again later." }),
+      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabase = createClient(supabaseUrl, serviceKey);
@@ -34,7 +78,7 @@ Deno.serve(async (req: Request) => {
   try {
     const { action, phone, code, purpose = "login", userId } = await req.json();
 
-    if (!phone || typeof phone !== "string") {
+    if (!phone || typeof phone !== "string" || phone.length > 20) {
       return new Response(
         JSON.stringify({ error: "Phone number required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -49,10 +93,25 @@ Deno.serve(async (req: Request) => {
     else if (cleanPhone.length === 11 && cleanPhone.startsWith("1")) formattedPhone = `+${cleanPhone}`;
     else formattedPhone = `+${cleanPhone}`;
 
-    if (action === "send") {
-      // ── SEND OTP ──
+    // Validate E.164 format
+    if (!PHONE_REGEX.test(formattedPhone)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid phone number format" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
-      // Rate limit: check last OTP sent
+    // Validate purpose
+    const ALLOWED_PURPOSES = ["login", "password_reset", "verification"];
+    if (!ALLOWED_PURPOSES.includes(purpose)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid purpose" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (action === "send") {
+      // Rate limit: check last OTP sent per phone
       const { data: recent } = await supabase
         .from("otp_codes")
         .select("created_at")
@@ -78,7 +137,6 @@ Deno.serve(async (req: Request) => {
       const otpCode = generateOtp();
       const expiresAt = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString();
 
-      // Store OTP
       await supabase.from("otp_codes").insert({
         phone: formattedPhone,
         code: otpCode,
@@ -87,7 +145,6 @@ Deno.serve(async (req: Request) => {
         expires_at: expiresAt,
       });
 
-      // Send via sms-router (OTP lane)
       const routerRes = await fetch(`${supabaseUrl}/functions/v1/sms-router`, {
         method: "POST",
         headers: {
@@ -102,9 +159,8 @@ Deno.serve(async (req: Request) => {
         }),
       });
 
-      const routerData = await routerRes.json();
-
       if (!routerRes.ok) {
+        const routerData = await routerRes.json().catch(() => ({}));
         console.error("[send-otp] Router error:", routerData);
         return new Response(
           JSON.stringify({ error: "Failed to send verification code" }),
@@ -123,15 +179,13 @@ Deno.serve(async (req: Request) => {
     }
 
     if (action === "verify") {
-      // ── VERIFY OTP ──
-      if (!code || typeof code !== "string") {
+      if (!code || typeof code !== "string" || code.length > 10) {
         return new Response(
           JSON.stringify({ error: "Verification code required" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
-      // Find the latest active OTP for this phone/purpose
       const { data: otpRecord } = await supabase
         .from("otp_codes")
         .select("*")
@@ -150,7 +204,6 @@ Deno.serve(async (req: Request) => {
         );
       }
 
-      // Check max attempts
       if (otpRecord.attempts >= MAX_ATTEMPTS) {
         return new Response(
           JSON.stringify({ error: "Too many attempts. Please request a new code." }),
@@ -158,13 +211,11 @@ Deno.serve(async (req: Request) => {
         );
       }
 
-      // Increment attempts
       await supabase
         .from("otp_codes")
         .update({ attempts: otpRecord.attempts + 1 })
         .eq("id", otpRecord.id);
 
-      // Verify code
       if (otpRecord.code !== code.trim()) {
         return new Response(
           JSON.stringify({
@@ -175,7 +226,6 @@ Deno.serve(async (req: Request) => {
         );
       }
 
-      // Mark as verified
       await supabase
         .from("otp_codes")
         .update({ verified_at: new Date().toISOString() })
@@ -199,7 +249,7 @@ Deno.serve(async (req: Request) => {
   } catch (err) {
     console.error("[send-otp] error:", err);
     return new Response(
-      JSON.stringify({ error: err instanceof Error ? err.message : "Internal error" }),
+      JSON.stringify({ error: "Something went wrong. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
