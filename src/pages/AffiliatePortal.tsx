@@ -169,13 +169,19 @@ const AffiliatePortal = () => {
                   userEmail={user.email || ""}
                   displayName={portalData.profile?.display_name || undefined}
                 />
-                <PortalDashboard
-                  profile={portalData.profile}
-                  wallet={portalData.wallet}
-                  blessings={portalData.blessings}
-                  userId={user.id}
-                  onClaimDaily={portalData.claimDailyBonus}
-                />
+                {portalData.profile ? (
+                  <PortalDashboard
+                    profile={portalData.profile}
+                    wallet={portalData.wallet}
+                    blessings={portalData.blessings}
+                    userId={user.id}
+                    onClaimDaily={portalData.claimDailyBonus}
+                  />
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground text-sm">
+                    Setting up your profile... Please refresh the page.
+                  </div>
+                )}
                 <PortalActivityFeed />
                 <ShareMilestoneTracker />
               </div>
