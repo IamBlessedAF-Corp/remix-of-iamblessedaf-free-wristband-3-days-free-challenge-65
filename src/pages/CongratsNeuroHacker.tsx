@@ -13,7 +13,7 @@ import confetti from "canvas-confetti";
 import logoImg from "@/assets/logo.png";
 import AuthorAvatar from "@/components/offer/AuthorAvatar";
 import GlobalMealCounter from "@/components/GlobalMealCounter";
-import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
+
 
 /* ─── Platform caption templates ─── */
 const buildCaptions = (friendName: string, referralLink: string) => [
@@ -159,7 +159,16 @@ export default function CongratsNeuroHacker() {
 
           {/* Global Meal Counter */}
           <GlobalMealCounter variant="banner" />
-          <RiskReversalGuarantee />
+          
+          {/* Social Impact Statement */}
+          <div className="mt-2 text-center">
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto">
+              Only in America, <strong className="text-foreground">14 million children</strong> are facing hunger. 
+              Claiming this FREE Neuro-Hacker Wristband feeds <strong className="text-primary">11 of them</strong> — 
+              in honor of Andrew Huberman's discoveries in the Neuroscience of Gratitude — 
+              through Tony Robbins' <strong className="text-foreground">"1 Billion Meals Challenge"</strong>. 🙏
+            </p>
+          </div>
         </motion.section>
 
         {/* ═══ THE SECRET (Brunson Epiphany Bridge) ═══ */}
