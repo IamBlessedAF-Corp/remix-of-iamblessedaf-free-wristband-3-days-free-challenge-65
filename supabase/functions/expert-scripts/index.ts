@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { FRAMEWORK_PROMPTS } from "./prompts.ts";
 
 const corsHeaders = {
@@ -7,20 +9,52 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const InputSchema = z.object({
+  framework: z.string().max(100),
+  heroProfile: z.object({
+    name: z.string().max(200),
+    brand: z.string().max(200),
+    niche: z.string().max(500),
+    audience: z.string().max(500),
+    originStory: z.string().max(5000),
+    transformation: z.string().max(1000),
+    mechanism: z.string().max(1000),
+    enemy: z.string().max(500),
+    bigPromise: z.string().max(1000),
+    proof: z.string().max(2000),
+  }),
+});
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { framework, heroProfile } = await req.json();
+    // Auth check — require authenticated user
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    if (!framework || !heroProfile) {
-      return new Response(
-        JSON.stringify({ error: "Missing framework or heroProfile" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
+      return new Response(JSON.stringify({ error: "Invalid token" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // Validate input
+    let input: z.infer<typeof InputSchema>;
+    try {
+      input = InputSchema.parse(await req.json());
+    } catch (e) {
+      return new Response(JSON.stringify({ error: "Invalid input", details: e instanceof z.ZodError ? e.errors : "Validation failed" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const { framework, heroProfile } = input;
 
     const frameworkPrompt = FRAMEWORK_PROMPTS[framework];
     if (!frameworkPrompt) {

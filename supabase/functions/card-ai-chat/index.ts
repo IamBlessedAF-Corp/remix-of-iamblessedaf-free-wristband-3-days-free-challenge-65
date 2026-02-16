@@ -1,11 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+const InputSchema = z.object({
+  card_id: z.string().uuid(),
+  message: z.string().max(10000).optional(),
+  action: z.enum(["suggest_next", "execute", "execute_step", "execute_all_steps", "chat"]).optional(),
+  step_index: z.number().int().nonnegative().optional(),
+  images: z.array(z.object({
+    data_url: z.string().max(10 * 1024 * 1024),
+    name: z.string().max(255),
+  })).max(5).optional(),
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -18,9 +30,31 @@ serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    const { card_id, message, action, step_index, images } = await req.json();
+    // Auth check — require admin role
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
+      return new Response(JSON.stringify({ error: "Invalid token" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const userId = claimsData.claims.sub;
+    const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle();
+    if (!roleData) {
+      return new Response(JSON.stringify({ error: "Admin access required" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
 
-    if (!card_id) throw new Error("card_id is required");
+    // Validate input
+    let input: z.infer<typeof InputSchema>;
+    try {
+      input = InputSchema.parse(await req.json());
+    } catch (e) {
+      return new Response(JSON.stringify({ error: "Invalid input", details: e instanceof z.ZodError ? e.errors : "Validation failed" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const { card_id, message, action, step_index, images } = input;
 
     // Fetch card context
     const { data: card, error: cardErr } = await supabase
@@ -165,7 +199,6 @@ ${projectContext.slice(0, 3000)}
         try {
           const structured = JSON.parse(toolCall.function.arguments);
 
-          // Log structured steps to card
           const stepsLog = structured.steps?.map((s: any, i: number) => `  ${i + 1}. [${s.priority}] ${s.title}`).join("\n") || "";
           const logTs = new Date().toISOString();
           const logEntry = `[${logTs}] AI CHAT — SUGGEST NEXT STEPS:\n${stepsLog}`;
@@ -189,7 +222,6 @@ ${projectContext.slice(0, 3000)}
 
     const reply = aiData.choices?.[0]?.message?.content || "No response from AI";
 
-    // Append action log to the card's logs field
     const actionLabel = action === "suggest_next" ? "SUGGEST NEXT STEPS"
       : action === "execute" ? "EXECUTE TASK"
       : action === "execute_step" ? "EXECUTE STEP"
@@ -201,7 +233,6 @@ ${projectContext.slice(0, 3000)}
     const existingLogs = card.logs || "";
     const updatedLogs = existingLogs ? `${existingLogs}\n\n${logEntry}` : logEntry;
 
-    // Update card logs (fire-and-forget)
     supabase.from("board_cards").update({ logs: updatedLogs.slice(0, 10000) }).eq("id", card_id).then(() => {});
 
     // Check for blockers in execute actions — notify owner
