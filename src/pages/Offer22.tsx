@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import FreeWristbandStep from "@/components/offer/FreeWristbandStep";
 import UpsellWristbandStep from "@/components/offer/UpsellWristbandStep";
@@ -14,11 +15,19 @@ import { supabase } from "@/integrations/supabase/client";
 type Step = "free-wristband" | "gratitude-intro" | "gratitude-setup" | "upsell-22";
 
 const Offer22 = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState<Step>("free-wristband");
   const [showAuth, setShowAuth] = useState(false);
   const [senderName, setSenderName] = useState<string | null>(null);
   const { startCheckout, loading } = useStripeCheckout();
-  const { user, signOut } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
+
+  // Redirect authenticated users to affiliate portal
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate("/affiliate-portal", { replace: true });
+    }
+  }, [user, authLoading, navigate]);
 
   usePageMeta({
     title: senderName
