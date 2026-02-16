@@ -90,34 +90,7 @@ const AffiliatePortal = () => {
     );
   }
 
-  if (!portalData.profile) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
-        <motion.div
-          className="max-w-md w-full text-center space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <img src={logoImg} alt="Logo" className="h-12 mx-auto" />
-          <h1 className="text-2xl font-bold text-foreground">Complete Your Profile</h1>
-          <p className="text-muted-foreground">
-            You're signed in but need an affiliate profile. Choose your path to get started.
-          </p>
-          <div className="flex gap-3">
-            <Button
-              onClick={() => window.location.href = "/3300us-Credit"}
-              className="flex-1 h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl"
-            >
-              Become an Affiliate
-            </Button>
-            <Button onClick={() => signOut()} variant="outline" className="h-11 rounded-xl">
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
+  // Profile is now auto-created in usePortalData, so no intermediate gate needed
 
   return (
     <div className="min-h-screen bg-background">
