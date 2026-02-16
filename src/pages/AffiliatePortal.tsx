@@ -54,6 +54,21 @@ const AffiliatePortal = () => {
     );
   }
 
+  if (portalData.error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <div className="text-center space-y-4 max-w-md">
+          <img src={logoImg} alt="Logo" className="h-12 mx-auto" />
+          <h2 className="text-xl font-bold text-foreground">Something went wrong</h2>
+          <p className="text-muted-foreground text-sm">We couldn't load your portal data. Please try again.</p>
+          <Button onClick={() => window.location.reload()} className="bg-primary text-primary-foreground">
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (!user) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">

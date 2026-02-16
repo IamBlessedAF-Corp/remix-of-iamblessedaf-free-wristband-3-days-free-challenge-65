@@ -103,21 +103,32 @@ export function usePortalData() {
           supabase.from("creator_profiles_public").select("*").order("blessings_confirmed", { ascending: false }).limit(50),
         ]);
 
+        if (profileRes.error) console.error("Profile fetch error:", profileRes.error.message);
+        if (walletRes.error) console.error("Wallet fetch error:", walletRes.error.message);
+
         let currentProfile = (profileRes.data as PortalProfile) ?? null;
 
         // Auto-create profile if user is authenticated but has no profile
-        if (!currentProfile) {
-          const { data: newProfile } = await supabase
-            .from("creator_profiles")
-            .insert({
-              user_id: user.id,
-              email: user.email || "",
-              referral_code: `pending-${user.id.slice(0, 8)}`,
-              display_name: user.user_metadata?.full_name || null,
-            })
-            .select("*")
-            .single();
-          if (newProfile) currentProfile = newProfile as PortalProfile;
+        if (!currentProfile && !profileRes.error) {
+          try {
+            const { data: newProfile, error: insertErr } = await supabase
+              .from("creator_profiles")
+              .insert({
+                user_id: user.id,
+                email: user.email || "",
+                referral_code: `pending-${user.id.slice(0, 8)}`,
+                display_name: user.user_metadata?.full_name || null,
+              })
+              .select("*")
+              .single();
+            if (insertErr) {
+              console.error("Profile auto-create error:", insertErr.message);
+            } else if (newProfile) {
+              currentProfile = newProfile as PortalProfile;
+            }
+          } catch (e) {
+            console.error("Profile auto-create failed:", e);
+          }
         }
 
         setProfile(currentProfile);
@@ -125,7 +136,8 @@ export function usePortalData() {
         setBlessings((blessingsRes.data as BlessingRow[]) ?? []);
         setLeaderboard((leaderboardRes.data as LeaderboardEntry[]) ?? []);
       } catch (e: any) {
-        setError(e.message);
+        console.error("Portal data fetch error:", e);
+        setError(e.message || "Failed to load portal data");
       } finally {
         setLoading(false);
       }
