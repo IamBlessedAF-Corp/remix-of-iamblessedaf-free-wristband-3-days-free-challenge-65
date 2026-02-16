@@ -13,6 +13,7 @@ import confetti from "canvas-confetti";
 import logoImg from "@/assets/logo.png";
 import AuthorAvatar from "@/components/offer/AuthorAvatar";
 import GlobalMealCounter from "@/components/GlobalMealCounter";
+import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
 
 /* ─── Platform caption templates ─── */
 const buildCaptions = (friendName: string, referralLink: string) => [
@@ -158,6 +159,7 @@ export default function CongratsNeuroHacker() {
 
           {/* Global Meal Counter */}
           <GlobalMealCounter variant="banner" />
+          <RiskReversalGuarantee />
         </motion.section>
 
         {/* ═══ THE SECRET (Brunson Epiphany Bridge) ═══ */}
