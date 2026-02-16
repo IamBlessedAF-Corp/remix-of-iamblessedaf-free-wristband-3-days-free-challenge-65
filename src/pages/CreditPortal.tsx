@@ -116,6 +116,10 @@ export default function CreditPortal() {
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1">
               <Sparkles className="w-3 h-3 mr-1" /> AFFILIATE PROGRAM
             </Badge>
+            <p className="text-sm md:text-base text-muted-foreground italic mb-3 max-w-lg mx-auto leading-relaxed">
+              If you've ever talked about <strong className="text-foreground">gratitude</strong>, <strong className="text-foreground">neuroscience</strong>, or <strong className="text-foreground">creating a life you love</strong> in your content…<br />
+              <span className="text-primary font-bold not-italic">I have $3,300 in marketing credit for you.</span>
+            </p>
             <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
               A Neuroscience-Backed Viral<br />
               <span className="text-primary">Gratitude Challenge</span> That Captures<br />
