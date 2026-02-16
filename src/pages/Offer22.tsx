@@ -7,6 +7,7 @@ import GratitudeSetupFlow from "@/components/challenge/GratitudeSetupFlow";
 import GratitudeIntroScreen from "@/components/challenge/GratitudeIntroScreen";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useAuth } from "@/hooks/useAuth";
+import { LogOut } from "lucide-react";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -17,7 +18,7 @@ const Offer22 = () => {
   const [showAuth, setShowAuth] = useState(false);
   const [senderName, setSenderName] = useState<string | null>(null);
   const { startCheckout, loading } = useStripeCheckout();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   usePageMeta({
     title: senderName
@@ -97,6 +98,17 @@ const Offer22 = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {user && (
+        <div className="fixed top-3 right-3 z-50">
+          <button
+            onClick={() => signOut()}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-muted-foreground bg-background/80 backdrop-blur-sm border border-border/50 rounded-full hover:text-foreground hover:border-border transition-colors"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            Cerrar sesión
+          </button>
+        </div>
+      )}
       <GamificationHeader />
 
       <CreatorSignupModal
