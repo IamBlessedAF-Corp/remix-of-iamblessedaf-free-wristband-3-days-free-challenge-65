@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 import InfluencerTestimonials from "@/components/lead-pages/InfluencerTestimonials";
 import LeadPageCountdown from "@/components/lead-pages/LeadPageCountdown";
+import { useABTest } from "@/hooks/useABTest";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ const STEPS = [
 export default function CreditPodcastHost() {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const { user, loading } = useAuth();
+  const { variant: abVariant } = useABTest("credit_podcast_headline");
 
   usePageMeta({
     title: "Podcast Hosts — Get $3,300 Marketing Credit",
@@ -62,13 +64,34 @@ export default function CreditPodcastHost() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <img src={logo} alt="Logo" className="h-10 mx-auto mb-5" />
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1"><Star className="w-3 h-3 mr-1" /> PODCAST HOST PROGRAM</Badge>
-            <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
-              Monetize Your <span className="text-primary">Podcast</span> With<br />Purpose + Profit 🎙️
-            </h1>
-            <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6 leading-relaxed">
-              Get <strong className="text-foreground">pre-built guest segments</strong> on gratitude & neuroscience.
-              Earn <strong className="text-primary">affiliate revenue per episode</strong> and feed 111 people with every sale.
-            </p>
+            {abVariant === "A" ? (
+              <>
+                <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
+                  A Neuroscience-Backed Viral <span className="text-primary">Gratitude Challenge</span><br />That Grows Your Podcast 2–3x Faster 🧠
+                </h1>
+                <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-4 leading-relaxed">
+                  Get <strong className="text-foreground">pre-built guest segments</strong> backed by neuroscience.
+                  Earn <strong className="text-primary">affiliate revenue per episode</strong> and feed 111 people with every sale.
+                </p>
+                <motion.div className="inline-flex items-center gap-3 bg-primary/10 border border-primary/30 rounded-2xl px-5 py-3 mb-4" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}>
+                  <Gift className="w-6 h-6 text-primary shrink-0" />
+                  <div className="text-left">
+                    <p className="text-lg md:text-xl font-black text-primary leading-tight">+ FREE $3,300 Marketing Credit</p>
+                    <p className="text-[11px] text-muted-foreground">Same system Inc 5000 companies paid $25,000 for — yours FREE for 30 days</p>
+                  </div>
+                </motion.div>
+              </>
+            ) : (
+              <>
+                <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
+                  Monetize Your <span className="text-primary">Podcast</span> With<br />Purpose + Profit 🎙️
+                </h1>
+                <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6 leading-relaxed">
+                  Get <strong className="text-foreground">pre-built guest segments</strong> on gratitude & neuroscience.
+                  Earn <strong className="text-primary">affiliate revenue per episode</strong> and feed 111 people with every sale.
+                </p>
+              </>
+            )}
             <Button onClick={openSignup} size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2 btn-glow">
               Join as Podcast Host <ArrowRight className="w-5 h-5" />
             </Button>

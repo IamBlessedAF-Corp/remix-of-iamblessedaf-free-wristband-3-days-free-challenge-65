@@ -16,6 +16,7 @@ import coachMarcusImg from "@/assets/coach-marcus.jpg";
 import coachDianaImg from "@/assets/coach-diana.jpg";
 import InfluencerTestimonials from "@/components/lead-pages/InfluencerTestimonials";
 import LeadPageCountdown from "@/components/lead-pages/LeadPageCountdown";
+import { useABTest } from "@/hooks/useABTest";
 
 const STATS = [
   { value: "$3,300", label: "FREE Marketing Credit", icon: Gift },
@@ -66,6 +67,7 @@ export default function CreditREAgent() {
   const [submitting, setSubmitting] = useState(false);
   const [enrolled, setEnrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const { variant: abVariant, trackConversion: abTrack } = useABTest("credit_reagent_headline");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,6 +78,7 @@ export default function CreditREAgent() {
         full_name: name, email, niche: niche || "Real Estate", source_page: "3300us-Credit-RE-Agent",
       });
       if (error) throw error;
+      abTrack();
       supabase.functions.invoke("send-expert-welcome", { body: { email, name, niche: niche || "Real Estate" } }).catch(console.error);
       setEnrolled(true);
       toast.success("🎉 You're in! Check your email for next steps.");
@@ -87,7 +90,25 @@ export default function CreditREAgent() {
 
   return (
     <div className="min-h-screen bg-background">
-      <section className="relative overflow-hidden"><div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" /><div className="relative max-w-3xl mx-auto px-4 pt-10 pb-16 text-center"><motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}><img src={logoImg} alt="I am Blessed AF" className="h-10 mx-auto mb-5" /><Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1"><Home className="w-3 h-3 mr-1" /> ATTENTION: REALTORS & REAL ESTATE TEAMS</Badge><h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">Get a FREE <span className="text-primary">$3,300 Marketing Credit</span><br className="hidden md:block" />To Reactivate Your List 💝</h1><p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6 leading-relaxed">The <strong className="text-foreground">same strategy we used to increase 2.7x lead capture for 7 Inc 5000 companies.</strong> A full funnel — <strong className="text-foreground">customized with YOUR branding</strong> — to reactivate your contact list, re-engage past clients & spike referrals on autopilot.</p></motion.div>
+      <section className="relative overflow-hidden"><div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" /><div className="relative max-w-3xl mx-auto px-4 pt-10 pb-16 text-center"><motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}><img src={logoImg} alt="I am Blessed AF" className="h-10 mx-auto mb-5" /><Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1"><Home className="w-3 h-3 mr-1" /> ATTENTION: REALTORS & REAL ESTATE TEAMS</Badge>
+            {abVariant === "A" ? (
+              <>
+                <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">A Neuroscience-Backed Viral <span className="text-primary">Gratitude Challenge</span><br className="hidden md:block" />That Captures 2–3x More Referrals 🧠</h1>
+                <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-4 leading-relaxed">Replace pop-bys and market update emails with a <strong className="text-foreground">science-backed gratitude challenge</strong> that reactivates your contact list and generates <strong className="text-foreground">2–3x more referrals</strong> — customized with <strong className="text-foreground">YOUR branding</strong>.</p>
+                <motion.div className="inline-flex items-center gap-3 bg-primary/10 border border-primary/30 rounded-2xl px-5 py-3 mb-4" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}>
+                  <Gift className="w-6 h-6 text-primary shrink-0" />
+                  <div className="text-left">
+                    <p className="text-lg md:text-xl font-black text-primary leading-tight">+ FREE $3,300 Marketing Credit</p>
+                    <p className="text-[11px] text-muted-foreground">Same system Inc 5000 companies paid $25,000 for — yours FREE for 30 days</p>
+                  </div>
+                </motion.div>
+              </>
+            ) : (
+              <>
+                <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">Get a FREE <span className="text-primary">$3,300 Marketing Credit</span><br className="hidden md:block" />To Reactivate Your List 💝</h1>
+                <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6 leading-relaxed">The <strong className="text-foreground">same strategy we used to increase 2.7x lead capture for 7 Inc 5000 companies.</strong> A full funnel — <strong className="text-foreground">customized with YOUR branding</strong> — to reactivate your contact list, re-engage past clients & spike referrals on autopilot.</p>
+              </>
+            )}</motion.div>
         <motion.div className="grid grid-cols-3 gap-3 mb-8" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>{STATS.map((s, i) => (<div key={i} className="bg-card border border-border/40 rounded-xl p-3 text-center"><s.icon className="w-5 h-5 text-primary mx-auto mb-1" /><p className="text-2xl font-black text-foreground">{s.value}</p><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{s.label}</p></div>))}</motion.div>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}><Button size="lg" onClick={scrollToEnroll} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2 btn-glow">YES! Claim My FREE $3,300 Marketing Credit <ArrowRight className="w-5 h-5" /></Button><p className="text-xs text-muted-foreground mt-2">100% free. Same strategy behind 7 Inc 5000 companies. No credit card required.</p></motion.div>
         <motion.div className="mt-8 max-w-md mx-auto" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}><LeadPageCountdown /></motion.div>
@@ -118,7 +139,7 @@ export default function CreditREAgent() {
 
       <section className="max-w-3xl mx-auto px-4 py-14"><h2 className="text-2xl font-bold text-foreground text-center mb-8">Frequently Asked Questions</h2><div className="space-y-2 max-w-xl mx-auto">{FAQS.map((faq, i) => (<motion.div key={i} className="border border-border/40 rounded-xl overflow-hidden" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}><button onClick={() => setOpenFaq(openFaq === i ? null : i)} className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-accent/30 transition-colors"><span className="text-sm font-semibold text-foreground pr-4">{faq.q}</span><ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`} /></button>{openFaq === i && (<motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} className="px-5 pb-4"><p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p></motion.div>)}</motion.div>))}</div></section>
 
-      <section className="bg-foreground"><div className="max-w-3xl mx-auto px-4 py-14 text-center"><h2 className="text-2xl md:text-3xl font-bold text-background mb-3">Stop Sending Market Updates. Start <span className="text-primary">Growing.</span></h2><p className="text-sm text-background/70 max-w-md mx-auto mb-6">While other agents send boring emails that get deleted, you'll have a proven system that reactivates relationships and generates referrals on autopilot.</p><Button size="lg" onClick={scrollToEnroll} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2">Claim My FREE $3,300 Credit <ArrowRight className="w-5 h-5" /></Button></div></section>
+      <section className="bg-foreground"><div className="max-w-3xl mx-auto px-4 py-14 text-center"><h2 className="text-2xl md:text-3xl font-bold text-background mb-3">Stop Chasing. Start <span className="text-primary">Attracting.</span></h2><p className="text-sm text-background/70 max-w-md mx-auto mb-6">While other agents chase cold leads, you'll have warm referrals coming to YOU on autopilot.</p><Button size="lg" onClick={scrollToEnroll} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 py-6 rounded-xl gap-2">Claim My FREE $3,300 Credit <ArrowRight className="w-5 h-5" /></Button></div></section>
 
       <footer className="border-t border-border/30 bg-card"><div className="max-w-3xl mx-auto px-4 py-6 text-center"><img src={logoImg} alt="Logo" className="h-6 mx-auto mb-2 opacity-50" /><p className="text-[10px] text-muted-foreground">© {new Date().getFullYear()} I am Blessed AF™ — All rights reserved.</p></div></footer>
     </div>
