@@ -32,6 +32,7 @@ interface PortalAccountSettingsProps {
 
 export default function PortalAccountSettings({ userId, userEmail, profile }: PortalAccountSettingsProps) {
   const [displayName, setDisplayName] = useState(profile?.display_name || "");
+  const [referralCode, setReferralCode] = useState(profile?.referral_code?.startsWith("pending-") ? "" : (profile?.referral_code || ""));
   const [tiktok, setTiktok] = useState(profile?.tiktok_handle || "");
   const [instagram, setInstagram] = useState(profile?.instagram_handle || "");
   const [twitter, setTwitter] = useState(profile?.twitter_handle || "");
@@ -46,9 +47,15 @@ export default function PortalAccountSettings({ userId, userEmail, profile }: Po
     setSaving(true);
     try {
       const from = (table: string) => supabase.from(table as any);
+      if (!referralCode.trim()) {
+        toast.error("Referral code is required.");
+        setSaving(false);
+        return;
+      }
       await (from("creator_profiles") as any)
         .update({
           display_name: displayName,
+          referral_code: referralCode.trim().toLowerCase(),
           tiktok_handle: tiktok || null,
           instagram_handle: instagram || null,
           twitter_handle: twitter || null,
@@ -88,10 +95,16 @@ export default function PortalAccountSettings({ userId, userEmail, profile }: Po
             </div>
           </div>
           <div>
-            <Label className="text-xs text-muted-foreground">Referral Code</Label>
+            <Label htmlFor="referralCode" className="text-xs text-muted-foreground">Referral Code</Label>
             <div className="flex items-center gap-2 mt-1">
               <Hash className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-mono text-primary">{profile?.referral_code || "N/A"}</span>
+              <Input
+                id="referralCode"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value.replace(/[^a-zA-Z0-9-_]/g, ""))}
+                placeholder="your-unique-code"
+                className="font-mono text-primary"
+              />
             </div>
           </div>
         </div>

@@ -107,14 +107,12 @@ export function usePortalData() {
 
         // Auto-create profile if user is authenticated but has no profile
         if (!currentProfile) {
-          const { data: codeData } = await supabase.rpc("generate_referral_code");
-          const referralCode = (codeData as string) || `ref-${user.id.slice(0, 8)}`;
           const { data: newProfile } = await supabase
             .from("creator_profiles")
             .insert({
               user_id: user.id,
               email: user.email || "",
-              referral_code: referralCode,
+              referral_code: `pending-${user.id.slice(0, 8)}`,
               display_name: user.user_metadata?.full_name || null,
             })
             .select("*")
