@@ -54,7 +54,7 @@ const Offer444 = () => {
 
   const handleFinalDecline = () => {
     setShowDownsell(false);
-    navigate("/offer/1111");
+    navigate("/Congrats-Neuro-Hacker");
   };
 
   return (
