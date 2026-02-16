@@ -25,6 +25,26 @@ const InputSchema = z.object({
   }),
 });
 
+// Rate limiter: 20 requests per hour per authenticated user
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 3600_000;
+const RATE_LIMIT_MAX = 20;
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const attempts = (rateLimitMap.get(key) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  if (attempts.length >= RATE_LIMIT_MAX) { rateLimitMap.set(key, attempts); return true; }
+  attempts.push(now); rateLimitMap.set(key, attempts); return false;
+}
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, a] of rateLimitMap.entries()) {
+    const r = a.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+    if (r.length === 0) rateLimitMap.delete(k); else rateLimitMap.set(k, r);
+  }
+}, RATE_LIMIT_WINDOW_MS);
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -44,6 +64,15 @@ serve(async (req) => {
     const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
     if (claimsError || !claimsData?.claims?.sub) {
       return new Response(JSON.stringify({ error: "Invalid token" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const userId = claimsData.claims.sub as string;
+
+    // Rate limit per user
+    if (isRateLimited(userId)) {
+      return new Response(
+        JSON.stringify({ error: "Too many requests. Please try again later." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     // Validate input
