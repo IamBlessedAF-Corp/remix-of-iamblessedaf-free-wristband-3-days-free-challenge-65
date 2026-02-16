@@ -220,8 +220,11 @@ ${projectContext.slice(0, 3000)}
 
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
-      console.error("AI error:", aiResponse.status, errorText);
-      throw new Error(`AI gateway returned ${aiResponse.status}`);
+      console.error("[card-ai-chat] AI gateway error:", aiResponse.status, errorText);
+      return new Response(
+        JSON.stringify({ error: "AI service temporarily unavailable. Please try again." }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const aiData = await aiResponse.json();

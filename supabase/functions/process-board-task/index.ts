@@ -15,6 +15,26 @@ const InputSchema = z.object({
   mode: z.enum(["execute", "clarify", "validate", "sixsigma"]).optional().default("execute"),
 });
 
+// Rate limiter: 50 requests per hour per admin
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 3600_000;
+const RATE_LIMIT_MAX = 50;
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const attempts = (rateLimitMap.get(key) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  if (attempts.length >= RATE_LIMIT_MAX) { rateLimitMap.set(key, attempts); return true; }
+  attempts.push(now); rateLimitMap.set(key, attempts); return false;
+}
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, a] of rateLimitMap.entries()) {
+    const r = a.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+    if (r.length === 0) rateLimitMap.delete(k); else rateLimitMap.set(k, r);
+  }
+}, RATE_LIMIT_WINDOW_MS);
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -44,6 +64,11 @@ serve(async (req) => {
     const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", authUserId).eq("role", "admin").maybeSingle();
     if (!roleData) {
       return json({ error: "Admin access required" }, 403);
+    }
+
+    // Rate limit per admin
+    if (isRateLimited(authUserId as string)) {
+      return json({ error: "Too many requests. Please try again later." }, 429);
     }
 
     // Validate input
