@@ -103,24 +103,7 @@ export function usePortalData() {
           supabase.from("creator_profiles_public").select("*").order("blessings_confirmed", { ascending: false }).limit(50),
         ]);
 
-        let currentProfile = (profileRes.data as PortalProfile) ?? null;
-
-        // Auto-create profile if user is authenticated but has no profile
-        if (!currentProfile) {
-          const { data: codeData } = await supabase.rpc("generate_referral_code");
-          const referralCode = (codeData as string) || `ref-${user.id.slice(0, 8)}`;
-          const { data: newProfile } = await supabase
-            .from("creator_profiles")
-            .insert({
-              user_id: user.id,
-              email: user.email || "",
-              referral_code: referralCode,
-              display_name: user.user_metadata?.full_name || null,
-            })
-            .select("*")
-            .single();
-          if (newProfile) currentProfile = newProfile as PortalProfile;
-        }
+        const currentProfile = (profileRes.data as PortalProfile) ?? null;
 
         setProfile(currentProfile);
         setWallet((walletRes.data as PortalWallet) ?? null);
