@@ -192,7 +192,7 @@ const GratitudeSetupFlow = ({ onComplete, onSkip }: GratitudeSetupFlowProps) => 
         })}
       </div>
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         {/* ── STEP 1: Name Your Best Friend ── */}
         {currentStep === "name-friend" && (
           <motion.div key="name-friend" {...anim} className="space-y-6">
@@ -444,6 +444,8 @@ const GratitudeSetupFlow = ({ onComplete, onSkip }: GratitudeSetupFlowProps) => 
             key="confirmation"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.3 }}
             className="space-y-6"
           >
             <div className="text-center space-y-2">
