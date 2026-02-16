@@ -50,6 +50,7 @@ import AffiliatePortal from "./pages/AffiliatePortal";
 import DiamondAmbassador from "./pages/DiamondAmbassador";
 import UnsubscribeDigest from "./pages/UnsubscribeDigest";
 import CongratsNeuroHacker from "./pages/CongratsNeuroHacker";
+import AdminCongrats from "./pages/AdminCongrats";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -91,6 +92,7 @@ const App = () => (
           <Route path="/roadmap" element={<Roadmap />} />
           <Route path="/clipper-dashboard" element={<ClipperDashboard />} />
           <Route path="/admin/clippers" element={<ClipperAdmin />} />
+          <Route path="/admin/congrats" element={<AdminCongrats />} />
           <Route path="/experts" element={<Experts />} />
           <Route path="/scripts-review" element={<ScriptsReview />} />
           <Route path="/Gratitude-Clippers" element={<GratitudeClippers />} />

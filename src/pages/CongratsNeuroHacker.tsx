@@ -23,25 +23,25 @@ const buildCaptions = (friendName: string, referralLink: string) => [
     platform: "Instagram",
     icon: Instagram,
     color: "from-pink-500 to-purple-600",
-    caption: `🧠 Day 1 of my Neuro-Hacker journey.\n\n@${friendName || "mybff"} — I genuinely appreciate you being in my life. Science says receiving gratitude activates your mPFC and makes you up to 27x happier. So here's mine. ❤️\n\nI just joined a movement to feed 11 people through the @IamBlessedAF Gratitude Challenge.\n\n🎁 FREE Neuro-Hacker Wristband for you 👇\n${referralLink}\n\n#NeuroHacker #GratitudeChallenge #27xHappier #IamBlessedAF #Day1`,
+    caption: `🧠 Day 1 of my Neuro-Hacker journey.\n\n@${friendName || "mybff"} — I genuinely appreciate you being in my life. Science says receiving gratitude activates your mPFC and makes you up to 27x happier. So here's mine. ❤️\n\nI just joined a movement to feed 11 people through the @IamBlessedAF Gratitude Challenge.\n\n🎯 YOUR CHALLENGE: Tag 2 people YOU'RE grateful for and challenge them to do the same. Let's start a gratitude chain reaction! 🔗\n\n🎁 FREE Neuro-Hacker Wristband for you 👇\n${referralLink}\n\n#NeuroHacker #GratitudeChallenge #27xHappier #IamBlessedAF #Day1`,
   },
   {
     platform: "TikTok",
     icon: Share2,
     color: "from-gray-900 to-gray-700",
-    caption: `🧠 POV: You just discovered the Neuro-Hack that makes you 27x happier\n\nTagging @${friendName || "mybff"} because RECEIVING genuine gratitude fires up your mPFC (the happiness center of your brain).\n\nThank you for being you. Seriously. ❤️\n\n🎁 Free Neuro-Hacker Wristband:\n${referralLink}\n\n#NeuroHacker #GratitudeChallenge #27xHappier #IamBlessedAF #Day1`,
+    caption: `🧠 POV: You just discovered the Neuro-Hack that makes you 27x happier\n\nTagging @${friendName || "mybff"} because RECEIVING genuine gratitude fires up your mPFC (the happiness center of your brain).\n\nThank you for being you. Seriously. ❤️\n\n🎯 I CHALLENGE YOU: Tag 2 people you're grateful for in the comments. Let's see how far this chain goes! 🔗\n\n🎁 Free Neuro-Hacker Wristband:\n${referralLink}\n\n#NeuroHacker #GratitudeChallenge #27xHappier #IamBlessedAF #Day1`,
   },
   {
     platform: "X / Twitter",
     icon: Share2,
     color: "from-blue-500 to-cyan-500",
-    caption: `🧠 Just became a Neuro-Hacker.\n\nScience says receiving genuine gratitude = up to 27x happier (Dr. Hawkins' research).\n\nSo @${friendName || "mybff"} — thank you for being in my life. Genuinely. ❤️\n\n🎁 Free wristband for you: ${referralLink}\n\n#NeuroHacker #IamBlessedAF #Day1`,
+    caption: `🧠 Just became a Neuro-Hacker.\n\nScience says receiving genuine gratitude = up to 27x happier (Dr. Hawkins' research).\n\nSo @${friendName || "mybff"} — thank you for being in my life. Genuinely. ❤️\n\n🎯 I challenge YOU: Quote this tweet, tag 2 people you're grateful for. Start the chain. 🔗\n\n🎁 Free wristband for you: ${referralLink}\n\n#NeuroHacker #IamBlessedAF #Day1`,
   },
   {
     platform: "WhatsApp",
     icon: Heart,
     color: "from-green-500 to-green-600",
-    caption: `Hey ${friendName || "friend"}! 🧠\n\nI just joined the Neuro-Hacker Gratitude Challenge and I wanted to start with YOU.\n\nDid you know that receiving genuine gratitude fires up your mPFC and makes you up to 27x happier? (Andrew Huberman's research)\n\nSo here it is: Thank you for being in my life. Genuinely. ❤️\n\nI got you a FREE Neuro-Hacker Wristband as a daily happiness trigger:\n${referralLink}\n\n#IamBlessedAF`,
+    caption: `Hey ${friendName || "friend"}! 🧠\n\nI just joined the Neuro-Hacker Gratitude Challenge and I wanted to start with YOU.\n\nDid you know that receiving genuine gratitude fires up your mPFC and makes you up to 27x happier? (Andrew Huberman's research)\n\nSo here it is: Thank you for being in my life. Genuinely. ❤️\n\n🎯 YOUR CHALLENGE: Forward this to 2 people YOU'RE grateful for. Let's start a gratitude chain reaction!\n\nI got you a FREE Neuro-Hacker Wristband as a daily happiness trigger:\n${referralLink}\n\n#IamBlessedAF`,
   },
 ];
 
