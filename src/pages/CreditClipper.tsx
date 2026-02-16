@@ -1,10 +1,11 @@
 // Updated clipper funnel: /3300us-Credit-Clipper
-// Adds $3,300 credit positioning + Joe Da Vincy testimonials
+// Adds $3,300 credit positioning + Joe Da Vincy testimonials + A/B headline test
 import { useState } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
+import { useABTest } from "@/hooks/useABTest";
 import GratitudeClippersHero from "@/components/contest/GratitudeClippersHero";
 import EarningsSliderCalculator from "@/components/contest/EarningsSliderCalculator";
 import BonusLadder from "@/components/contest/BonusLadder";
@@ -24,6 +25,7 @@ import { Gift, Sparkles } from "lucide-react";
 const CreditClipper = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const { user, loading } = useAuth();
+  const { variant: abVariant } = useABTest("credit_clipper_headline");
 
   usePageMeta({
     title: "Clip Gratitude Viral Content + Get $3,300 Marketing Credit",
@@ -60,8 +62,8 @@ const CreditClipper = () => {
         </p>
       </motion.div>
 
-      {/* 1. Hero — what you do + what you earn */}
-      <GratitudeClippersHero logo={logo} onJoin={openSignup} />
+      {/* Hero — uses A/B variant via prop */}
+      <GratitudeClippersHero logo={logo} onJoin={openSignup} variant={abVariant} />
 
       {/* Countdown */}
       <div className="max-w-md mx-auto px-4 mb-6">

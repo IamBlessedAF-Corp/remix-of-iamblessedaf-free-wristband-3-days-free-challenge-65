@@ -1,5 +1,5 @@
 // Renamed from ExpertsLeads — route: /3300us-Credit-Expert
-// Re-exports the same component with updated source_page tracking
+// Re-exports the same component with updated source_page tracking + A/B headline test
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -17,6 +17,7 @@ import coachMarcusImg from "@/assets/coach-marcus.jpg";
 import coachDianaImg from "@/assets/coach-diana.jpg";
 import InfluencerTestimonials from "@/components/lead-pages/InfluencerTestimonials";
 import LeadPageCountdown from "@/components/lead-pages/LeadPageCountdown";
+import { useABTest } from "@/hooks/useABTest";
 
 const STATS = [
   { value: "$3,300", label: "FREE Marketing Credit", icon: Gift },
@@ -67,6 +68,7 @@ export default function CreditExpert() {
   const [submitting, setSubmitting] = useState(false);
   const [enrolled, setEnrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const { variant: abVariant, trackConversion: abTrack } = useABTest("credit_expert_headline");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,6 +79,7 @@ export default function CreditExpert() {
         full_name: name, email, niche: niche || null, source_page: "3300us-Credit-Expert",
       });
       if (error) throw error;
+      abTrack();
       supabase.functions.invoke("send-expert-welcome", { body: { email, name, niche: niche || null } }).catch(console.error);
       setEnrolled(true);
       toast.success("🎉 You're in! Check your email for next steps.");
@@ -94,8 +97,24 @@ export default function CreditExpert() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <img src={logoImg} alt="I am Blessed AF" className="h-10 mx-auto mb-5" />
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1"><Sparkles className="w-3 h-3 mr-1" /> ATTENTION: COACHES, EXPERTS & CONSULTANTS</Badge>
-            <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">Get a FREE <span className="text-primary">$3,300 Marketing Credit</span><br />To Reactivate Your List 🚀</h1>
-            <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6 leading-relaxed">The <strong className="text-foreground">same strategy we used to increase 2.7x lead capture for 7 Inc 5000 companies.</strong> A full funnel — <strong className="text-foreground">customized with YOUR branding</strong> — designed to reactivate your list, re-engage past clients & capture warm leads on autopilot.</p>
+            {abVariant === "A" ? (
+              <>
+                <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">A Neuroscience-Backed Viral <span className="text-primary">Gratitude Challenge</span><br />That Captures 2–3x More Leads 🧠</h1>
+                <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-4 leading-relaxed">Replace tired lead magnets with a <strong className="text-foreground">science-backed gratitude challenge</strong> proven to capture <strong className="text-foreground">2–3x more qualified leads</strong> than traditional opt-ins — customized with <strong className="text-foreground">YOUR branding</strong>.</p>
+                <motion.div className="inline-flex items-center gap-3 bg-primary/10 border border-primary/30 rounded-2xl px-5 py-3 mb-4" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}>
+                  <Gift className="w-6 h-6 text-primary shrink-0" />
+                  <div className="text-left">
+                    <p className="text-lg md:text-xl font-black text-primary leading-tight">+ FREE $3,300 Marketing Credit</p>
+                    <p className="text-[11px] text-muted-foreground">Same system Inc 5000 companies paid $25,000 for — yours FREE for 30 days</p>
+                  </div>
+                </motion.div>
+              </>
+            ) : (
+              <>
+                <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">Get a FREE <span className="text-primary">$3,300 Marketing Credit</span><br />To Reactivate Your List 🚀</h1>
+                <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6 leading-relaxed">The <strong className="text-foreground">same strategy we used to increase 2.7x lead capture for 7 Inc 5000 companies.</strong> A full funnel — <strong className="text-foreground">customized with YOUR branding</strong> — designed to reactivate your list, re-engage past clients & capture warm leads on autopilot.</p>
+              </>
+            )}
           </motion.div>
           <motion.div className="grid grid-cols-3 gap-3 mb-8" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             {STATS.map((s, i) => (<div key={i} className="bg-card border border-border/40 rounded-xl p-3 text-center"><s.icon className="w-5 h-5 text-primary mx-auto mb-1" /><p className="text-2xl font-black text-foreground">{s.value}</p><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{s.label}</p></div>))}
@@ -138,4 +157,3 @@ export default function CreditExpert() {
     </div>
   );
 }
-

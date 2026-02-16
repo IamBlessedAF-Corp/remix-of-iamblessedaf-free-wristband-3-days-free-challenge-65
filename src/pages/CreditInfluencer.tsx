@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 import InfluencerTestimonials from "@/components/lead-pages/InfluencerTestimonials";
 import LeadPageCountdown from "@/components/lead-pages/LeadPageCountdown";
+import { useABTest } from "@/hooks/useABTest";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ const STEPS = [
 const CreditInfluencer = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const { user, loading } = useAuth();
+  const { variant: abVariant } = useABTest("credit_influencer_headline");
 
   usePageMeta({
     title: "Influencer / Content Creator — Get $3,300 Marketing Credit",
@@ -74,15 +76,36 @@ const CreditInfluencer = () => {
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs font-bold px-3 py-1">
               <Star className="w-3 h-3 mr-1" /> INFLUENCER PROGRAM
             </Badge>
-            <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
-              Turn Your <span className="text-primary">Influence</span> Into
-              <br />
-              Income + Impact 🙏
-            </h1>
-            <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6 leading-relaxed">
-              Post <strong className="text-foreground">ready-made viral clips</strong> about gratitude & neuroscience.
-              Earn <strong className="text-primary">$2.22–$1,111 per clip</strong> and feed 111 people with every sale.
-            </p>
+            {abVariant === "A" ? (
+              <>
+                <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
+                  A Neuroscience-Backed Viral <span className="text-primary">Gratitude Challenge</span><br />That Drives 2–3x More Engagement 🧠
+                </h1>
+                <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-4 leading-relaxed">
+                  Post <strong className="text-foreground">ready-made viral clips</strong> backed by neuroscience.
+                  Earn <strong className="text-primary">$2.22–$1,111 per clip</strong> and feed 111 people with every sale.
+                </p>
+                <motion.div className="inline-flex items-center gap-3 bg-primary/10 border border-primary/30 rounded-2xl px-5 py-3 mb-4" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}>
+                  <Gift className="w-6 h-6 text-primary shrink-0" />
+                  <div className="text-left">
+                    <p className="text-lg md:text-xl font-black text-primary leading-tight">+ FREE $3,300 Marketing Credit</p>
+                    <p className="text-[11px] text-muted-foreground">Same system Inc 5000 companies paid $25,000 for — yours FREE for 30 days</p>
+                  </div>
+                </motion.div>
+              </>
+            ) : (
+              <>
+                <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
+                  Turn Your <span className="text-primary">Influence</span> Into
+                  <br />
+                  Income + Impact 🙏
+                </h1>
+                <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6 leading-relaxed">
+                  Post <strong className="text-foreground">ready-made viral clips</strong> about gratitude & neuroscience.
+                  Earn <strong className="text-primary">$2.22–$1,111 per clip</strong> and feed 111 people with every sale.
+                </p>
+              </>
+            )}
             <Button
               onClick={openSignup}
               size="lg"
