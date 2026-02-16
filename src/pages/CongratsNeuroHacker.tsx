@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useExitIntentTracking } from "@/hooks/useExitIntentTracking";
 import confetti from "canvas-confetti";
 import logoImg from "@/assets/logo.png";
 import AuthorAvatar from "@/components/offer/AuthorAvatar";
@@ -48,6 +49,7 @@ export default function CongratsNeuroHacker() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const nextRoute = searchParams.get("next") || "/portal";
+  const { track } = useExitIntentTracking("congrats-neuro-hacker");
   const [referralCode, setReferralCode] = useState<string>("");
   const [friendName, setFriendName] = useState("mybff");
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
@@ -82,8 +84,9 @@ export default function CongratsNeuroHacker() {
     }
   }, [user]);
 
-  // Confetti on mount
+  // Track page view + Confetti on mount
   useEffect(() => {
+    track("shown");
     const timer = setTimeout(() => {
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.3 } });
     }, 600);
@@ -93,6 +96,7 @@ export default function CongratsNeuroHacker() {
   const handleCopy = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
     setCopiedIdx(idx);
+    track("accepted"); // viral share activated
     toast.success("Caption copied! Paste it in your post 🚀");
     setTimeout(() => setCopiedIdx(null), 3000);
 
@@ -408,6 +412,7 @@ export default function CongratsNeuroHacker() {
             </p>
             <a
               href={nextRoute}
+              onClick={() => track("declined")}
               className="text-xs text-muted-foreground/60 hover:text-muted-foreground underline"
             >
               Maybe later → {nextRoute === "/portal" ? "Go to Portal" : "Skip to next offer"}
