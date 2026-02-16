@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MessageCircle, Loader2, Check, Globe } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import ReCaptcha from "@/components/ReCaptcha";
+
 import {
   Dialog,
   DialogContent,
@@ -40,7 +40,7 @@ export default function GiftSmsDialog({
   const [friendName, setFriendName] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  
 
   const intl = isInternational(phone);
 
@@ -49,23 +49,9 @@ export default function GiftSmsDialog({
       toast.error("Please enter a phone number");
       return;
     }
-    if (!captchaToken) {
-      toast.error("Please complete the CAPTCHA first");
-      return;
-    }
 
     setSending(true);
     try {
-      // Verify captcha server-side
-      const captchaRes = await supabase.functions.invoke("verify-captcha", {
-        body: { token: captchaToken },
-      });
-      if (!captchaRes.data?.success) {
-        toast.error("CAPTCHA verification failed. Please try again.");
-        setCaptchaToken(null);
-        setSending(false);
-        return;
-      }
       const defaultMsg = `🎁 Someone thinks you're blessed! You've been gifted a FREE 'I Am Blessed AF' Wristband. Claim yours: ${shortUrl}`;
       const personalizedMessage = friendName.trim()
         ? `Hey ${friendName}! ${defaultMsg}`
@@ -156,17 +142,9 @@ export default function GiftSmsDialog({
             </div>
           )}
 
-          {/* reCAPTCHA */}
-          <div className="py-1">
-            <ReCaptcha
-              onVerify={(token) => setCaptchaToken(token)}
-              onExpire={() => setCaptchaToken(null)}
-            />
-          </div>
-
           <Button
             onClick={handleSend}
-            disabled={sending || sent || !phone.trim() || !captchaToken}
+            disabled={sending || sent || !phone.trim()}
             className="w-full"
           >
             {sent ? (
