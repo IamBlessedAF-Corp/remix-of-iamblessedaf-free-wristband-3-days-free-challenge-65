@@ -33,6 +33,7 @@ interface PortalAccountSettingsProps {
 export default function PortalAccountSettings({ userId, userEmail, profile }: PortalAccountSettingsProps) {
   const [displayName, setDisplayName] = useState(profile?.display_name || "");
   const [referralCode, setReferralCode] = useState(profile?.referral_code?.startsWith("pending-") ? "" : (profile?.referral_code || ""));
+  const [referredByCode, setReferredByCode] = useState(profile?.referred_by_code || "");
   const [tiktok, setTiktok] = useState(profile?.tiktok_handle || "");
   const [instagram, setInstagram] = useState(profile?.instagram_handle || "");
   const [twitter, setTwitter] = useState(profile?.twitter_handle || "");
@@ -42,6 +43,19 @@ export default function PortalAccountSettings({ userId, userEmail, profile }: Po
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  const [referrerValid, setReferrerValid] = useState<boolean | null>(null);
+
+  // Validate referred-by code on blur
+  const validateReferrer = async (code: string) => {
+    if (!code.trim()) { setReferrerValid(null); return; }
+    const { data } = await supabase
+      .from("creator_profiles")
+      .select("id")
+      .eq("referral_code", code.trim().toLowerCase())
+      .maybeSingle();
+    setReferrerValid(!!data);
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -64,10 +78,31 @@ export default function PortalAccountSettings({ userId, userEmail, profile }: Po
         setSaving(false);
         return;
       }
+
+      // Validate referred_by_code if provided
+      const refBy = referredByCode.trim().toLowerCase();
+      if (refBy) {
+        if (refBy === code) {
+          toast.error("You can't refer yourself!");
+          setSaving(false);
+          return;
+        }
+        const { data: refExists } = await (from("creator_profiles") as any)
+          .select("id")
+          .eq("referral_code", refBy)
+          .maybeSingle();
+        if (!refExists) {
+          toast.error("The referrer code doesn't exist. Check the code and try again.");
+          setSaving(false);
+          return;
+        }
+      }
+
       await (from("creator_profiles") as any)
         .update({
           display_name: displayName,
           referral_code: code,
+          referred_by_code: refBy || null,
           tiktok_handle: tiktok || null,
           instagram_handle: instagram || null,
           twitter_handle: twitter || null,
@@ -105,6 +140,26 @@ export default function PortalAccountSettings({ userId, userEmail, profile }: Po
               <span className="text-sm text-foreground">{userEmail}</span>
               <Badge variant="outline" className="text-[9px] ml-auto">Verified</Badge>
             </div>
+          </div>
+          <div>
+            <Label htmlFor="referredBy" className="text-xs text-muted-foreground">Referred By (optional)</Label>
+            <div className="flex items-center gap-2 mt-1">
+              <UserPlus className="w-4 h-4 text-muted-foreground" />
+              <Input
+                id="referredBy"
+                value={referredByCode}
+                onChange={(e) => setReferredByCode(e.target.value.replace(/[^a-zA-Z0-9-_]/g, ""))}
+                onBlur={(e) => validateReferrer(e.target.value)}
+                placeholder="friend-code"
+                className="font-mono"
+                disabled={!!profile?.referred_by_code}
+              />
+              {referrerValid === true && <Check className="w-4 h-4 text-primary" />}
+              {referrerValid === false && <span className="text-[10px] text-destructive">Not found</span>}
+            </div>
+            {profile?.referred_by_code && (
+              <p className="text-[10px] text-muted-foreground mt-1">Referrer already set and locked.</p>
+            )}
           </div>
           <div>
             <Label htmlFor="referralCode" className="text-xs text-muted-foreground">Referral Code</Label>
