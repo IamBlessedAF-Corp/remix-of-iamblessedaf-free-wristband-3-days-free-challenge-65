@@ -1,0 +1,1 @@
+ALTER TABLE public.creator_profiles ADD CONSTRAINT creator_profiles_referral_code_unique UNIQUE (referral_code);
