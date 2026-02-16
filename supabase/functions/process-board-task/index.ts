@@ -23,7 +23,10 @@ serve(async (req) => {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    if (!LOVABLE_API_KEY) {
+      console.error("[process-board-task] LOVABLE_API_KEY not configured");
+      return json({ error: "Service temporarily unavailable" }, 503);
+    }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -119,7 +122,7 @@ serve(async (req) => {
     }
   } catch (e) {
     console.error("process-board-task error:", e);
-    return json({ error: e instanceof Error ? e.message : "Unknown error" }, 500);
+    return json({ error: "Something went wrong. Please try again." }, 500);
   }
 });
 
@@ -469,9 +472,9 @@ async function callAI(apiKey: string, systemPrompt: string, userContent: string)
   if (!aiResponse.ok) {
     const errorText = await aiResponse.text();
     console.error("AI gateway error:", aiResponse.status, errorText);
-    if (aiResponse.status === 429) throw new Error("Rate limited — please try again later");
-    if (aiResponse.status === 402) throw new Error("Payment required — add credits to your workspace");
-    throw new Error(`AI gateway returned ${aiResponse.status}`);
+    if (aiResponse.status === 429) throw new Error("AI service is busy. Please try again later.");
+    if (aiResponse.status === 402) throw new Error("AI service temporarily unavailable.");
+    throw new Error("AI service error. Please try again.");
   }
 
   const aiData = await aiResponse.json();

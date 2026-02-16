@@ -7,28 +7,69 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+// IP-based rate limiter: max 5 requests per hour per IP
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 3600_000;
+const RATE_LIMIT_MAX = 5;
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const attempts = (rateLimitMap.get(key) || []).filter(
+    (t) => now - t < RATE_LIMIT_WINDOW_MS
+  );
+  if (attempts.length >= RATE_LIMIT_MAX) {
+    rateLimitMap.set(key, attempts);
+    return true;
+  }
+  attempts.push(now);
+  rateLimitMap.set(key, attempts);
+  return false;
+}
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, attempts] of rateLimitMap.entries()) {
+    const recent = attempts.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+    if (recent.length === 0) rateLimitMap.delete(key);
+    else rateLimitMap.set(key, recent);
+  }
+}, 300_000);
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Rate limit by IP
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("cf-connecting-ip") ||
+    "unknown";
+
+  if (isRateLimited(ip)) {
+    return new Response(
+      JSON.stringify({ error: "Too many requests. Please try again later." }),
+      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 
   try {
     const { phone, friends, gratitudeMemory, fullMessage } = await req.json();
 
     // ── Validate ──
-    if (!phone || typeof phone !== "string" || phone.length < 10) {
+    if (!phone || typeof phone !== "string" || phone.length < 10 || phone.length > 20) {
       return new Response(
         JSON.stringify({ error: "Valid phone number required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-    if (!friends?.friend1 || typeof friends.friend1 !== "string") {
+    if (!friends?.friend1 || typeof friends.friend1 !== "string" || friends.friend1.length > 100) {
       return new Response(
         JSON.stringify({ error: "At least one friend name required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-    if (!fullMessage || typeof fullMessage !== "string") {
+    if (!fullMessage || typeof fullMessage !== "string" || fullMessage.length > 5000) {
       return new Response(
         JSON.stringify({ error: "Message body required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -69,7 +110,13 @@ serve(async (req) => {
       .select()
       .single();
 
-    if (pErr) throw pErr;
+    if (pErr) {
+      console.error("[schedule-challenge-messages] Insert error:", pErr);
+      return new Response(
+        JSON.stringify({ error: "Failed to join challenge. Please try again." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     // ── Create scheduled messages ──
     const now = new Date();
@@ -120,7 +167,9 @@ serve(async (req) => {
     const { error: mErr } = await supabase
       .from("scheduled_gratitude_messages")
       .insert(messages);
-    if (mErr) throw mErr;
+    if (mErr) {
+      console.error("[schedule-challenge-messages] Message insert error:", mErr);
+    }
 
     // ── Follow-up sequences ──
     if (!friends.friend2 || !friends.friend3) {
@@ -158,10 +207,7 @@ serve(async (req) => {
       }
     }
 
-    // ── Send welcome SMS via sms-router (transactional lane) ──
-    const friendCount = [friends.friend1, friends.friend2, friends.friend3]
-      .filter(Boolean).length;
-
+    // ── Send welcome SMS via sms-router ──
     await callRouter(supabaseUrl, supabaseServiceKey, {
       to: phone.trim(),
       trafficType: "transactional",
@@ -182,7 +228,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("schedule-challenge-messages error:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: "Something went wrong. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

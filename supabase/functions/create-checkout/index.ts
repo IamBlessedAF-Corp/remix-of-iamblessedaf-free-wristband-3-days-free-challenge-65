@@ -8,6 +8,34 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// IP-based rate limiter: max 10 checkout sessions per hour per IP
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 3600_000;
+const RATE_LIMIT_MAX = 10;
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const attempts = (rateLimitMap.get(key) || []).filter(
+    (t) => now - t < RATE_LIMIT_WINDOW_MS
+  );
+  if (attempts.length >= RATE_LIMIT_MAX) {
+    rateLimitMap.set(key, attempts);
+    return true;
+  }
+  attempts.push(now);
+  rateLimitMap.set(key, attempts);
+  return false;
+}
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, attempts] of rateLimitMap.entries()) {
+    const recent = attempts.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+    if (recent.length === 0) rateLimitMap.delete(key);
+    else rateLimitMap.set(key, recent);
+  }
+}, 300_000);
+
 /** Map tier keys to Stripe price IDs */
 const PRICE_MAP: Record<string, string> = {
   "free-wristband": "price_1SyijPK7ifE56qrAXBoP2Fsk",
@@ -21,10 +49,8 @@ const PRICE_MAP: Record<string, string> = {
   "kickstarter-1": "price_1T0l4dK7ifE56qrAqSF3wQzh",
 };
 
-/** Tiers that use subscription mode */
 const SUBSCRIPTION_TIERS = new Set(["monthly-11"]);
 
-/** Tiers that require shipping */
 const SHIPPING_TIERS = new Set([
   "free-wristband", "wristband-22", "pack-111", "pack-444", "pack-1111", "pack-4444",
   "kickstarter-11", "kickstarter-1",
@@ -35,13 +61,38 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Rate limit by IP
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("cf-connecting-ip") ||
+    "unknown";
+
+  if (isRateLimited(ip)) {
+    return new Response(
+      JSON.stringify({ error: "Too many requests. Please try again later." }),
+      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
   try {
     const { tier, coupon } = await req.json();
-    if (!tier || !PRICE_MAP[tier]) {
-      throw new Error(`Invalid tier: ${tier}`);
+    if (!tier || typeof tier !== "string" || !PRICE_MAP[tier]) {
+      return new Response(
+        JSON.stringify({ error: "Invalid tier selected" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      console.error("[create-checkout] STRIPE_SECRET_KEY not configured");
+      return new Response(
+        JSON.stringify({ error: "Payment service temporarily unavailable" }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const stripe = new Stripe(stripeKey, {
       apiVersion: "2025-08-27.basil",
     });
 
@@ -59,7 +110,6 @@ serve(async (req) => {
         const { data } = await supabaseClient.auth.getUser(token);
         if (data.user?.email) {
           customerEmail = data.user.email;
-          // Check if Stripe customer already exists
           const customers = await stripe.customers.list({ email: customerEmail, limit: 1 });
           if (customers.data.length > 0) {
             customerId = customers.data[0].id;
@@ -85,7 +135,6 @@ serve(async (req) => {
         const existing = await stripe.promotionCodes.list({ code, limit: 1 });
         if (existing.data.length === 0) {
           await stripe.promotionCodes.create({ coupon: couponId, code });
-          console.log(`[create-checkout] Created promo code: ${code}`);
         }
       } catch (e) {
         console.log(`[create-checkout] Promo code ${code} setup skipped:`, e);
@@ -101,14 +150,12 @@ serve(async (req) => {
       allow_promotion_codes: true,
     };
 
-    // Pre-fill customer email or attach existing Stripe customer
     if (customerId) {
       sessionParams.customer = customerId;
     } else if (customerEmail) {
       sessionParams.customer_email = customerEmail;
     }
 
-    // Collect shipping address for physical product tiers
     if (needsShipping) {
       sessionParams.shipping_address_collection = {
         allowed_countries: [
@@ -120,8 +167,14 @@ serve(async (req) => {
       };
     }
 
-    // Apply coupon directly if provided from frontend
+    // Validate coupon format if provided
     if (coupon) {
+      if (typeof coupon !== "string" || coupon.length > 50) {
+        return new Response(
+          JSON.stringify({ error: "Invalid coupon format" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
       delete sessionParams.allow_promotion_codes;
       if (isSubscription) {
         sessionParams.subscription_data = { coupon };
@@ -137,9 +190,8 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("[create-checkout] Error:", message);
-    return new Response(JSON.stringify({ error: message }), {
+    console.error("[create-checkout] Error:", error);
+    return new Response(JSON.stringify({ error: "Failed to create checkout session. Please try again." }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });
