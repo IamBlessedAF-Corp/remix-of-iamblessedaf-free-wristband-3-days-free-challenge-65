@@ -56,13 +56,12 @@ const Challenge = () => {
   const referralCode = searchParams.get("ref");
   const isReferred = !!referralCode;
 
-  // Redirect to thanks page when user is authenticated via Google
-  // BUT only if they're NOT arriving via a referral link (they need to see the wristband offer first)
+  // Redirect authenticated users to the Affiliate Portal
   useEffect(() => {
-    if (user && !isReferred) {
-      navigate("/challenge/thanks");
+    if (user) {
+      navigate("/affiliate-portal");
     }
-  }, [user, navigate, isReferred]);
+  }, [user, navigate]);
 
   // Look up sender's name from referral code
   useEffect(() => {
@@ -104,10 +103,7 @@ const Challenge = () => {
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSubmitting(false);
-    const thanksUrl = referralCode
-      ? `/challenge/thanks?ref=${referralCode}`
-      : "/challenge/thanks";
-    navigate(thanksUrl);
+    navigate("/affiliate-portal");
   };
 
   const handleGoogleSignup = async () => {
