@@ -117,15 +117,29 @@ export default function CreditPortal() {
               <Sparkles className="w-3 h-3 mr-1" /> AFFILIATE PROGRAM
             </Badge>
             <h1 className="text-3xl md:text-5xl font-black text-foreground leading-[1.1] mb-4 tracking-tight">
-              Get a FREE <span className="text-primary">$3,300 Marketing Credit</span>
-              <br />
-              Choose Your Path 🚀
+              A Neuroscience-Backed Viral<br />
+              <span className="text-primary">Gratitude Challenge</span> That Captures<br />
+              2–3x More Emails 🧠
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-4 leading-relaxed">
-              The <strong className="text-foreground">same proven system Inc 5000 companies paid $25,000 for</strong> — 
-              customized for <strong className="text-foreground">YOUR industry</strong>. 
-              Pick your role below and get started in minutes.
+              Replace tired lead magnets with a <strong className="text-foreground">science-backed gratitude challenge</strong> proven to capture
+              <strong className="text-foreground"> 2–3x more emails</strong> than traditional opt-ins.
+              Customized for <strong className="text-foreground">YOUR industry</strong> — pick your role and get started in minutes.
             </p>
+
+            {/* FREE $3,300 Bonus Callout */}
+            <motion.div
+              className="inline-flex items-center gap-3 bg-primary/10 border border-primary/30 rounded-2xl px-5 py-3 mb-2"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Gift className="w-6 h-6 text-primary shrink-0" />
+              <div className="text-left">
+                <p className="text-lg md:text-xl font-black text-primary leading-tight">+ FREE $3,300 Marketing Credit</p>
+                <p className="text-[11px] text-muted-foreground">Same system Inc 5000 companies paid $25,000 for — yours FREE for 30 days</p>
+              </div>
+            </motion.div>
           </motion.div>
 
           <motion.div
