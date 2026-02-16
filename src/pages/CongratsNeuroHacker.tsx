@@ -11,6 +11,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import confetti from "canvas-confetti";
 import logoImg from "@/assets/logo.png";
+import AuthorAvatar from "@/components/offer/AuthorAvatar";
+import GlobalMealCounter from "@/components/GlobalMealCounter";
 
 /* ─── Platform caption templates ─── */
 const buildCaptions = (friendName: string, referralLink: string) => [
@@ -149,10 +151,13 @@ export default function CongratsNeuroHacker() {
               it's about <strong className="text-foreground">we</strong>. The moment you start focusing on what you can
               <em> give</em> rather than what you can <em>get</em>, your whole world changes."
             </p>
-            <p className="text-xs text-primary font-semibold mt-3">
-              — Tony Robbins, 1 Billion Meals Challenge
-            </p>
+            <footer className="mt-3">
+              <AuthorAvatar author="tony-robbins" />
+            </footer>
           </motion.blockquote>
+
+          {/* Global Meal Counter */}
+          <GlobalMealCounter variant="banner" />
         </motion.section>
 
         {/* ═══ THE SECRET (Brunson Epiphany Bridge) ═══ */}
