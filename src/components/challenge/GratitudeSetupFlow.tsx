@@ -17,7 +17,9 @@ import {
   ChevronDown,
 } from "lucide-react";
 import MessageBubblePreview from "./MessageBubblePreview";
+import ReCaptcha from "@/components/ReCaptcha";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import wristbandImg from "@/assets/wristband-gift.avif";
 
 interface GratitudeSetupFlowProps {
@@ -56,6 +58,7 @@ const GratitudeSetupFlow = ({ onComplete, onSkip }: GratitudeSetupFlowProps) => 
   const [agreedToSms, setAgreedToSms] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showCountryCodes, setShowCountryCodes] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const phone = `${countryCode}${phoneLocal}`;
 
@@ -109,8 +112,23 @@ const GratitudeSetupFlow = ({ onComplete, onSkip }: GratitudeSetupFlowProps) => 
   };
 
   const handleSchedule = async () => {
+    if (!captchaToken) {
+      toast.error("Please complete the CAPTCHA first");
+      return;
+    }
     setSaving(true);
     try {
+      // Verify captcha server-side
+      const captchaRes = await supabase.functions.invoke("verify-captcha", {
+        body: { token: captchaToken },
+      });
+      if (!captchaRes.data?.success) {
+        toast.error("CAPTCHA verification failed. Please try again.");
+        setCaptchaToken(null);
+        setSaving(false);
+        return;
+      }
+
       const res = await supabase.functions.invoke("schedule-challenge-messages", {
         body: {
           phone,
@@ -409,10 +427,18 @@ const GratitudeSetupFlow = ({ onComplete, onSkip }: GratitudeSetupFlowProps) => 
               </div>
             </div>
 
+            {/* reCAPTCHA */}
+            <div className="py-2">
+              <ReCaptcha
+                onVerify={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken(null)}
+              />
+            </div>
+
             <Button
               onClick={handleSchedule}
               disabled={
-                !phone.trim() || phone.length < 10 || !agreedToSms || saving
+                !phone.trim() || phone.length < 10 || !agreedToSms || saving || !captchaToken
               }
               className="w-full h-14 text-base md:text-lg font-bold btn-glow px-4"
             >
