@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import ShareMilestoneTracker from "@/components/viral/ShareMilestoneTracker";
-import { LayoutDashboard, Trophy, Share2, ShoppingBag, Target, Activity, LogOut, Loader2 } from "lucide-react";
+import { LayoutDashboard, Trophy, Share2, ShoppingBag, Target, Activity, LogOut, Loader2, Rocket, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { usePortalData } from "@/hooks/usePortalData";
@@ -12,6 +13,8 @@ import PortalReferralHub from "@/components/portal/PortalReferralHub";
 import PortalRewardsStore from "@/components/portal/PortalRewardsStore";
 import PortalMissions from "@/components/portal/PortalMissions";
 import PortalActivityFeed from "@/components/portal/PortalActivityFeed";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 import logoImg from "@/assets/logo.png";
 
 type Tab = "dashboard" | "leaderboard" | "referrals" | "store" | "missions";
@@ -27,8 +30,38 @@ const TABS: { id: Tab; label: string; icon: any }[] = [
 const Portal = () => {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
   const [showAuth, setShowAuth] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
   const { user, loading: authLoading, signOut } = useAuth();
   const portalData = usePortalData();
+  const navigate = useNavigate();
+
+  const handleUpgradeToAffiliate = useCallback(async () => {
+    if (!user) return;
+    setUpgrading(true);
+    try {
+      // Ensure affiliate_tiers row exists (starter tier)
+      const { data: existing } = await (supabase.from("affiliate_tiers" as any) as any)
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (!existing) {
+        await (supabase.from("affiliate_tiers" as any) as any).insert({
+          user_id: user.id,
+          current_tier: "starter",
+          credit_amount: 3300,
+          wristbands_distributed: 0,
+        });
+      }
+
+      toast({ title: "🚀 Affiliate Activated!", description: "Welcome to the Affiliate Portal." });
+      navigate("/affiliate-portal");
+    } catch (e) {
+      toast({ variant: "destructive", title: "Error", description: "Something went wrong. Try again." });
+    } finally {
+      setUpgrading(false);
+    }
+  }, [user, navigate]);
 
   // Loading state
   if (authLoading || portalData.loading) {
@@ -163,6 +196,40 @@ const Portal = () => {
           >
             {activeTab === "dashboard" && (
               <div className="space-y-6">
+                {/* Affiliate Upgrade CTA */}
+                <motion.div
+                  className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-5 sm:p-6"
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                >
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
+                      <Rocket className="w-6 h-6 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-bold text-foreground mb-1">
+                        Unlock Your FREE <span className="text-primary">$3,300 Marketing Credit</span>
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Upgrade to the Affiliate Portal — access Clip & Earn, Repost & Earn, tier tracking, and more. Same account, no re-login needed.
+                      </p>
+                    </div>
+                    <Button
+                      onClick={handleUpgradeToAffiliate}
+                      disabled={upgrading}
+                      className="w-full sm:w-auto h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm rounded-xl gap-2 px-6 shrink-0"
+                    >
+                      {upgrading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          Upgrade Now <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </motion.div>
+
                 <PortalDashboard
                   profile={portalData.profile}
                   wallet={portalData.wallet}
