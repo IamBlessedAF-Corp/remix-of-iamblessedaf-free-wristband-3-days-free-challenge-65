@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,6 +9,52 @@ const corsHeaders = {
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+const CreateSchema = z.object({
+  action: z.literal("create"),
+  destination_url: z.string().url().max(2048),
+  title: z.string().max(200).optional(),
+  campaign: z.string().max(100).optional(),
+  source_page: z.string().max(100).optional(),
+  created_by: z.string().uuid().optional(),
+  custom_code: z.string().regex(/^[a-zA-Z0-9_-]+$/).min(3).max(50).optional(),
+  metadata: z.record(z.any()).optional(),
+});
+
+const ResolveSchema = z.object({
+  action: z.literal("resolve"),
+  code: z.string().min(1).max(50),
+});
+
+const TrackSchema = z.object({
+  action: z.literal("track"),
+  link_id: z.string().uuid(),
+  referrer: z.string().max(2048).optional(),
+  user_agent: z.string().max(1000).optional(),
+  utm_source: z.string().max(200).optional(),
+  utm_medium: z.string().max(200).optional(),
+  utm_campaign: z.string().max(200).optional(),
+});
+
+const AnalyticsSchema = z.object({
+  action: z.literal("analytics"),
+  link_id: z.string().uuid(),
+  days: z.number().int().min(1).max(365).optional().default(30),
+});
+
+const BatchCreateSchema = z.object({
+  action: z.literal("batch_create"),
+  links: z.array(z.object({
+    destination_url: z.string().url().max(2048),
+    title: z.string().max(200).optional(),
+    campaign: z.string().max(100).optional(),
+    source_page: z.string().max(100).optional(),
+    created_by: z.string().uuid().optional(),
+    metadata: z.record(z.any()).optional(),
+  })).min(1).max(50),
+});
+
+const ActionSchema = z.object({ action: z.enum(["create", "resolve", "track", "analytics", "batch_create"]) });
 
 function generateCode(len = 7): string {
   const chars = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -42,7 +89,6 @@ function parseUserAgent(ua: string) {
   return { device, browser, os };
 }
 
-// Simple IP hash for privacy
 async function hashIP(ip: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(ip + "blessed-salt-2024");
@@ -53,6 +99,23 @@ async function hashIP(ip: string): Promise<string> {
     .join("");
 }
 
+async function requireAdmin(req: Request, supabase: any): Promise<Response | null> {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
+  const token = authHeader.replace("Bearer ", "");
+  const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+  if (claimsError || !claimsData?.claims?.sub) {
+    return new Response(JSON.stringify({ error: "Invalid token" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
+  const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", claimsData.claims.sub).eq("role", "admin").maybeSingle();
+  if (!roleData) {
+    return new Response(JSON.stringify({ error: "Admin access required" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
+  return null; // authorized
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -61,271 +124,198 @@ Deno.serve(async (req: Request) => {
   const supabase = createClient(supabaseUrl, serviceKey);
 
   try {
-    const body = await req.json();
-    const { action } = body;
+    // First parse just the action to route
+    const rawBody = await req.text();
+    let body: any;
+    try {
+      body = JSON.parse(rawBody);
+    } catch {
+      return new Response(JSON.stringify({ error: "Invalid JSON" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    let actionResult: any;
+    try {
+      actionResult = ActionSchema.parse(body);
+    } catch {
+      return new Response(JSON.stringify({ error: "Invalid action. Use: create, resolve, track, analytics, batch_create" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const { action } = actionResult;
 
     // ────────────────────────────────────────────
-    // ACTION: CREATE SHORT LINK
+    // ACTION: CREATE SHORT LINK (requires admin)
     // ────────────────────────────────────────────
     if (action === "create") {
-      const {
-        destination_url,
-        title,
-        campaign,
-        source_page,
-        created_by,
-        custom_code,
-        metadata,
-      } = body;
+      const authErr = await requireAdmin(req, supabase);
+      if (authErr) return authErr;
 
-      if (!destination_url) {
-        return new Response(
-          JSON.stringify({ error: "destination_url is required" }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+      let input: z.infer<typeof CreateSchema>;
+      try { input = CreateSchema.parse(body); } catch (e) {
+        return new Response(JSON.stringify({ error: "Invalid input", details: e instanceof z.ZodError ? e.errors : "Validation failed" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
-      // Use custom code or generate one
-      let shortCode = custom_code || generateCode();
-
-      // Ensure uniqueness
+      let shortCode = input.custom_code || generateCode();
       let attempts = 0;
       while (attempts < 5) {
-        const { data: existing } = await supabase
-          .from("short_links")
-          .select("id")
-          .eq("short_code", shortCode)
-          .maybeSingle();
-
+        const { data: existing } = await supabase.from("short_links").select("id").eq("short_code", shortCode).maybeSingle();
         if (!existing) break;
         shortCode = generateCode();
         attempts++;
       }
 
-      const { data, error } = await supabase
-        .from("short_links")
-        .insert({
-          short_code: shortCode,
-          destination_url,
-          title: title || null,
-          campaign: campaign || null,
-          source_page: source_page || null,
-          created_by: created_by || null,
-          metadata: metadata || {},
-        })
-        .select()
-        .single();
+      const { data, error } = await supabase.from("short_links").insert({
+        short_code: shortCode,
+        destination_url: input.destination_url,
+        title: input.title || null,
+        campaign: input.campaign || null,
+        source_page: input.source_page || null,
+        created_by: input.created_by || null,
+        metadata: input.metadata || {},
+      }).select().single();
 
       if (error) {
         console.error("Create short link error:", error);
-        return new Response(
-          JSON.stringify({ error: error.message }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return new Response(JSON.stringify({ error: "Failed to create link" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
-      return new Response(
-        JSON.stringify({
-          short_code: data.short_code,
-          short_url: `https://iamblessedaf.com/go/${data.short_code}`,
-          id: data.id,
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({
+        short_code: data.short_code,
+        short_url: `https://iamblessedaf.com/go/${data.short_code}`,
+        id: data.id,
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // ────────────────────────────────────────────
-    // ACTION: RESOLVE (get destination for a code)
+    // ACTION: RESOLVE (public)
     // ────────────────────────────────────────────
     if (action === "resolve") {
-      const { code } = body;
-
-      if (!code) {
-        return new Response(
-          JSON.stringify({ error: "code is required" }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+      let input: z.infer<typeof ResolveSchema>;
+      try { input = ResolveSchema.parse(body); } catch {
+        return new Response(JSON.stringify({ error: "Invalid input" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
-      const { data: link, error } = await supabase
-        .from("short_links")
-        .select("id, destination_url, is_active, expires_at")
-        .eq("short_code", code)
-        .maybeSingle();
-
+      const { data: link, error } = await supabase.from("short_links").select("id, destination_url, is_active, expires_at").eq("short_code", input.code).maybeSingle();
       if (error || !link) {
-        return new Response(
-          JSON.stringify({ error: "Link not found" }),
-          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return new Response(JSON.stringify({ error: "Link not found" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
-
       if (!link.is_active) {
-        return new Response(
-          JSON.stringify({ error: "Link is deactivated" }),
-          { status: 410, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return new Response(JSON.stringify({ error: "Link is deactivated" }), { status: 410, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
-
       if (link.expires_at && new Date(link.expires_at) < new Date()) {
-        return new Response(
-          JSON.stringify({ error: "Link has expired" }),
-          { status: 410, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return new Response(JSON.stringify({ error: "Link has expired" }), { status: 410, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
-      return new Response(
-        JSON.stringify({ destination_url: link.destination_url, link_id: link.id }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ destination_url: link.destination_url, link_id: link.id }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // ────────────────────────────────────────────
-    // ACTION: TRACK CLICK
+    // ACTION: TRACK CLICK (public)
     // ────────────────────────────────────────────
     if (action === "track") {
-      const { link_id, referrer, user_agent, utm_source, utm_medium, utm_campaign } = body;
-
-      if (!link_id) {
-        return new Response(
-          JSON.stringify({ error: "link_id is required" }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+      let input: z.infer<typeof TrackSchema>;
+      try { input = TrackSchema.parse(body); } catch {
+        return new Response(JSON.stringify({ error: "Invalid input" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
-      const ua = user_agent || req.headers.get("user-agent") || "";
+      const ua = input.user_agent || req.headers.get("user-agent") || "";
       const { device, browser, os } = parseUserAgent(ua);
 
-      // Hash IP for privacy
-      const clientIP =
-        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-        req.headers.get("cf-connecting-ip") ||
-        "unknown";
+      const clientIP = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("cf-connecting-ip") || "unknown";
       const ipHash = await hashIP(clientIP);
 
-      // Insert click event
       await supabase.from("link_clicks").insert({
-        link_id,
-        referrer: referrer || null,
+        link_id: input.link_id,
+        referrer: input.referrer || null,
         user_agent: ua.substring(0, 500),
         ip_hash: ipHash,
         device_type: device,
         browser,
         os,
-        utm_source: utm_source || null,
-        utm_medium: utm_medium || null,
-        utm_campaign: utm_campaign || null,
+        utm_source: input.utm_source || null,
+        utm_medium: input.utm_medium || null,
+        utm_campaign: input.utm_campaign || null,
       });
 
-      // Increment click count
-      await supabase.rpc("increment_click_count", { p_link_id: link_id });
+      await supabase.rpc("increment_click_count", { p_link_id: input.link_id });
 
-      return new Response(
-        JSON.stringify({ success: true }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // ────────────────────────────────────────────
-    // ACTION: GET ANALYTICS (admin only)
+    // ACTION: GET ANALYTICS (requires admin)
     // ────────────────────────────────────────────
     if (action === "analytics") {
-      const { link_id, days = 30 } = body;
+      const authErr = await requireAdmin(req, supabase);
+      if (authErr) return authErr;
 
-      if (!link_id) {
-        return new Response(
-          JSON.stringify({ error: "link_id is required" }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+      let input: z.infer<typeof AnalyticsSchema>;
+      try { input = AnalyticsSchema.parse(body); } catch {
+        return new Response(JSON.stringify({ error: "Invalid input" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
       const since = new Date();
-      since.setDate(since.getDate() - days);
+      since.setDate(since.getDate() - input.days);
 
-      // Get link info
-      const { data: link } = await supabase
-        .from("short_links")
-        .select("*")
-        .eq("id", link_id)
-        .single();
-
-      // Get clicks
-      const { data: clicks } = await supabase
-        .from("link_clicks")
+      const { data: link } = await supabase.from("short_links").select("*").eq("id", input.link_id).single();
+      const { data: clicks } = await supabase.from("link_clicks")
         .select("clicked_at, device_type, browser, os, country, utm_source, utm_medium, utm_campaign")
-        .eq("link_id", link_id)
+        .eq("link_id", input.link_id)
         .gte("clicked_at", since.toISOString())
         .order("clicked_at", { ascending: false })
         .limit(1000);
 
-      // Aggregate stats
       const deviceBreakdown: Record<string, number> = {};
       const browserBreakdown: Record<string, number> = {};
       const dailyClicks: Record<string, number> = {};
       const utmSources: Record<string, number> = {};
 
       for (const click of clicks || []) {
-        // Device
         const d = click.device_type || "unknown";
         deviceBreakdown[d] = (deviceBreakdown[d] || 0) + 1;
-
-        // Browser
         const b = click.browser || "unknown";
         browserBreakdown[b] = (browserBreakdown[b] || 0) + 1;
-
-        // Daily
         const day = click.clicked_at.substring(0, 10);
         dailyClicks[day] = (dailyClicks[day] || 0) + 1;
-
-        // UTM
         if (click.utm_source) {
           utmSources[click.utm_source] = (utmSources[click.utm_source] || 0) + 1;
         }
       }
 
-      return new Response(
-        JSON.stringify({
-          link,
-          total_clicks: link?.click_count || 0,
-          period_clicks: clicks?.length || 0,
-          device_breakdown: deviceBreakdown,
-          browser_breakdown: browserBreakdown,
-          daily_clicks: dailyClicks,
-          utm_sources: utmSources,
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({
+        link,
+        total_clicks: link?.click_count || 0,
+        period_clicks: clicks?.length || 0,
+        device_breakdown: deviceBreakdown,
+        browser_breakdown: browserBreakdown,
+        daily_clicks: dailyClicks,
+        utm_sources: utmSources,
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // ────────────────────────────────────────────
-    // ACTION: BATCH CREATE (for bulk link generation)
+    // ACTION: BATCH CREATE (requires admin)
     // ────────────────────────────────────────────
     if (action === "batch_create") {
-      const { links } = body;
+      const authErr = await requireAdmin(req, supabase);
+      if (authErr) return authErr;
 
-      if (!Array.isArray(links) || links.length === 0) {
-        return new Response(
-          JSON.stringify({ error: "links array is required" }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+      let input: z.infer<typeof BatchCreateSchema>;
+      try { input = BatchCreateSchema.parse(body); } catch (e) {
+        return new Response(JSON.stringify({ error: "Invalid input", details: e instanceof z.ZodError ? e.errors : "Validation failed" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
       const results = [];
-      for (const link of links.slice(0, 50)) {
+      for (const link of input.links) {
         const shortCode = generateCode();
-        const { data, error } = await supabase
-          .from("short_links")
-          .insert({
-            short_code: shortCode,
-            destination_url: link.destination_url,
-            title: link.title || null,
-            campaign: link.campaign || null,
-            source_page: link.source_page || null,
-            created_by: link.created_by || null,
-            metadata: link.metadata || {},
-          })
-          .select("short_code, id")
-          .single();
+        const { data, error } = await supabase.from("short_links").insert({
+          short_code: shortCode,
+          destination_url: link.destination_url,
+          title: link.title || null,
+          campaign: link.campaign || null,
+          source_page: link.source_page || null,
+          created_by: link.created_by || null,
+          metadata: link.metadata || {},
+        }).select("short_code, id").single();
 
         if (data) {
           results.push({
@@ -336,10 +326,7 @@ Deno.serve(async (req: Request) => {
         }
       }
 
-      return new Response(
-        JSON.stringify({ links: results }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ links: results }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     return new Response(
@@ -349,7 +336,7 @@ Deno.serve(async (req: Request) => {
   } catch (err) {
     console.error("Short link error:", err);
     return new Response(
-      JSON.stringify({ error: err.message || "Internal error" }),
+      JSON.stringify({ error: "Internal error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

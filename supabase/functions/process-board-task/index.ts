@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { runSixSigmaChecks, formatSixSigmaLog } from "./six-sigma.ts";
 
 const corsHeaders = {
@@ -7,6 +8,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+const InputSchema = z.object({
+  card_id: z.string().uuid().optional(),
+  source_column_id: z.string().uuid().optional(),
+  mode: z.enum(["execute", "clarify", "validate", "sixsigma"]).optional().default("execute"),
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -20,7 +27,31 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    const { card_id, source_column_id, mode = "execute" } = await req.json();
+    // Auth check — require admin role
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return json({ error: "Unauthorized" }, 401);
+    }
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
+      return json({ error: "Invalid token" }, 401);
+    }
+    const authUserId = claimsData.claims.sub;
+    const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", authUserId).eq("role", "admin").maybeSingle();
+    if (!roleData) {
+      return json({ error: "Admin access required" }, 403);
+    }
+
+    // Validate input
+    let input: z.infer<typeof InputSchema>;
+    try {
+      input = InputSchema.parse(await req.json());
+    } catch (e) {
+      return json({ error: "Invalid input", details: e instanceof z.ZodError ? e.errors : "Validation failed" }, 400);
+    }
+
+    const { card_id, source_column_id, mode } = input;
 
     // ---- Fetch project documentation card for context ----
     const docsCard = await getOrCreateDocsCard(supabase);

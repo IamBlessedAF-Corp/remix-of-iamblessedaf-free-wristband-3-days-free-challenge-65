@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { FRAMEWORKS, HeroProfile } from "@/data/expertFrameworks";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface GenerationProgress {
   frameworkId: string;
@@ -57,13 +58,15 @@ export const useVoiceScriptGeneration = (
         );
 
         try {
+          const { data: { session } } = await supabase.auth.getSession();
+          const accessToken = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
           const resp = await fetch(
             `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/expert-scripts`,
             {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+                Authorization: `Bearer ${accessToken}`,
               },
               body: JSON.stringify({
                 framework: fw.id,
