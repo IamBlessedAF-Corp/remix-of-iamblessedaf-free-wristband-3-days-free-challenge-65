@@ -1,6 +1,7 @@
 // /3300us-Credit-Portal, /affiliate-dashboard, /affiliate-portal
 // Unified affiliate portal — placeholder for Phase 2
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Trophy, Share2, ShoppingBag, Target, Scissors, Video,
@@ -38,10 +39,21 @@ const TABS: { id: Tab; label: string; icon: any }[] = [
 ];
 
 const AffiliatePortal = () => {
-  const [activeTab, setActiveTab] = useState<Tab>("dashboard");
-  const [showAuth, setShowAuth] = useState(false);
+  const navigate = useNavigate();
   const { user, loading: authLoading, signOut } = useAuth();
   const portalData = usePortalData();
+
+  // If logged in but no profile, default to account tab so they can set it up
+  const needsSetup = !!(user && !portalData.loading && !portalData.profile);
+  const [activeTab, setActiveTab] = useState<Tab>(needsSetup ? "account" : "dashboard");
+  const [showAuth, setShowAuth] = useState(false);
+
+  // Redirect to account tab when profile is missing
+  useEffect(() => {
+    if (needsSetup) {
+      setActiveTab("account");
+    }
+  }, [needsSetup]);
 
   if (authLoading || portalData.loading) {
     return (
@@ -69,40 +81,10 @@ const AffiliatePortal = () => {
     );
   }
 
+  // Not logged in → redirect to home
   if (!user) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
-        <motion.div
-          className="max-w-md w-full text-center space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <img src={logoImg} alt="Logo" className="h-12 mx-auto" />
-          <h1 className="text-3xl font-bold text-foreground">Affiliate Portal</h1>
-          <p className="text-muted-foreground">
-            Sign in to access your dashboard, track earnings, clip content & earn rewards.
-          </p>
-          <Button
-            onClick={() => setShowAuth(true)}
-            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base rounded-xl btn-glow"
-          >
-            Sign In / Create Account
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => window.location.href = "/3300us-Credit"}
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            ← Back to Affiliate Program
-          </Button>
-        </motion.div>
-        <CreatorSignupModal
-          isOpen={showAuth}
-          onClose={() => setShowAuth(false)}
-          onSuccess={() => { setShowAuth(false); window.location.reload(); }}
-        />
-      </div>
-    );
+    navigate("/", { replace: true });
+    return null;
   }
 
   // Profile is now auto-created in usePortalData, so no intermediate gate needed
@@ -134,22 +116,39 @@ const AffiliatePortal = () => {
       {/* Tab navigation */}
       <nav className="sticky top-[57px] z-30 bg-background border-b border-border/30 overflow-x-auto">
         <div className="max-w-5xl mx-auto px-4 flex gap-1">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-3 py-3 text-xs sm:text-sm font-medium border-b-2 transition-all whitespace-nowrap ${
-                activeTab === tab.id
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <tab.icon className="w-4 h-4" />
-              <span className="hidden sm:inline">{tab.label}</span>
-            </button>
-          ))}
+          {TABS.map((tab) => {
+            // If no profile, only allow account tab
+            const disabled = needsSetup && tab.id !== "account";
+            return (
+              <button
+                key={tab.id}
+                onClick={() => !disabled && setActiveTab(tab.id)}
+                className={`flex items-center gap-1.5 px-3 py-3 text-xs sm:text-sm font-medium border-b-2 transition-all whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? "border-primary text-primary"
+                    : disabled
+                    ? "border-transparent text-muted-foreground/40 cursor-not-allowed"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <tab.icon className="w-4 h-4" />
+                <span className="hidden sm:inline">{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
       </nav>
+
+      {/* Setup banner */}
+      {needsSetup && (
+        <div className="max-w-5xl mx-auto px-4 pt-4">
+          <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 text-center">
+            <p className="text-sm font-medium text-foreground">
+              👋 Welcome! Complete your profile setup below to unlock all portal features.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <main className="max-w-5xl mx-auto px-4 py-6">
@@ -161,27 +160,21 @@ const AffiliatePortal = () => {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
           >
-            {activeTab === "dashboard" && (
+            {activeTab === "dashboard" && portalData.profile && (
               <div className="space-y-6">
                 <AffiliateCreditTracker
-                  referralCode={portalData.profile?.referral_code}
+                  referralCode={portalData.profile.referral_code}
                   userId={user.id}
                   userEmail={user.email || ""}
-                  displayName={portalData.profile?.display_name || undefined}
+                  displayName={portalData.profile.display_name || undefined}
                 />
-                {portalData.profile ? (
-                  <PortalDashboard
-                    profile={portalData.profile}
-                    wallet={portalData.wallet}
-                    blessings={portalData.blessings}
-                    userId={user.id}
-                    onClaimDaily={portalData.claimDailyBonus}
-                  />
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground text-sm">
-                    Setting up your profile... Please refresh the page.
-                  </div>
-                )}
+                <PortalDashboard
+                  profile={portalData.profile}
+                  wallet={portalData.wallet}
+                  blessings={portalData.blessings}
+                  userId={user.id}
+                  onClaimDaily={portalData.claimDailyBonus}
+                />
                 <PortalActivityFeed />
                 <ShareMilestoneTracker />
               </div>
@@ -189,7 +182,7 @@ const AffiliatePortal = () => {
             {activeTab === "leaderboard" && (
               <PortalLeaderboard leaderboard={portalData.leaderboard} currentUserId={user.id} />
             )}
-            {activeTab === "referrals" && (
+            {activeTab === "referrals" && portalData.profile && (
               <PortalReferralHub
                 profile={portalData.profile}
                 blessings={portalData.blessings}
