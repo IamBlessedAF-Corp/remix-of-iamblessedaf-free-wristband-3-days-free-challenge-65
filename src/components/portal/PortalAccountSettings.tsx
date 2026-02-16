@@ -47,15 +47,27 @@ export default function PortalAccountSettings({ userId, userEmail, profile }: Po
     setSaving(true);
     try {
       const from = (table: string) => supabase.from(table as any);
-      if (!referralCode.trim()) {
+      const code = referralCode.trim().toLowerCase();
+      if (!code) {
         toast.error("Referral code is required.");
+        setSaving(false);
+        return;
+      }
+      // Check uniqueness
+      const { data: existing } = await (from("creator_profiles") as any)
+        .select("id")
+        .eq("referral_code", code)
+        .neq("user_id", userId)
+        .maybeSingle();
+      if (existing) {
+        toast.error("That referral code is already taken. Try another one.");
         setSaving(false);
         return;
       }
       await (from("creator_profiles") as any)
         .update({
           display_name: displayName,
-          referral_code: referralCode.trim().toLowerCase(),
+          referral_code: code,
           tiktok_handle: tiktok || null,
           instagram_handle: instagram || null,
           twitter_handle: twitter || null,
