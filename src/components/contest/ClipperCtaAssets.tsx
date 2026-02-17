@@ -39,19 +39,31 @@ const overlayAssets = [
   },
 ];
 
-/* ── Copy-paste captions ── */
+/* ── Copy-paste captions per platform ── */
 const getCaptionTemplates = (link: string) => [
   {
-    label: "🎁 Free Wristband Caption",
-    text: `Gratitude changes your brain chemistry. Science says so. 🧠\n\nClaim your FREE gratitude wristband → ${link}\n\n#IamBlessedAF #GratitudeChallenge #BrainHack #Neuroscience #Gratitude`,
+    label: "🎵 TikTok — Science Hook",
+    text: `Gratitude literally rewires your brain. Not motivation — neuroscience. 🧠\n\nClaim your FREE Neuro-Hacker wristband → ${link}\n\n#3DayNeuroHackerChallenge #IamBlessedAF #GratitudeChallenge #BrainHack #Neuroscience #fyp #foryoupage #mindset #mentalhealthmatters`,
   },
   {
-    label: "🧠 Challenge Caption",
-    text: `3 days of gratitude texts = 27× more serotonin 🔥\n\nJoin the FREE 3-Day Gratitude Challenge → ${link}\n\n#IamBlessedAF #GratitudeChallenge #MentalHealth #Mindset`,
+    label: "🎵 TikTok — Hustle Hook",
+    text: `I'm getting paid to spread gratitude. Not kidding.\n\n$2.22 per clip. $1,111 bonus at 1M views.\n\nGet your FREE wristband → ${link}\n\n#3DayNeuroHackerChallenge #IamBlessedAF #SideHustle #CreatorEconomy #MoneyTok #GratitudeChallenge #fyp`,
   },
   {
-    label: "💪 Hustle Caption",
-    text: `I'm getting paid to spread gratitude. Not kidding.\n\n$2.22 per clip. $1,111 bonus at 1M views. \n\nClaim your FREE wristband → ${link}\n\n#IamBlessedAF #SideHustle #CreatorEconomy #GratitudeChallenge`,
+    label: "📸 IG Reels — Emotional Hook",
+    text: `3 days of gratitude texts = 27× more serotonin. Science says so. 🔥\n\nJoin the FREE 3-Day Neuro-Hacker Challenge & claim your wristband 🧠\n\n→ Link in bio or ${link}\n\n#3DayNeuroHackerChallenge #IamBlessedAF #GratitudeChallenge #ReelsViral #Neuroscience #MentalHealth #SelfImprovement #Mindfulness #Gratitude`,
+  },
+  {
+    label: "📸 IG Reels — Gift Hook",
+    text: `Tag someone who deserves a FREE gratitude wristband 🎁🙏\n\nEvery wristband honors Huberman's Neuroscience of Gratitude & donates 11 meals 🍽️\n\n→ ${link}\n\n#3DayNeuroHackerChallenge #IamBlessedAF #GratitudeChallenge #FreeGift #TagSomeone #Blessed #GiveBack #Reels`,
+  },
+  {
+    label: "▶️ YouTube Shorts — Challenge Hook",
+    text: `The 3-Day Neuro-Hacker Challenge is changing lives 🧠🔥\n\n3 days. 3 gratitude texts. Science-backed brain rewiring.\n\nJoin FREE + get your wristband → ${link}\n\n#3DayNeuroHackerChallenge #IamBlessedAF #GratitudeChallenge #Shorts #Neuroscience #BrainHack #MentalHealth`,
+  },
+  {
+    label: "▶️ YouTube Shorts — Creator Earnings",
+    text: `How I'm earning $2.22+ per clip just spreading gratitude 🙏💰\n\nThe Gratitude Clips Challenge pays you per verified view.\n\nGet your FREE wristband → ${link}\n\n#3DayNeuroHackerChallenge #IamBlessedAF #SideHustle #CreatorEconomy #Shorts #MakeMoneyOnline #GratitudeChallenge`,
   },
 ];
 
@@ -263,7 +275,7 @@ const ClipperCtaAssets = ({ referralLink }: { referralLink?: string | null }) =>
             <li>Trim the gratitude clip to ~55 seconds</li>
             <li><strong className="text-foreground">Download a CTA overlay above</strong> and drag it onto the last 3–5 seconds</li>
             <li>Export and upload to TikTok / Reels / Shorts</li>
-            <li>Paste your referral link in bio + add #IamBlessedAF in caption</li>
+            <li>Paste your referral link in bio + add <strong className="text-primary">#3DayNeuroHackerChallenge</strong> + #IamBlessedAF in caption</li>
             <li><strong className="text-foreground">Submit your clip link in the dashboard → get paid on views</strong></li>
           </ol>
         </div>

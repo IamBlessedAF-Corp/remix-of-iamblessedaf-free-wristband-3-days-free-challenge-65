@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, Loader2, CheckCircle } from "lucide-react";
+import { Upload, Loader2, CheckCircle, AlertTriangle, Hash } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -13,6 +13,7 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   userId: string;
   onSubmitted: () => void;
+  referralCode?: string | null;
 }
 
 const PLATFORMS = [
@@ -28,9 +29,12 @@ const URL_PATTERNS: Record<string, RegExp> = {
   youtube: /youtu(be\.com|\.be)/i,
 };
 
-const ClipSubmitModal = ({ open, onOpenChange, userId, onSubmitted }: Props) => {
+const REQUIRED_HASHTAG = "#3DayNeuroHackerChallenge";
+
+const ClipSubmitModal = ({ open, onOpenChange, userId, onSubmitted, referralCode }: Props) => {
   const [clipUrl, setClipUrl] = useState("");
   const [platform, setPlatform] = useState("");
+  const [hashtagConfirmed, setHashtagConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const { toast } = useToast();
@@ -62,6 +66,11 @@ const ClipSubmitModal = ({ open, onOpenChange, userId, onSubmitted }: Props) => 
       return;
     }
 
+    if (!hashtagConfirmed) {
+      toast({ title: "Hashtag required", description: `Please confirm you added ${REQUIRED_HASHTAG} in your video description.`, variant: "destructive" });
+      return;
+    }
+
     // Optional: warn if URL doesn't match selected platform
     const expectedPattern = URL_PATTERNS[platform];
     if (expectedPattern && !expectedPattern.test(trimmedUrl)) {
@@ -88,6 +97,7 @@ const ClipSubmitModal = ({ open, onOpenChange, userId, onSubmitted }: Props) => 
       setTimeout(() => {
         setClipUrl("");
         setPlatform("");
+        setHashtagConfirmed(false);
         setSubmitted(false);
         onOpenChange(false);
       }, 1800);
@@ -102,6 +112,7 @@ const ClipSubmitModal = ({ open, onOpenChange, userId, onSubmitted }: Props) => 
     if (!submitting) {
       setClipUrl("");
       setPlatform("");
+      setHashtagConfirmed(false);
       setSubmitted(false);
       onOpenChange(val);
     }
@@ -152,9 +163,52 @@ const ClipSubmitModal = ({ open, onOpenChange, userId, onSubmitted }: Props) => 
               />
             </div>
 
+            {/* Ownership Verification Step */}
+            <div className={`rounded-xl border p-3 space-y-2 transition-colors ${hashtagConfirmed ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-amber-500/10 border-amber-500/30'}`}>
+              <div className="flex items-start gap-2">
+                {hashtagConfirmed ? (
+                  <CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                ) : (
+                  <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                )}
+                <div className="space-y-1.5">
+                  <p className="text-xs font-semibold text-foreground">
+                    ✅ Verification Required
+                  </p>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    Add these hashtags in your video description to verify ownership:
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="inline-flex items-center gap-0.5 bg-primary/15 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      <Hash className="w-2.5 h-2.5" />3DayNeuroHackerChallenge
+                    </span>
+                    <span className="inline-flex items-center gap-0.5 bg-primary/15 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      <Hash className="w-2.5 h-2.5" />IamBlessedAF
+                    </span>
+                    {referralCode && (
+                      <span className="inline-flex items-center gap-0.5 bg-foreground/10 text-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        <Hash className="w-2.5 h-2.5" />{referralCode}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer pt-1">
+                <input
+                  type="checkbox"
+                  checked={hashtagConfirmed}
+                  onChange={(e) => setHashtagConfirmed(e.target.checked)}
+                  className="w-4 h-4 rounded border-border accent-primary"
+                />
+                <span className="text-[11px] font-medium text-foreground">
+                  I added the hashtags in my video description
+                </span>
+              </label>
+            </div>
+
             <Button
               onClick={handleSubmit}
-              disabled={submitting || !clipUrl.trim() || !platform}
+              disabled={submitting || !clipUrl.trim() || !platform || !hashtagConfirmed}
               className="w-full h-12 font-bold rounded-xl"
             >
               {submitting ? (
