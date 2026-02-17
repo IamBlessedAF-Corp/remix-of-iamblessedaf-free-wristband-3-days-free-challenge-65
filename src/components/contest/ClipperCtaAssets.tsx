@@ -40,18 +40,18 @@ const overlayAssets = [
 ];
 
 /* ── Copy-paste captions ── */
-const captionTemplates = [
+const getCaptionTemplates = (link: string) => [
   {
     label: "🎁 Free Wristband Caption",
-    text: "Gratitude changes your brain chemistry. Science says so. 🧠\n\nClaim your FREE gratitude wristband → link in bio\n\n#IamBlessedAF #GratitudeChallenge #BrainHack #Neuroscience #Gratitude",
+    text: `Gratitude changes your brain chemistry. Science says so. 🧠\n\nClaim your FREE gratitude wristband → ${link}\n\n#IamBlessedAF #GratitudeChallenge #BrainHack #Neuroscience #Gratitude`,
   },
   {
     label: "🧠 Challenge Caption",
-    text: "3 days of gratitude texts = 27× more serotonin 🔥\n\nJoin the FREE 3-Day Gratitude Challenge → link in bio\n\n#IamBlessedAF #GratitudeChallenge #MentalHealth #Mindset",
+    text: `3 days of gratitude texts = 27× more serotonin 🔥\n\nJoin the FREE 3-Day Gratitude Challenge → ${link}\n\n#IamBlessedAF #GratitudeChallenge #MentalHealth #Mindset`,
   },
   {
     label: "💪 Hustle Caption",
-    text: "I'm getting paid to spread gratitude. Not kidding.\n\n$2.22 per clip. $1,111 bonus at 1M views. \n\nClaim your FREE wristband → link in bio\n\n#IamBlessedAF #SideHustle #CreatorEconomy #GratitudeChallenge",
+    text: `I'm getting paid to spread gratitude. Not kidding.\n\n$2.22 per clip. $1,111 bonus at 1M views. \n\nClaim your FREE wristband → ${link}\n\n#IamBlessedAF #SideHustle #CreatorEconomy #GratitudeChallenge`,
   },
 ];
 
@@ -229,10 +229,10 @@ const ClipperCtaAssets = ({ referralLink }: { referralLink?: string | null }) =>
             Copy-Paste Caption Templates
           </h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Use these captions when you post your clip. Replace "link in bio" with your actual referral link.
+            Your referral link is already included. Just copy, paste & post!
           </p>
           <div className="space-y-3">
-            {captionTemplates.map((tmpl) => (
+            {getCaptionTemplates(referralLink || "https://iamblessedaf.com/challenge").map((tmpl) => (
               <div key={tmpl.label} className="bg-card border border-border/50 rounded-xl p-4 space-y-2">
                 <p className="text-sm font-semibold text-foreground">{tmpl.label}</p>
                 <p className="text-xs text-muted-foreground whitespace-pre-line leading-relaxed font-mono bg-secondary/30 rounded-lg p-3">
