@@ -86,7 +86,7 @@ const handleDownload = (file: string, label: string) => {
   toast.success(`"${label}" downloaded! Drag it into CapCut or your editor.`);
 };
 
-const ClipperCtaAssets = () => {
+const ClipperCtaAssets = ({ referralLink }: { referralLink?: string | null }) => {
   const [previewAsset, setPreviewAsset] = useState<typeof overlayAssets[0] | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -94,36 +94,16 @@ const ClipperCtaAssets = () => {
   const hasCopiedBefore = useRef(false);
 
   const handleCopyReferralLink = async () => {
-    // Build referral link from user metadata or fallback
-    const firstName = user?.user_metadata?.firstName || user?.user_metadata?.full_name?.split(" ")[0] || "";
-    const referralBase = "https://iamblessedaf.com/r/";
-    // Try to get referral code from creator profile
-    try {
-      const { supabase } = await import("@/integrations/supabase/client");
-      const { data } = await supabase
-        .from("creator_profiles")
-        .select("referral_code")
-        .eq("user_id", user?.id || "")
-        .maybeSingle();
-      
-      if (data?.referral_code) {
-        await navigator.clipboard.writeText(`${referralBase}${data.referral_code}`);
-        setLinkCopied(true);
-        if (!hasCopiedBefore.current) {
-          hasCopiedBefore.current = true;
-          confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } });
-          toast.success("🎉 Referral link copied! Paste it in your TikTok/IG bio → viewers click → you earn!");
-        } else {
-          toast.success("Referral link copied!");
-        }
-        setTimeout(() => setLinkCopied(false), 3000);
-        return;
-      }
-    } catch {}
-    // Fallback: copy the base challenge link
-    await navigator.clipboard.writeText("https://iamblessedaf.com/challenge");
+    const link = referralLink || "https://iamblessedaf.com/challenge";
+    await navigator.clipboard.writeText(link);
     setLinkCopied(true);
-    toast.success("Link copied! Sign up first to get your unique referral link.");
+    if (!hasCopiedBefore.current && referralLink) {
+      hasCopiedBefore.current = true;
+      confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } });
+      toast.success("🎉 Referral link copied! Paste it in your TikTok/IG bio → viewers click → you earn!");
+    } else {
+      toast.success(referralLink ? "Referral link copied!" : "Link copied! Sign up first to get your unique referral link.");
+    }
     setTimeout(() => setLinkCopied(false), 3000);
   };
 
@@ -164,7 +144,12 @@ const ClipperCtaAssets = () => {
                   <><Link2 className="w-5 h-5" /> Copy My Referral Link</>
                 )}
               </Button>
-              <p className="text-xs text-muted-foreground mt-2">
+              {referralLink && (
+                <p className="text-xs text-primary font-mono mt-2 bg-primary/5 rounded-lg px-3 py-1.5 truncate max-w-sm mx-auto">
+                  {referralLink}
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground mt-1.5">
                 Paste this in your TikTok / IG / YouTube bio → viewers click → you earn
               </p>
             </div>

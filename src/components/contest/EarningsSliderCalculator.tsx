@@ -1,8 +1,12 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Calculator, TrendingUp, Trophy, Target, Star, Share2, Link } from "lucide-react";
+import { Calculator, TrendingUp, Trophy, Target, Star, Share2, Link, Copy, Check, Link2 } from "lucide-react";
 import { toast } from "sonner";
 import { Slider } from "@/components/ui/slider";
+
+interface EarningsSliderCalculatorProps {
+  referralLink?: string | null;
+}
 
 const FLOOR = 2.22;
 const RPM = 0.22;
@@ -24,9 +28,10 @@ function weeksToViews(target: number, weeklyViews: number): number | null {
   return Math.ceil(target / weeklyViews);
 }
 
-const EarningsSliderCalculator = () => {
+const EarningsSliderCalculator = ({ referralLink }: EarningsSliderCalculatorProps) => {
   const [clipsPerWeek, setClipsPerWeek] = useState(10);
   const [avgViews, setAvgViews] = useState(10000);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const stats = useMemo(() => {
     const perClip = calcPerClip(avgViews);
@@ -180,11 +185,37 @@ const EarningsSliderCalculator = () => {
           </p>
         </div>
 
+        {/* Referral link */}
+        {referralLink && (
+          <div className="mt-4 bg-primary/5 border border-primary/20 rounded-lg p-3">
+            <p className="text-xs font-semibold text-muted-foreground mb-1.5 flex items-center gap-1.5">
+              <Link2 className="w-3.5 h-3.5 text-primary" /> Your Referral Link — paste in bio
+            </p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 text-xs text-primary bg-background/60 rounded px-2 py-1.5 truncate font-mono">
+                {referralLink}
+              </code>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(referralLink);
+                  setLinkCopied(true);
+                  toast.success("Referral link copied!");
+                  setTimeout(() => setLinkCopied(false), 2000);
+                }}
+                className="flex items-center gap-1 text-xs font-bold text-primary bg-primary/10 hover:bg-primary/15 px-3 py-1.5 rounded-md transition-colors"
+              >
+                {linkCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                {linkCopied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Share + Copy Link buttons */}
         <div className="mt-4 grid grid-cols-2 gap-2">
           <button
             onClick={() => {
-              const text = `🎬 My Clipper Earnings Plan:\n${clipsPerWeek} clips/wk × ${viewsLabel} avg views\n💰 $${stats.monthly.toFixed(2)}/mo in clip pay\n🏆 6-month projection: $${stats.sixMonthTotal.toLocaleString()}\n\nStart clipping → iamblessedaf.com/2us-Clippers-Campaign`;
+              const text = `🎬 My Clipper Earnings Plan:\n${clipsPerWeek} clips/wk × ${viewsLabel} avg views\n💰 $${stats.monthly.toFixed(2)}/mo in clip pay\n🏆 6-month projection: $${stats.sixMonthTotal.toLocaleString()}\n\nStart clipping → ${referralLink || "iamblessedaf.com/Gratitude-Clips-Challenge"}`;
               if (navigator.share) {
                 navigator.share({ title: "My Clipper Earnings Plan", text }).catch(() => {});
               } else {
@@ -199,8 +230,8 @@ const EarningsSliderCalculator = () => {
           </button>
           <button
             onClick={() => {
-              navigator.clipboard.writeText("https://iamblessedaf.com/2us-Clippers-Campaign");
-              toast.success("Campaign link copied!");
+              navigator.clipboard.writeText(referralLink || "https://iamblessedaf.com/Gratitude-Clips-Challenge");
+              toast.success("Link copied!");
             }}
             className="flex items-center justify-center gap-2 py-2.5 bg-secondary hover:bg-secondary/80 text-foreground font-bold text-sm rounded-lg transition-colors"
           >
