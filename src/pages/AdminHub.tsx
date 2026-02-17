@@ -6,6 +6,7 @@ import {
   CheckCircle, Clock, AlertTriangle, Trash2, ExternalLink, Play,
   DollarSign, Eye, TrendingUp, Zap, Target, Gauge, BarChart3,
   Flame, AlertCircle, ArrowUpRight, ArrowDownRight,
+  ChevronDown, ChevronRight,
 } from "lucide-react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useClipperAdmin, type ClipRow } from "@/hooks/useClipperAdmin";
@@ -40,27 +41,68 @@ import EditableCampaignSettings from "@/components/admin/EditableCampaignSetting
 const FunnelMap = lazy(() => import("@/pages/FunnelMap"));
 
 // ─── Tab definitions ───
-const TABS = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "clippers", label: "Clippers", icon: Film },
-  { id: "congrats", label: "Congrats", icon: Award },
-  { id: "experts", label: "Experts", icon: Users },
-  { id: "links", label: "Links", icon: Link2 },
-  { id: "campaign", label: "Campaign Settings", icon: Settings },
-  { id: "blocks", label: "Intelligent Blocks", icon: Blocks },
-  { id: "risk", label: "Risk Engine", icon: ShieldAlert },
-  { id: "payments", label: "Payments", icon: CreditCard },
-  { id: "board", label: "Board", icon: Kanban },
-  { id: "roadmap", label: "Roadmap", icon: Map },
-  { id: "logs", label: "Logs", icon: ScrollText },
-  { id: "forecast", label: "Forecast AI", icon: Brain },
-  { id: "fraud", label: "Fraud Monitor", icon: SearchIcon },
-  { id: "leaderboard", label: "Leaderboard", icon: Trophy },
-  { id: "alerts", label: "Alerts", icon: Bell },
-  { id: "budget", label: "Budget Control", icon: DollarSign },
+const ALL_TAB_IDS = [
+  "dashboard", "clippers", "congrats", "experts", "links",
+  "campaign", "blocks", "risk", "payments", "board",
+  "roadmap", "logs", "forecast", "fraud", "leaderboard",
+  "alerts", "budget",
 ] as const;
 
-type TabId = typeof TABS[number]["id"];
+type TabId = typeof ALL_TAB_IDS[number];
+
+type SidebarItem = { id: TabId; label: string; icon: any };
+type SidebarGroup = { group: string; icon: any; items: SidebarItem[] };
+type SidebarEntry = SidebarItem | SidebarGroup;
+
+const SIDEBAR_MENU: SidebarEntry[] = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  {
+    group: "Creators",
+    icon: Users,
+    items: [
+      { id: "clippers", label: "Clippers", icon: Film },
+      { id: "congrats", label: "Congrats", icon: Award },
+      { id: "experts", label: "Experts", icon: Users },
+      { id: "leaderboard", label: "Leaderboard", icon: Trophy },
+    ],
+  },
+  {
+    group: "Funnel & Content",
+    icon: Blocks,
+    items: [
+      { id: "blocks", label: "Intelligent Blocks", icon: Blocks },
+      { id: "campaign", label: "Campaign Settings", icon: Settings },
+      { id: "links", label: "Links", icon: Link2 },
+      { id: "roadmap", label: "Roadmap", icon: Map },
+    ],
+  },
+  {
+    group: "Finance",
+    icon: DollarSign,
+    items: [
+      { id: "payments", label: "Payments", icon: CreditCard },
+      { id: "budget", label: "Budget Control", icon: DollarSign },
+    ],
+  },
+  {
+    group: "Risk & Intelligence",
+    icon: ShieldAlert,
+    items: [
+      { id: "risk", label: "Risk Engine", icon: ShieldAlert },
+      { id: "fraud", label: "Fraud Monitor", icon: SearchIcon },
+      { id: "forecast", label: "Forecast AI", icon: Brain },
+      { id: "alerts", label: "Alerts", icon: Bell },
+    ],
+  },
+  {
+    group: "Operations",
+    icon: Kanban,
+    items: [
+      { id: "board", label: "Board", icon: Kanban },
+      { id: "logs", label: "Logs", icon: ScrollText },
+    ],
+  },
+];
 
 // ─── Video Embed ───
 const VideoEmbed = ({ url }: { url: string }) => {
@@ -116,15 +158,21 @@ const ClipRowItem = ({ clip, onApprove, onReject, onDelete }: { clip: ClipRow; o
 // ═══════════════════════════════════════════════
 export default function AdminHub() {
   const { user, isAdmin, loading: authLoading, signInWithEmail, signOut } = useAdminAuth();
-  const [activeTab, setActiveTab] = useState<TabId>("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
+   const [sidebarOpen, setSidebarOpen] = useState(true);
+   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
-  // Listen for tab navigation from FunnelMap smart blocks
-  useEffect(() => {
+   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail;
-      if (detail?.tab && TABS.some(t => t.id === detail.tab)) {
+      if (detail?.tab && ALL_TAB_IDS.includes(detail.tab)) {
         setActiveTab(detail.tab as TabId);
+        // auto-open the group containing this tab
+        for (const entry of SIDEBAR_MENU) {
+          if ("group" in entry && entry.items.some(i => i.id === detail.tab)) {
+            setOpenGroups(prev => ({ ...prev, [entry.group]: true }));
+          }
+        }
       }
     };
     window.addEventListener("admin-navigate-tab", handler);
@@ -157,15 +205,50 @@ export default function AdminHub() {
           {sidebarOpen && <span className="text-sm font-bold text-foreground truncate">Growth Intelligence OS</span>}
         </div>
         <nav className="flex-1 py-2 space-y-0.5 px-2">
-          {TABS.map((tab) => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} title={tab.label}
-              className={cn("w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-colors",
-                activeTab === tab.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-              )}>
-              <tab.icon className="w-4 h-4 shrink-0" />
-              {sidebarOpen && <span className="truncate">{tab.label}</span>}
-            </button>
-          ))}
+          {SIDEBAR_MENU.map((entry, idx) => {
+            if ("group" in entry) {
+              const isGroupOpen = openGroups[entry.group] ?? entry.items.some(i => i.id === activeTab);
+              const groupActive = entry.items.some(i => i.id === activeTab);
+              const toggleGroup = () => setOpenGroups(prev => ({ ...prev, [entry.group]: !isGroupOpen }));
+              return (
+                <div key={entry.group} className="mt-1">
+                  <button onClick={toggleGroup} title={entry.group}
+                    className={cn("w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors",
+                      groupActive ? "text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                    )}>
+                    <entry.icon className="w-4 h-4 shrink-0" />
+                    {sidebarOpen && <>
+                      <span className="truncate flex-1 text-left">{entry.group}</span>
+                      {isGroupOpen ? <ChevronDown className="w-3 h-3 shrink-0" /> : <ChevronRight className="w-3 h-3 shrink-0" />}
+                    </>}
+                  </button>
+                  {(isGroupOpen || !sidebarOpen) && (
+                    <div className={cn("space-y-0.5", sidebarOpen ? "ml-4 mt-0.5 border-l border-border/30 pl-2" : "")}>
+                      {entry.items.map(item => (
+                        <button key={item.id} onClick={() => setActiveTab(item.id)} title={item.label}
+                          className={cn("w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors",
+                            activeTab === item.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                          )}>
+                          <item.icon className="w-3.5 h-3.5 shrink-0" />
+                          {sidebarOpen && <span className="truncate">{item.label}</span>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+            // Top-level item (e.g. Dashboard)
+            return (
+              <button key={entry.id} onClick={() => setActiveTab(entry.id)} title={entry.label}
+                className={cn("w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-colors",
+                  activeTab === entry.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                )}>
+                <entry.icon className="w-4 h-4 shrink-0" />
+                {sidebarOpen && <span className="truncate">{entry.label}</span>}
+              </button>
+            );
+          })}
         </nav>
         <div className="border-t border-border/30 p-3">
           {sidebarOpen && <p className="text-[10px] text-muted-foreground truncate mb-2">{user.email}</p>}
