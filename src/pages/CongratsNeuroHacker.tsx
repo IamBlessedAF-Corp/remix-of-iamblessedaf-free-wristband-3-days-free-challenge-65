@@ -56,11 +56,42 @@ export default function CongratsNeuroHacker() {
   const [expandedIdx, setExpandedIdx] = useState<number | null>(0);
   const [unlocked, setUnlocked] = useState(false);
   const [showChain, setShowChain] = useState(false);
+  const [alreadySeen, setAlreadySeen] = useState<boolean | null>(null);
 
-  const referralLink = referralCode
-    ? `https://iamblessedaf.com/r/${referralCode}`
-    : "https://iamblessedaf.com/challenge";
+  // Check if user already completed/skipped — show only once
+  useEffect(() => {
+    const local = localStorage.getItem("congrats_neurohacker_completed");
+    if (local) {
+      setAlreadySeen(true);
+      return;
+    }
+    if (user) {
+      supabase
+        .from("creator_profiles")
+        .select("congrats_completed")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data?.congrats_completed) {
+            localStorage.setItem("congrats_neurohacker_completed", data.congrats_completed);
+            setAlreadySeen(true);
+          } else {
+            setAlreadySeen(false);
+          }
+        });
+    } else {
+      setAlreadySeen(false);
+    }
+  }, [user]);
 
+  // Redirect away if already seen
+  useEffect(() => {
+    if (alreadySeen === true) {
+      window.location.href = nextRoute;
+    }
+  }, [alreadySeen, nextRoute]);
+
+  // While checking, show nothing
   // Load referral code + friend name
   useEffect(() => {
     const stored = localStorage.getItem("gratitude_challenge_setup");
@@ -86,12 +117,22 @@ export default function CongratsNeuroHacker() {
 
   // Track page view + Confetti on mount
   useEffect(() => {
+    if (alreadySeen !== false) return;
     track("shown");
     const timer = setTimeout(() => {
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.3 } });
     }, 600);
     return () => clearTimeout(timer);
-  }, []);
+  }, [alreadySeen]);
+
+  // While checking or already seen, show nothing
+  if (alreadySeen === null || alreadySeen === true) {
+    return null;
+  }
+
+  const referralLink = referralCode
+    ? `https://iamblessedaf.com/r/${referralCode}`
+    : "https://iamblessedaf.com/challenge";
 
   const saveCongratsStatus = async (status: "completed" | "skipped") => {
     localStorage.setItem("congrats_neurohacker_completed", status);
