@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Play, Sparkles, Copy, Check, X } from "lucide-react";
+import { Play, Sparkles, Copy, Check, X, Instagram } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -112,22 +112,21 @@ const InspirationGallery = () => {
             <Play className="w-5 h-5 text-primary" />
             Example Remix Style (Make Yours Like This)
           </h3>
-          <div className="max-w-md mx-auto rounded-xl overflow-hidden border border-primary/30 shadow-lg">
-            <div className="relative w-full" style={{ paddingBottom: "177.78%" }}>
-              <iframe
-                className="absolute inset-0 w-full h-full"
-                src={`https://www.youtube.com/embed/${exampleRemix}?rel=0&modestbranding=1&fs=0`}
-                title="Example remix style"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                loading="lazy"
-              />
+          <a
+            href="https://www.instagram.com/reel/DRUYflsiWTT/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block max-w-md mx-auto rounded-xl overflow-hidden border border-primary/30 shadow-lg hover:shadow-primary/20 transition-shadow"
+          >
+            <div className="relative w-full bg-black flex items-center justify-center p-6">
+              <div className="text-center space-y-3">
+                <Instagram className="w-12 h-12 text-primary mx-auto" />
+                <p className="text-foreground font-bold text-lg">Ver Ejemplo en Instagram</p>
+                <p className="text-muted-foreground text-sm">Tap para ver el Reel →</p>
+              </div>
             </div>
-          </div>
-          <div className="max-w-md mx-auto mt-2">
-            <CopyLinkButton videoId={exampleRemix} />
-          </div>
-          <p className="text-center text-sm text-muted-foreground mt-2">
+          </a>
+          <p className="text-center text-sm text-muted-foreground mt-3">
             👆 This style = no copyright issues. Your remix, your earnings.
           </p>
         </div>
