@@ -169,10 +169,23 @@ const ChallengeThanks = () => {
     window.open(fbUrl, "_blank", "width=550,height=420");
   };
 
+  const inviteModal = (
+    <InviteFriendsModal
+      open={showInviteModal}
+      onClose={() => {
+        setShowInviteModal(false);
+        navigate("/affiliate-portal");
+      }}
+      referralCode={referralCode || ""}
+      displayName={displayName}
+    />
+  );
+
   if (loading || loadingProfile) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        {inviteModal}
       </div>
     );
   }
@@ -189,6 +202,7 @@ const ChallengeThanks = () => {
             Join the Free Challenge
           </Button>
         </div>
+        {inviteModal}
       </div>
     );
   }
@@ -438,18 +452,7 @@ const ChallengeThanks = () => {
       </div>
       </div>
 
-      {/* WhatsApp Invite Modal */}
-      {referralCode && (
-        <InviteFriendsModal
-          open={showInviteModal}
-          onClose={() => {
-            setShowInviteModal(false);
-            navigate("/affiliate-portal");
-          }}
-          referralCode={referralCode}
-          displayName={displayName}
-        />
-      )}
+      {inviteModal}
     </div>
   );
 };
