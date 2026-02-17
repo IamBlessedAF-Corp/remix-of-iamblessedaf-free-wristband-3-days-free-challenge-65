@@ -160,7 +160,7 @@ const Offer1111 = () => {
                 open={showDownsell}
                 onClose={() => setShowDownsell(false)}
                 onAccept={() => { setShowDownsell(false); navigate("/offer/11mo"); }}
-                onDecline={() => { setShowDownsell(false); navigate("/Congrats-Neuro-Hacker?next=/offer/4444"); }}
+                onDecline={() => { setShowDownsell(false); navigate("/offer/4444"); }}
                 onTrack={track}
               />
              </>
