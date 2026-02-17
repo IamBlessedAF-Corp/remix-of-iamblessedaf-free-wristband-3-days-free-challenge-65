@@ -70,8 +70,7 @@ const Offer22 = () => {
 
   const handleAuthSuccess = () => {
     setShowAuth(false);
-    setStep("gratitude-intro");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    navigate("/Congrats-Neuro-Hacker?next=/challenge");
   };
 
   const handleIntroComplete = () => {
