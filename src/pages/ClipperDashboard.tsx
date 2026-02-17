@@ -14,6 +14,7 @@ import ClipperNextAction from "@/components/clipper/ClipperNextAction";
 import ClipperPayoutHistory from "@/components/clipper/ClipperPayoutHistory";
 import ClipperMyClips from "@/components/clipper/ClipperMyClips";
 import ClipSubmitModal from "@/components/clipper/ClipSubmitModal";
+import ClipperRepostGallery from "@/components/clipper/ClipperRepostGallery";
 import ClipperPersonalAnalytics from "@/components/clipper/ClipperPersonalAnalytics";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import logoImg from "@/assets/logo.png";
@@ -44,7 +45,7 @@ const ClipperDashboard = () => {
 
   // Support ?tab=post deep-link from signup redirect
   const urlParams = new URLSearchParams(window.location.search);
-  const initialTab = urlParams.get("tab") === "post" ? "post" : "dashboard";
+  const initialTab = urlParams.get("tab") === "post" ? "post" : urlParams.get("tab") === "repost" ? "repost" : "dashboard";
 
   const handleSubmitClip = () => {
     setShowSubmitModal(true);
@@ -118,9 +119,10 @@ const ClipperDashboard = () => {
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4">
         <Tabs defaultValue={initialTab} className="space-y-4">
           <TabsList className="w-full bg-secondary/50">
-            <TabsTrigger value="dashboard" className="flex-1">Dashboard</TabsTrigger>
-            <TabsTrigger value="post" className="flex-1">🎬 Post</TabsTrigger>
-            <TabsTrigger value="analytics" className="flex-1">📊 Analytics</TabsTrigger>
+            <TabsTrigger value="dashboard" className="flex-1 text-xs">Dashboard</TabsTrigger>
+            <TabsTrigger value="post" className="flex-1 text-xs">🎬 Post</TabsTrigger>
+            <TabsTrigger value="repost" className="flex-1 text-xs">🔁 Repost</TabsTrigger>
+            <TabsTrigger value="analytics" className="flex-1 text-xs">📊 Analytics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard">
@@ -204,6 +206,16 @@ const ClipperDashboard = () => {
             </motion.div>
           </TabsContent>
 
+          <TabsContent value="repost">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ClipperRepostGallery userId={user.id} referralLink={referralLink} />
+            </motion.div>
+          </TabsContent>
+
           <TabsContent value="analytics">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
@@ -221,6 +233,7 @@ const ClipperDashboard = () => {
         onOpenChange={setShowSubmitModal}
         userId={user.id}
         onSubmitted={dashboard.refresh}
+        referralCode={referralCode}
       />
     </div>
   );
