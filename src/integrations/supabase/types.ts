@@ -446,6 +446,7 @@ export type Database = {
       creator_profiles: {
         Row: {
           blessings_confirmed: number
+          congrats_completed: string | null
           created_at: string
           digest_opted_out: boolean
           display_name: string | null
@@ -461,6 +462,7 @@ export type Database = {
         }
         Insert: {
           blessings_confirmed?: number
+          congrats_completed?: string | null
           created_at?: string
           digest_opted_out?: boolean
           display_name?: string | null
@@ -476,6 +478,7 @@ export type Database = {
         }
         Update: {
           blessings_confirmed?: number
+          congrats_completed?: string | null
           created_at?: string
           digest_opted_out?: boolean
           display_name?: string | null

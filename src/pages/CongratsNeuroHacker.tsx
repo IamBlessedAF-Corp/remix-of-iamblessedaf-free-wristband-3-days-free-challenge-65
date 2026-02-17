@@ -93,6 +93,16 @@ export default function CongratsNeuroHacker() {
     return () => clearTimeout(timer);
   }, []);
 
+  const saveCongratsStatus = async (status: "completed" | "skipped") => {
+    localStorage.setItem("congrats_neurohacker_completed", status);
+    if (user) {
+      await supabase
+        .from("creator_profiles")
+        .update({ congrats_completed: status })
+        .eq("user_id", user.id);
+    }
+  };
+
   const handleCopy = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
     setCopiedIdx(idx);
@@ -103,7 +113,7 @@ export default function CongratsNeuroHacker() {
     // Auto-unlock after first copy
     if (!unlocked) {
       setUnlocked(true);
-      localStorage.setItem("congrats_neurohacker_completed", "completed");
+      saveCongratsStatus("completed");
       setTimeout(() => {
         confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
         toast.success("🎁 $363 Bonus UNLOCKED! 11 Gift Links activated!", { duration: 5000 });
@@ -393,7 +403,7 @@ export default function CongratsNeuroHacker() {
               {/* CTA to Portal */}
               <Button
                 onClick={() => {
-                  localStorage.setItem("congrats_neurohacker_completed", "completed");
+                  saveCongratsStatus("completed");
                   window.location.href = nextRoute;
                 }}
                 className="w-full h-14 text-base font-black bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl gap-2"
@@ -417,7 +427,7 @@ export default function CongratsNeuroHacker() {
               size="sm"
               onClick={() => {
                 track("declined");
-                localStorage.setItem("congrats_neurohacker_completed", "skipped");
+                saveCongratsStatus("skipped");
                 window.location.href = nextRoute;
               }}
               className="text-xs text-muted-foreground/60 hover:text-muted-foreground"

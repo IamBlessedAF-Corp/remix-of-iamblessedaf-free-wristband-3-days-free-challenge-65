@@ -88,8 +88,10 @@ const AffiliatePortal = () => {
   }
 
   // New users must complete Congrats Neuro-Hacker activation first
-  const congratsStatus = localStorage.getItem("congrats_neurohacker_completed");
-  if (!congratsStatus) {
+  // Check DB first (cross-device), fallback to localStorage for immediate session
+  const congratsStatusDb = portalData.profile?.congrats_completed;
+  const congratsStatusLocal = localStorage.getItem("congrats_neurohacker_completed");
+  if (!congratsStatusDb && !congratsStatusLocal) {
     navigate("/Congrats-Neuro-Hacker?next=/affiliate-portal", { replace: true });
     return null;
   }
