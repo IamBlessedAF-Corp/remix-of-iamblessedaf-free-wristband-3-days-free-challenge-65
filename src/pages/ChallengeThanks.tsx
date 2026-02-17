@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
+import InviteFriendsModal from "@/components/portal/InviteFriendsModal";
 import logo from "@/assets/logo.png";
 
 // Social media icons
@@ -46,7 +47,9 @@ const ChallengeThanks = () => {
   const [searchParams] = useSearchParams();
   const { user, loading } = useAuth();
   const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string>("");
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   // Check if this user arrived via a referral (wristband gift flow)
   const incomingRef = searchParams.get("ref") || sessionStorage.getItem("referral_code");
@@ -72,7 +75,7 @@ const ChallengeThanks = () => {
       try {
         const { data, error } = await supabase
           .from("creator_profiles")
-          .select("referral_code")
+          .select("referral_code, display_name, congrats_completed")
           .eq("user_id", user.id)
           .maybeSingle();
 
@@ -82,6 +85,14 @@ const ChallengeThanks = () => {
 
         if (data?.referral_code) {
           setReferralCode(data.referral_code);
+        }
+        if (data?.display_name) {
+          setDisplayName(data.display_name);
+        }
+
+        // Auto-open WhatsApp invite modal if not yet completed
+        if (!data?.congrats_completed) {
+          setShowInviteModal(true);
         }
       } catch (err) {
         if (import.meta.env.DEV) {
@@ -256,12 +267,12 @@ const ChallengeThanks = () => {
             <Button
               size="lg"
               className="w-full sm:w-auto px-8 h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all"
-              onClick={() => navigate("/affiliate-portal")}
+              onClick={() => setShowInviteModal(true)}
             >
-              🚀 Go to My Dashboard
+              💬 Invitar Amigos por WhatsApp
             </Button>
             <p className="text-xs text-muted-foreground mt-2">
-              Complete your activation & invite 3 friends via WhatsApp
+              Envía tu gratitud a 3 amigos y activa tu cuenta
             </p>
           </motion.div>
         )}
@@ -426,6 +437,19 @@ const ChallengeThanks = () => {
         </motion.p>
       </div>
       </div>
+
+      {/* WhatsApp Invite Modal */}
+      {referralCode && (
+        <InviteFriendsModal
+          open={showInviteModal}
+          onClose={() => {
+            setShowInviteModal(false);
+            navigate("/affiliate-portal");
+          }}
+          referralCode={referralCode}
+          displayName={displayName}
+        />
+      )}
     </div>
   );
 };
