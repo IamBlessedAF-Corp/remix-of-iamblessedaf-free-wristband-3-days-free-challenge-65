@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Play, Sparkles, Copy, Check, X, Instagram, Link2 } from "lucide-react";
+import { Play, Sparkles, Copy, Check, X, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -107,26 +107,39 @@ const InspirationGallery = ({ referralLink }: { referralLink?: string | null }) 
           </p>
         </div>
 
-        {/* Example remix style */}
+        {/* Example remix style — same inline preview as campaign clips */}
         <div className="mb-10">
           <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
             <Play className="w-5 h-5 text-primary" />
             Example Remix Style (Make Yours Like This)
           </h3>
-          <a
-            href="https://www.instagram.com/reel/DRUYflsiWTT/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block max-w-md mx-auto rounded-xl overflow-hidden border border-primary/30 shadow-lg hover:shadow-primary/20 transition-shadow"
-          >
-            <div className="relative w-full bg-black flex items-center justify-center p-6">
-              <div className="text-center space-y-3">
-                <Instagram className="w-12 h-12 text-primary mx-auto" />
-                <p className="text-foreground font-bold text-lg">Ver Ejemplo en Instagram</p>
-                <p className="text-muted-foreground text-sm">Tap para ver el Reel →</p>
+          <div className="max-w-[200px] mx-auto">
+            <motion.div
+              className="group relative bg-card rounded-lg border border-primary/40 overflow-hidden shadow-lg"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <div
+                className="cursor-pointer relative"
+                onClick={() => setActiveClip(exampleRemix)}
+              >
+                <img
+                  src={`https://img.youtube.com/vi/${exampleRemix}/mqdefault.jpg`}
+                  alt="Example Remix"
+                  className="w-full aspect-[9/16] object-cover"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center">
+                  <Play className="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                  <p className="text-white text-xs font-medium">Example Remix</p>
+                </div>
               </div>
-            </div>
-          </a>
+              <CopyLinkButton videoId={exampleRemix} />
+            </motion.div>
+          </div>
           <p className="text-center text-sm text-muted-foreground mt-3">
             👆 This style = no copyright issues. Your remix, your earnings.
           </p>
