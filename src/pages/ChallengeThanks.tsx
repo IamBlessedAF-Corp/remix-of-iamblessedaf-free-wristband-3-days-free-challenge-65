@@ -245,7 +245,7 @@ const ChallengeThanks = () => {
             : "Your challenge starts tomorrow. While you wait — one tap feeds 11 hungry people and earns you the Gratitude Identity."}
         </motion.p>
 
-        {/* Primary CTA — above the fold */}
+        {/* Primary CTA — Go to Dashboard (where WhatsApp invite modal awaits) */}
         {!isReferred && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -256,12 +256,12 @@ const ChallengeThanks = () => {
             <Button
               size="lg"
               className="w-full sm:w-auto px-8 h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/affiliate-portal")}
             >
-              🍽️ Feed 11 People & Claim My Gratitude Pack
+              🚀 Go to My Dashboard
             </Button>
             <p className="text-xs text-muted-foreground mt-2">
-              100% goes to meals · You earn <span className="font-semibold text-primary">+75 XP</span> &amp; <span className="font-semibold text-primary">50 BC</span>
+              Complete your activation & invite 3 friends via WhatsApp
             </p>
           </motion.div>
         )}

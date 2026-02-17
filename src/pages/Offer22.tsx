@@ -22,10 +22,21 @@ const Offer22 = () => {
   const { startCheckout, loading } = useStripeCheckout();
   const { user, loading: authLoading, signOut } = useAuth();
 
-  // Redirect authenticated users to affiliate portal
+  // Authenticated users who already completed the funnel go to portal
   useEffect(() => {
     if (!authLoading && user) {
-      navigate("/affiliate-portal", { replace: true });
+      const checkFunnelStatus = async () => {
+        const { data } = await supabase
+          .from("creator_profiles")
+          .select("congrats_completed")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        // Only redirect if they already completed the full funnel + invite flow
+        if (data?.congrats_completed) {
+          navigate("/affiliate-portal", { replace: true });
+        }
+      };
+      checkFunnelStatus();
     }
   }, [user, authLoading, navigate]);
 
