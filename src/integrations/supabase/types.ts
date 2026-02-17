@@ -350,6 +350,192 @@ export type Database = {
         }
         Relationships: []
       }
+      budget_cycles: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          emergency_reserve_cents: number
+          end_date: string
+          global_monthly_limit_cents: number
+          global_weekly_limit_cents: number
+          id: string
+          max_payout_per_clip_cents: number
+          max_payout_per_clipper_week_cents: number
+          notes: string | null
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          emergency_reserve_cents?: number
+          end_date: string
+          global_monthly_limit_cents?: number
+          global_weekly_limit_cents?: number
+          id?: string
+          max_payout_per_clip_cents?: number
+          max_payout_per_clipper_week_cents?: number
+          notes?: string | null
+          start_date: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          emergency_reserve_cents?: number
+          end_date?: string
+          global_monthly_limit_cents?: number
+          global_weekly_limit_cents?: number
+          id?: string
+          max_payout_per_clip_cents?: number
+          max_payout_per_clipper_week_cents?: number
+          notes?: string | null
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      budget_events_log: {
+        Row: {
+          action: string
+          actor: string | null
+          after_state: Json | null
+          before_state: Json | null
+          created_at: string
+          estimated_impact_cents: number | null
+          id: string
+          impacted_segments: string[] | null
+          notes: string | null
+          rollback_token: string | null
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          after_state?: Json | null
+          before_state?: Json | null
+          created_at?: string
+          estimated_impact_cents?: number | null
+          id?: string
+          impacted_segments?: string[] | null
+          notes?: string | null
+          rollback_token?: string | null
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          after_state?: Json | null
+          before_state?: Json | null
+          created_at?: string
+          estimated_impact_cents?: number | null
+          id?: string
+          impacted_segments?: string[] | null
+          notes?: string | null
+          rollback_token?: string | null
+        }
+        Relationships: []
+      }
+      budget_segment_cycles: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          cycle_id: string
+          id: string
+          projected_cents: number
+          remaining_cents: number
+          segment_id: string
+          spent_cents: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          cycle_id: string
+          id?: string
+          projected_cents?: number
+          remaining_cents?: number
+          segment_id: string
+          spent_cents?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          cycle_id?: string
+          id?: string
+          projected_cents?: number
+          remaining_cents?: number
+          segment_id?: string
+          spent_cents?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_segment_cycles_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "budget_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_segment_cycles_segment_id_fkey"
+            columns: ["segment_id"]
+            isOneToOne: false
+            referencedRelation: "budget_segments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      budget_segments: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          monthly_limit_cents: number
+          name: string
+          priority: number
+          rules: Json
+          soft_throttle_config: Json
+          updated_at: string
+          weekly_limit_cents: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          monthly_limit_cents?: number
+          name: string
+          priority?: number
+          rules?: Json
+          soft_throttle_config?: Json
+          updated_at?: string
+          weekly_limit_cents?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          monthly_limit_cents?: number
+          name?: string
+          priority?: number
+          rules?: Json
+          soft_throttle_config?: Json
+          updated_at?: string
+          weekly_limit_cents?: number
+        }
+        Relationships: []
+      }
       challenge_participants: {
         Row: {
           challenge_start_date: string | null
@@ -598,6 +784,38 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      clipper_segment_membership: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          id: string
+          segment_id: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          segment_id: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          segment_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clipper_segment_membership_segment_id_fkey"
+            columns: ["segment_id"]
+            isOneToOne: false
+            referencedRelation: "budget_segments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       creator_profiles: {
         Row: {
