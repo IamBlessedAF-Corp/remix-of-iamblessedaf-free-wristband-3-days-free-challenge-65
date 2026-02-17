@@ -1,0 +1,184 @@
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+import { Shield, Plus, Trash2, Users, Crown, Code, ShieldCheck } from "lucide-react";
+import AdminSectionDashboard from "./AdminSectionDashboard";
+
+const ROLE_CONFIG: Record<string, { label: string; color: string; icon: any; description: string }> = {
+  super_admin: { label: "Super Admin", color: "bg-amber-500/15 text-amber-400 border-amber-500/30", icon: Crown, description: "Full access to everything. Cannot be removed." },
+  admin: { label: "Admin", color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30", icon: ShieldCheck, description: "Full access to admin panel and management." },
+  developer: { label: "Developer", color: "bg-blue-500/15 text-blue-400 border-blue-500/30", icon: Code, description: "Access to board, logs, and technical areas." },
+  user: { label: "User", color: "bg-muted text-muted-foreground border-border/30", icon: Users, description: "Standard user with portal access." },
+};
+
+const ASSIGNABLE_ROLES = ["admin", "developer", "user"];
+
+export default function RolesTab() {
+  const qc = useQueryClient();
+  const [newEmail, setNewEmail] = useState("");
+  const [newRole, setNewRole] = useState("admin");
+
+  const { data: roles = [], isLoading } = useQuery({
+    queryKey: ["admin-roles"],
+    queryFn: async () => {
+      const { data, error } = await (supabase.from("user_roles" as any) as any).select("*");
+      if (error) throw error;
+      // Get emails from creator_profiles
+      const userIds = (data || []).map((r: any) => r.user_id);
+      const { data: profiles } = await supabase.from("creator_profiles").select("user_id, email, display_name").in("user_id", userIds);
+      const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
+      return (data || []).map((r: any) => ({
+        ...r,
+        email: profileMap.get(r.user_id)?.email || "Unknown",
+        display_name: profileMap.get(r.user_id)?.display_name || null,
+      }));
+    },
+  });
+
+  const addRole = useMutation({
+    mutationFn: async ({ email, role }: { email: string; role: string }) => {
+      // Find user_id from creator_profiles by email
+      const { data: profile, error: pErr } = await supabase
+        .from("creator_profiles")
+        .select("user_id")
+        .eq("email", email)
+        .maybeSingle();
+      if (pErr || !profile) throw new Error("User not found with that email. They must have a creator profile first.");
+      
+      const { error } = await (supabase.from("user_roles" as any) as any)
+        .insert({ user_id: profile.user_id, role });
+      if (error) {
+        if (error.code === "23505") throw new Error("This user already has that role.");
+        throw error;
+      }
+    },
+    onSuccess: () => { toast.success("Role assigned"); qc.invalidateQueries({ queryKey: ["admin-roles"] }); setNewEmail(""); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const removeRole = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await (supabase.from("user_roles" as any) as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("Role removed"); qc.invalidateQueries({ queryKey: ["admin-roles"] }); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const superAdminCount = roles.filter((r: any) => r.role === "super_admin").length;
+  const adminCount = roles.filter((r: any) => r.role === "admin").length;
+  const devCount = roles.filter((r: any) => r.role === "developer").length;
+
+  return (
+    <div className="space-y-6">
+      <AdminSectionDashboard
+        title="Role Management"
+        description="Manage user roles and permissions"
+        kpis={[
+          { label: "Super Admins", value: superAdminCount },
+          { label: "Admins", value: adminCount },
+          { label: "Developers", value: devCount },
+          { label: "Total Roles", value: roles.length },
+        ]}
+      />
+
+      {/* Role descriptions */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {Object.entries(ROLE_CONFIG).map(([key, cfg]) => {
+          const Icon = cfg.icon;
+          return (
+            <div key={key} className="border border-border/30 rounded-xl p-4 bg-card/50">
+              <div className="flex items-center gap-2 mb-2">
+                <Icon className="w-4 h-4 text-primary" />
+                <Badge className={cfg.color}>{cfg.label}</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">{cfg.description}</p>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Add role */}
+      <div className="border border-border/30 rounded-xl p-4 bg-card/50">
+        <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Assign Role
+        </h3>
+        <div className="flex gap-2 items-end flex-wrap">
+          <div className="flex-1 min-w-[200px]">
+            <label className="text-xs text-muted-foreground mb-1 block">User Email</label>
+            <Input
+              value={newEmail}
+              onChange={e => setNewEmail(e.target.value)}
+              placeholder="user@example.com"
+              className="text-sm"
+            />
+          </div>
+          <div className="w-40">
+            <label className="text-xs text-muted-foreground mb-1 block">Role</label>
+            <Select value={newRole} onValueChange={setNewRole}>
+              <SelectTrigger className="text-sm"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {ASSIGNABLE_ROLES.map(r => (
+                  <SelectItem key={r} value={r}>{ROLE_CONFIG[r]?.label || r}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button size="sm" onClick={() => addRole.mutate({ email: newEmail, role: newRole })} disabled={!newEmail || addRole.isPending}>
+            <Plus className="w-3 h-3 mr-1" /> Assign
+          </Button>
+        </div>
+      </div>
+
+      {/* Roles list */}
+      <div className="border border-border/30 rounded-xl bg-card/50 overflow-hidden">
+        <div className="px-4 py-3 border-b border-border/20">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+            <Shield className="w-4 h-4" /> Active Roles ({roles.length})
+          </h3>
+        </div>
+        <div className="divide-y divide-border/20">
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground p-4">Loading...</p>
+          ) : roles.length === 0 ? (
+            <p className="text-sm text-muted-foreground p-4">No roles assigned.</p>
+          ) : (
+            roles.map((r: any) => {
+              const cfg = ROLE_CONFIG[r.role] || ROLE_CONFIG.user;
+              const Icon = cfg.icon;
+              const isSuperAdmin = r.role === "super_admin";
+              return (
+                <div key={r.id} className="flex items-center gap-3 px-4 py-3 hover:bg-secondary/20 transition-colors">
+                  <Icon className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {r.display_name || r.email}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground truncate">{r.email} · {r.user_id.substring(0, 8)}...</p>
+                  </div>
+                  <Badge className={cfg.color}>{cfg.label}</Badge>
+                  {!isSuperAdmin && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => removeRole.mutate(r.id)}
+                      disabled={removeRole.isPending}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -19,9 +19,8 @@ export function useAdminAuth() {
       const { data } = await (supabase.from("user_roles" as any) as any)
         .select("role")
         .eq("user_id", user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-      setIsAdmin(!!data);
+        .in("role", ["admin", "super_admin"]);
+      setIsAdmin(!!data && data.length > 0);
       setChecking(false);
     };
 
