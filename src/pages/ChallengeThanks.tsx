@@ -67,13 +67,12 @@ const ChallengeThanks = () => {
       if (loading) return;
 
       if (!user) {
-        // Redirect unauthenticated users back to challenge
-        navigate("/challenge");
+        navigate("/");
         return;
       }
 
       try {
-        const { data, error } = await supabase
+        let { data, error } = await supabase
           .from("creator_profiles")
           .select("referral_code, display_name, congrats_completed")
           .eq("user_id", user.id)
@@ -83,15 +82,44 @@ const ChallengeThanks = () => {
           console.error("Error fetching profile:", error);
         }
 
-        if (data?.referral_code) {
+        // Auto-generate referral code if profile exists but has no code
+        if (data && !data.referral_code) {
+          const { data: codeData } = await supabase.rpc("generate_referral_code");
+          if (codeData) {
+            await supabase
+              .from("creator_profiles")
+              .update({ referral_code: codeData })
+              .eq("user_id", user.id);
+            data = { ...data, referral_code: codeData };
+          }
+        }
+
+        // If no profile at all, create one with auto-generated code
+        if (!data) {
+          const { data: codeData } = await supabase.rpc("generate_referral_code");
+          const newCode = codeData || `BLESSED${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+          await supabase.from("creator_profiles").insert({
+            user_id: user.id,
+            email: user.email || "",
+            referral_code: newCode,
+            display_name: user.user_metadata?.display_name || user.email?.split("@")[0] || "",
+          });
+          setReferralCode(newCode);
+          setDisplayName(user.user_metadata?.display_name || user.email?.split("@")[0] || "");
+          setShowInviteModal(true);
+          setLoadingProfile(false);
+          return;
+        }
+
+        if (data.referral_code) {
           setReferralCode(data.referral_code);
         }
-        if (data?.display_name) {
+        if (data.display_name) {
           setDisplayName(data.display_name);
         }
 
         // Auto-open WhatsApp invite modal if not yet completed
-        if (!data?.congrats_completed) {
+        if (!data.congrats_completed) {
           setShowInviteModal(true);
         }
       } catch (err) {
@@ -192,16 +220,8 @@ const ChallengeThanks = () => {
 
   if (!referralCode) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold mb-4">Almost there!</h1>
-          <p className="text-muted-foreground mb-6">
-            Join the free challenge to get your unique referral link.
-          </p>
-          <Button onClick={() => navigate("/")}>
-            Join the Free Challenge
-          </Button>
-        </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
         {inviteModal}
       </div>
     );

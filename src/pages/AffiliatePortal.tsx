@@ -23,7 +23,7 @@ import ContentVault from "@/components/portal/ContentVault";
 import AffiliateCreditTracker from "@/components/portal/AffiliateCreditTracker";
 import PortalAccountSettings from "@/components/portal/PortalAccountSettings";
 import PortalNotificationBell from "@/components/portal/PortalNotificationBell";
-import InviteFriendsModal from "@/components/portal/InviteFriendsModal";
+
 import logoImg from "@/assets/logo.png";
 
 type Tab = "dashboard" | "leaderboard" | "referrals" | "missions" | "store" | "clip" | "repost" | "account";
@@ -88,10 +88,13 @@ const AffiliatePortal = () => {
     return null;
   }
 
-  // Show invite modal for new users who haven't completed congrats
-  const congratsStatusDb = portalData.profile?.congrats_completed;
-  const congratsStatusLocal = localStorage.getItem("congrats_neurohacker_completed");
-  const showInviteModal = !congratsStatusDb && !congratsStatusLocal;
+  // Onboarding not completed → redirect to home
+  const congratsStatus = portalData.profile?.congrats_completed;
+  if (!portalData.loading && !congratsStatus) {
+    navigate("/", { replace: true });
+    return null;
+  }
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -210,17 +213,6 @@ const AffiliatePortal = () => {
           </motion.div>
         </AnimatePresence>
       </main>
-
-      {/* Invite Friends Modal — shows once for new users */}
-      <InviteFriendsModal
-        open={showInviteModal}
-        onClose={() => {
-          // Force re-render by reloading portal data
-          window.location.reload();
-        }}
-        referralCode={portalData.profile?.referral_code || ""}
-        displayName={portalData.profile?.display_name || ""}
-      />
     </div>
   );
 };

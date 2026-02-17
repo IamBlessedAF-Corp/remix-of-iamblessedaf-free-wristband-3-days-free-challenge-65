@@ -75,38 +75,10 @@ const Portal = () => {
     );
   }
 
-  // Not logged in
+  // Not logged in — redirect to home
   if (!user) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
-        <motion.div
-          className="max-w-md w-full text-center space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <img src={logoImg} alt="Logo" className="h-12 mx-auto" />
-          <h1 className="text-3xl font-bold text-foreground">Ambassador Portal</h1>
-          <p className="text-muted-foreground">
-            Sign in to track your impact, climb the leaderboard, and earn rewards.
-          </p>
-          <Button
-            onClick={() => setShowAuth(true)}
-            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base rounded-xl btn-glow"
-          >
-            Sign In / Create Account
-          </Button>
-        </motion.div>
-
-        <CreatorSignupModal
-          isOpen={showAuth}
-          onClose={() => setShowAuth(false)}
-          onSuccess={() => {
-            setShowAuth(false);
-            window.location.reload();
-          }}
-        />
-      </div>
-    );
+    navigate("/", { replace: true });
+    return null;
   }
 
   // Logged in but no creator profile
