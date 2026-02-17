@@ -837,7 +837,7 @@ function FunnelOverviewSection() {
 
   const funnelSteps = [
     { num: "0.1", name: "Expert Enrollment", route: "/experts-leads", sells: "Lead capture for coaches" },
-    { num: "0.2", name: "Clipper Campaign", route: "/Gratitude-Clippers", sells: "Creator recruitment — $2.22–$1,111/clip" },
+    { num: "0.2", name: "Clipper Campaign", route: "/Gratitude-Clips-Challenge", sells: "Creator recruitment — $2.22–$1,111/clip" },
     { num: "01", name: "Free Wristband", route: "/", sells: "Lead capture (wristband gratis)" },
     { num: "02", name: "Science Hook", route: null, sells: "Educación — Hawkins 27x" },
     { num: "03", name: "Friend Capture", route: null, sells: "Name Your Best Friend" },

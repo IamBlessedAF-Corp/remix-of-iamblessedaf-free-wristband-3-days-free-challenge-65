@@ -22,14 +22,14 @@ const GratitudeClippers = () => {
     title: "Clip Gratitude Viral Content. Get Paid $2.22–$1,111 Per Clip",
     description: "Remix viral gratitude clips from Tony Robbins & Huberman. Add our free CTA end-screen. Post on TikTok/Reels/Shorts. Get paid $2.22–$1,111 per clip.",
     image: "/og-clippers.png",
-    url: "https://iamblessedaf.com/Gratitude-Clippers",
+    url: "https://iamblessedaf.com/Gratitude-Clips-Challenge",
   });
 
   const openSignup = () => setShowSignupModal(true);
 
   const handleSignupSuccess = () => {
     setShowSignupModal(false);
-    window.location.href = "/clipper-dashboard";
+    window.location.href = "/clipper-dashboard?tab=post";
   };
 
   return (
@@ -67,7 +67,7 @@ const GratitudeClippers = () => {
         <section className="px-4 py-14 max-w-3xl mx-auto text-center space-y-4">
           <p className="text-lg font-bold text-foreground">You're signed in ✅</p>
           <a
-            href="/clipper-dashboard"
+            href="/clipper-dashboard?tab=post"
             className="inline-flex items-center justify-center h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl transition-colors btn-glow"
           >
             Open Your Clipper Dashboard →
