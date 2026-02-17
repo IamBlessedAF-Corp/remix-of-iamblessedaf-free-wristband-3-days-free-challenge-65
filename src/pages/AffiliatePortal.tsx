@@ -87,6 +87,13 @@ const AffiliatePortal = () => {
     return null;
   }
 
+  // New users must complete Congrats Neuro-Hacker activation first
+  const congratsStatus = localStorage.getItem("congrats_neurohacker_completed");
+  if (!congratsStatus) {
+    navigate("/Congrats-Neuro-Hacker?next=/affiliate-portal", { replace: true });
+    return null;
+  }
+
   // Profile is now auto-created in usePortalData, so no intermediate gate needed
 
   return (

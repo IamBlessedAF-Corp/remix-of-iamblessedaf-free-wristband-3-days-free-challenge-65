@@ -103,6 +103,7 @@ export default function CongratsNeuroHacker() {
     // Auto-unlock after first copy
     if (!unlocked) {
       setUnlocked(true);
+      localStorage.setItem("congrats_neurohacker_completed", "completed");
       setTimeout(() => {
         confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
         toast.success("🎁 $363 Bonus UNLOCKED! 11 Gift Links activated!", { duration: 5000 });
@@ -391,14 +392,15 @@ export default function CongratsNeuroHacker() {
 
               {/* CTA to Portal */}
               <Button
-                asChild
+                onClick={() => {
+                  localStorage.setItem("congrats_neurohacker_completed", "completed");
+                  window.location.href = nextRoute;
+                }}
                 className="w-full h-14 text-base font-black bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl gap-2"
               >
-                <a href={nextRoute}>
-                  <Gift className="w-5 h-5" />
-                  {nextRoute === "/portal" ? "Enter Your Portal" : "Continue Your Journey"}
-                  <ArrowRight className="w-5 h-5" />
-                </a>
+                <Gift className="w-5 h-5" />
+                {nextRoute === "/portal" || nextRoute === "/affiliate-portal" ? "Enter Your Portal" : "Continue Your Journey"}
+                <ArrowRight className="w-5 h-5" />
               </Button>
             </motion.section>
           )}
@@ -406,17 +408,22 @@ export default function CongratsNeuroHacker() {
 
         {/* ═══ PRE-UNLOCK CTA ═══ */}
         {!unlocked && (
-          <div className="text-center space-y-2">
+          <div className="text-center space-y-3">
             <p className="text-xs text-muted-foreground">
               👆 Copy any caption above to unlock your <strong>$363 bonus</strong>
             </p>
-            <a
-              href={nextRoute}
-              onClick={() => track("declined")}
-              className="text-xs text-muted-foreground/60 hover:text-muted-foreground underline"
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                track("declined");
+                localStorage.setItem("congrats_neurohacker_completed", "skipped");
+                window.location.href = nextRoute;
+              }}
+              className="text-xs text-muted-foreground/60 hover:text-muted-foreground"
             >
-              Maybe later → {nextRoute === "/portal" ? "Go to Portal" : "Skip to next offer"}
-            </a>
+              Skip for now →
+            </Button>
           </div>
         )}
 
