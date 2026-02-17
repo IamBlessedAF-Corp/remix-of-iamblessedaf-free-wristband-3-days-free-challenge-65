@@ -87,6 +87,7 @@ const App = () => (
           <Route path="/2us-Clippers-Campaign" element={<AIVideoContest />} />
           <Route path="/board" element={<Board />} />
           <Route path="/portal" element={<Portal />} />
+          <Route path="/admin" element={<Navigate to="/admin/clippers" replace />} />
           <Route path="/admin/links" element={<AdminLinks />} />
           <Route path="/impact" element={<Impact />} />
           <Route path="/roadmap" element={<Roadmap />} />
