@@ -56,7 +56,7 @@ export function useClipperDashboard(userId: string | undefined) {
       // Fetch all clips
       const { data: allClips } = await supabase
         .from("clip_submissions")
-        .select("view_count, earnings_cents, submitted_at")
+        .select("view_count, baseline_view_count, earnings_cents, submitted_at")
         .eq("user_id", userId)
         .order("submitted_at", { ascending: false });
 
@@ -65,7 +65,8 @@ export function useClipperDashboard(userId: string | undefined) {
         return;
       }
 
-      const totalViews = allClips.reduce((s, c) => s + (c.view_count || 0), 0);
+      // Net views = total views minus baseline (views at submission time)
+      const totalViews = allClips.reduce((s, c) => s + Math.max(0, (c.view_count || 0) - (c.baseline_view_count || 0)), 0);
       const totalEarningsCents = allClips.reduce((s, c) => s + (c.earnings_cents || 0), 0);
 
       const thisWeekClips = allClips.filter((c) => c.submitted_at >= thisWeekStart);
@@ -98,7 +99,7 @@ export function useClipperDashboard(userId: string | undefined) {
       // Calculate average views per clip per week (based on last 2 weeks)
       const recentClips = [...thisWeekClips, ...lastWeekClips];
       const avgViewsPerClipPerWeek = recentClips.length > 0
-        ? recentClips.reduce((s, c) => s + (c.view_count || 0), 0) / Math.max(1, recentClips.length) * 10
+        ? recentClips.reduce((s, c) => s + Math.max(0, (c.view_count || 0) - (c.baseline_view_count || 0)), 0) / Math.max(1, recentClips.length) * 10
         : 0;
 
       // Clips today
@@ -112,7 +113,7 @@ export function useClipperDashboard(userId: string | undefined) {
         totalClips: allClips.length,
         totalEarningsCents,
         clipsThisWeek: thisWeekClips.length,
-        viewsThisWeek: thisWeekClips.reduce((s, c) => s + (c.view_count || 0), 0),
+        viewsThisWeek: thisWeekClips.reduce((s, c) => s + Math.max(0, (c.view_count || 0) - (c.baseline_view_count || 0)), 0),
         earningsThisWeekCents: thisWeekClips.reduce((s, c) => s + (c.earnings_cents || 0), 0),
         clipsLastWeek: lastWeekClips.length,
         clipsToday,
