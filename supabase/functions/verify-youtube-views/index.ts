@@ -41,9 +41,10 @@ Deno.serve(async (req) => {
 
   try {
     // Get all YouTube clips that are pending or verified
+    // Fetch YouTube clips with their owner's referral code for ownership re-check
     const { data: clips, error } = await supabase
       .from("clip_submissions")
-      .select("id, clip_url, view_count, baseline_view_count, status")
+      .select("id, clip_url, view_count, baseline_view_count, status, user_id")
       .eq("platform", "youtube")
       .in("status", ["pending", "verified"]);
 
@@ -55,14 +56,28 @@ Deno.serve(async (req) => {
     }
 
     // Extract video IDs
+    // Extract video IDs and map clips
     const clipMap = new Map<string, typeof clips[0]>();
     const videoIds: string[] = [];
+    const userIds = new Set<string>();
     for (const clip of clips) {
       const vid = extractYouTubeId(clip.clip_url);
       if (vid) {
         videoIds.push(vid);
         clipMap.set(vid, clip);
+        userIds.add(clip.user_id);
       }
+    }
+
+    // Pre-fetch referral codes for all users
+    const { data: profiles } = await supabase
+      .from("creator_profiles")
+      .select("user_id, referral_code")
+      .in("user_id", Array.from(userIds));
+
+    const referralMap = new Map<string, string>();
+    for (const p of profiles || []) {
+      referralMap.set(p.user_id, p.referral_code);
     }
 
     if (videoIds.length === 0) {
@@ -93,9 +108,15 @@ Deno.serve(async (req) => {
         const liveViewCount = parseInt(item.statistics?.viewCount || "0", 10);
         const description = (item.snippet?.description || "").toLowerCase();
         
-        // Check if the required hashtag is in the description
-        const hasRequiredHashtag = description.includes("#3dayneurohackerchallenge") || 
-                                    description.includes("3dayneurohackerchallenge");
+        // Check campaign hashtag
+        const hasCampaignTag = description.includes("#3dayneurohackerchallenge") || 
+                               description.includes("3dayneurohackerchallenge");
+
+        // Check ownership code: #IABAF_{referral_code}
+        const userRefCode = referralMap.get(clip.user_id);
+        const hasOwnership = userRefCode
+          ? description.includes(`#iabaf_${userRefCode}`.toLowerCase())
+          : false;
 
         // Update view count
         const updateData: Record<string, any> = {
@@ -108,15 +129,13 @@ Deno.serve(async (req) => {
           updateData.baseline_view_count = liveViewCount;
         }
 
-        // Auto-verify if hashtag is present and has views
-        if (hasRequiredHashtag && clip.status === "pending") {
+        // Auto-verify if both tags are present and clip is pending
+        if (hasCampaignTag && hasOwnership && clip.status === "pending") {
           updateData.status = "verified";
           updateData.verified_at = new Date().toISOString();
-          
-          // Calculate earnings: net views × $0.22 RPM, minimum $2.22
           const netViews = Math.max(0, liveViewCount - (updateData.baseline_view_count || clip.baseline_view_count || 0));
-          const rpmEarnings = Math.round((netViews / 1000) * 22); // $0.22 RPM = 22 cents per 1000
-          updateData.earnings_cents = Math.max(222, rpmEarnings); // minimum $2.22
+          const rpmEarnings = Math.round((netViews / 1000) * 22);
+          updateData.earnings_cents = Math.max(222, rpmEarnings);
         }
 
         const { error: updateError } = await supabase
