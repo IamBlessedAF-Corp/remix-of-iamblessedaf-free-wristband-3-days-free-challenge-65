@@ -403,6 +403,7 @@ export type Database = {
       }
       clip_submissions: {
         Row: {
+          baseline_view_count: number
           clip_url: string
           created_at: string
           earnings_cents: number
@@ -416,6 +417,7 @@ export type Database = {
           view_count: number
         }
         Insert: {
+          baseline_view_count?: number
           clip_url: string
           created_at?: string
           earnings_cents?: number
@@ -429,6 +431,7 @@ export type Database = {
           view_count?: number
         }
         Update: {
+          baseline_view_count?: number
           clip_url?: string
           created_at?: string
           earnings_cents?: number
