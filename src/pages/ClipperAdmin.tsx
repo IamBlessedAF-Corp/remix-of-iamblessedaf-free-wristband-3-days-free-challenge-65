@@ -13,6 +13,7 @@ import { useClipperAdmin, type ClipRow } from "@/hooks/useClipperAdmin";
 import BoardLoginForm from "@/components/board/BoardLoginForm";
 import { toast } from "sonner";
 import AdminAnalyticsDashboard from "@/components/clipper/AdminAnalyticsDashboard";
+import BudgetControlTab from "@/components/admin/BudgetControlTab";
 
 // ---------- Video Embed ----------
 const VideoEmbed = ({ url }: { url: string }) => {
@@ -228,6 +229,7 @@ export default function ClipperAdmin() {
               <TabsList className="bg-secondary/50">
                 <TabsTrigger value="clips">All Clips</TabsTrigger>
                 <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
+                <TabsTrigger value="budget">Budget Control</TabsTrigger>
                 <TabsTrigger value="suggestions">Optimize</TabsTrigger>
               </TabsList>
 
@@ -302,6 +304,11 @@ export default function ClipperAdmin() {
                     ))}
                   </div>
                 </div>
+              </TabsContent>
+
+              {/* === Budget Control Tab === */}
+              <TabsContent value="budget">
+                <BudgetControlTab />
               </TabsContent>
 
               {/* === Optimize Tab === */}
