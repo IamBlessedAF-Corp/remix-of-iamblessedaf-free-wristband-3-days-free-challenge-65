@@ -42,7 +42,7 @@ const PRE_FUNNEL_STEPS = [
     dashboard: "Admin sees all leads at /admin/experts with search, filter by status, and CSV export."
   },
   {
-    id: 0.2, route: "/Gratitude-Clippers", name: "Clipper Campaign", sells: "Creator recruitment — $2.22–$1,111/clip", defaultConv: 0.38, icon: Video,
+    id: 0.2, route: "/Gratitude-Clips-Challenge", name: "Clipper Campaign", sells: "Creator recruitment — $2.22–$1,111/clip", defaultConv: 0.38, icon: Video,
     vitality: "Andrew Tate Formula → paid viral content engine", kFactor: "K=4.2",
     subtitle: "Recruits content creators via earnings psychology. 3-step workflow: Pick clip → Add CTA → Post. Redirects to /clipper-dashboard on signup.",
     emotional: "💰 Greed + purpose: 'Get paid to spread gratitude'",

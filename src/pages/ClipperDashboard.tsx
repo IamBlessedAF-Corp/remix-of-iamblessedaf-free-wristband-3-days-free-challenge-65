@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Loader2, LogOut, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,11 +16,19 @@ import ClipSubmitModal from "@/components/clipper/ClipSubmitModal";
 import ClipperPersonalAnalytics from "@/components/clipper/ClipperPersonalAnalytics";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import logoImg from "@/assets/logo.png";
+import GratitudeDegenBlock from "@/components/contest/GratitudeDegenBlock";
+import EarningsSliderCalculator from "@/components/contest/EarningsSliderCalculator";
+import ClipperCtaAssets from "@/components/contest/ClipperCtaAssets";
+import InspirationGallery from "@/components/contest/InspirationGallery";
 
 const ClipperDashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const dashboard = useClipperDashboard(user?.id);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
+
+  // Support ?tab=post deep-link from signup redirect
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialTab = urlParams.get("tab") === "post" ? "post" : "dashboard";
 
   const handleSubmitClip = () => {
     setShowSubmitModal(true);
@@ -42,7 +50,7 @@ const ClipperDashboard = () => {
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-4">
           <p className="text-muted-foreground">Sign in to access your clipper dashboard.</p>
-          <Button onClick={() => (window.location.href = "/2us-Clippers-Campaign")}>
+          <Button onClick={() => (window.location.href = "/Gratitude-Clips-Challenge")}>
             Go to Campaign Page
           </Button>
         </div>
@@ -62,7 +70,7 @@ const ClipperDashboard = () => {
               variant="ghost"
               size="sm"
               className="p-1"
-              onClick={() => (window.location.href = "/2us-Clippers-Campaign")}
+              onClick={() => (window.location.href = "/Gratitude-Clips-Challenge")}
             >
               <ArrowLeft className="w-4 h-4" />
             </Button>
@@ -92,9 +100,10 @@ const ClipperDashboard = () => {
 
       {/* Dashboard sections */}
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4">
-        <Tabs defaultValue="dashboard" className="space-y-4">
+        <Tabs defaultValue={initialTab} className="space-y-4">
           <TabsList className="w-full bg-secondary/50">
             <TabsTrigger value="dashboard" className="flex-1">Dashboard</TabsTrigger>
+            <TabsTrigger value="post" className="flex-1">🎬 Post</TabsTrigger>
             <TabsTrigger value="analytics" className="flex-1">📊 Analytics</TabsTrigger>
           </TabsList>
 
@@ -155,6 +164,27 @@ const ClipperDashboard = () => {
                   onSubmitClip={handleSubmitClip}
                 />
               )}
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="post">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-0"
+            >
+              {/* HIGH-OUTPUT PATH scenarios */}
+              <GratitudeDegenBlock />
+
+              {/* Build Your Earnings Plan */}
+              <EarningsSliderCalculator />
+
+              {/* CTA Assets — downloadable end-screens */}
+              <ClipperCtaAssets />
+
+              {/* Content Vault + Example Remix + Campaign Drop */}
+              <InspirationGallery />
             </motion.div>
           </TabsContent>
 

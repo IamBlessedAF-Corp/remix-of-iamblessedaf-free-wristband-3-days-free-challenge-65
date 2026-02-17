@@ -95,7 +95,8 @@ const App = () => (
           <Route path="/admin/congrats" element={<AdminCongrats />} />
           <Route path="/experts" element={<Experts />} />
           <Route path="/scripts-review" element={<ScriptsReview />} />
-          <Route path="/Gratitude-Clippers" element={<GratitudeClippers />} />
+          <Route path="/Gratitude-Clips-Challenge" element={<GratitudeClippers />} />
+          <Route path="/Gratitude-Clippers" element={<Navigate to="/Gratitude-Clips-Challenge" replace />} />
           <Route path="/Traffic-Funnel" element={<FunnelMap />} />
           <Route path="/admin/experts" element={<ExpertsLeadsAdmin />} />
           <Route path="/privacy" element={<Privacy />} />
