@@ -95,3 +95,9 @@ verify_jwt = false
 
 [functions.verify-youtube-views]
 verify_jwt = false
+
+[functions.budget-alerts]
+verify_jwt = false
+
+[functions.auto-assign-segments]
+verify_jwt = false

@@ -216,7 +216,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "payout") {
-      // FRIDAY: Approve and mark as paid
+      // FRIDAY: Approve and mark as paid — WITH SEGMENT ENFORCEMENT
       const { data: payouts } = await supabase
         .from("clipper_payouts")
         .select("*")
@@ -229,11 +229,103 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Calculate monthly bonuses
+      // ── Check global cycle approval ──
+      const { data: currentCycles } = await supabase
+        .from("budget_cycles")
+        .select("*")
+        .gte("start_date", lastWeekMonday.toISOString())
+        .lte("start_date", lastWeekEnd.toISOString())
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      const currentCycle = currentCycles?.[0];
+      const globalApproved = currentCycle && currentCycle.status === "approved";
+      const globalKilled = currentCycle && currentCycle.status === "killed";
+
+      if (globalKilled) {
+        return new Response(
+          JSON.stringify({ ok: true, message: "Global kill switch active — all payouts blocked", paid: 0, held: payouts.length }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      if (!globalApproved) {
+        return new Response(
+          JSON.stringify({ ok: true, message: "Global cycle not approved — payouts locked", paid: 0, held: payouts.length }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // ── Load segment data for enforcement ──
+      const { data: allSegments } = await supabase.from("budget_segments").select("*").eq("is_active", true);
+      const { data: allSegCycles } = await supabase.from("budget_segment_cycles").select("*").eq("cycle_id", currentCycle.id);
+      const { data: allMemberships } = await supabase.from("clipper_segment_membership").select("user_id, segment_id");
+
+      // Build segment lookup
+      const userSegmentMap: Record<string, string> = {};
+      for (const m of allMemberships || []) {
+        userSegmentMap[m.user_id] = m.segment_id; // Last wins (highest priority assigned first)
+      }
+
+      const segCycleMap: Record<string, any> = {};
+      for (const sc of allSegCycles || []) {
+        segCycleMap[sc.segment_id] = sc;
+      }
+
+      const segmentMap: Record<string, any> = {};
+      for (const seg of allSegments || []) {
+        segmentMap[seg.id] = seg;
+      }
+
+      // Track per-segment spend during this payout run
+      const segmentSpendAccum: Record<string, number> = {};
+
       const monthKey = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
+      let paidCount = 0;
+      let heldCount = 0;
+      const heldReasons: { user_id: string; reason: string }[] = [];
 
       for (const payout of payouts) {
-        // Get monthly views for this user
+        const segmentId = userSegmentMap[payout.user_id];
+        const segCycle = segmentId ? segCycleMap[segmentId] : null;
+        const segment = segmentId ? segmentMap[segmentId] : null;
+
+        // ── Segment-level enforcement ──
+        if (segCycle) {
+          // Killed segment → block payout
+          if (segCycle.status === "killed") {
+            heldCount++;
+            heldReasons.push({ user_id: payout.user_id, reason: `Segment "${segment?.name}" is killed` });
+            await supabase.from("clipper_payouts").update({ status: "held", notes: `Segment killed: ${segment?.name}` }).eq("id", payout.id);
+            continue;
+          }
+
+          // Pending segment → block payout
+          if (segCycle.status === "pending") {
+            heldCount++;
+            heldReasons.push({ user_id: payout.user_id, reason: `Segment "${segment?.name}" not approved` });
+            await supabase.from("clipper_payouts").update({ status: "held", notes: `Segment pending: ${segment?.name}` }).eq("id", payout.id);
+            continue;
+          }
+
+          // Check segment weekly limit
+          if (segment) {
+            const currentSegSpent = (segCycle.spent_cents || 0) + (segmentSpendAccum[segmentId] || 0);
+            if (currentSegSpent + (payout.base_earnings_cents || 0) > segment.weekly_limit_cents) {
+              heldCount++;
+              heldReasons.push({ user_id: payout.user_id, reason: `Segment "${segment.name}" weekly limit exceeded` });
+              await supabase.from("clipper_payouts").update({ status: "held", notes: `Segment limit exceeded: ${segment.name}` }).eq("id", payout.id);
+              continue;
+            }
+          }
+        }
+
+        // ── Per-clipper weekly cap ──
+        if (currentCycle && (payout.base_earnings_cents || 0) > currentCycle.max_payout_per_clipper_week_cents) {
+          payout.base_earnings_cents = currentCycle.max_payout_per_clipper_week_cents;
+        }
+
+        // ── Monthly bonus calculation ──
         const monthStart = new Date(now.getUTCFullYear(), now.getUTCMonth(), 1);
         const { data: monthClips } = await supabase
           .from("clip_submissions")
@@ -246,10 +338,12 @@ Deno.serve(async (req) => {
           0
         );
 
-        // Determine monthly bonus
         let bonusCents = 0;
         let bonusTier = "none";
-        if (!isProtection) {
+
+        // Throttled segments → no bonus unlocks
+        const canBonus = !isProtection && (!segCycle || segCycle.status === "approved");
+        if (canBonus) {
           for (const tier of MONTHLY_BONUS_TIERS) {
             if (monthlyViews >= tier.views) {
               bonusCents = tier.bonus;
@@ -259,11 +353,23 @@ Deno.serve(async (req) => {
           }
         }
 
-        const totalCents = payout.base_earnings_cents + bonusCents;
+        // ── Per-clip cap ──
+        let baseCents = payout.base_earnings_cents || 0;
+        if (currentCycle && baseCents > currentCycle.max_payout_per_clip_cents) {
+          baseCents = currentCycle.max_payout_per_clip_cents;
+        }
+
+        const totalCents = baseCents + bonusCents;
+
+        // Track segment spend
+        if (segmentId) {
+          segmentSpendAccum[segmentId] = (segmentSpendAccum[segmentId] || 0) + totalCents;
+        }
 
         await supabase
           .from("clipper_payouts")
           .update({
+            base_earnings_cents: baseCents,
             bonus_cents: bonusCents,
             total_cents: totalCents,
             status: "approved",
@@ -271,7 +377,6 @@ Deno.serve(async (req) => {
           })
           .eq("id", payout.id);
 
-        // Upsert monthly bonus record
         await supabase.from("clipper_monthly_bonuses").upsert(
           {
             user_id: payout.user_id,
@@ -282,10 +387,26 @@ Deno.serve(async (req) => {
           },
           { onConflict: "user_id,month_key" }
         );
+
+        paidCount++;
+      }
+
+      // Update segment cycle spent_cents
+      for (const [segId, addedSpend] of Object.entries(segmentSpendAccum)) {
+        const sc = segCycleMap[segId];
+        if (sc) {
+          await supabase
+            .from("budget_segment_cycles")
+            .update({
+              spent_cents: (sc.spent_cents || 0) + addedSpend,
+              remaining_cents: Math.max(0, (segmentMap[segId]?.weekly_limit_cents || 0) - ((sc.spent_cents || 0) + addedSpend)),
+            })
+            .eq("id", sc.id);
+        }
       }
 
       return new Response(
-        JSON.stringify({ ok: true, paid: payouts.length }),
+        JSON.stringify({ ok: true, paid: paidCount, held: heldCount, heldReasons }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
