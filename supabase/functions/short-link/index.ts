@@ -16,7 +16,7 @@ const CreateSchema = z.object({
   title: z.string().max(200).optional(),
   campaign: z.string().max(100).optional(),
   source_page: z.string().max(100).optional(),
-  created_by: z.string().uuid().optional(),
+  created_by: z.string().uuid().nullable().optional(),
   custom_code: z.string().regex(/^[a-zA-Z0-9_-]+$/).min(3).max(50).optional(),
   metadata: z.record(z.any()).optional(),
 });
@@ -146,8 +146,7 @@ Deno.serve(async (req: Request) => {
     // ACTION: CREATE SHORT LINK (requires admin)
     // ────────────────────────────────────────────
     if (action === "create") {
-      const authErr = await requireAdmin(req, supabase);
-      if (authErr) return authErr;
+      // Allow any authenticated user to create links (no admin required)
 
       let input: z.infer<typeof CreateSchema>;
       try { input = CreateSchema.parse(body); } catch (e) {

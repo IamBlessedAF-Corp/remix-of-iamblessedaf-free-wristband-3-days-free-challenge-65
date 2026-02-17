@@ -33,7 +33,7 @@ export function useShortLinks() {
       setLoading(true);
       try {
         const { data, error } = await supabase.functions.invoke("short-link", {
-          body: { action: "create", ...options, created_by: user?.id || null },
+          body: { action: "create", ...options, created_by: user?.id || undefined },
         });
 
         if (error) throw error;
