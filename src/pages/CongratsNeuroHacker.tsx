@@ -406,19 +406,26 @@ export default function CongratsNeuroHacker() {
 
         {/* ═══ PRE-UNLOCK CTA ═══ */}
         {!unlocked && (
-          <div className="text-center space-y-2">
+          <div className="text-center space-y-3">
             <p className="text-xs text-muted-foreground">
               👆 Copy any caption above to unlock your <strong>$363 bonus</strong>
             </p>
-            <a
-              href={nextRoute}
-              onClick={() => track("declined")}
-              className="text-xs text-muted-foreground/60 hover:text-muted-foreground underline"
-            >
-              Maybe later → {nextRoute === "/portal" ? "Go to Portal" : "Skip to next offer"}
-            </a>
           </div>
         )}
+
+        {/* ═══ SKIP BUTTON (always visible) ═══ */}
+        <div className="text-center">
+          <Button
+            variant="ghost"
+            onClick={() => track("declined")}
+            asChild
+            className="text-muted-foreground/60 hover:text-muted-foreground text-sm"
+          >
+            <a href={nextRoute}>
+              Skip for now →
+            </a>
+          </Button>
+        </div>
 
         {/* Brunson closing */}
         <div className="text-center pb-8">
