@@ -547,28 +547,18 @@ function CampaignSettingsTab() {
 }
 
 // ═══════════════════════════════════════════════
-// 7️⃣ INTELLIGENT BLOCKS — live component usage stats
+// 7️⃣ INTELLIGENT BLOCKS — full funnel component registry
 // ═══════════════════════════════════════════════
 function IntelligentBlocksTab() {
   const admin = useClipperAdmin();
   const budget = useBudgetControl();
+  const [filterCat, setFilterCat] = useState<string>("all");
+  const [search, setSearch] = useState("");
 
-  // Live counts derived from actual DB state
   const activatedClips = admin.clips.filter(c => c.status === "verified").length;
   const pendingClips = admin.clips.filter(c => c.status === "pending").length;
   const throttledSegs = budget.segmentCycles.filter(sc => sc.status === "killed" || sc.status === "throttled").length;
-  const totalSegments = budget.segments.length;
 
-  const blocks = [
-    { name: "Activation Badge", desc: `${activatedClips} clips verified / ${admin.clips.length} total`, usedIn: activatedClips, icon: Zap, live: true },
-    { name: "Bonus Card", desc: `${admin.clippers.length} clippers tracked`, usedIn: admin.clippers.filter(c => c.totalEarningsCents > 0).length, icon: Trophy, live: true },
-    { name: "Risk Banner", desc: `${throttledSegs} segments throttled/killed of ${totalSegments}`, usedIn: throttledSegs, icon: ShieldAlert, live: true },
-    { name: "Pending Queue", desc: `${pendingClips} clips awaiting review`, usedIn: pendingClips, icon: Clock, live: true },
-    { name: "Payment Timeline", desc: `Cycle: ${budget.cycle?.status || "none"} · ${budget.segmentCycles.length} segment cycles`, usedIn: budget.segmentCycles.filter(sc => sc.status === "approved").length, icon: CreditCard, live: true },
-    { name: "Activity Feed", desc: "Portal activity events (live stream)", usedIn: 0, icon: AlertCircle, live: true },
-  ];
-
-  // Load portal activity count
   const { data: activityCount } = useQuery({
     queryKey: ["portal-activity-count"],
     queryFn: async () => {
@@ -576,48 +566,184 @@ function IntelligentBlocksTab() {
       return count || 0;
     },
   });
-  if (activityCount) blocks[5].usedIn = activityCount;
+
+  const { data: orderCount } = useQuery({
+    queryKey: ["orders-count-blocks"],
+    queryFn: async () => {
+      const { count } = await supabase.from("orders").select("*", { count: "exact", head: true });
+      return count || 0;
+    },
+  });
+
+  type Block = { name: string; category: string; component: string; usedIn: string[]; desc: string; icon: any; liveValue?: string | number };
+
+  const blocks: Block[] = [
+    // ─── Content Blocks ───
+    { name: "Expert Quotes", category: "Content", component: "GrokQuotesSection / GptQuotesSection", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt"], desc: "Huberman, Tony Robbins & Joe Dispenza quotes with author avatars. Grok=clinical tone, GPT=warm tone.", icon: ScrollText, liveValue: "3 quotes × 3 variants" },
+    { name: "Hawkins Scale", category: "Content", component: "Inline <img> hawkins-scale.jpg", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt"], desc: "Dr. Hawkins' Consciousness Scale image (20Hz→540Hz). Anchors the '27× happier' claim.", icon: Brain, liveValue: "27× multiplier" },
+    { name: "Research List", category: "Content", component: "ResearchList", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt"], desc: "'Backed by Science' section with peer-reviewed study citations.", icon: ScrollText },
+    { name: "Epiphany Bridge", category: "Content", component: "EpiphanyBridge", usedIn: ["/offer/111"], desc: "Brunson-style storytelling bridge from problem to solution.", icon: Brain },
+    { name: "Gratitude Engine Loop™", category: "Content", component: "GratitudeEngineLoop", usedIn: ["/", "/challenge"], desc: "Locked Huberman video + mPFC tooltip. Core neuroscience trigger.", icon: Flame },
+    { name: "I AM Branding", category: "Content", component: "Inline section + logo", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt", "/"], desc: "'I AM' identity encoding section with Tony Robbins quote and brand logo.", icon: Zap },
+
+    // ─── Product Blocks ───
+    { name: "Wristband Product Card", category: "Product", component: "ProductSections (wristband)", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt", "/offer/22", "/"], desc: "Neuro-Hacker Wristband showcase: waterproof nylon, debossed, FREE badge + $11 strikethrough.", icon: Award, liveValue: `${orderCount || 0} orders` },
+    { name: "Friend Shirt Section", category: "Product", component: "FriendShirtSection", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt"], desc: "Custom shirt preview with friend name personalization, model gallery, and video.", icon: Users },
+    { name: "Shirt Customizer", category: "Product", component: "ShirtCustomizer", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt"], desc: "Interactive shirt message editor — saves friendShirtName + friendShirtMessage to localStorage.", icon: Settings },
+    { name: "Shopify Cart", category: "Product", component: "ShopifyStyleCart", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt"], desc: "TEMU/Shopify-style itemized cart with FREE badges, coupon breakdown, and savings summary.", icon: DollarSign },
+    { name: "Product Sections", category: "Product", component: "ProductSections", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt"], desc: "Full product grid: shirts + wristbands with gallery, zoom modals, and afterWristband CTA slot.", icon: Eye },
+
+    // ─── CTA & Conversion Blocks ───
+    { name: "CTA Block (Grok)", category: "CTA", component: "GrokCtaBlock", usedIn: ["/offer/111-grok"], desc: "ROI-math CTA with scarcity counter. Data-driven copy.", icon: Target },
+    { name: "CTA Block (GPT)", category: "CTA", component: "GptCtaBlock", usedIn: ["/offer/111-gpt"], desc: "Warm emotional CTA with heart-centered copy.", icon: Target },
+    { name: "CTA Block ($444)", category: "CTA", component: "Grok444CtaBlock", usedIn: ["/offer/444"], desc: "Habit-lock tier CTA — 1,111 meals.", icon: Target },
+    { name: "CTA Block ($1111)", category: "CTA", component: "Grok1111CtaBlock", usedIn: ["/offer/1111"], desc: "Kingdom Ambassador CTA — 11,111 meals.", icon: Target },
+    { name: "CTA Block ($4444)", category: "CTA", component: "Grok4444CtaBlock", usedIn: ["/offer/4444"], desc: "Terminal Ambassador CTA — custom leather jacket + NFT.", icon: Target },
+    { name: "Discount Banner", category: "CTA", component: "DiscountBanner", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt"], desc: "'77% OFF TODAY' red badge with strikethrough pricing.", icon: DollarSign },
+
+    // ─── Hero Blocks ───
+    { name: "Hero (Grok $111)", category: "Hero", component: "GrokHeroSection", usedIn: ["/offer/111-grok"], desc: "$111 ÷ 365 = $0.30/day ROI math headline + Harvard 85-year study bridge.", icon: BarChart3 },
+    { name: "Hero (GPT $111)", category: "Hero", component: "GptHeroSection", usedIn: ["/offer/111-gpt"], desc: "Warm storytelling hero — 'custom shirt for your best friend'.", icon: BarChart3 },
+    { name: "Hero ($444)", category: "Hero", component: "Grok444HeroSection", usedIn: ["/offer/444"], desc: "$444 ÷ 365 = $1.22/day. 5 shirts + 14 wristbands.", icon: BarChart3 },
+    { name: "Hero ($1111)", category: "Hero", component: "Grok1111HeroSection", usedIn: ["/offer/1111"], desc: "Kingdom Ambassador — 7 black shirts + 11 friend shirts + 111 wristbands.", icon: BarChart3 },
+    { name: "Hero ($4444)", category: "Hero", component: "Grok4444HeroSection", usedIn: ["/offer/4444"], desc: "Custom leather jacket + artist patronage + NFT ownership.", icon: BarChart3 },
+    { name: "Landing Hero", category: "Hero", component: "Index page inline", usedIn: ["/"], desc: "'Feel Up to 27× Happier in 3 Days' — auth gate CTA with wristband visual.", icon: BarChart3 },
+
+    // ─── Trust & Social Proof ───
+    { name: "Social Proof", category: "Trust", component: "SocialProofSection", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt"], desc: "Testimonial cards + live metrics. Two variants: 'story' (warm) and 'data' (clinical).", icon: Users },
+    { name: "Risk Reversal (Grok)", category: "Trust", component: "GrokRiskReversal", usedIn: ["/offer/111-grok"], desc: "Green checkmarks: 11 meals donated, SSL, free US shipping.", icon: ShieldAlert },
+    { name: "Risk Reversal (GPT)", category: "Trust", component: "GptRiskReversal", usedIn: ["/offer/111-gpt"], desc: "Heart emojis: 'Our Promise to You' warm guarantee.", icon: ShieldAlert },
+    { name: "Gratitude Guarantee", category: "Trust", component: "RiskReversalGuarantee", usedIn: ["/offer/111"], desc: "'Gratitude Guarantee' badge — 11 meals in honor of neuroscience.", icon: ShieldAlert },
+    { name: "Author Avatar", category: "Trust", component: "AuthorAvatar", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt"], desc: "Huberman, Tony Robbins, Joe Dispenza photo + credentials badge.", icon: Users },
+
+    // ─── Urgency & Scarcity ───
+    { name: "Offer Timer", category: "Urgency", component: "OfferTimer", usedIn: ["/offer/111"], desc: "Countdown timer for checkout urgency.", icon: Clock },
+    { name: "Urgency Banner", category: "Urgency", component: "UrgencyBanner", usedIn: ["/offer/111"], desc: "Exit-intent triggered stock decay + viewer count.", icon: AlertTriangle },
+    { name: "Mystery Box Badge", category: "Urgency", component: "Inline badge", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt"], desc: "'🎉 You Won a FREE Custom Shirt From the Mystery Box!' unlock badge.", icon: Award },
+    { name: "Downsell Modal", category: "Urgency", component: "DownsellModal", usedIn: ["/offer/111", "/offer/111-grok", "/offer/111-gpt"], desc: "Exit-intent modal: $11/mo alternative offer.", icon: AlertCircle },
+
+    // ─── Viral & Gamification ───
+    { name: "Viral Footer", category: "Viral", component: "GrokViralFooter", usedIn: ["/offer/111-grok"], desc: "Post-offer viral share + skip link.", icon: TrendingUp },
+    { name: "Viral Share Nudge", category: "Viral", component: "ViralShareNudge", usedIn: ["/offer/111"], desc: "Cross-funnel WhatsApp/SMS share prompt.", icon: TrendingUp },
+    { name: "Impact Counter", category: "Viral", component: "ImpactCounter", usedIn: ["/offer/111"], desc: "Global meals donated counter with animation.", icon: Gauge },
+    { name: "Gamification Header", category: "Viral", component: "GamificationHeader", usedIn: ["/", "/offer/111", "/offer/111-grok", "/offer/111-gpt", "/offer/444", "/offer/1111", "/offer/4444"], desc: "Top bar with BC coins, streak, and progress. Present on all funnel pages.", icon: Trophy },
+
+    // ─── Value Stacks ───
+    { name: "Value Stack (Grok)", category: "Value Stack", component: "GrokValueStack", usedIn: ["/offer/111-grok"], desc: "Benefits-first bullet list — data-driven, ROI focus.", icon: Zap },
+    { name: "Value Stack (GPT)", category: "Value Stack", component: "GptValueStack", usedIn: ["/offer/111-gpt"], desc: "Emotion-first benefit list — warm, story-driven.", icon: Zap },
+    { name: "Value Stack ($444)", category: "Value Stack", component: "Grok444ValueStack", usedIn: ["/offer/444"], desc: "5 shirts + 14 wristbands + 1,111 meals stack.", icon: Zap },
+    { name: "Value Stack ($1111)", category: "Value Stack", component: "Grok1111ValueStack", usedIn: ["/offer/1111"], desc: "7+11 shirts + 111 wristbands + 11,111 meals.", icon: Zap },
+    { name: "Value Stack ($4444)", category: "Value Stack", component: "Grok4444ValueStack", usedIn: ["/offer/4444"], desc: "Leather jacket + NFT + artist patronage.", icon: Zap },
+
+    // ─── System Blocks (live DB) ───
+    { name: "Activation Badge", category: "System", component: "ClipActivationGate", usedIn: ["/clipper-dashboard"], desc: `${activatedClips} clips verified / ${admin.clips.length} total`, icon: Zap, liveValue: activatedClips },
+    { name: "Bonus Card", category: "System", component: "ClipperBonusLadder", usedIn: ["/clipper-dashboard", "/Gratitude-Clips-Challenge"], desc: `${admin.clippers.length} clippers tracked`, icon: Trophy, liveValue: admin.clippers.filter(c => c.totalEarningsCents > 0).length },
+    { name: "Risk Banner", category: "System", component: "RiskThrottleIndicator", usedIn: ["/clipper-dashboard", "/admin"], desc: `${throttledSegs} segments throttled/killed of ${budget.segments.length}`, icon: ShieldAlert, liveValue: throttledSegs },
+    { name: "Pending Queue", category: "System", component: "ClipperMyClips", usedIn: ["/clipper-dashboard", "/admin"], desc: `${pendingClips} clips awaiting review`, icon: Clock, liveValue: pendingClips },
+    { name: "Payment Timeline", category: "System", component: "ClipperPayoutHistory", usedIn: ["/clipper-dashboard", "/admin"], desc: `Cycle: ${budget.cycle?.status || "none"} · ${budget.segmentCycles.length} segment cycles`, icon: CreditCard, liveValue: budget.segmentCycles.filter(sc => sc.status === "approved").length },
+    { name: "Activity Feed", category: "System", component: "PortalActivityFeed", usedIn: ["/portal", "/admin"], desc: "Portal activity events (live stream)", icon: AlertCircle, liveValue: activityCount || 0 },
+  ];
+
+  const categories = ["all", ...Array.from(new Set(blocks.map(b => b.category)))];
+  const filtered = blocks.filter(b => {
+    if (filterCat !== "all" && b.category !== filterCat) return false;
+    if (search && !b.name.toLowerCase().includes(search.toLowerCase()) && !b.desc.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
+
+  const catColors: Record<string, string> = {
+    Content: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+    Product: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+    CTA: "bg-primary/10 text-primary border-primary/20",
+    Hero: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+    Trust: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+    Urgency: "bg-red-500/10 text-red-500 border-red-500/20",
+    Viral: "bg-pink-500/10 text-pink-500 border-pink-500/20",
+    "Value Stack": "bg-orange-500/10 text-orange-500 border-orange-500/20",
+    System: "bg-cyan-500/10 text-cyan-500 border-cyan-500/20",
+  };
 
   return (
     <div className="space-y-6">
       <AdminSectionDashboard
-        title="Intelligent Blocks"
-        description="Live component state pulled from database"
+        title="Intelligent Blocks Registry"
+        description={`${blocks.length} reusable components across the entire funnel`}
         kpis={[
-          { label: "Verified Clips", value: activatedClips },
-          { label: "Earning Clippers", value: admin.clippers.filter(c => c.totalEarningsCents > 0).length },
-          { label: "Throttled Segs", value: throttledSegs },
-          { label: "Pending Review", value: pendingClips },
-          { label: "Cycle Status", value: budget.cycle?.status || "—" },
-          { label: "Activity Events", value: activityCount || 0 },
+          { label: "Total Blocks", value: blocks.length },
+          { label: "Categories", value: categories.length - 1 },
+          { label: "Funnel Pages", value: Array.from(new Set(blocks.flatMap(b => b.usedIn))).length },
+          { label: "Content", value: blocks.filter(b => b.category === "Content").length },
+          { label: "Product", value: blocks.filter(b => b.category === "Product").length },
+          { label: "System (Live)", value: blocks.filter(b => b.category === "System").length },
         ]}
         charts={[
-          { type: "pie", title: "Clip Status", data: [
-            { name: "Verified", value: activatedClips || 1 },
-            { name: "Pending", value: pendingClips || 1 },
-            { name: "Rejected", value: admin.clips.filter(c => c.status === "rejected").length || 1 },
+          { type: "pie", title: "Blocks by Category", data: categories.filter(c => c !== "all").map(c => ({ name: c, value: blocks.filter(b => b.category === c).length })) },
+          { type: "bar", title: "Pages Using Blocks", data: [
+            { name: "/offer/111", value: blocks.filter(b => b.usedIn.includes("/offer/111")).length },
+            { name: "Grok", value: blocks.filter(b => b.usedIn.includes("/offer/111-grok")).length },
+            { name: "GPT", value: blocks.filter(b => b.usedIn.includes("/offer/111-gpt")).length },
+            { name: "/", value: blocks.filter(b => b.usedIn.includes("/")).length },
+            { name: "Portal", value: blocks.filter(b => b.usedIn.includes("/portal")).length },
           ]},
-          { type: "bar", title: "Segment Health", data: budget.segments.map(s => ({
-            name: s.name.slice(0, 12),
-            value: budget.segmentCycles.find(sc => sc.segment_id === s.id)?.spent_cents ? Math.round((budget.segmentCycles.find(sc => sc.segment_id === s.id)!.spent_cents / Math.max(s.weekly_limit_cents, 1)) * 100) : 0,
-          }))},
         ]}
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {blocks.map(b => (
-          <div key={b.name} className="bg-card border border-border/40 rounded-xl p-4 hover:border-primary/30 transition-colors">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><b.icon className="w-4 h-4 text-primary" /></div>
-              <h3 className="text-sm font-bold text-foreground">{b.name}</h3>
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2">
+        {categories.map(cat => (
+          <button key={cat} onClick={() => setFilterCat(cat)}
+            className={cn("px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors",
+              filterCat === cat ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground border-border/40 hover:text-foreground hover:border-border"
+            )}>
+            {cat === "all" ? `All (${blocks.length})` : `${cat} (${blocks.filter(b => b.category === cat).length})`}
+          </button>
+        ))}
+        <div className="ml-auto">
+          <Input placeholder="Search blocks…" value={search} onChange={e => setSearch(e.target.value)} className="h-8 w-48 text-xs" />
+        </div>
+      </div>
+
+      {/* Block Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {filtered.map(b => (
+          <div key={b.name} className="bg-card border border-border/40 rounded-xl p-4 hover:border-primary/30 transition-colors group">
+            <div className="flex items-start gap-3 mb-2">
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <b.icon className="w-4 h-4 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <h3 className="text-sm font-bold text-foreground truncate">{b.name}</h3>
+                  <Badge className={`text-[9px] px-1.5 py-0 ${catColors[b.category] || "bg-secondary text-foreground border-border"}`}>
+                    {b.category}
+                  </Badge>
+                </div>
+                <p className="text-[10px] text-muted-foreground font-mono truncate">{b.component}</p>
+              </div>
+              {b.liveValue !== undefined && (
+                <Badge variant="outline" className="text-[9px] shrink-0 border-emerald-500/30 text-emerald-500 bg-emerald-500/5">
+                  🟢 {b.liveValue}
+                </Badge>
+              )}
             </div>
-            <p className="text-xs text-muted-foreground mb-2">{b.desc}</p>
-            <Badge variant="outline" className="text-[10px]">{b.usedIn} active</Badge>
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">{b.desc}</p>
+            <div className="flex flex-wrap gap-1">
+              {b.usedIn.map(page => (
+                <span key={page} className="text-[9px] bg-secondary text-muted-foreground px-1.5 py-0.5 rounded-md">{page}</span>
+              ))}
+            </div>
           </div>
         ))}
       </div>
+
+      {filtered.length === 0 && (
+        <div className="text-center py-12 text-muted-foreground text-sm">No blocks match your filter.</div>
+      )}
     </div>
   );
 }
+
+
 
 // ═══════════════════════════════════════════════
 // 8️⃣ RISK ENGINE — live from clipper_risk_throttle + clip_submissions
