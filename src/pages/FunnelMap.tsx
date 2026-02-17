@@ -13,7 +13,7 @@ import {
   TrendingUp, Users, DollarSign, Eye, Video, ArrowRight, ArrowDown, Zap, Target, BarChart3,
   Settings2, Sparkles, Gift, Brain, Share2, Repeat, MessageSquare, Crown, RefreshCw,
   Info, Calculator, Rocket, Snowflake, Heart, Star, ShoppingBag, Megaphone, ChevronDown,
-  ExternalLink, Mail, Phone, Smartphone, Trophy, Gauge, UserPlus, BookOpen, Flame, Radio, Shield, FlaskConical, Home
+  ExternalLink, Mail, Phone, Smartphone, Trophy, Gauge, UserPlus, BookOpen, Flame, Radio, Shield, FlaskConical, Home, Blocks
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -32,6 +32,66 @@ const MetricLabel = ({ label, tip }: { label: string; tip: string }) => (
 );
 
 /* ─── Pre-Funnel: Viral Lead Gen Strategies ─── */
+/* ─── Smart Block definitions per step ─── */
+const STEP_SMART_BLOCKS: Record<number, { name: string; blockKey: string; desc: string }[]> = {
+  0.1: [
+    { name: "Activity Feed", blockKey: "activity-feed", desc: "Logs expert enrollment events" },
+  ],
+  0.2: [
+    { name: "Activation Badge", blockKey: "activation-badge", desc: "Shows clipper activation status" },
+    { name: "Bonus Card", blockKey: "bonus-card", desc: "Displays clipper earnings & tier" },
+    { name: "Risk Banner", blockKey: "risk-banner", desc: "Throttle/kill warnings on dashboard" },
+  ],
+  0.3: [
+    { name: "Activity Feed", blockKey: "activity-feed", desc: "Logs network marketer signups" },
+  ],
+  0.4: [
+    { name: "Activity Feed", blockKey: "activity-feed", desc: "Logs realtor signups" },
+  ],
+  1: [
+    { name: "Pending Queue", blockKey: "pending-queue", desc: "Auth gate lead queue" },
+    { name: "Activity Feed", blockKey: "activity-feed", desc: "Logs new signups" },
+  ],
+  2: [],
+  3: [
+    { name: "Activity Feed", blockKey: "activity-feed", desc: "Logs friend captures" },
+  ],
+  4: [
+    { name: "Payment Timeline", blockKey: "payment-timeline", desc: "Tracks checkout payments" },
+    { name: "Activity Feed", blockKey: "activity-feed", desc: "Logs orders" },
+  ],
+  5: [
+    { name: "Activity Feed", blockKey: "activity-feed", desc: "Logs viral shares" },
+    { name: "Bonus Card", blockKey: "bonus-card", desc: "BC rewards for shares" },
+  ],
+  6: [
+    { name: "Activity Feed", blockKey: "activity-feed", desc: "Logs TGF messages" },
+  ],
+  7: [
+    { name: "Payment Timeline", blockKey: "payment-timeline", desc: "Tracks $22 orders" },
+  ],
+  8: [
+    { name: "Payment Timeline", blockKey: "payment-timeline", desc: "Tracks $111 orders" },
+    { name: "Activation Badge", blockKey: "activation-badge", desc: "Identity pack activation" },
+  ],
+  9: [
+    { name: "Payment Timeline", blockKey: "payment-timeline", desc: "Tracks $444 orders" },
+    { name: "Bonus Card", blockKey: "bonus-card", desc: "Habit lock bonus rewards" },
+  ],
+  10: [
+    { name: "Payment Timeline", blockKey: "payment-timeline", desc: "Tracks $1,111 orders" },
+    { name: "Activation Badge", blockKey: "activation-badge", desc: "Kingdom badge" },
+    { name: "Activity Feed", blockKey: "activity-feed", desc: "Logs kingdom events" },
+  ],
+  11: [
+    { name: "Payment Timeline", blockKey: "payment-timeline", desc: "Tracks $4,444 orders" },
+    { name: "Activation Badge", blockKey: "activation-badge", desc: "Ambassador badge" },
+    { name: "Bonus Card", blockKey: "bonus-card", desc: "Ambassador earnings" },
+    { name: "Risk Banner", blockKey: "risk-banner", desc: "Fraud monitoring" },
+    { name: "Activity Feed", blockKey: "activity-feed", desc: "Logs all portal events" },
+  ],
+};
+
 const PRE_FUNNEL_STEPS = [
   {
     id: 0.1, route: "/experts-leads", name: "Expert Enrollment", sells: "Reserved box of 48 wristbands ($1,500) — lead capture for coaches", defaultConv: 0.45, icon: BookOpen,
@@ -294,6 +354,32 @@ const FunnelStepCard = ({ step, index, baseStep, getConv, navigate, stepNumber }
                 <div className="space-y-1">
                   {step.touchpoints.map((tp: string, i: number) => (
                     <p key={i} className="text-[11px] text-foreground/80">{tp}</p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Smart Blocks */}
+            {(STEP_SMART_BLOCKS[step.id] || []).length > 0 && (
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">⚡ Smart Blocks</p>
+                <div className="space-y-1.5">
+                  {(STEP_SMART_BLOCKS[step.id] || []).map((block, i) => (
+                    <button
+                      key={i}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.dispatchEvent(new CustomEvent("admin-navigate-tab", { detail: { tab: "blocks", block: block.blockKey } }));
+                      }}
+                      className="w-full flex items-center gap-2 bg-accent/60 hover:bg-accent border border-border/40 hover:border-primary/30 rounded-lg px-3 py-2 transition-colors text-left group"
+                    >
+                      <Blocks className="w-3.5 h-3.5 text-primary shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-semibold text-foreground">{block.name}</p>
+                        <p className="text-[10px] text-muted-foreground">{block.desc}</p>
+                      </div>
+                      <span className="text-[9px] text-primary opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Edit in Blocks →</span>
+                    </button>
                   ))}
                 </div>
               </div>
