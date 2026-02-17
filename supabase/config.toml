@@ -83,3 +83,6 @@ verify_jwt = false
 
 [functions.verify-captcha]
 verify_jwt = false
+
+[functions.send-whatsapp-invite]
+verify_jwt = false
