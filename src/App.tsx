@@ -18,18 +18,14 @@ import Offer1111 from "./pages/Offer1111";
 import Offer4444 from "./pages/Offer4444";
 import OfferSuccess from "./pages/OfferSuccess";
 import AIVideoContest from "./pages/AIVideoContest";
-import Board from "./pages/Board";
+import AdminHub from "./pages/AdminHub";
 import Portal from "./pages/Portal";
-import AdminLinks from "./pages/AdminLinks";
 import Impact from "./pages/Impact";
-import Roadmap from "./pages/Roadmap";
 import ClipperDashboard from "./pages/ClipperDashboard";
-import ClipperAdmin from "./pages/ClipperAdmin";
 import Experts from "./pages/Experts";
 import ScriptsReview from "./pages/ScriptsReview";
 import GratitudeClippers from "./pages/GratitudeClippers";
 import FunnelMap from "./pages/FunnelMap";
-import ExpertsLeadsAdmin from "./pages/ExpertsLeadsAdmin";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import SmartWristband from "./pages/SmartWristband";
@@ -50,7 +46,6 @@ import AffiliatePortal from "./pages/AffiliatePortal";
 import DiamondAmbassador from "./pages/DiamondAmbassador";
 import UnsubscribeDigest from "./pages/UnsubscribeDigest";
 import CongratsNeuroHacker from "./pages/CongratsNeuroHacker";
-import AdminCongrats from "./pages/AdminCongrats";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -85,21 +80,26 @@ const App = () => (
           <Route path="/offer/success" element={<OfferSuccess />} />
           <Route path="/make-2500-with-1-ai-clip" element={<AIVideoContest />} />
           <Route path="/2us-Clippers-Campaign" element={<AIVideoContest />} />
-          <Route path="/board" element={<Board />} />
+
+          {/* ═══ Unified Admin Hub ═══ */}
+          <Route path="/admin" element={<AdminHub />} />
+
+          {/* Legacy admin redirects → unified /admin */}
+          <Route path="/admin/clippers" element={<Navigate to="/admin" replace />} />
+          <Route path="/admin/congrats" element={<Navigate to="/admin" replace />} />
+          <Route path="/admin/experts" element={<Navigate to="/admin" replace />} />
+          <Route path="/admin/links" element={<Navigate to="/admin" replace />} />
+          <Route path="/board" element={<Navigate to="/admin" replace />} />
+          <Route path="/roadmap" element={<Navigate to="/admin" replace />} />
+
           <Route path="/portal" element={<Portal />} />
-          <Route path="/admin" element={<Navigate to="/admin/clippers" replace />} />
-          <Route path="/admin/links" element={<AdminLinks />} />
           <Route path="/impact" element={<Impact />} />
-          <Route path="/roadmap" element={<Roadmap />} />
           <Route path="/clipper-dashboard" element={<ClipperDashboard />} />
-          <Route path="/admin/clippers" element={<ClipperAdmin />} />
-          <Route path="/admin/congrats" element={<AdminCongrats />} />
           <Route path="/experts" element={<Experts />} />
           <Route path="/scripts-review" element={<ScriptsReview />} />
           <Route path="/Gratitude-Clips-Challenge" element={<GratitudeClippers />} />
           <Route path="/Gratitude-Clippers" element={<Navigate to="/Gratitude-Clips-Challenge" replace />} />
           <Route path="/Traffic-Funnel" element={<FunnelMap />} />
-          <Route path="/admin/experts" element={<ExpertsLeadsAdmin />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/Reserve-your-Neuro-Hack-Wristband-SMART" element={<SmartWristband />} />
@@ -120,20 +120,19 @@ const App = () => (
           <Route path="/3300us-Credit-Gym-Owner" element={<CreditGymOwner />} />
           <Route path="/3300us-Credit-Health-Coach" element={<CreditHealthCoach />} />
 
-          {/* ═══ Unified Affiliate Portal (same page, multiple aliases) ═══ */}
+          {/* ═══ Affiliate Portal ═══ */}
           <Route path="/3300us-Credit-Portal" element={<AffiliatePortal />} />
           <Route path="/affiliate-dashboard" element={<AffiliatePortal />} />
           <Route path="/affiliate-portal" element={<AffiliatePortal />} />
-           <Route path="/diamond-ambassador" element={<DiamondAmbassador />} />
-            <Route path="/Congrats-Neuro-Hacker" element={<CongratsNeuroHacker />} />
-            <Route path="/unsubscribe-digest" element={<UnsubscribeDigest />} />
+          <Route path="/diamond-ambassador" element={<DiamondAmbassador />} />
+          <Route path="/Congrats-Neuro-Hacker" element={<CongratsNeuroHacker />} />
+          <Route path="/unsubscribe-digest" element={<UnsubscribeDigest />} />
 
           {/* Legacy redirects */}
           <Route path="/experts-leads" element={<Navigate to="/3300us-Credit-Expert" replace />} />
           <Route path="/network-marketers" element={<Navigate to="/3300us-Credit-N-Marketer" replace />} />
           <Route path="/realtors-list-activation" element={<Navigate to="/3300us-Credit-RE-Agent" replace />} />
 
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
