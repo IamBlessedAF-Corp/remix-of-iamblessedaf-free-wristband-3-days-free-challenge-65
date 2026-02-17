@@ -406,9 +406,15 @@ export type Database = {
           baseline_view_count: number
           clip_url: string
           created_at: string
+          ctr: number | null
+          day1_post_rate: number | null
           earnings_cents: number
           id: string
+          is_activated: boolean | null
+          net_views: number | null
+          payout_week: string | null
           platform: string
+          reg_rate: number | null
           status: string
           submitted_at: string
           updated_at: string
@@ -420,9 +426,15 @@ export type Database = {
           baseline_view_count?: number
           clip_url: string
           created_at?: string
+          ctr?: number | null
+          day1_post_rate?: number | null
           earnings_cents?: number
           id?: string
+          is_activated?: boolean | null
+          net_views?: number | null
+          payout_week?: string | null
           platform?: string
+          reg_rate?: number | null
           status?: string
           submitted_at?: string
           updated_at?: string
@@ -434,15 +446,156 @@ export type Database = {
           baseline_view_count?: number
           clip_url?: string
           created_at?: string
+          ctr?: number | null
+          day1_post_rate?: number | null
           earnings_cents?: number
           id?: string
+          is_activated?: boolean | null
+          net_views?: number | null
+          payout_week?: string | null
           platform?: string
+          reg_rate?: number | null
           status?: string
           submitted_at?: string
           updated_at?: string
           user_id?: string
           verified_at?: string | null
           view_count?: number
+        }
+        Relationships: []
+      }
+      clipper_monthly_bonuses: {
+        Row: {
+          bonus_cents: number | null
+          bonus_tier: string | null
+          created_at: string
+          id: string
+          lifetime_views: number | null
+          month_key: string
+          monthly_views: number | null
+          paid: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bonus_cents?: number | null
+          bonus_tier?: string | null
+          created_at?: string
+          id?: string
+          lifetime_views?: number | null
+          month_key: string
+          monthly_views?: number | null
+          paid?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bonus_cents?: number | null
+          bonus_tier?: string | null
+          created_at?: string
+          id?: string
+          lifetime_views?: number | null
+          month_key?: string
+          monthly_views?: number | null
+          paid?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      clipper_payouts: {
+        Row: {
+          base_earnings_cents: number | null
+          bonus_cents: number | null
+          clips_count: number | null
+          created_at: string
+          frozen_at: string | null
+          id: string
+          notes: string | null
+          paid_at: string | null
+          reviewed_at: string | null
+          status: string
+          total_cents: number | null
+          total_net_views: number | null
+          updated_at: string
+          user_id: string
+          week_key: string
+        }
+        Insert: {
+          base_earnings_cents?: number | null
+          bonus_cents?: number | null
+          clips_count?: number | null
+          created_at?: string
+          frozen_at?: string | null
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          reviewed_at?: string | null
+          status?: string
+          total_cents?: number | null
+          total_net_views?: number | null
+          updated_at?: string
+          user_id: string
+          week_key: string
+        }
+        Update: {
+          base_earnings_cents?: number | null
+          bonus_cents?: number | null
+          clips_count?: number | null
+          created_at?: string
+          frozen_at?: string | null
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          reviewed_at?: string | null
+          status?: string
+          total_cents?: number | null
+          total_net_views?: number | null
+          updated_at?: string
+          user_id?: string
+          week_key?: string
+        }
+        Relationships: []
+      }
+      clipper_risk_throttle: {
+        Row: {
+          activated_at: string | null
+          consecutive_low_days: number | null
+          consecutive_recovery_days: number | null
+          current_avg_ctr: number | null
+          current_avg_day1_rate: number | null
+          current_avg_reg_rate: number | null
+          deactivated_at: string | null
+          id: string
+          is_active: boolean | null
+          rpm_override: number | null
+          updated_at: string
+        }
+        Insert: {
+          activated_at?: string | null
+          consecutive_low_days?: number | null
+          consecutive_recovery_days?: number | null
+          current_avg_ctr?: number | null
+          current_avg_day1_rate?: number | null
+          current_avg_reg_rate?: number | null
+          deactivated_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          rpm_override?: number | null
+          updated_at?: string
+        }
+        Update: {
+          activated_at?: string | null
+          consecutive_low_days?: number | null
+          consecutive_recovery_days?: number | null
+          current_avg_ctr?: number | null
+          current_avg_day1_rate?: number | null
+          current_avg_reg_rate?: number | null
+          deactivated_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          rpm_override?: number | null
+          updated_at?: string
         }
         Relationships: []
       }

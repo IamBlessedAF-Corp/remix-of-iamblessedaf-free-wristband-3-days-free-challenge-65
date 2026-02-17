@@ -4,6 +4,7 @@ import { Loader2, LogOut, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useClipperDashboard } from "@/hooks/useClipperDashboard";
+import { useClipperEconomy } from "@/hooks/useClipperEconomy";
 import { supabase } from "@/integrations/supabase/client";
 import ClipperStatusHeader from "@/components/clipper/ClipperStatusHeader";
 import ClipperWeeklySnapshot from "@/components/clipper/ClipperWeeklySnapshot";
@@ -16,6 +17,9 @@ import ClipperMyClips from "@/components/clipper/ClipperMyClips";
 import ClipSubmitModal from "@/components/clipper/ClipSubmitModal";
 import ClipperRepostGallery from "@/components/clipper/ClipperRepostGallery";
 import ClipperPersonalAnalytics from "@/components/clipper/ClipperPersonalAnalytics";
+import PayoutCountdown from "@/components/clipper/PayoutCountdown";
+import RiskThrottleIndicator from "@/components/clipper/RiskThrottleIndicator";
+import MonthlyBonusTracker from "@/components/clipper/MonthlyBonusTracker";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import logoImg from "@/assets/logo.png";
 import GratitudeDegenBlock from "@/components/contest/GratitudeDegenBlock";
@@ -26,6 +30,7 @@ import InspirationGallery from "@/components/contest/InspirationGallery";
 const ClipperDashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const dashboard = useClipperDashboard(user?.id);
+  const economy = useClipperEconomy(user?.id);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [referralCode, setReferralCode] = useState<string | null>(null);
 
@@ -43,13 +48,10 @@ const ClipperDashboard = () => {
 
   const referralLink = referralCode ? `https://iamblessedaf.com/r/${referralCode}` : null;
 
-  // Support ?tab=post deep-link from signup redirect
   const urlParams = new URLSearchParams(window.location.search);
   const initialTab = urlParams.get("tab") === "post" ? "post" : urlParams.get("tab") === "repost" ? "repost" : "dashboard";
 
-  const handleSubmitClip = () => {
-    setShowSubmitModal(true);
-  };
+  const handleSubmitClip = () => setShowSubmitModal(true);
 
   if (authLoading || dashboard.loading) {
     return (
@@ -83,32 +85,17 @@ const ClipperDashboard = () => {
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border/40">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-1"
-              onClick={() => (window.location.href = "/Gratitude-Clips-Challenge")}
-            >
+            <Button variant="ghost" size="sm" className="p-1" onClick={() => (window.location.href = "/Gratitude-Clips-Challenge")}>
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <img src={logoImg} alt="Logo" className="h-6" />
             <span className="text-sm font-bold text-foreground">Clipper Dashboard</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs gap-1 text-primary border-primary/30"
-              onClick={() => (window.location.href = "/portal")}
-            >
+            <Button variant="outline" size="sm" className="text-xs gap-1 text-primary border-primary/30" onClick={() => (window.location.href = "/portal")}>
               🪙 Portal & Store
             </Button>
-            <Button
-              onClick={() => signOut()}
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground hover:text-foreground"
-            >
+            <Button onClick={() => signOut()} variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
               <LogOut className="w-4 h-4" />
             </Button>
           </div>
@@ -132,50 +119,32 @@ const ClipperDashboard = () => {
               transition={{ duration: 0.3 }}
               className="space-y-4"
             >
-              {/* 1. Status & Trust — identity anchor */}
               <ClipperStatusHeader
                 totalViews={dashboard.totalViews}
                 totalEarningsCents={dashboard.totalEarningsCents}
                 lastPayoutDate={dashboard.lastPayoutDate}
               />
-
-              {/* 2. Activation Trigger — first-clip dopamine / urgency */}
+              <RiskThrottleIndicator />
+              <PayoutCountdown />
               <ClipperActivationTrigger
                 totalClips={dashboard.totalClips}
                 clipsToday={dashboard.clipsToday}
                 onSubmitClip={handleSubmitClip}
               />
-
-              {/* 3. Weekly Snapshot — momentum loop */}
               <ClipperWeeklySnapshot
                 clipsThisWeek={dashboard.clipsThisWeek}
                 viewsThisWeek={dashboard.viewsThisWeek}
                 earningsThisWeekCents={dashboard.earningsThisWeekCents}
               />
-
-              {/* 4. Sprint Segmentation + Perceived Acceleration */}
-              <ClipperBonusLadder
-                totalViews={dashboard.totalViews}
-                avgViewsPerWeek={dashboard.avgViewsPerClipPerWeek}
-                clipsThisWeek={dashboard.clipsThisWeek}
-                viewsThisWeek={dashboard.viewsThisWeek}
-              />
-
-              {/* 5. Momentum Signals — positive reinforcement only */}
+              <MonthlyBonusTracker userId={user.id} totalLifetimeViews={dashboard.totalViews} />
               <ClipperMomentum
                 clipsThisWeek={dashboard.clipsThisWeek}
                 clipsLastWeek={dashboard.clipsLastWeek}
                 streakDays={dashboard.streakDays}
                 totalClips={dashboard.totalClips}
               />
-
-              {/* 6. My Clips — progress evidence */}
               <ClipperMyClips userId={user.id} />
-
-              {/* 7. Payout History — trust builder */}
               <ClipperPayoutHistory userId={user.id} />
-
-              {/* 8. Next Action — only if activated */}
               {isActivated && (
                 <ClipperNextAction
                   clipsThisWeek={dashboard.clipsThisWeek}
@@ -192,16 +161,9 @@ const ClipperDashboard = () => {
               transition={{ duration: 0.3 }}
               className="space-y-0"
             >
-              {/* HIGH-OUTPUT PATH scenarios */}
               <GratitudeDegenBlock referralLink={referralLink} />
-
-              {/* Build Your Earnings Plan */}
               <EarningsSliderCalculator referralLink={referralLink} />
-
-              {/* CTA Assets — downloadable end-screens */}
               <ClipperCtaAssets referralLink={referralLink} />
-
-              {/* Content Vault + Example Remix + Campaign Drop */}
               <InspirationGallery referralLink={referralLink} />
             </motion.div>
           </TabsContent>
@@ -211,7 +173,9 @@ const ClipperDashboard = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
+              className="space-y-4"
             >
+              <MonthlyBonusTracker userId={user.id} totalLifetimeViews={dashboard.totalViews} />
               <ClipperRepostGallery userId={user.id} referralLink={referralLink} />
             </motion.div>
           </TabsContent>
@@ -221,7 +185,16 @@ const ClipperDashboard = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
+              className="space-y-4"
             >
+              <PayoutCountdown />
+              <MonthlyBonusTracker userId={user.id} totalLifetimeViews={dashboard.totalViews} />
+              <ClipperBonusLadder
+                totalViews={dashboard.totalViews}
+                avgViewsPerWeek={dashboard.avgViewsPerClipPerWeek}
+                clipsThisWeek={dashboard.clipsThisWeek}
+                viewsThisWeek={dashboard.viewsThisWeek}
+              />
               <ClipperPersonalAnalytics userId={user.id} />
             </motion.div>
           </TabsContent>

@@ -89,3 +89,9 @@ verify_jwt = false
 
 [functions.verify-clip]
 verify_jwt = false
+
+[functions.process-weekly-payout]
+verify_jwt = false
+
+[functions.verify-youtube-views]
+verify_jwt = false
