@@ -12,6 +12,7 @@ export interface PortalProfile {
   instagram_handle: string | null;
   tiktok_handle: string | null;
   twitter_handle: string | null;
+  congrats_completed: string | null;
 }
 
 export interface PortalWallet {
