@@ -43,6 +43,7 @@ import SmsTab from "@/components/admin/SmsTab";
 import GamificationTab from "@/components/admin/GamificationTab";
 import AffiliatesTab from "@/components/admin/AffiliatesTab";
 import WaitlistTab from "@/components/admin/WaitlistTab";
+import RolesTab from "@/components/admin/RolesTab";
 
 // Lazy load the heavy FunnelMap
 const FunnelMap = lazy(() => import("@/pages/FunnelMap"));
@@ -53,7 +54,7 @@ const ALL_TAB_IDS = [
   "campaign", "blocks", "risk", "payments", "board",
   "roadmap", "logs", "forecast", "fraud", "leaderboard",
   "alerts", "budget", "orders", "blessings", "challenge",
-  "sms", "gamification", "affiliates", "waitlist",
+  "sms", "gamification", "affiliates", "waitlist", "roles",
 ] as const;
 
 type TabId = typeof ALL_TAB_IDS[number];
@@ -121,6 +122,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
     items: [
       { id: "board", label: "Board", icon: Kanban },
       { id: "logs", label: "Logs", icon: ScrollText },
+      { id: "roles", label: "Roles", icon: Shield },
     ],
   },
 ];
@@ -318,6 +320,7 @@ function TabContent({ tab }: { tab: TabId }) {
     case "gamification": return <GamificationTab />;
     case "affiliates": return <AffiliatesTab />;
     case "waitlist": return <WaitlistTab />;
+    case "roles": return <RolesTab />;
     default: return null;
   }
 }
