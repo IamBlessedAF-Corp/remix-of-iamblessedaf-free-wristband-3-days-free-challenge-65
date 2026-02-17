@@ -5,7 +5,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +18,9 @@ interface FriendInput {
 
 const DEFAULT_MESSAGE = (friendName: string, senderName: string) =>
   `Hey ${friendName}! 🧠\n\nIt's ${senderName}. I just joined the Neuro-Hacker Gratitude Challenge and I wanted to start with YOU.\n\nDid you know that receiving genuine gratitude fires up your mPFC and makes you up to 27x happier?\n\nSo here it is: Thank you for being in my life. Genuinely. ❤️\n\n🎯 YOUR CHALLENGE: Forward this to 2 people YOU'RE grateful for!`;
+
+const getMessageForFriend = (friendName: string, senderName: string) =>
+  DEFAULT_MESSAGE(friendName || "amigo", senderName);
 
 interface InviteFriendsModalProps {
   open: boolean;
@@ -51,10 +53,6 @@ export default function InviteFriendsModal({
     setFriends((prev) => {
       const next = [...prev];
       next[idx] = { ...next[idx], [field]: value };
-      // Auto-fill message when name changes
-      if (field === "name" && value && !next[idx].message) {
-        next[idx].message = DEFAULT_MESSAGE(value, senderName);
-      }
       return next;
     });
   };
@@ -73,11 +71,11 @@ export default function InviteFriendsModal({
 
   const handleSend = async () => {
     const validFriends = friends.filter(
-      (f) => f.name.trim() && f.phone.trim() && f.message.trim()
+      (f) => f.name.trim() && f.phone.trim()
     );
 
     if (validFriends.length === 0) {
-      toast.error("Agrega al menos 1 amigo con nombre, teléfono y mensaje");
+      toast.error("Agrega al menos 1 amigo con nombre y teléfono");
       return;
     }
 
@@ -88,7 +86,7 @@ export default function InviteFriendsModal({
           friends: validFriends.map((f) => ({
             name: f.name.trim(),
             phone: f.phone.trim(),
-            message: f.message.trim(),
+            message: getMessageForFriend(f.name.trim(), senderName),
           })),
           senderName,
           referralLink,
@@ -283,16 +281,14 @@ export default function InviteFriendsModal({
                       />
                     </div>
 
-                    <Textarea
-                      placeholder="Tu mensaje personalizado..."
-                      value={friend.message || (friend.name ? DEFAULT_MESSAGE(friend.name, senderName) : "")}
-                      onChange={(e) => updateFriend(idx, "message", e.target.value)}
-                      className="text-xs min-h-[100px] rounded-lg resize-none"
-                      maxLength={1000}
-                    />
-                    <p className="text-[10px] text-muted-foreground text-right">
-                      {(friend.message || DEFAULT_MESSAGE(friend.name || "amigo", senderName)).length}/1000
-                    </p>
+                    {friend.name && (
+                      <div className="bg-muted/20 rounded-lg p-3 border border-border/20">
+                        <p className="text-[10px] text-muted-foreground mb-1 font-medium">Vista previa del mensaje:</p>
+                        <p className="text-xs text-muted-foreground whitespace-pre-line leading-relaxed">
+                          {getMessageForFriend(friend.name, senderName).substring(0, 150)}...
+                        </p>
+                      </div>
+                    )}
                   </motion.div>
                 ))}
 
