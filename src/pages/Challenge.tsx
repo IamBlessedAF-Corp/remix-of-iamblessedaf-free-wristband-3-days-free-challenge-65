@@ -56,12 +56,23 @@ const Challenge = () => {
   const referralCode = searchParams.get("ref");
   const isReferred = !!referralCode;
 
-  // Redirect to thanks page when user is authenticated via Google
-  // BUT only if they're NOT arriving via a referral link (they need to see the wristband offer first)
+  // Redirect authenticated users who completed the funnel to portal
+  // Otherwise let them continue through the challenge flow
   useEffect(() => {
-    if (user && !isReferred) {
-      navigate("/challenge/thanks");
-    }
+    if (!user) return;
+    const checkStatus = async () => {
+      const { data } = await supabase
+        .from("creator_profiles")
+        .select("congrats_completed")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (data?.congrats_completed) {
+        navigate("/affiliate-portal", { replace: true });
+      } else if (!isReferred) {
+        navigate("/challenge/thanks");
+      }
+    };
+    checkStatus();
   }, [user, navigate, isReferred]);
 
   // Look up sender's name from referral code
