@@ -202,12 +202,39 @@ function TabContent({ tab }: { tab: TabId }) {
 // 1️⃣ DASHBOARD — 3 Sub-tabs
 // ═══════════════════════════════════════════════
 function DashboardTab() {
+  const admin = useClipperAdmin();
+  const budget = useBudgetControl();
+  const s = admin.stats;
+
+  // Live summary KPIs
+  const { data: orderCount } = useQuery({
+    queryKey: ["orders-count-live"],
+    queryFn: async () => {
+      const { count } = await supabase.from("orders").select("*", { count: "exact", head: true });
+      return count || 0;
+    },
+  });
+  const { data: creatorCount } = useQuery({
+    queryKey: ["creators-count-live"],
+    queryFn: async () => {
+      const { count } = await supabase.from("creator_profiles").select("*", { count: "exact", head: true });
+      return count || 0;
+    },
+  });
+
   return (
     <div className="space-y-4">
       <AdminSectionDashboard
         title="Growth Intelligence Command Center"
-        description="3 views: Funnel Engine, Revenue Intelligence, Growth Metrics"
-        kpis={[]}
+        description="Live data from all systems"
+        kpis={[
+          { label: "Active Clippers", value: s?.totalClippers || 0 },
+          { label: "Total Clips", value: s?.totalClips || 0 },
+          { label: "Total Views", value: s ? (s.totalViews >= 1000 ? `${(s.totalViews / 1000).toFixed(1)}k` : String(s.totalViews)) : "…" },
+          { label: "Creators", value: creatorCount || 0 },
+          { label: "Orders", value: orderCount || 0 },
+          { label: "Budget Status", value: budget.cycle?.status || "—" },
+        ]}
       />
       <Tabs defaultValue="funnel" className="space-y-4">
         <TabsList className="w-full md:w-auto">
@@ -560,28 +587,60 @@ function CampaignSettingsTab() {
 }
 
 // ═══════════════════════════════════════════════
-// 7️⃣ INTELLIGENT BLOCKS
+// 7️⃣ INTELLIGENT BLOCKS — live component usage stats
 // ═══════════════════════════════════════════════
 function IntelligentBlocksTab() {
+  const admin = useClipperAdmin();
+  const budget = useBudgetControl();
+
+  // Live counts derived from actual DB state
+  const activatedClips = admin.clips.filter(c => c.status === "verified").length;
+  const pendingClips = admin.clips.filter(c => c.status === "pending").length;
+  const throttledSegs = budget.segmentCycles.filter(sc => sc.status === "killed" || sc.status === "throttled").length;
+  const totalSegments = budget.segments.length;
+
   const blocks = [
-    { name: "Activation Badge", desc: "Shows when clipper reaches activation threshold", usedIn: 5, icon: Zap },
-    { name: "Bonus Card", desc: "Displays current bonus tier and progress", usedIn: 3, icon: Trophy },
-    { name: "Risk Banner", desc: "Warning banner for throttled/killed segments", usedIn: 4, icon: ShieldAlert },
-    { name: "Tooltip Explanations", desc: "Contextual help for all metrics", usedIn: 12, icon: AlertCircle },
-    { name: "Payment Timeline", desc: "Weekly payout countdown widget", usedIn: 2, icon: Clock },
-    { name: "Metric Unlock Animation", desc: "Celebrates milestone achievements", usedIn: 3, icon: Zap },
+    { name: "Activation Badge", desc: `${activatedClips} clips verified / ${admin.clips.length} total`, usedIn: activatedClips, icon: Zap, live: true },
+    { name: "Bonus Card", desc: `${admin.clippers.length} clippers tracked`, usedIn: admin.clippers.filter(c => c.totalEarningsCents > 0).length, icon: Trophy, live: true },
+    { name: "Risk Banner", desc: `${throttledSegs} segments throttled/killed of ${totalSegments}`, usedIn: throttledSegs, icon: ShieldAlert, live: true },
+    { name: "Pending Queue", desc: `${pendingClips} clips awaiting review`, usedIn: pendingClips, icon: Clock, live: true },
+    { name: "Payment Timeline", desc: `Cycle: ${budget.cycle?.status || "none"} · ${budget.segmentCycles.length} segment cycles`, usedIn: budget.segmentCycles.filter(sc => sc.status === "approved").length, icon: CreditCard, live: true },
+    { name: "Activity Feed", desc: "Portal activity events (live stream)", usedIn: 0, icon: AlertCircle, live: true },
   ];
+
+  // Load portal activity count
+  const { data: activityCount } = useQuery({
+    queryKey: ["portal-activity-count"],
+    queryFn: async () => {
+      const { count } = await supabase.from("portal_activity").select("*", { count: "exact", head: true });
+      return count || 0;
+    },
+  });
+  if (activityCount) blocks[5].usedIn = activityCount;
 
   return (
     <div className="space-y-6">
       <AdminSectionDashboard
         title="Intelligent Blocks"
-        description="Reusable dynamic UI components synced across all pages"
+        description="Live component state pulled from database"
         kpis={[
-          { label: "Total Blocks", value: blocks.length },
-          { label: "Active", value: blocks.length },
-          { label: "Pages Using", value: "6+" },
-          { label: "Last Updated", value: "Today" },
+          { label: "Verified Clips", value: activatedClips },
+          { label: "Earning Clippers", value: admin.clippers.filter(c => c.totalEarningsCents > 0).length },
+          { label: "Throttled Segs", value: throttledSegs },
+          { label: "Pending Review", value: pendingClips },
+          { label: "Cycle Status", value: budget.cycle?.status || "—" },
+          { label: "Activity Events", value: activityCount || 0 },
+        ]}
+        charts={[
+          { type: "pie", title: "Clip Status", data: [
+            { name: "Verified", value: activatedClips || 1 },
+            { name: "Pending", value: pendingClips || 1 },
+            { name: "Rejected", value: admin.clips.filter(c => c.status === "rejected").length || 1 },
+          ]},
+          { type: "bar", title: "Segment Health", data: budget.segments.map(s => ({
+            name: s.name.slice(0, 12),
+            value: budget.segmentCycles.find(sc => sc.segment_id === s.id)?.spent_cents ? Math.round((budget.segmentCycles.find(sc => sc.segment_id === s.id)!.spent_cents / Math.max(s.weekly_limit_cents, 1)) * 100) : 0,
+          }))},
         ]}
       />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -592,7 +651,7 @@ function IntelligentBlocksTab() {
               <h3 className="text-sm font-bold text-foreground">{b.name}</h3>
             </div>
             <p className="text-xs text-muted-foreground mb-2">{b.desc}</p>
-            <Badge variant="outline" className="text-[10px]">Used in {b.usedIn} pages</Badge>
+            <Badge variant="outline" className="text-[10px]">{b.usedIn} active</Badge>
           </div>
         ))}
       </div>
@@ -601,43 +660,76 @@ function IntelligentBlocksTab() {
 }
 
 // ═══════════════════════════════════════════════
-// 8️⃣ RISK ENGINE
+// 8️⃣ RISK ENGINE — live from clipper_risk_throttle + clip_submissions
 // ═══════════════════════════════════════════════
 function RiskEngineTab() {
   const admin = useClipperAdmin();
   const clips = admin.clips.filter(c => c.status === "verified");
   const totalViews = clips.reduce((s, c) => s + c.view_count, 0);
 
-  // Simulated risk metrics
-  const avgCTR = 0.012;
-  const avgRegRate = 0.18;
-  const avgDay1 = 0.28;
-  const riskScore = avgCTR < 0.008 || avgRegRate < 0.1 ? 75 : avgCTR < 0.01 ? 50 : 25;
+  // Pull live risk throttle data
+  const { data: throttle } = useQuery({
+    queryKey: ["risk-throttle-live"],
+    queryFn: async () => {
+      const { data } = await supabase.from("clipper_risk_throttle").select("*").limit(1).maybeSingle();
+      return data;
+    },
+  });
 
-  const trendData = Array.from({ length: 7 }, (_, i) => ({
-    name: `Day ${i + 1}`,
-    value: Math.round((avgCTR + (Math.random() - 0.5) * 0.004) * 10000) / 100,
-  }));
+  // Compute real averages from clip_submissions
+  const clipsWithMetrics = clips.filter(c => (c as any).ctr != null);
+  const avgCTR = clipsWithMetrics.length > 0
+    ? clipsWithMetrics.reduce((s, c) => s + (Number((c as any).ctr) || 0), 0) / clipsWithMetrics.length
+    : throttle?.current_avg_ctr ? Number(throttle.current_avg_ctr) : 0.012;
+  const avgRegRate = throttle?.current_avg_reg_rate ? Number(throttle.current_avg_reg_rate) : 0.18;
+  const avgDay1 = throttle?.current_avg_day1_rate ? Number(throttle.current_avg_day1_rate) : 0.28;
+  const isThrottleActive = throttle?.is_active ?? false;
+  const rpmOverride = throttle?.rpm_override ? Number(throttle.rpm_override) : null;
+
+  // Compute risk score from real metrics
+  let riskScore = 0;
+  if (avgCTR < 0.008) riskScore += 30;
+  else if (avgCTR < 0.01) riskScore += 15;
+  if (avgRegRate < 0.1) riskScore += 30;
+  else if (avgRegRate < 0.15) riskScore += 15;
+  if (avgDay1 < 0.2) riskScore += 25;
+  else if (avgDay1 < 0.25) riskScore += 10;
+  if (isThrottleActive) riskScore += 15;
+
+  // Build trend from last 7 clips
+  const recentClips = clips.slice(0, 7);
+  const trendData = recentClips.length > 0
+    ? recentClips.map((c, i) => ({ name: `Clip ${i + 1}`, value: Math.round((Number((c as any).ctr) || avgCTR) * 10000) / 100 }))
+    : Array.from({ length: 7 }, (_, i) => ({ name: `Day ${i + 1}`, value: Math.round(avgCTR * 10000) / 100 }));
+
+  // Per-clipper risk distribution from real views
+  const lowRisk = admin.clippers.filter(c => c.totalViews > 1000).length;
+  const medRisk = admin.clippers.filter(c => c.totalViews > 0 && c.totalViews <= 1000).length;
+  const highRisk = admin.clippers.filter(c => c.totalViews === 0).length;
 
   return (
     <div className="space-y-6">
       <AdminSectionDashboard
         title="Risk Engine"
-        description="Global conversion averages, 7-day trends, throttle status"
+        description="Live conversion averages from DB, throttle state, risk scoring"
         kpis={[
-          { label: "Avg CTR", value: `${(avgCTR * 100).toFixed(2)}%` },
+          { label: "Avg CTR", value: `${(avgCTR * 100).toFixed(2)}%`, delta: avgCTR < 0.01 ? "⚠️ Below threshold" : "✅ Healthy" },
           { label: "Avg Reg Rate", value: `${(avgRegRate * 100).toFixed(1)}%` },
           { label: "Avg Day-1", value: `${(avgDay1 * 100).toFixed(1)}%` },
-          { label: "Risk Score", value: riskScore, delta: riskScore > 50 ? "⚠️ Elevated" : "✅ Normal" },
-          { label: "Throttle", value: riskScore > 60 ? "Active" : "Off" },
-          { label: "Verified Clips", value: clips.length },
+          { label: "Risk Score", value: `${riskScore}/100`, delta: riskScore > 50 ? "⚠️ Elevated" : "✅ Normal" },
+          { label: "Throttle", value: isThrottleActive ? "🔴 Active" : "🟢 Off" },
+          { label: "RPM Override", value: rpmOverride ? `$${rpmOverride}` : "Default" },
         ]}
         charts={[
-          { type: "area", title: "CTR Trend (7 Days)", data: trendData },
-          { type: "bar", title: "Risk Distribution", data: [
-            { name: "Low (<30)", value: Math.round(admin.clippers.length * 0.6) },
-            { name: "Medium (30-60)", value: Math.round(admin.clippers.length * 0.3) },
-            { name: "High (>60)", value: Math.round(admin.clippers.length * 0.1) },
+          { type: "area", title: "CTR Trend (Recent Clips)", data: trendData },
+          { type: "bar", title: "Clipper Risk Distribution", data: [
+            { name: "Low (>1K views)", value: lowRisk },
+            { name: "Medium (<1K)", value: medRisk },
+            { name: "High (0 views)", value: highRisk },
+          ]},
+          { type: "pie", title: "Verified vs Total", data: [
+            { name: "Verified", value: clips.length || 1 },
+            { name: "Other", value: Math.max(admin.clips.length - clips.length, 1) },
           ]},
         ]}
       />
@@ -648,7 +740,11 @@ function RiskEngineTab() {
           <span className="text-sm font-black uppercase">System Risk Level: {riskScore}/100</span>
         </div>
         <p className="text-xs text-muted-foreground">
-          {riskScore > 60 ? "Auto-throttle ACTIVE. RPM reduced, new activations paused." : riskScore > 40 ? "Warning zone. Monitoring closely." : "All systems nominal. No throttling required."}
+          {isThrottleActive
+            ? `Auto-throttle ACTIVE since ${throttle?.activated_at ? new Date(throttle.activated_at).toLocaleDateString() : "—"}. ${rpmOverride ? `RPM overridden to $${rpmOverride}` : "RPM reduced."}`
+            : riskScore > 40
+              ? "Warning zone. Monitoring closely."
+              : `All systems nominal. ${clips.length} verified clips, ${totalViews.toLocaleString()} total views.`}
         </p>
       </div>
     </div>
@@ -744,19 +840,33 @@ function BoardTab() {
 }
 
 // ═══════════════════════════════════════════════
-// 1️⃣1️⃣ ROADMAP
+// 1️⃣1️⃣ ROADMAP — live from board_cards
 // ═══════════════════════════════════════════════
 function RoadmapTab() {
+  const board = useBoard();
+  const totalCards = board.cards.length;
+  const completedCards = board.cards.filter(c => c.completed_at).length;
+  const completionPct = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
+
+  // Group by column as milestones
+  const colGroups = board.columns.map(col => ({
+    name: col.name.slice(0, 14),
+    value: board.cards.filter(c => c.column_id === col.id).length,
+  }));
+
   return (
     <div className="space-y-6">
       <AdminSectionDashboard
         title="Roadmap"
-        description="Quarterly roadmap with milestone tracking and board linking"
+        description="Live from board cards — milestone tracking"
         kpis={[
-          { label: "Q1 Items", value: 12 },
-          { label: "Q2 Items", value: 8 },
-          { label: "Completed", value: "45%" },
-          { label: "In Progress", value: 5 },
+          { label: "Total Items", value: totalCards },
+          { label: "Completed", value: `${completionPct}%` },
+          { label: "In Progress", value: board.cards.filter(c => !c.completed_at).length },
+          { label: "Columns", value: board.columns.length },
+        ]}
+        charts={[
+          { type: "bar", title: "Items per Stage", data: colGroups },
         ]}
       />
       <Suspense fallback={<div className="flex justify-center py-20"><RefreshCw className="w-6 h-6 animate-spin text-primary" /></div>}>
@@ -805,38 +915,61 @@ function LogsTab() {
 }
 
 // ═══════════════════════════════════════════════
-// 1️⃣3️⃣ FORECAST AI
+// 1️⃣3️⃣ FORECAST AI — live from clip views + budget
 // ═══════════════════════════════════════════════
 function ForecastTab() {
   const admin = useClipperAdmin();
   const budget = useBudgetControl();
-  const sim = budget.simulate({ rpm: 0.22 });
+
+  // Use real total views for forecasting
+  const realTotalViews = admin.stats?.totalViews || 0;
+  const realWeeklyViews = admin.clips
+    .filter(c => {
+      const d = new Date(c.submitted_at);
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return d >= weekAgo;
+    })
+    .reduce((s, c) => s + c.view_count, 0);
+
+  const rpm = 0.22;
+  const weeklyLimit = budget.cycle?.global_weekly_limit_cents || 500000;
+  const weeklyBase = Math.round((realWeeklyViews / 1000) * rpm * 100);
+  const day7 = Math.min(weeklyBase, weeklyLimit);
+  const day30 = day7 * 4;
+  const worstCase = Math.round(day30 * 1.5);
+  const riskAdj = Math.round(day30 * 0.8);
 
   const forecastData = [
-    { name: "Week 1", value: sim.day7Forecast / 100 },
-    { name: "Week 2", value: sim.day7Forecast * 2 / 100 },
-    { name: "Week 3", value: sim.day7Forecast * 3 / 100 },
-    { name: "Week 4", value: sim.day30Projection / 100 },
+    { name: "Week 1", value: day7 / 100 },
+    { name: "Week 2", value: (day7 * 2) / 100 },
+    { name: "Week 3", value: (day7 * 3) / 100 },
+    { name: "Week 4", value: day30 / 100 },
   ];
 
   return (
     <div className="space-y-6">
       <AdminSectionDashboard
         title="Forecast AI"
-        description="30-day revenue forecast, 90-day projection, budget burn simulation"
+        description={`Based on ${realWeeklyViews.toLocaleString()} weekly views · ${realTotalViews.toLocaleString()} lifetime views`}
         kpis={[
-          { label: "7-Day Forecast", value: `$${(sim.day7Forecast / 100).toFixed(0)}` },
-          { label: "30-Day Projection", value: `$${(sim.day30Projection / 100).toFixed(0)}` },
-          { label: "Worst Case", value: `$${(sim.worstCase / 100).toFixed(0)}` },
-          { label: "Risk-Adjusted", value: `$${(sim.riskAdjusted / 100).toFixed(0)}` },
-          { label: "Safe Limit", value: `$${(sim.safeLimit / 100).toFixed(0)}` },
+          { label: "Weekly Views", value: realWeeklyViews.toLocaleString() },
+          { label: "7-Day Forecast", value: `$${(day7 / 100).toFixed(0)}` },
+          { label: "30-Day Projection", value: `$${(day30 / 100).toFixed(0)}` },
+          { label: "Worst Case", value: `$${(worstCase / 100).toFixed(0)}` },
+          { label: "Risk-Adjusted", value: `$${(riskAdj / 100).toFixed(0)}` },
+          { label: "Budget Limit", value: `$${(weeklyLimit / 100).toFixed(0)}/wk` },
         ]}
         charts={[
           { type: "area", title: "Revenue Forecast (4 Weeks)", data: forecastData },
           { type: "bar", title: "Scenario Analysis", data: [
-            { name: "Best", value: sim.day30Projection * 1.4 / 100 },
-            { name: "Base", value: sim.day30Projection / 100 },
-            { name: "Worst", value: sim.worstCase / 100 },
+            { name: "Best", value: day30 * 1.4 / 100 },
+            { name: "Base", value: day30 / 100 },
+            { name: "Worst", value: worstCase / 100 },
+          ]},
+          { type: "pie", title: "Views: This Week vs Rest", data: [
+            { name: "This Week", value: realWeeklyViews || 1 },
+            { name: "Older", value: Math.max(realTotalViews - realWeeklyViews, 1) },
           ]},
         ]}
       />
@@ -845,42 +978,83 @@ function ForecastTab() {
 }
 
 // ═══════════════════════════════════════════════
-// 1️⃣4️⃣ FRAUD MONITOR
+// 1️⃣4️⃣ FRAUD MONITOR — live anomaly detection from clip_submissions
 // ═══════════════════════════════════════════════
 function FraudMonitorTab() {
   const admin = useClipperAdmin();
 
-  // Simulated fraud scores per clipper
-  const fraudData = admin.clippers.map(c => ({
-    name: c.display_name.slice(0, 12),
-    score: Math.round(Math.random() * 40),
-    views: c.totalViews,
-  }));
+  // Compute real fraud scores based on clip metrics
+  const fraudData = admin.clippers.map(c => {
+    let score = 0;
+    const userClips = admin.clips.filter(cl => cl.user_id === c.user_id);
+    
+    // High views but zero earnings = suspicious
+    if (c.totalViews > 5000 && c.totalEarningsCents === 0) score += 20;
+    // All clips pending = new/unverified
+    if (c.pendingClips === c.totalClips && c.totalClips > 3) score += 15;
+    // Abnormal view velocity (>10k per clip average)
+    if (c.totalClips > 0 && c.totalViews / c.totalClips > 10000) score += 25;
+    // Check for suspicious CTR patterns
+    const ctrs = userClips.map(cl => Number((cl as any).ctr) || 0).filter(v => v > 0);
+    if (ctrs.length > 0) {
+      const avgCtr = ctrs.reduce((a, b) => a + b, 0) / ctrs.length;
+      if (avgCtr > 0.05) score += 20; // Abnormally high CTR
+    }
+    // Burst submission (many clips in short window)
+    if (userClips.length >= 3) {
+      const dates = userClips.map(cl => new Date(cl.submitted_at).getTime()).sort();
+      const span = (dates[dates.length - 1] - dates[0]) / (1000 * 60 * 60);
+      if (span < 1 && userClips.length > 5) score += 20; // 5+ clips in 1 hour
+    }
+
+    return {
+      name: c.display_name.slice(0, 12),
+      user_id: c.user_id,
+      score: Math.min(score, 100),
+      views: c.totalViews,
+      clips: c.totalClips,
+      pending: c.pendingClips,
+    };
+  });
+
+  const flagged = fraudData.filter(f => f.score > 30);
+  const highRisk = fraudData.filter(f => f.score > 60);
+  const avgScore = fraudData.length > 0 ? Math.round(fraudData.reduce((s, f) => s + f.score, 0) / fraudData.length) : 0;
 
   return (
     <div className="space-y-6">
       <AdminSectionDashboard
         title="Fraud Monitor"
-        description="AI anomaly detection: CTR/reg spikes, bot patterns, risk scoring"
+        description="Anomaly detection from real clip metrics — view velocity, CTR spikes, burst patterns"
         kpis={[
           { label: "Monitored", value: admin.clippers.length },
-          { label: "Flagged", value: fraudData.filter(f => f.score > 30).length },
-          { label: "High Risk", value: fraudData.filter(f => f.score > 60).length },
-          { label: "Avg Score", value: `${Math.round(fraudData.reduce((s, f) => s + f.score, 0) / (fraudData.length || 1))}/100` },
+          { label: "Flagged", value: flagged.length, delta: flagged.length > 0 ? "⚠️ Needs review" : "✅ Clear" },
+          { label: "High Risk", value: highRisk.length },
+          { label: "Avg Score", value: `${avgScore}/100` },
+          { label: "Total Views", value: admin.stats?.totalViews?.toLocaleString() || "0" },
+          { label: "Total Clips", value: admin.stats?.totalClips || 0 },
         ]}
         charts={[
-          { type: "bar", title: "Fraud Risk Scores", data: fraudData.slice(0, 8).map(f => ({ name: f.name, value: f.score })) },
+          { type: "bar", title: "Risk Scores (Top 8)", data: fraudData.sort((a, b) => b.score - a.score).slice(0, 8).map(f => ({ name: f.name, value: f.score })) },
+          { type: "pie", title: "Risk Breakdown", data: [
+            { name: "Clean (<30)", value: fraudData.filter(f => f.score < 30).length || 1 },
+            { name: "Flagged (30-60)", value: flagged.filter(f => f.score <= 60).length || 1 },
+            { name: "High (>60)", value: highRisk.length || 1 },
+          ]},
         ]}
       />
 
       <div className="bg-card border border-border/40 rounded-xl overflow-hidden">
         <div className="px-4 py-3 border-b border-border/20 bg-secondary/20">
-          <h3 className="text-xs font-bold text-foreground uppercase">Clipper Risk Scores</h3>
+          <h3 className="text-xs font-bold text-foreground uppercase">Clipper Risk Scores (Live)</h3>
         </div>
         <div className="divide-y divide-border/10">
           {fraudData.sort((a, b) => b.score - a.score).map(f => (
-            <div key={f.name} className="flex items-center justify-between px-4 py-3 text-sm">
-              <p className="font-medium text-foreground text-xs">{f.name}</p>
+            <div key={f.user_id} className="flex items-center justify-between px-4 py-3 text-sm">
+              <div>
+                <p className="font-medium text-foreground text-xs">{f.name}</p>
+                <p className="text-[10px] text-muted-foreground">{f.clips} clips · {f.pending} pending</p>
+              </div>
               <div className="flex items-center gap-3">
                 <span className="text-xs text-muted-foreground">{f.views.toLocaleString()} views</span>
                 <Badge className={`text-[10px] ${f.score > 60 ? "bg-red-500/15 text-red-400" : f.score > 30 ? "bg-amber-500/15 text-amber-400" : "bg-emerald-500/15 text-emerald-400"}`}>
@@ -889,6 +1063,7 @@ function FraudMonitorTab() {
               </div>
             </div>
           ))}
+          {fraudData.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">No clippers to monitor yet.</p>}
         </div>
       </div>
     </div>
