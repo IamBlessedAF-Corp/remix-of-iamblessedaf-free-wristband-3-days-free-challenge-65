@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Play, Sparkles, Copy, Check, X, Instagram } from "lucide-react";
+import { Play, Sparkles, Copy, Check, X, Instagram, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -82,8 +82,9 @@ const InlinePlayer = ({ videoId, onClose }: { videoId: string; onClose: () => vo
   </div>
 );
 
-const InspirationGallery = () => {
+const InspirationGallery = ({ referralLink }: { referralLink?: string | null }) => {
   const [activeClip, setActiveClip] = useState<string | null>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   return (
     <section className="px-4 py-12 max-w-5xl mx-auto">
@@ -165,7 +166,28 @@ const InspirationGallery = () => {
           ))}
         </div>
 
-        <div className="mt-6 bg-primary/10 border border-primary/20 rounded-xl p-5 text-center">
+        {/* Referral link + next step */}
+        {referralLink && (
+          <div className="mt-6 bg-secondary/40 border border-border/50 rounded-xl p-4 flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-muted-foreground mb-1">📎 Your Referral Link</p>
+              <code className="text-xs text-primary font-mono truncate block">{referralLink}</code>
+            </div>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(referralLink);
+                setLinkCopied(true);
+                toast.success("Referral link copied!");
+                setTimeout(() => setLinkCopied(false), 2000);
+              }}
+              className="flex items-center gap-1 text-xs font-bold text-primary bg-primary/10 hover:bg-primary/15 px-3 py-2 rounded-lg transition-colors whitespace-nowrap"
+            >
+              {linkCopied ? <><Check className="w-3.5 h-3.5" /> Copied!</> : <><Copy className="w-3.5 h-3.5" /> Copy</>}
+            </button>
+          </div>
+        )}
+
+        <div className="mt-4 bg-primary/10 border border-primary/20 rounded-xl p-5 text-center">
           <p className="text-foreground font-semibold mb-1">⚡ Next Step: Add Your CTA</p>
           <p className="text-muted-foreground text-sm">
             Picked a clip? Now scroll up to the <strong className="text-foreground">CTA End-Screens</strong> section,

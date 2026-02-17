@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Zap, Shield, TrendingUp } from "lucide-react";
+import { Zap, Shield, TrendingUp, Copy, Check, Link2 } from "lucide-react";
+import { toast } from "sonner";
 
 type Mode = "444" | "111-low" | "111-agg";
 
@@ -52,10 +53,19 @@ const scenarioData: Record<Mode, {
   },
 };
 
-const GratitudeDegenBlock = () => {
+const GratitudeDegenBlock = ({ referralLink }: { referralLink?: string | null }) => {
   const [mode, setMode] = useState<Mode>("444");
+  const [copied, setCopied] = useState(false);
   const s = scenarioData[mode];
   const is444 = mode === "444";
+
+  const handleCopyLink = () => {
+    if (!referralLink) return;
+    navigator.clipboard.writeText(referralLink);
+    setCopied(true);
+    toast.success("Referral link copied!");
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <motion.section
@@ -155,6 +165,27 @@ const GratitudeDegenBlock = () => {
               Bonuses are cumulative — they never reset or expire.
             </p>
           </div>
+
+          {/* Referral link */}
+          {referralLink && (
+            <div className="mt-4 bg-secondary/40 border border-border/50 rounded-lg p-3">
+              <p className="text-xs font-semibold text-muted-foreground mb-1.5 flex items-center gap-1.5">
+                <Link2 className="w-3.5 h-3.5" /> Your Referral Link
+              </p>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 text-xs text-primary bg-background/60 rounded px-2 py-1.5 truncate font-mono">
+                  {referralLink}
+                </code>
+                <button
+                  onClick={handleCopyLink}
+                  className="flex items-center gap-1 text-xs font-bold text-primary bg-primary/10 hover:bg-primary/15 px-3 py-1.5 rounded-md transition-colors"
+                >
+                  {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? "Copied!" : "Copy"}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Disclaimer */}
           <p className="mt-3 text-[10px] leading-relaxed text-muted-foreground/60">

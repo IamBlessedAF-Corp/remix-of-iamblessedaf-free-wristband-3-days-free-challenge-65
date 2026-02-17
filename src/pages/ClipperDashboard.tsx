@@ -4,6 +4,7 @@ import { Loader2, LogOut, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useClipperDashboard } from "@/hooks/useClipperDashboard";
+import { supabase } from "@/integrations/supabase/client";
 import ClipperStatusHeader from "@/components/clipper/ClipperStatusHeader";
 import ClipperWeeklySnapshot from "@/components/clipper/ClipperWeeklySnapshot";
 import ClipperBonusLadder from "@/components/clipper/ClipperBonusLadder";
@@ -25,6 +26,21 @@ const ClipperDashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const dashboard = useClipperDashboard(user?.id);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase
+      .from("creator_profiles")
+      .select("referral_code")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.referral_code) setReferralCode(data.referral_code);
+      });
+  }, [user?.id]);
+
+  const referralLink = referralCode ? `https://iamblessedaf.com/r/${referralCode}` : null;
 
   // Support ?tab=post deep-link from signup redirect
   const urlParams = new URLSearchParams(window.location.search);
@@ -175,16 +191,16 @@ const ClipperDashboard = () => {
               className="space-y-0"
             >
               {/* HIGH-OUTPUT PATH scenarios */}
-              <GratitudeDegenBlock />
+              <GratitudeDegenBlock referralLink={referralLink} />
 
               {/* Build Your Earnings Plan */}
-              <EarningsSliderCalculator />
+              <EarningsSliderCalculator referralLink={referralLink} />
 
               {/* CTA Assets — downloadable end-screens */}
-              <ClipperCtaAssets />
+              <ClipperCtaAssets referralLink={referralLink} />
 
               {/* Content Vault + Example Remix + Campaign Drop */}
-              <InspirationGallery />
+              <InspirationGallery referralLink={referralLink} />
             </motion.div>
           </TabsContent>
 
