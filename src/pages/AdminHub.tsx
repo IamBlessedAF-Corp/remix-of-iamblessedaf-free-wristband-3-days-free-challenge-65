@@ -119,6 +119,18 @@ export default function AdminHub() {
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  // Listen for tab navigation from FunnelMap smart blocks
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.tab && TABS.some(t => t.id === detail.tab)) {
+        setActiveTab(detail.tab as TabId);
+      }
+    };
+    window.addEventListener("admin-navigate-tab", handler);
+    return () => window.removeEventListener("admin-navigate-tab", handler);
+  }, []);
+
   if (authLoading) return <div className="min-h-screen bg-background flex items-center justify-center"><RefreshCw className="w-6 h-6 animate-spin text-primary" /></div>;
   if (!user) return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
