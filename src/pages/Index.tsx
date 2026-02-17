@@ -175,7 +175,7 @@ const Index = () => {
         onClose={() => setShowAuth(false)}
         onSuccess={() => {
           setShowAuth(false);
-          navigate("/Congrats-Neuro-Hacker?next=/challenge");
+          navigate("/challenge");
         }}
       />
     </div>
