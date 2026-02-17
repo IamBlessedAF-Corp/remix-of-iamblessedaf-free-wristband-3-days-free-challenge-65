@@ -536,6 +536,45 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_config: {
+        Row: {
+          affected_areas: string[]
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          label: string
+          updated_at: string
+          updated_by: string | null
+          value: string
+        }
+        Insert: {
+          affected_areas?: string[]
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+          label: string
+          updated_at?: string
+          updated_by?: string | null
+          value: string
+        }
+        Update: {
+          affected_areas?: string[]
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+          label?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: string
+        }
+        Relationships: []
+      }
       challenge_participants: {
         Row: {
           challenge_start_date: string | null

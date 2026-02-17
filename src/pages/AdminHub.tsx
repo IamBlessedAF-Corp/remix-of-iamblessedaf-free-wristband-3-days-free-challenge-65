@@ -34,6 +34,7 @@ import LinkPieCharts from "@/components/admin/LinkPieCharts";
 import TopLinksTable from "@/components/admin/TopLinksTable";
 import UtmBuilder from "@/components/admin/UtmBuilder";
 import PerLinkTrafficChart from "@/components/admin/PerLinkTrafficChart";
+import EditableCampaignSettings from "@/components/admin/EditableCampaignSettings";
 
 // Lazy load the heavy FunnelMap
 const FunnelMap = lazy(() => import("@/pages/FunnelMap"));
@@ -527,63 +528,10 @@ function LinksTab() {
 }
 
 // ═══════════════════════════════════════════════
-// 6️⃣ CAMPAIGN SETTINGS
+// 6️⃣ CAMPAIGN SETTINGS — Editable with confirmation modals
 // ═══════════════════════════════════════════════
 function CampaignSettingsTab() {
-  const budget = useBudgetControl();
-  const cycle = budget.cycle;
-
-  return (
-    <div className="space-y-6">
-      <AdminSectionDashboard
-        title="Campaign Settings"
-        description="Activation thresholds, RPM, bonus tiers, payout rules"
-        kpis={[
-          { label: "Min Views", value: "1,000" },
-          { label: "Min CTR", value: "1.0%" },
-          { label: "Min Reg Rate", value: "15%" },
-          { label: "RPM", value: "$0.22" },
-          { label: "Min Payout", value: "$2.22" },
-          { label: "Weekly Limit", value: cycle ? `$${(cycle.global_weekly_limit_cents / 100).toFixed(0)}` : "—" },
-        ]}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-card border border-border/40 rounded-xl p-5 space-y-3">
-          <h3 className="text-sm font-bold text-foreground flex items-center gap-2"><Target className="w-4 h-4 text-primary" /> Activation Thresholds</h3>
-          {[
-            { label: "Minimum Views", value: "1,000", desc: "Clips below this are not monetized" },
-            { label: "Minimum CTR", value: "0.010", desc: "Click-through rate floor" },
-            { label: "Minimum Reg Rate", value: "0.15", desc: "Registration rate floor" },
-            { label: "Minimum Day-1 Rate", value: "0.25", desc: "Day-1 retention floor" },
-          ].map(t => (
-            <div key={t.label} className="flex items-center justify-between py-2 border-b border-border/20 last:border-0">
-              <div><p className="text-xs font-medium text-foreground">{t.label}</p><p className="text-[10px] text-muted-foreground">{t.desc}</p></div>
-              <Badge variant="outline" className="text-xs font-mono">{t.value}</Badge>
-            </div>
-          ))}
-        </div>
-
-        <div className="bg-card border border-border/40 rounded-xl p-5 space-y-3">
-          <h3 className="text-sm font-bold text-foreground flex items-center gap-2"><DollarSign className="w-4 h-4 text-primary" /> Economics</h3>
-          {[
-            { label: "RPM (Revenue per 1K views)", value: "$0.22" },
-            { label: "Minimum Payout", value: "$2.22" },
-            { label: "Bonus: 100K Views/mo", value: "+$50" },
-            { label: "Bonus: 500K Views/mo", value: "+$200" },
-            { label: "Bonus: 1M Views/mo", value: "+$500" },
-            { label: "Weekly Cutoff", value: "Monday 00:00 UTC" },
-            { label: "Payout Day", value: "Friday" },
-          ].map(t => (
-            <div key={t.label} className="flex items-center justify-between py-2 border-b border-border/20 last:border-0">
-              <p className="text-xs font-medium text-foreground">{t.label}</p>
-              <Badge variant="outline" className="text-xs font-mono">{t.value}</Badge>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  return <EditableCampaignSettings />;
 }
 
 // ═══════════════════════════════════════════════
