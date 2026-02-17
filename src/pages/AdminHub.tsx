@@ -36,6 +36,13 @@ import TopLinksTable from "@/components/admin/TopLinksTable";
 import UtmBuilder from "@/components/admin/UtmBuilder";
 import PerLinkTrafficChart from "@/components/admin/PerLinkTrafficChart";
 import EditableCampaignSettings from "@/components/admin/EditableCampaignSettings";
+import OrdersTab from "@/components/admin/OrdersTab";
+import BlessingsTab from "@/components/admin/BlessingsTab";
+import ChallengeTab from "@/components/admin/ChallengeTab";
+import SmsTab from "@/components/admin/SmsTab";
+import GamificationTab from "@/components/admin/GamificationTab";
+import AffiliatesTab from "@/components/admin/AffiliatesTab";
+import WaitlistTab from "@/components/admin/WaitlistTab";
 
 // Lazy load the heavy FunnelMap
 const FunnelMap = lazy(() => import("@/pages/FunnelMap"));
@@ -45,7 +52,8 @@ const ALL_TAB_IDS = [
   "dashboard", "clippers", "congrats", "experts", "links",
   "campaign", "blocks", "risk", "payments", "board",
   "roadmap", "logs", "forecast", "fraud", "leaderboard",
-  "alerts", "budget",
+  "alerts", "budget", "orders", "blessings", "challenge",
+  "sms", "gamification", "affiliates", "waitlist",
 ] as const;
 
 type TabId = typeof ALL_TAB_IDS[number];
@@ -57,13 +65,15 @@ type SidebarEntry = SidebarItem | SidebarGroup;
 const SIDEBAR_MENU: SidebarEntry[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   {
-    group: "Creators",
+    group: "Creators & Community",
     icon: Users,
     items: [
       { id: "clippers", label: "Clippers", icon: Film },
       { id: "congrats", label: "Congrats", icon: Award },
       { id: "experts", label: "Experts", icon: Users },
       { id: "leaderboard", label: "Leaderboard", icon: Trophy },
+      { id: "blessings", label: "Blessings & Creators", icon: Award },
+      { id: "affiliates", label: "Affiliate Tiers", icon: Target },
     ],
   },
   {
@@ -74,14 +84,25 @@ const SIDEBAR_MENU: SidebarEntry[] = [
       { id: "campaign", label: "Campaign Settings", icon: Settings },
       { id: "links", label: "Links", icon: Link2 },
       { id: "roadmap", label: "Roadmap", icon: Map },
+      { id: "waitlist", label: "Waitlist & Reposts", icon: ScrollText },
     ],
   },
   {
-    group: "Finance",
+    group: "Finance & Orders",
     icon: DollarSign,
     items: [
+      { id: "orders", label: "Orders", icon: CreditCard },
       { id: "payments", label: "Payments", icon: CreditCard },
       { id: "budget", label: "Budget Control", icon: DollarSign },
+    ],
+  },
+  {
+    group: "Engagement",
+    icon: Zap,
+    items: [
+      { id: "challenge", label: "Challenge & Messaging", icon: Target },
+      { id: "sms", label: "SMS Intelligence", icon: Bell },
+      { id: "gamification", label: "Gamification (BC)", icon: Award },
     ],
   },
   {
@@ -290,6 +311,13 @@ function TabContent({ tab }: { tab: TabId }) {
     case "leaderboard": return <LeaderboardTab />;
     case "alerts": return <AlertsTab />;
     case "budget": return <BudgetControlTab />;
+    case "orders": return <OrdersTab />;
+    case "blessings": return <BlessingsTab />;
+    case "challenge": return <ChallengeTab />;
+    case "sms": return <SmsTab />;
+    case "gamification": return <GamificationTab />;
+    case "affiliates": return <AffiliatesTab />;
+    case "waitlist": return <WaitlistTab />;
     default: return null;
   }
 }
