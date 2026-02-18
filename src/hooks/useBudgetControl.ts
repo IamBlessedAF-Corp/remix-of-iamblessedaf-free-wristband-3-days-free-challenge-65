@@ -278,12 +278,32 @@ export function useBudgetControl() {
     segmentIds?: string[];
   }) => {
     const rpm = params.rpm || 0.22;
-    const weeklyLimit = params.weeklyLimit || cycle?.global_weekly_limit_cents || 500000;
+    const weeklyLimitCents = params.weeklyLimit || cycle?.global_weekly_limit_cents || 500000;
+    const weeklyLimitDollars = weeklyLimitCents / 100;
 
-    // Use the entire weekly budget as "what-if" capacity
-    const maxViews = Math.round((weeklyLimit / 100) / rpm * 1000);
-    const weeklyBase = weeklyLimit; // Simulate using full budget
-    const day7 = weeklyBase;
+    // Core math: how many views can the budget support at this RPM?
+    const maxViews = Math.round(weeklyLimitDollars / rpm * 1000);
+    // Average earnings per clip = RPM * (avgViews / 1000)
+    // With $0.22 RPM and ~13,636 views per clip → ~$3 per clip
+    const avgEarningsPerClipCents = Math.round(rpm * 1000 * (maxViews / 1000 / Math.max(1, Math.round(weeklyLimitDollars / 3))) / 1000 * 100);
+    const effectiveAvgPerClip = avgEarningsPerClipCents > 0 ? avgEarningsPerClipCents : Math.round(rpm * 13636 / 1000 * 100);
+    const totalClips = effectiveAvgPerClip > 0 ? Math.floor(weeklyLimitCents / effectiveAvgPerClip) : 0;
+    
+    // Distribute across segments
+    const segDistribution = segments.map(seg => {
+      const segPct = seg.weekly_limit_cents / Math.max(1, segments.reduce((s, x) => s + x.weekly_limit_cents, 0));
+      const segClips = Math.round(totalClips * segPct);
+      const segSpendCents = segClips * effectiveAvgPerClip;
+      return {
+        name: seg.name,
+        clips: segClips,
+        spendCents: Math.min(segSpendCents, seg.weekly_limit_cents),
+        limitCents: seg.weekly_limit_cents,
+        pctUsed: Math.round(Math.min(segSpendCents, seg.weekly_limit_cents) / seg.weekly_limit_cents * 100),
+      };
+    });
+
+    const day7 = weeklyLimitCents;
     const day30 = day7 * 4;
     const worstCase = Math.round(day30 * 1.5);
     const riskAdj = Math.round(day30 * 0.8);
@@ -295,9 +315,12 @@ export function useBudgetControl() {
       riskAdjusted: riskAdj,
       safeLimit: Math.round(riskAdj * 1.1),
       maxViews,
+      totalClips,
+      avgEarningsPerClipCents: effectiveAvgPerClip,
+      segDistribution,
       realSpendCents,
     };
-  }, [cycle, realSpendCents]);
+  }, [cycle, realSpendCents, segments]);
 
   return {
     cycle, segments, segmentCycles, events, members, loading,

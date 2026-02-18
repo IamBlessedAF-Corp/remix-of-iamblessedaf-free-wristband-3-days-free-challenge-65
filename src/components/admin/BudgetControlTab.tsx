@@ -311,13 +311,14 @@ const SegmentBudgets = ({ budget }: { budget: ReturnType<typeof useBudgetControl
 
 // ─── Section 3: Simulation ───
 const SimulationEngine = ({ budget }: { budget: ReturnType<typeof useBudgetControl> }) => {
-  const [rpm, setRpm] = useState(0.22);
+  const [rpm, setRpm] = useState(2.22);
   const [weeklyLimit, setWeeklyLimit] = useState((budget.cycle?.global_weekly_limit_cents || 500000) / 100);
 
   // Auto-run simulation on mount and whenever inputs change
   const result = budget.simulate({ rpm, weeklyLimit: Math.round(weeklyLimit * 100) });
   const realSpend = budget.realSpendCents;
   const simSpend = result.day7Forecast;
+  const avgPerClip = (result.avgEarningsPerClipCents || 300) / 100;
 
   return (
     <div className="bg-card border border-border/40 rounded-xl p-5 space-y-4">
@@ -326,7 +327,7 @@ const SimulationEngine = ({ budget }: { budget: ReturnType<typeof useBudgetContr
         <h3 className="text-sm font-bold text-foreground">What-If Simulation</h3>
         <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px] ml-auto">Auto-updating</Badge>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div>
           <label className="text-[10px] text-muted-foreground uppercase">RPM ($)</label>
           <Input type="number" step="0.01" value={rpm} onChange={(e) => setRpm(Number(e.target.value))} className="h-8 text-sm" />
@@ -335,11 +336,13 @@ const SimulationEngine = ({ budget }: { budget: ReturnType<typeof useBudgetContr
           <label className="text-[10px] text-muted-foreground uppercase">Weekly Limit ($)</label>
           <Input type="number" value={weeklyLimit} onChange={(e) => setWeeklyLimit(Number(e.target.value))} className="h-8 text-sm" />
         </div>
-        <div className="flex items-end">
-          <div className="bg-secondary/30 rounded-lg p-2 w-full text-center">
-            <p className="text-[10px] text-muted-foreground uppercase">Max Views Supported</p>
-            <p className="text-sm font-bold text-foreground">{(result.maxViews || 0).toLocaleString()}</p>
-          </div>
+        <div className="bg-secondary/30 rounded-lg p-2 text-center">
+          <p className="text-[10px] text-muted-foreground uppercase">Max Views</p>
+          <p className="text-sm font-bold text-foreground">{(result.maxViews || 0).toLocaleString()}</p>
+        </div>
+        <div className="bg-secondary/30 rounded-lg p-2 text-center">
+          <p className="text-[10px] text-muted-foreground uppercase">Clips @ ~${avgPerClip.toFixed(2)} avg</p>
+          <p className="text-sm font-bold text-foreground">{(result.totalClips || 0).toLocaleString()}</p>
         </div>
       </div>
 
@@ -359,7 +362,7 @@ const SimulationEngine = ({ budget }: { budget: ReturnType<typeof useBudgetContr
             <p className="text-[10px] text-muted-foreground uppercase">Simulated (Full Budget)</p>
             <p className="text-xl font-bold text-primary">{fmt$(simSpend)}</p>
             <Progress value={100} className="h-2" />
-            <p className="text-[10px] text-muted-foreground">100% utilization scenario</p>
+            <p className="text-[10px] text-muted-foreground">100% utilization → {result.totalClips} clips</p>
           </div>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground border-t border-border/20 pt-2">
@@ -367,6 +370,28 @@ const SimulationEngine = ({ budget }: { budget: ReturnType<typeof useBudgetContr
           <span>Gap: <strong className="text-foreground">{fmt$(simSpend - realSpend)}</strong> remaining capacity this week</span>
         </div>
       </div>
+
+      {/* Segment Distribution */}
+      {result.segDistribution && result.segDistribution.length > 0 && (
+        <div className="bg-secondary/20 border border-border/30 rounded-lg p-4 space-y-3">
+          <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+            <Target className="w-3.5 h-3.5 text-primary" /> Budget Distribution by Segment
+          </h4>
+          <div className="space-y-2">
+            {result.segDistribution.map((seg) => (
+              <div key={seg.name} className="flex items-center gap-3">
+                <span className="text-xs font-medium text-foreground w-32 truncate">{seg.name}</span>
+                <div className="flex-1">
+                  <Progress value={seg.pctUsed} className="h-2" />
+                </div>
+                <span className="text-[10px] text-muted-foreground w-16 text-right">{seg.clips} clips</span>
+                <span className="text-[10px] font-medium text-foreground w-20 text-right">{fmt$(seg.spendCents)}</span>
+                <span className="text-[10px] text-muted-foreground w-12 text-right">{seg.pctUsed}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
