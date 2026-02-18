@@ -2,6 +2,7 @@ import { useClipperAdmin } from "@/hooks/useClipperAdmin";
 import { useBudgetControl } from "@/hooks/useBudgetControl";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
+import ExportCsvButton from "@/components/admin/ExportCsvButton";
 
 export default function PaymentsTab() {
   const admin = useClipperAdmin();
@@ -27,8 +28,9 @@ export default function PaymentsTab() {
         ]}
       />
       <div className="bg-card border border-border/40 rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-border/20 bg-secondary/20">
+        <div className="px-4 py-3 border-b border-border/20 bg-secondary/20 flex items-center justify-between">
           <h3 className="text-xs font-bold text-foreground uppercase">Payout Queue</h3>
+          <ExportCsvButton data={admin.clippers.filter(c => c.totalEarningsCents > 0).map(c => ({ name: c.display_name, clips: c.totalClips, views: c.totalViews, earnings: (c.totalEarningsCents / 100).toFixed(2), pending: c.pendingClips }))} filename="payout-queue.csv" columns={["name", "clips", "views", "earnings", "pending"]} />
         </div>
         <div className="divide-y divide-border/10">
           {admin.clippers.filter(c => c.totalEarningsCents > 0).map(c => (

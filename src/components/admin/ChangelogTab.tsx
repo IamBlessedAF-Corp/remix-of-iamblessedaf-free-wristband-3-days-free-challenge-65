@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import ExportCsvButton from "./ExportCsvButton";
 
 type CodeChange = {
   file: string;
@@ -328,6 +329,7 @@ export default function ChangelogTab() {
           onChange={e => setFilter(e.target.value)}
           className="max-w-sm text-sm"
         />
+        <ExportCsvButton data={filtered.map(e => ({ summary: e.prompt_summary, areas: e.affected_areas?.join(", "), tags: e.tags?.join(", "), details: e.change_details, files: e.code_changes?.length || 0, created_at: e.created_at }))} filename="changelog.csv" columns={["summary", "areas", "tags", "details", "files", "created_at"]} />
         <AddChangelogForm onSuccess={() => refetch()} />
       </div>
 

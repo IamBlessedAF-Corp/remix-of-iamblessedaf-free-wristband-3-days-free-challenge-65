@@ -2,6 +2,7 @@ import { useClipperAdmin } from "@/hooks/useClipperAdmin";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw } from "lucide-react";
+import ExportCsvButton from "@/components/admin/ExportCsvButton";
 
 export default function LeaderboardTab() {
   const admin = useClipperAdmin();
@@ -23,7 +24,10 @@ export default function LeaderboardTab() {
         ]}
       />
       <div className="bg-card border border-border/50 rounded-xl overflow-hidden">
-        <div className="grid grid-cols-[2.5rem_1fr_5rem_5rem_5rem_4.5rem] px-4 py-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b border-border/20 bg-secondary/30">
+        <div className="px-4 py-2 border-b border-border/20 bg-secondary/30 flex items-center justify-between">
+          <ExportCsvButton data={admin.clippers.map((c, i) => ({ rank: i + 1, name: c.display_name, clips: c.totalClips, views: c.totalViews, earned: (c.totalEarningsCents / 100).toFixed(2), pending: c.pendingClips }))} filename="leaderboard.csv" columns={["rank", "name", "clips", "views", "earned", "pending"]} />
+        </div>
+        <div className="grid grid-cols-[2.5rem_1fr_5rem_5rem_5rem_4.5rem] px-4 py-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b border-border/20">
           <span>#</span><span>Clipper</span><span className="text-right">Clips</span><span className="text-right">Views</span><span className="text-right">Earned</span><span className="text-right">Pending</span>
         </div>
         <div className="divide-y divide-border/15">

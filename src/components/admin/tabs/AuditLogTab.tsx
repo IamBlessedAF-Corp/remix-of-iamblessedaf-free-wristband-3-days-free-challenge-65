@@ -11,6 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ScrollText, RefreshCw, Search, ChevronDown, ChevronRight, Filter } from "lucide-react";
 import { format } from "date-fns";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
+import ExportCsvButton from "@/components/admin/ExportCsvButton";
 
 interface AuditEntry {
   id: string;
@@ -149,6 +150,7 @@ export default function AuditLogTab() {
         <Button size="sm" variant="outline" className="h-8 text-xs gap-1" onClick={() => refetch()}>
           <RefreshCw className="w-3 h-3" /> Refresh
         </Button>
+        <ExportCsvButton data={filtered.map(e => ({ ...e, old_data: JSON.stringify(e.old_data), new_data: JSON.stringify(e.new_data), changed_fields: e.changed_fields?.join(", ") }))} filename="audit-log.csv" columns={["created_at", "table_name", "operation", "row_id", "user_id", "changed_fields"]} />
       </div>
 
       {/* Log entries */}

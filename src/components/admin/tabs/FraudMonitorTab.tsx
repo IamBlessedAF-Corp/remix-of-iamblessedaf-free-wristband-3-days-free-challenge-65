@@ -1,6 +1,7 @@
 import { useClipperAdmin } from "@/hooks/useClipperAdmin";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
+import ExportCsvButton from "@/components/admin/ExportCsvButton";
 
 export default function FraudMonitorTab() {
   const admin = useClipperAdmin();
@@ -51,8 +52,9 @@ export default function FraudMonitorTab() {
         ]}
       />
       <div className="bg-card border border-border/40 rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-border/20 bg-secondary/20">
+        <div className="px-4 py-3 border-b border-border/20 bg-secondary/20 flex items-center justify-between">
           <h3 className="text-xs font-bold text-foreground uppercase">Clipper Risk Scores (Live)</h3>
+          <ExportCsvButton data={fraudData.map(f => ({ name: f.name, score: f.score, views: f.views, clips: f.clips, pending: f.pending }))} filename="fraud-scores.csv" columns={["name", "score", "views", "clips", "pending"]} />
         </div>
         <div className="divide-y divide-border/10">
           {fraudData.sort((a, b) => b.score - a.score).map(f => (
