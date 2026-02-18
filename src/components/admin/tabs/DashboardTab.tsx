@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { RefreshCw, Flame, DollarSign, TrendingUp } from "lucide-react";
+import RevenueLtvDashboard from "@/components/admin/RevenueLtvDashboard";
 
 const FunnelMap = lazy(() => import("@/pages/FunnelMap"));
 
@@ -54,48 +55,14 @@ export default function DashboardTab() {
             <FunnelMap />
           </Suspense>
         </TabsContent>
-        <TabsContent value="revenue"><RevenueIntelligenceSubTab /></TabsContent>
+        <TabsContent value="revenue"><RevenueLtvDashboard /></TabsContent>
         <TabsContent value="growth"><GrowthMetricsSubTab /></TabsContent>
       </Tabs>
     </div>
   );
 }
 
-function RevenueIntelligenceSubTab() {
-  const admin = useClipperAdmin();
-  const budget = useBudgetControl();
-  const totalPaid = admin.stats?.totalPaidCents || 0;
-  const weeklyLimit = budget.cycle?.global_weekly_limit_cents || 500000;
-  const monthlyLimit = budget.cycle?.global_monthly_limit_cents || 2000000;
-  const segSpent = budget.segmentCycles.reduce((s, c) => s + c.spent_cents, 0);
-
-  const revenueData = [
-    { name: "Week 1", value: Math.round(totalPaid * 0.2) },
-    { name: "Week 2", value: Math.round(totalPaid * 0.35) },
-    { name: "Week 3", value: Math.round(totalPaid * 0.65) },
-    { name: "Week 4", value: totalPaid },
-  ].map(d => ({ ...d, value: d.value / 100 }));
-
-  return (
-    <AdminSectionDashboard
-      title="Revenue Intelligence"
-      description="Financial overview across all channels"
-      kpis={[
-        { label: "Total Paid", value: `$${(totalPaid / 100).toFixed(2)}` },
-        { label: "Weekly Budget", value: `$${(weeklyLimit / 100).toFixed(0)}` },
-        { label: "Monthly Budget", value: `$${(monthlyLimit / 100).toFixed(0)}` },
-        { label: "Segment Spend", value: `$${(segSpent / 100).toFixed(2)}` },
-        { label: "Budget Used", value: `${weeklyLimit > 0 ? Math.round((segSpent / weeklyLimit) * 100) : 0}%` },
-        { label: "Segments", value: budget.segments.length },
-      ]}
-      charts={[
-        { type: "area", title: "Cumulative Payouts ($)", data: revenueData },
-        { type: "bar", title: "Segment Spend", data: budget.segments.slice(0, 5).map(s => ({ name: s.name.slice(0, 10), value: (budget.segmentCycles.find(c => c.segment_id === s.id)?.spent_cents || 0) / 100 })) },
-        { type: "pie", title: "Budget Status", data: [{ name: "Spent", value: segSpent }, { name: "Remaining", value: Math.max(weeklyLimit - segSpent, 0) }] },
-      ]}
-    />
-  );
-}
+// RevenueIntelligenceSubTab replaced by RevenueLtvDashboard component
 
 function GrowthMetricsSubTab() {
   const admin = useClipperAdmin();
