@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Film, Award, Users, Link2, Settings, Blocks,
   ShieldAlert, CreditCard, Kanban, Map, ScrollText, Brain, Database,
   Trophy, Bell, LogOut, RefreshCw, Menu, ChevronLeft, Shield,
-  DollarSign, Zap, Target, ChevronDown, ChevronRight, Search, Globe, Type, MessageSquare,
+  DollarSign, Zap, Target, ChevronDown, ChevronRight, Search, Globe, Type, MessageSquare, BarChart3,
 } from "lucide-react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useQuery } from "@tanstack/react-query";
@@ -31,6 +31,7 @@ import AlertsTab from "@/components/admin/tabs/AlertsTab";
 import UserManagementTab from "@/components/admin/tabs/UserManagementTab";
 import IntegrationsTab from "@/components/admin/tabs/IntegrationsTab";
 import DatabaseTab from "@/components/admin/tabs/DatabaseTab";
+import TrafficTab from "@/components/admin/tabs/TrafficTab";
 
 import EditableCampaignSettings from "@/components/admin/EditableCampaignSettings";
 import OrdersTab from "@/components/admin/OrdersTab";
@@ -50,7 +51,7 @@ import GlobalSearchModal from "@/components/admin/GlobalSearchModal";
 
 // ─── Tab definitions ───
 const ALL_TAB_IDS = [
-  "dashboard", "clippers", "congrats", "experts", "links",
+  "dashboard", "clippers", "congrats", "experts", "links", "traffic",
   "campaign", "blocks", "risk", "payments", "board",
   "roadmap", "logs", "forecast", "fraud", "leaderboard",
   "alerts", "budget", "orders", "blessings", "challenge",
@@ -85,6 +86,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
       { id: "blocks", label: "Intelligent Blocks", icon: Blocks },
       { id: "campaign", label: "Campaign Settings", icon: Settings },
       { id: "links", label: "Links", icon: Link2 },
+      { id: "traffic", label: "Traffic", icon: BarChart3 },
       { id: "roadmap", label: "Roadmap", icon: Map },
       { id: "waitlist", label: "Waitlist & Reposts", icon: ScrollText },
     ],
@@ -142,6 +144,7 @@ function TabContent({ tab }: { tab: TabId }) {
     case "congrats": return <CongratsTab />;
     case "experts": return <ExpertsTab />;
     case "links": return <LinksTab />;
+    case "traffic": return <TrafficTab />;
     case "campaign": return <EditableCampaignSettings />;
     case "blocks": return <IntelligentBlocksTab />;
     case "risk": return <RiskEngineTab />;
