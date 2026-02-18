@@ -10,18 +10,17 @@ interface RoadmapCompletion {
   completed_by: string | null;
 }
 
-// Use untyped access since roadmap_completions is new and not yet in generated types
-const from = (table: string) => supabase.from(table as "board_columns");
-
 export function useRoadmapCompletions() {
   const qc = useQueryClient();
 
   const { data: completions = [] } = useQuery<RoadmapCompletion[]>({
     queryKey: ["roadmap-completions"],
     queryFn: async () => {
-      const { data, error } = await (from("roadmap_completions") as unknown as { select: (cols: string) => Promise<{ data: RoadmapCompletion[] | null; error: { message: string } | null }> }).select("*");
+      const { data, error } = await supabase
+        .from("roadmap_completions")
+        .select("*");
       if (error) throw new Error(error.message);
-      return data ?? [];
+      return (data ?? []) as RoadmapCompletion[];
     },
   });
 
@@ -29,7 +28,9 @@ export function useRoadmapCompletions() {
 
   const markDone = useMutation({
     mutationFn: async ({ title, phase }: { title: string; phase: string }) => {
-      const { error } = await (from("roadmap_completions") as unknown as { insert: (row: Record<string, string>) => Promise<{ error: { message: string } | null }> }).insert({ item_title: title, phase });
+      const { error } = await supabase
+        .from("roadmap_completions")
+        .insert({ item_title: title, phase });
       if (error) throw new Error(error.message);
     },
     onSuccess: (_, vars) => {
@@ -41,7 +42,11 @@ export function useRoadmapCompletions() {
 
   const unmarkDone = useMutation({
     mutationFn: async ({ title, phase }: { title: string; phase: string }) => {
-      const { error } = await (from("roadmap_completions") as unknown as { delete: () => { eq: (col: string, val: string) => { eq: (col: string, val: string) => Promise<{ error: { message: string } | null }> } } }).delete().eq("item_title", title).eq("phase", phase);
+      const { error } = await supabase
+        .from("roadmap_completions")
+        .delete()
+        .eq("item_title", title)
+        .eq("phase", phase);
       if (error) throw new Error(error.message);
     },
     onSuccess: (_, vars) => {
