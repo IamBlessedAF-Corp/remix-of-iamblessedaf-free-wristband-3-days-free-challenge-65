@@ -98,7 +98,7 @@ export function useClipperAdmin() {
           lastSubmitted: c.submitted_at,
         };
         prev.totalClips += 1;
-        prev.totalViews += c.view_count || 0;
+        prev.totalViews += Math.max(0, (c.view_count || 0) - (c.baseline_view_count || 0));
         prev.totalEarningsCents += c.earnings_cents || 0;
         if (c.status === "pending") prev.pendingClips += 1;
         if (c.submitted_at > prev.lastSubmitted) prev.lastSubmitted = c.submitted_at;
@@ -118,7 +118,7 @@ export function useClipperAdmin() {
       let lastWeek = 0;
 
       for (const c of allClips) {
-        totalViews += c.view_count || 0;
+        totalViews += Math.max(0, (c.view_count || 0) - (c.baseline_view_count || 0));
         totalPaid += c.earnings_cents || 0;
         if (c.status === "pending") pending++;
         if (c.status === "verified") verified++;
