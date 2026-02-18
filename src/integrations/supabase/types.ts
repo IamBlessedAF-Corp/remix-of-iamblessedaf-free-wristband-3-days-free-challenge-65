@@ -1343,6 +1343,30 @@ export type Database = {
         }
         Relationships: []
       }
+      roadmap_completions: {
+        Row: {
+          completed_at: string
+          completed_by: string | null
+          id: string
+          item_title: string
+          phase: string
+        }
+        Insert: {
+          completed_at?: string
+          completed_by?: string | null
+          id?: string
+          item_title: string
+          phase: string
+        }
+        Update: {
+          completed_at?: string
+          completed_by?: string | null
+          id?: string
+          item_title?: string
+          phase?: string
+        }
+        Relationships: []
+      }
       role_permissions: {
         Row: {
           allowed_sections: string[]
