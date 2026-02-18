@@ -1,18 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { usePaginatedQuery } from "@/hooks/usePaginatedQuery";
+import PaginationControls from "@/components/admin/PaginationControls";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw } from "lucide-react";
 import ExportCsvButton from "@/components/admin/ExportCsvButton";
 
 export default function ExpertsTab() {
-  const { data: leads = [], isLoading } = useQuery({
-    queryKey: ["expert-leads-admin"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("expert_leads").select("*").order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
+  const { data: leads, isLoading, page, totalPages, totalCount, pageSize, nextPage, prevPage } = usePaginatedQuery({
+    table: "expert_leads",
+    queryKey: "expert-leads-admin",
+    pageSize: 50,
   });
   if (isLoading) return <div className="flex justify-center py-20"><RefreshCw className="w-6 h-6 animate-spin text-primary" /></div>;
   const stats = { total: leads.length, new: leads.filter(l => l.status === "new").length, contacted: leads.filter(l => l.status === "contacted").length, converted: leads.filter(l => l.status === "converted").length };
@@ -60,6 +57,7 @@ export default function ExpertsTab() {
           </tbody>
         </table>
       </div>
+      <PaginationControls page={page} totalPages={totalPages} totalCount={totalCount} pageSize={pageSize} onPrev={prevPage} onNext={nextPage} />
     </div>
   );
 }
