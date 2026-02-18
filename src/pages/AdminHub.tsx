@@ -5,6 +5,7 @@ import {
   ShieldAlert, CreditCard, Kanban, Map, ScrollText, Brain, Database,
   Trophy, Bell, LogOut, RefreshCw, Menu, ChevronLeft, Shield,
   DollarSign, Zap, Target, ChevronDown, ChevronRight, Search, Globe, Type, MessageSquare, BarChart3, TrendingUp,
+  Bug,
 } from "lucide-react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useQuery } from "@tanstack/react-query";
@@ -49,6 +50,7 @@ import RolesTab from "@/components/admin/RolesTab";
 import ChangelogTab from "@/components/admin/ChangelogTab";
 import BudgetControlTab from "@/components/admin/BudgetControlTab";
 import AuditLogTab from "@/components/admin/tabs/AuditLogTab";
+import ErrorMonitorTab from "@/components/admin/tabs/ErrorMonitorTab";
 import GlobalSearchModal from "@/components/admin/GlobalSearchModal";
 
 // ─── Tab definitions ───
@@ -58,7 +60,7 @@ const ALL_TAB_IDS = [
   "roadmap", "logs", "forecast", "fraud", "leaderboard",
   "alerts", "budget", "orders", "blessings", "challenge",
   "messaging", "copymanager", "sms", "gamification", "affiliates", "referrals", "waitlist", "roles", "users",
-  "integrations", "database", "auditlog", "backups",
+  "integrations", "database", "auditlog", "backups", "errors",
 ] as const;
 
 type TabId = typeof ALL_TAB_IDS[number];
@@ -132,6 +134,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
       { id: "logs", label: "Logs", icon: ScrollText },
       { id: "database", label: "Database", icon: Database },
       { id: "backups", label: "Backup Verification", icon: ShieldAlert },
+      { id: "errors", label: "Error Monitor", icon: Bug },
       { id: "auditlog", label: "Audit Log", icon: ScrollText },
       { id: "roles", label: "Roles", icon: Shield },
       { id: "users", label: "Users", icon: Users },
@@ -177,6 +180,7 @@ function TabContent({ tab }: { tab: TabId }) {
     case "database": return <DatabaseTab />;
     case "auditlog": return <AuditLogTab />;
     case "backups": return <BackupVerificationPanel />;
+    case "errors": return <ErrorMonitorTab />;
     default: return null;
   }
 }
