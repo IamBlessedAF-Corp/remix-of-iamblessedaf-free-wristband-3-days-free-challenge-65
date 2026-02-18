@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Shield, DollarSign, AlertTriangle, CheckCircle, Clock,
   Plus, Trash2, Edit, Lock, Unlock, Zap, Download,
-  TrendingUp, BarChart3, Target, Activity, XCircle
+  TrendingUp, BarChart3, Target, Activity, XCircle, Award
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -407,6 +407,149 @@ const SimulationEngine = ({ budget }: { budget: ReturnType<typeof useBudgetContr
           </div>
         ))}
       </div>
+
+      {/* ─── Projected Data: Conversions, Sales & Gamification ─── */}
+      {(() => {
+        const clips = result.totalClips || 0;
+        const views = result.maxViews || 0;
+        // Conversion funnel rates (industry benchmarks for UGC/gratitude vertical)
+        const viewToClickRate = 0.028; // 2.8% CTR from clips
+        const clickToLeadRate = 0.22;  // 22% lead capture
+        const leadToCheckoutRate = 0.15; // 15% initiate checkout
+        const checkoutToSaleRate = 0.45; // 45% checkout completion
+        const upsellRate = 0.32; // 32% accept upsell
+        const downsellRate = 0.18; // 18% exit-intent downsell
+        const referralRate = 0.12; // 12% buyers share referral
+        const challengeJoinRate = 0.35; // 35% leads join challenge
+        const challengeCompleteRate = 0.60; // 60% complete 3 days
+
+        const clicks = Math.round(views * viewToClickRate);
+        const leads = Math.round(clicks * clickToLeadRate);
+        const checkouts = Math.round(leads * leadToCheckoutRate);
+        const sales = Math.round(checkouts * checkoutToSaleRate);
+        const upsells = Math.round(sales * upsellRate);
+        const downsells = Math.round((checkouts - sales) * downsellRate);
+        const totalOrders = sales + downsells;
+        const referrals = Math.round(totalOrders * referralRate);
+        const challengeJoins = Math.round(leads * challengeJoinRate);
+        const challengeCompletes = Math.round(challengeJoins * challengeCompleteRate);
+
+        // Revenue by tier (weighted distribution)
+        const tierDist = [
+          { tier: "Free Wristband", pct: 0.15, price: 0, meals: 0 },
+          { tier: "$22 (3-pack)", pct: 0.30, price: 22, meals: 22 },
+          { tier: "$111 (pack)", pct: 0.28, price: 111, meals: 11 },
+          { tier: "$444 (pack)", pct: 0.15, price: 444, meals: 1111 },
+          { tier: "$1,111 (pack)", pct: 0.08, price: 1111, meals: 11111 },
+          { tier: "$4,444 (pack)", pct: 0.02, price: 4444, meals: 44444 },
+          { tier: "$11/mo sub", pct: 0.02, price: 11, meals: 1 },
+        ];
+        const salesByTier = tierDist.map(t => {
+          const count = Math.round(totalOrders * t.pct);
+          return { ...t, count, revenue: count * t.price, meals: count * t.meals };
+        });
+        const totalRevenue = salesByTier.reduce((s, t) => s + t.revenue, 0);
+        const totalMeals = salesByTier.reduce((s, t) => s + t.meals, 0);
+
+        // Gamification projections
+        const bcEarnedPerOrder = 150;
+        const bcEarnedPerChallenge = 50;
+        const bcEarnedPerReferral = 75;
+        const totalBcMinted = (totalOrders * bcEarnedPerOrder) + (challengeCompletes * bcEarnedPerChallenge) + (referrals * bcEarnedPerReferral);
+        const newAmbassadors = Math.round(leads * 0.40);
+        const streakUsers = Math.round(newAmbassadors * 0.55);
+        const spinPlays = Math.round(totalOrders * 2.1);
+        const badgesUnlocked = Math.round(newAmbassadors * 3.2);
+
+        // Affiliate tier projections
+        const silverUpgrades = Math.round(newAmbassadors * 0.08);
+        const goldUpgrades = Math.round(newAmbassadors * 0.02);
+
+        return (
+          <div className="space-y-4">
+            {/* Conversion Funnel */}
+            <div className="bg-secondary/20 border border-border/30 rounded-lg p-4 space-y-3">
+              <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <TrendingUp className="w-3.5 h-3.5 text-primary" /> Projected Conversion Funnel
+              </h4>
+              <div className="space-y-1.5">
+                {[
+                  { stage: "Views (from clips)", value: views, rate: null, color: "bg-primary" },
+                  { stage: "Clicks (CTR 2.8%)", value: clicks, rate: viewToClickRate * 100, color: "bg-primary" },
+                  { stage: "Leads captured (22%)", value: leads, rate: clickToLeadRate * 100, color: "bg-primary" },
+                  { stage: "Checkouts started (15%)", value: checkouts, rate: leadToCheckoutRate * 100, color: "bg-amber-500" },
+                  { stage: "Sales completed (45%)", value: sales, rate: checkoutToSaleRate * 100, color: "bg-emerald-500" },
+                  { stage: "Upsells accepted (32%)", value: upsells, rate: upsellRate * 100, color: "bg-emerald-500" },
+                  { stage: "Downsells converted (18%)", value: downsells, rate: downsellRate * 100, color: "bg-amber-500" },
+                  { stage: "Referrals generated (12%)", value: referrals, rate: referralRate * 100, color: "bg-primary" },
+                ].map((row) => (
+                  <div key={row.stage} className="flex items-center gap-2">
+                    <span className="text-[10px] text-muted-foreground w-44 truncate">{row.stage}</span>
+                    <div className="flex-1 h-2 bg-secondary/30 rounded-full overflow-hidden">
+                      <div className={`h-full rounded-full ${row.color}`} style={{ width: `${Math.min(100, (row.value / Math.max(views, 1)) * 100)}%` }} />
+                    </div>
+                    <span className="text-xs font-bold text-foreground w-16 text-right">{row.value.toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Sales by Tier */}
+            <div className="bg-secondary/20 border border-border/30 rounded-lg p-4 space-y-3">
+              <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <DollarSign className="w-3.5 h-3.5 text-primary" /> Projected Sales by Tier
+              </h4>
+              <div className="space-y-1.5">
+                {salesByTier.map((t) => (
+                  <div key={t.tier} className="flex items-center gap-2">
+                    <span className="text-[10px] font-medium text-foreground w-28 truncate">{t.tier}</span>
+                    <div className="flex-1 h-2 bg-secondary/30 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full bg-primary" style={{ width: `${Math.min(100, (t.revenue / Math.max(totalRevenue, 1)) * 100)}%` }} />
+                    </div>
+                    <span className="text-[10px] text-muted-foreground w-12 text-right">{t.count}×</span>
+                    <span className="text-xs font-bold text-foreground w-20 text-right">${t.revenue.toLocaleString()}</span>
+                    <span className="text-[10px] text-muted-foreground w-20 text-right">{t.meals.toLocaleString()} 🍽️</span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center justify-between border-t border-border/20 pt-2 text-xs">
+                <span className="text-muted-foreground">Total: <strong className="text-foreground">{totalOrders} orders</strong></span>
+                <span className="font-bold text-primary text-base">${totalRevenue.toLocaleString()}</span>
+                <span className="text-muted-foreground">{totalMeals.toLocaleString()} meals 🍽️</span>
+              </div>
+            </div>
+
+            {/* Gamification & Community */}
+            <div className="bg-secondary/20 border border-border/30 rounded-lg p-4 space-y-3">
+              <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <Award className="w-3.5 h-3.5 text-primary" /> Projected Gamification & Community
+              </h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { label: "New Ambassadors", value: newAmbassadors, icon: "👥" },
+                  { label: "Challenge Joins", value: challengeJoins, icon: "🎯" },
+                  { label: "Challenge Completes", value: challengeCompletes, icon: "✅" },
+                  { label: "BC Minted", value: totalBcMinted.toLocaleString(), icon: "🙏" },
+                  { label: "Streak Users", value: streakUsers, icon: "🔥" },
+                  { label: "Spin Plays", value: spinPlays, icon: "🎰" },
+                  { label: "Badges Unlocked", value: badgesUnlocked, icon: "🏅" },
+                  { label: "Referral Chains", value: referrals, icon: "🔗" },
+                  { label: "Silver Tier Ups", value: silverUpgrades, icon: "🥈" },
+                  { label: "Gold Tier Ups", value: goldUpgrades, icon: "🥇" },
+                  { label: "Total Revenue", value: `$${totalRevenue.toLocaleString()}`, icon: "💰" },
+                  { label: "ROI (Revenue/Budget)", value: `${((totalRevenue / Math.max(weeklyLimit, 1)) * 100).toFixed(0)}%`, icon: "📈" },
+                ].map((item) => (
+                  <div key={item.label} className="bg-card border border-border/40 rounded-lg p-2.5 text-center">
+                    <span className="text-lg">{item.icon}</span>
+                    <p className="text-sm font-bold text-foreground">{typeof item.value === "number" ? item.value.toLocaleString() : item.value}</p>
+                    <p className="text-[9px] text-muted-foreground uppercase">{item.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
