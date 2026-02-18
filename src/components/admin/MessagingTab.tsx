@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import AdminSectionDashboard from "./AdminSectionDashboard";
@@ -8,6 +9,7 @@ import ExportCsvButton from "./ExportCsvButton";
 import EngagementBlueprintPanel from "./EngagementBlueprintPanel";
 
 export default function MessagingTab() {
+  const [activeTab, setActiveTab] = useState("blueprint");
   const { data: messages = [], isLoading } = useQuery({
     queryKey: ["admin-scheduled-messages"],
     queryFn: async () => {
@@ -53,7 +55,7 @@ export default function MessagingTab() {
         ]}
       />
 
-      <Tabs defaultValue="blueprint" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <div className="flex items-center justify-between">
           <TabsList>
             <TabsTrigger value="blueprint" className="gap-1 text-xs"><LayoutDashboard className="w-3.5 h-3.5" /> Engagement Blueprint</TabsTrigger>
@@ -61,7 +63,15 @@ export default function MessagingTab() {
             <TabsTrigger value="followups" className="gap-1 text-xs"><Calendar className="w-3.5 h-3.5" /> Follow-ups</TabsTrigger>
             <TabsTrigger value="tgf" className="gap-1 text-xs"><Heart className="w-3.5 h-3.5" /> TGF Contacts</TabsTrigger>
           </TabsList>
-          <ExportCsvButton data={messages} filename="messages.csv" columns={["friend_name", "day_number", "message_body", "status", "scheduled_send_at"]} />
+          {activeTab === "messages" && (
+            <ExportCsvButton data={messages.map(m => ({ friend_name: m.friend_name, day_number: m.day_number, message_body: m.message_body, status: m.status, scheduled_send_at: m.scheduled_send_at }))} filename="messages.csv" columns={["friend_name", "day_number", "message_body", "status", "scheduled_send_at"]} />
+          )}
+          {activeTab === "followups" && (
+            <ExportCsvButton data={followups.map(f => ({ type: f.sequence_type, channel: f.channel, step: f.step_number, status: f.status, scheduled_at: f.scheduled_at, sent_at: f.sent_at || "" }))} filename="followups.csv" columns={["type", "channel", "step", "status", "scheduled_at", "sent_at"]} />
+          )}
+          {activeTab === "tgf" && (
+            <ExportCsvButton data={tgfContacts.map((c: any) => ({ friend_name: c.friend_name, send_count: c.send_count, last_sent_at: c.last_sent_at || "", referral_link: c.referral_link || "" }))} filename="tgf-contacts.csv" columns={["friend_name", "send_count", "last_sent_at", "referral_link"]} />
+          )}
         </div>
 
         <TabsContent value="blueprint">
