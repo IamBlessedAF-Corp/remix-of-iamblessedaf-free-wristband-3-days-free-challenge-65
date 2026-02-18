@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 
 const signupSchema = z.object({
@@ -47,6 +48,19 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
 
   const { signInWithGoogle, signInWithApple, signUpWithEmail, signInWithEmail } = useAuth();
   const { toast } = useToast();
+
+  // Write referral attribution to creator_profiles after any successful auth
+  const writeReferralAttribution = async (userId: string) => {
+    const refCode = sessionStorage.getItem("referral_code");
+    if (!refCode) return;
+    try {
+      await supabase
+        .from("creator_profiles")
+        .update({ referred_by_code: refCode })
+        .eq("user_id", userId);
+      sessionStorage.removeItem("referral_code");
+    } catch (_) {}
+  };
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -114,10 +128,11 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
       if (signupErr) {
         // If user already exists, try signing in directly
         if (signupErr.message?.includes("already registered") || signupErr.message?.includes("already exists")) {
-          const { error: signInErr } = await signInWithEmail(email, password);
+          const { data: signInData, error: signInErr } = await signInWithEmail(email, password);
           if (signInErr) {
             toast({ variant: "destructive", title: "Sign-in failed", description: (signInErr as any).message });
           } else {
+            if (signInData?.user) await writeReferralAttribution(signInData.user.id);
             toast({ title: "✅ Welcome back!", description: "Signed in successfully." });
             onSuccess();
           }
@@ -126,10 +141,11 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
         }
       } else {
         // Account created — now sign in to get a session
-        const { error: signInErr } = await signInWithEmail(email, password);
+        const { data: signInData, error: signInErr } = await signInWithEmail(email, password);
         if (signInErr) {
           toast({ variant: "destructive", title: "Account created but sign-in failed", description: "Please sign in manually." });
         } else {
+          if (signInData?.user) await writeReferralAttribution(signInData.user.id);
           // Send welcome email (fire & forget)
           try {
             await supabase.functions.invoke("send-welcome-email", { body: { email, name: firstName } });
@@ -148,10 +164,11 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
     e.preventDefault();
     setErrors({});
     setIsLoading(true);
-    const { error } = await signInWithEmail(email, password);
+    const { data: signInData, error } = await signInWithEmail(email, password);
     if (error) {
       toast({ variant: "destructive", title: "Sign-in failed", description: (error as any).message });
     } else {
+      if (signInData?.user) await writeReferralAttribution(signInData.user.id);
       onSuccess();
     }
     setIsLoading(false);
