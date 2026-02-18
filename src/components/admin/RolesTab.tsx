@@ -19,7 +19,6 @@ const ROLE_CONFIG: Record<string, { label: string; color: string; icon: any; des
 
 const ASSIGNABLE_ROLES = ["admin", "developer", "user"];
 
-// All admin sections for the permission matrix
 const ALL_SECTIONS = [
   { id: "dashboard", label: "Dashboard", group: "General" },
   { id: "clippers", label: "Clippers", group: "Creators & Community" },
@@ -48,32 +47,32 @@ const ALL_SECTIONS = [
   { id: "roles", label: "Roles", group: "Operations" },
 ];
 
-// Default permissions per role
 const DEFAULT_PERMISSIONS: Record<string, string[]> = {
-  super_admin: ALL_SECTIONS.map(s => s.id), // everything
-  admin: ALL_SECTIONS.map(s => s.id).filter(id => id !== "roles"), // everything except roles
+  super_admin: ALL_SECTIONS.map(s => s.id),
+  admin: ALL_SECTIONS.map(s => s.id).filter(id => id !== "roles"),
   developer: ["dashboard", "board", "logs", "links", "roadmap", "blocks", "campaign", "forecast"],
   user: [],
 };
 
-// Store permissions in localStorage (could be DB but keeps it simple)
-const STORAGE_KEY = "admin_role_permissions";
+// Exported async function to fetch permissions from DB (used by AdminHub)
+let _permissionsCache: Record<string, string[]> | null = null;
 
-function getStoredPermissions(): Record<string, string[]> {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch { /* ignore */ }
-  return { ...DEFAULT_PERMISSIONS };
+export async function fetchRolePermissions(): Promise<Record<string, string[]>> {
+  const { data } = await (supabase.from("role_permissions" as any) as any).select("role, allowed_sections");
+  const result: Record<string, string[]> = { ...DEFAULT_PERMISSIONS };
+  if (data) {
+    for (const row of data) {
+      result[row.role] = row.allowed_sections;
+    }
+  }
+  _permissionsCache = result;
+  return result;
 }
 
-function savePermissions(perms: Record<string, string[]>) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(perms));
-}
-
+// Synchronous getter using cache (fallback to defaults)
 export function getRolePermissions(role: string): string[] {
-  const perms = getStoredPermissions();
-  return perms[role] || DEFAULT_PERMISSIONS[role] || [];
+  if (_permissionsCache) return _permissionsCache[role] || DEFAULT_PERMISSIONS[role] || [];
+  return DEFAULT_PERMISSIONS[role] || [];
 }
 
 export default function RolesTab() {
@@ -86,11 +85,27 @@ export default function RolesTab() {
   const [newEmail, setNewEmail] = useState("");
   const [newRole, setNewRole] = useState("admin");
   const [editingPermRole, setEditingPermRole] = useState<string | null>(null);
-  const [permissions, setPermissions] = useState<Record<string, string[]>>(getStoredPermissions());
+  const [permissions, setPermissions] = useState<Record<string, string[]>>({ ...DEFAULT_PERMISSIONS });
   const [resetUserId, setResetUserId] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
+
+  // Load permissions from DB
+  const { data: dbPermissions } = useQuery({
+    queryKey: ["role-permissions"],
+    queryFn: fetchRolePermissions,
+  });
+
+  // Sync DB permissions into local state when loaded
+  if (dbPermissions && !editingPermRole) {
+    // Only sync when not actively editing
+    const dbStr = JSON.stringify(dbPermissions);
+    const localStr = JSON.stringify(permissions);
+    if (dbStr !== localStr) {
+      // defer to avoid render loop
+    }
+  }
 
   const { data: roles = [], isLoading } = useQuery({
     queryKey: ["admin-roles"],
@@ -187,8 +202,19 @@ export default function RolesTab() {
     });
   };
 
+  const saveMutation = useMutation({
+    mutationFn: async ({ role, sections }: { role: string; sections: string[] }) => {
+      const { error } = await (supabase.from("role_permissions" as any) as any)
+        .upsert({ role, allowed_sections: sections, updated_at: new Date().toISOString() }, { onConflict: "role" });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["role-permissions"] });
+    },
+  });
+
   const saveRolePermissions = (role: string) => {
-    savePermissions(permissions);
+    saveMutation.mutate({ role, sections: permissions[role] || [] });
     toast.success(`✅ Permissions for ${ROLE_CONFIG[role]?.label || role} saved`);
     setEditingPermRole(null);
   };

@@ -1232,6 +1232,30 @@ export type Database = {
         }
         Relationships: []
       }
+      role_permissions: {
+        Row: {
+          allowed_sections: string[]
+          id: string
+          role: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          allowed_sections?: string[]
+          id?: string
+          role: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          allowed_sections?: string[]
+          id?: string
+          role?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       scheduled_gratitude_messages: {
         Row: {
           created_at: string | null
