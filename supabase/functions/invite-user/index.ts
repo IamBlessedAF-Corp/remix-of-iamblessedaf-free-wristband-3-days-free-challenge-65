@@ -171,23 +171,24 @@ Deno.serve(async (req) => {
                 <h1 style="font-size: 24px; color: #111;">Welcome ${display_name || "Team Member"}! 🙌</h1>
                 <p style="color: #555; font-size: 16px;">You've been granted <strong>${role}</strong> access to the I Am Blessed AF admin panel.</p>
                 
-                <div style="background: #f5f5f5; border-radius: 12px; padding: 20px; margin: 24px 0;">
-                  <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Your temporary credentials:</strong></p>
-                  <p style="margin: 4px 0; font-size: 14px;">📧 Email: <code style="background: #e5e5e5; padding: 2px 6px; border-radius: 4px;">${email}</code></p>
-                  <p style="margin: 4px 0; font-size: 14px;">🔑 Password: <code style="background: #e5e5e5; padding: 2px 6px; border-radius: 4px;">${password}</code></p>
-                </div>
+                 <div style="background: #f5f5f5; border-radius: 12px; padding: 20px; margin: 24px 0;">
+                   <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Your login email:</strong></p>
+                   <p style="margin: 4px 0; font-size: 14px;">📧 Email: <code style="background: #e5e5e5; padding: 2px 6px; border-radius: 4px;">${email}</code></p>
+                 </div>
 
-                <p style="color: #555; font-size: 14px;">Click the button below to access the admin panel:</p>
-                
-                <a href="https://funnel-architect-ai-30.lovable.app/admin" 
-                   style="display: inline-block; background: #7c3aed; color: white; text-decoration: none; padding: 14px 28px; border-radius: 10px; font-weight: 600; font-size: 16px; margin: 16px 0;">
-                  Open Admin Panel →
-                </a>
+                <p style="color: #555; font-size: 14px;">Click the button below to sign in securely via magic link:</p>
+                 
+                 ${magicLink ? `<a href="${magicLink}" 
+                    style="display: inline-block; background: #7c3aed; color: white; text-decoration: none; padding: 14px 28px; border-radius: 10px; font-weight: 600; font-size: 16px; margin: 16px 0;">
+                   Sign In to Admin Panel →
+                 </a>` : `<a href="https://funnel-architect-ai-30.lovable.app/admin" 
+                    style="display: inline-block; background: #7c3aed; color: white; text-decoration: none; padding: 14px 28px; border-radius: 10px; font-weight: 600; font-size: 16px; margin: 16px 0;">
+                   Open Admin Panel →
+                 </a>`}
 
-                <p style="color: #999; font-size: 12px; margin-top: 24px;">
-                  ⚠️ Please change your password after your first login for security.<br/>
-                  Go to your profile settings to update it.
-                </p>
+                 <p style="color: #999; font-size: 12px; margin-top: 24px;">
+                   🔒 For security, use the magic link above to sign in. You can set your own password in profile settings after logging in.
+                 </p>
               </div>
             `,
           }),
