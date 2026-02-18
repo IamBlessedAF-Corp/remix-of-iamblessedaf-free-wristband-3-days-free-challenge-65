@@ -28,6 +28,7 @@ const Offer22 = () => {
     const ref = searchParams.get("ref");
     if (ref) {
       sessionStorage.setItem("referral_code", ref);
+      localStorage.setItem("referral_code", ref);
     }
   }, [searchParams]);
 
@@ -42,13 +43,14 @@ const Offer22 = () => {
           .maybeSingle();
 
         // Write referral attribution if not yet set
-        const storedRef = sessionStorage.getItem("referral_code");
+        const storedRef = sessionStorage.getItem("referral_code") || localStorage.getItem("referral_code");
         if (storedRef && data && !data.referred_by_code) {
           await supabase
             .from("creator_profiles")
             .update({ referred_by_code: storedRef })
             .eq("user_id", user.id);
           sessionStorage.removeItem("referral_code");
+          localStorage.removeItem("referral_code");
         }
 
         // Only redirect if they already completed the full funnel + invite flow

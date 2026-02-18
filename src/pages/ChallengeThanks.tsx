@@ -98,7 +98,7 @@ const ChallengeThanks = () => {
         if (!data) {
           const { data: codeData } = await supabase.rpc("generate_referral_code");
           const newCode = codeData || `BLESSED${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-          const storedRef = sessionStorage.getItem("referral_code");
+          const storedRef = sessionStorage.getItem("referral_code") || localStorage.getItem("referral_code");
           await supabase.from("creator_profiles").insert({
             user_id: user.id,
             email: user.email || "",
@@ -106,7 +106,10 @@ const ChallengeThanks = () => {
             display_name: user.user_metadata?.display_name || user.email?.split("@")[0] || "",
             ...(storedRef ? { referred_by_code: storedRef } : {}),
           });
-          if (storedRef) sessionStorage.removeItem("referral_code");
+          if (storedRef) {
+            sessionStorage.removeItem("referral_code");
+            localStorage.removeItem("referral_code");
+          }
           setReferralCode(newCode);
           setDisplayName(user.user_metadata?.display_name || user.email?.split("@")[0] || "");
           setShowInviteModal(true);
