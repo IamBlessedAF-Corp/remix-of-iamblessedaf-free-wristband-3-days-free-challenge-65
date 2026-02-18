@@ -9,9 +9,7 @@ export interface RoadmapFilters {
 const STATUS_OPTIONS = [
   { value: "", label: "All Statuses" },
   { value: "done", label: "✅ Done" },
-  { value: "in-progress", label: "🔄 In Progress" },
-  { value: "blocked", label: "🚫 Blocked" },
-  { value: "planned", label: "📋 Planned" },
+  { value: "pending", label: "⏳ Pending" },
 ];
 
 const PRIORITY_OPTIONS = [
