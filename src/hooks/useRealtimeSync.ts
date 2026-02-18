@@ -14,10 +14,11 @@ import { supabase } from "@/integrations/supabase/client";
  */
 
 const REALTIME_TABLES = [
-  { table: "campaign_config", queryKeys: ["campaign-config", "copy-manager"] },
+  { table: "campaign_config", queryKeys: ["campaign-config", "copy-manager", "admin-copy-config"] },
   { table: "orders", queryKeys: ["orders", "orders-count-live"] },
   { table: "clip_submissions", queryKeys: ["clips", "clipper", "clippers-count"] },
   { table: "creator_profiles", queryKeys: ["creators", "creators-count-live", "creator-profile", "leaderboard"] },
+  { table: "changelog_entries", queryKeys: ["changelog-entries"] },
 ] as const;
 
 export function useRealtimeSync() {
@@ -62,6 +63,11 @@ export function useRealtimeSync() {
         "postgres_changes",
         { event: "*", schema: "public", table: "creator_profiles" },
         () => scheduleInvalidation(REALTIME_TABLES[3].queryKeys)
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "changelog_entries" },
+        () => scheduleInvalidation(REALTIME_TABLES[4].queryKeys)
       )
       .subscribe();
 
