@@ -20,6 +20,9 @@ import {
 // ── Tab definitions for navigation search ──
 const TAB_ENTRIES = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "dashboard", label: "Revenue Intelligence", icon: DollarSign },
+  { id: "dashboard", label: "Funnel Engine", icon: Zap },
+  { id: "dashboard", label: "Growth Metrics", icon: Target },
   { id: "clippers", label: "Clippers", icon: Film },
   { id: "congrats", label: "Congrats", icon: Award },
   { id: "experts", label: "Experts", icon: Users },
@@ -45,6 +48,11 @@ const TAB_ENTRIES = [
   { id: "waitlist", label: "Waitlist & Reposts", icon: ScrollText },
   { id: "roles", label: "Roles", icon: Shield },
   { id: "users", label: "Users", icon: Users },
+  { id: "traffic", label: "Traffic", icon: Search },
+  { id: "database", label: "Database", icon: Blocks },
+  { id: "integrations", label: "Integrations", icon: Zap },
+  { id: "changelog", label: "Changelog", icon: ScrollText },
+  { id: "copy", label: "Copy Manager", icon: ScrollText },
 ];
 
 function navigateToTab(tabId: string) {
@@ -136,8 +144,8 @@ export default function GlobalSearchModal() {
 
         {/* Tab navigation */}
         <CommandGroup heading="Navigate">
-          {TAB_ENTRIES.map(t => (
-            <CommandItem key={t.id} value={`tab-${t.label}`} onSelect={() => select(t.id)}>
+          {TAB_ENTRIES.map((t, i) => (
+            <CommandItem key={`${t.id}-${i}`} value={`tab-${t.label}`} onSelect={() => select(t.id)} keywords={[t.label, t.id]}>
               <t.icon className="mr-2 h-4 w-4 text-muted-foreground" />
               <span>{t.label}</span>
             </CommandItem>
