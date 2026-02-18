@@ -42,12 +42,24 @@ const Offer22 = () => {
           .eq("user_id", user.id)
           .maybeSingle();
 
-        // Write referral attribution if not yet set
+        // Write referral attribution if not yet set — resolve code → user_id
         const storedRef = sessionStorage.getItem("referral_code") || localStorage.getItem("referral_code");
         if (storedRef && data && !data.referred_by_code) {
+          // Look up the referrer's user_id from their referral_code
+          const { data: referrer } = await supabase
+            .from("creator_profiles")
+            .select("user_id")
+            .eq("referral_code", storedRef)
+            .maybeSingle();
+
+          const updatePayload: Record<string, string> = { referred_by_code: storedRef };
+          if (referrer?.user_id) {
+            updatePayload.referred_by_user_id = referrer.user_id;
+          }
+
           await supabase
             .from("creator_profiles")
-            .update({ referred_by_code: storedRef })
+            .update(updatePayload)
             .eq("user_id", user.id);
           sessionStorage.removeItem("referral_code");
           localStorage.removeItem("referral_code");

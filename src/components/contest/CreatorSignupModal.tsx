@@ -50,14 +50,28 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
   const { toast } = useToast();
 
   // Write referral attribution to creator_profiles after any successful auth
+  // Resolves the referral code → referrer's user_id and stores both
   const writeReferralAttribution = async (userId: string) => {
     const refCode = sessionStorage.getItem("referral_code") || localStorage.getItem("referral_code");
     if (!refCode) return;
     try {
+      // Look up the referrer's user_id from their referral_code
+      const { data: referrer } = await supabase
+        .from("creator_profiles")
+        .select("user_id")
+        .eq("referral_code", refCode)
+        .maybeSingle();
+
+      const updatePayload: Record<string, string> = { referred_by_code: refCode };
+      if (referrer?.user_id) {
+        updatePayload.referred_by_user_id = referrer.user_id;
+      }
+
       await supabase
         .from("creator_profiles")
-        .update({ referred_by_code: refCode })
+        .update(updatePayload)
         .eq("user_id", userId);
+
       sessionStorage.removeItem("referral_code");
       localStorage.removeItem("referral_code");
     } catch (_) {}
