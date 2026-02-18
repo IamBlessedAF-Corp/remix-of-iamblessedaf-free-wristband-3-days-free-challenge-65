@@ -43,7 +43,7 @@ import SmsTab from "@/components/admin/SmsTab";
 import GamificationTab from "@/components/admin/GamificationTab";
 import AffiliatesTab from "@/components/admin/AffiliatesTab";
 import WaitlistTab from "@/components/admin/WaitlistTab";
-import RolesTab from "@/components/admin/RolesTab";
+import RolesTab, { getRolePermissions } from "@/components/admin/RolesTab";
 
 // Lazy load the heavy FunnelMap
 const FunnelMap = lazy(() => import("@/pages/FunnelMap"));
@@ -180,7 +180,7 @@ const ClipRowItem = ({ clip, onApprove, onReject, onDelete }: { clip: ClipRow; o
 // MAIN ADMIN HUB
 // ═══════════════════════════════════════════════
 export default function AdminHub() {
-  const { user, isAdmin, loading: authLoading, signInWithEmail, signOut } = useAdminAuth();
+  const { user, isAdmin, userRole, loading: authLoading, signInWithEmail, signOut } = useAdminAuth();
    const [activeTab, setActiveTab] = useState<TabId>("dashboard");
    const [sidebarOpen, setSidebarOpen] = useState(true);
    const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
@@ -228,50 +228,57 @@ export default function AdminHub() {
           {sidebarOpen && <span className="text-sm font-bold text-foreground truncate">Growth Intelligence OS</span>}
         </div>
         <nav className="flex-1 py-2 space-y-0.5 px-2">
-          {SIDEBAR_MENU.map((entry, idx) => {
-            if ("group" in entry) {
-              const isGroupOpen = openGroups[entry.group] ?? entry.items.some(i => i.id === activeTab);
-              const groupActive = entry.items.some(i => i.id === activeTab);
-              const toggleGroup = () => setOpenGroups(prev => ({ ...prev, [entry.group]: !isGroupOpen }));
+          {(() => {
+            const allowedTabs = userRole === "super_admin" ? null : getRolePermissions(userRole || "user");
+            const isAllowed = (id: string) => !allowedTabs || allowedTabs.includes(id);
+            
+            return SIDEBAR_MENU.map((entry, idx) => {
+              if ("group" in entry) {
+                const visibleItems = entry.items.filter(i => isAllowed(i.id));
+                if (visibleItems.length === 0) return null;
+                const isGroupOpen = openGroups[entry.group] ?? visibleItems.some(i => i.id === activeTab);
+                const groupActive = visibleItems.some(i => i.id === activeTab);
+                const toggleGroup = () => setOpenGroups(prev => ({ ...prev, [entry.group]: !isGroupOpen }));
+                return (
+                  <div key={entry.group} className="mt-1">
+                    <button onClick={toggleGroup} title={entry.group}
+                      className={cn("w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors",
+                        groupActive ? "text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                      )}>
+                      <entry.icon className="w-4 h-4 shrink-0" />
+                      {sidebarOpen && <>
+                        <span className="truncate flex-1 text-left">{entry.group}</span>
+                        {isGroupOpen ? <ChevronDown className="w-3 h-3 shrink-0" /> : <ChevronRight className="w-3 h-3 shrink-0" />}
+                      </>}
+                    </button>
+                    {(isGroupOpen || !sidebarOpen) && (
+                      <div className={cn("space-y-0.5", sidebarOpen ? "ml-4 mt-0.5 border-l border-border/30 pl-2" : "")}>
+                        {visibleItems.map(item => (
+                          <button key={item.id} onClick={() => setActiveTab(item.id)} title={item.label}
+                            className={cn("w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors",
+                              activeTab === item.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                            )}>
+                            <item.icon className="w-3.5 h-3.5 shrink-0" />
+                            {sidebarOpen && <span className="truncate">{item.label}</span>}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              if (!isAllowed(entry.id)) return null;
               return (
-                <div key={entry.group} className="mt-1">
-                  <button onClick={toggleGroup} title={entry.group}
-                    className={cn("w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors",
-                      groupActive ? "text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                    )}>
-                    <entry.icon className="w-4 h-4 shrink-0" />
-                    {sidebarOpen && <>
-                      <span className="truncate flex-1 text-left">{entry.group}</span>
-                      {isGroupOpen ? <ChevronDown className="w-3 h-3 shrink-0" /> : <ChevronRight className="w-3 h-3 shrink-0" />}
-                    </>}
-                  </button>
-                  {(isGroupOpen || !sidebarOpen) && (
-                    <div className={cn("space-y-0.5", sidebarOpen ? "ml-4 mt-0.5 border-l border-border/30 pl-2" : "")}>
-                      {entry.items.map(item => (
-                        <button key={item.id} onClick={() => setActiveTab(item.id)} title={item.label}
-                          className={cn("w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors",
-                            activeTab === item.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                          )}>
-                          <item.icon className="w-3.5 h-3.5 shrink-0" />
-                          {sidebarOpen && <span className="truncate">{item.label}</span>}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <button key={entry.id} onClick={() => setActiveTab(entry.id)} title={entry.label}
+                  className={cn("w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-colors",
+                    activeTab === entry.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  )}>
+                  <entry.icon className="w-4 h-4 shrink-0" />
+                  {sidebarOpen && <span className="truncate">{entry.label}</span>}
+                </button>
               );
-            }
-            // Top-level item (e.g. Dashboard)
-            return (
-              <button key={entry.id} onClick={() => setActiveTab(entry.id)} title={entry.label}
-                className={cn("w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-colors",
-                  activeTab === entry.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                )}>
-                <entry.icon className="w-4 h-4 shrink-0" />
-                {sidebarOpen && <span className="truncate">{entry.label}</span>}
-              </button>
-            );
-          })}
+            });
+          })()}
         </nav>
         <div className="border-t border-border/30 p-3">
           {sidebarOpen && <p className="text-[10px] text-muted-foreground truncate mb-2">{user.email}</p>}
