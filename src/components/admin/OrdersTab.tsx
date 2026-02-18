@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { usePaginatedQuery } from "@/hooks/usePaginatedQuery";
+import PaginationControls from "./PaginationControls";
 import AdminSectionDashboard from "./AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,13 +18,10 @@ export default function OrdersTab() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editStatus, setEditStatus] = useState("");
 
-  const { data: orders = [], isLoading } = useQuery({
-    queryKey: ["admin-orders"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(200);
-      if (error) throw error;
-      return data;
-    },
+  const { data: orders, isLoading, page, totalPages, totalCount, pageSize, nextPage, prevPage } = usePaginatedQuery({
+    table: "orders",
+    queryKey: "admin-orders",
+    pageSize: 50,
   });
 
   const handleSave = async (id: string) => {
@@ -111,6 +110,7 @@ export default function OrdersTab() {
           </tbody>
         </table>
       </div>
+      <PaginationControls page={page} totalPages={totalPages} totalCount={totalCount} pageSize={pageSize} onPrev={prevPage} onNext={nextPage} />
     </div>
   );
 }

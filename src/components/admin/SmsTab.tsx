@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { usePaginatedQuery } from "@/hooks/usePaginatedQuery";
+import PaginationControls from "./PaginationControls";
 import AdminSectionDashboard from "./AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,20 +9,16 @@ import { RefreshCw, MessageCircle, Shield } from "lucide-react";
 import ExportCsvButton from "./ExportCsvButton";
 
 export default function SmsTab() {
-  const { data: deliveries = [], isLoading: dLoad } = useQuery({
-    queryKey: ["admin-sms-deliveries"],
-    queryFn: async () => {
-      const { data } = await supabase.from("sms_deliveries").select("*").order("created_at", { ascending: false }).limit(200);
-      return data || [];
-    },
+  const { data: deliveries, isLoading: dLoad, page: dPage, totalPages: dTotalPages, totalCount: dTotalCount, pageSize: dPageSize, nextPage: dNext, prevPage: dPrev } = usePaginatedQuery({
+    table: "sms_deliveries",
+    queryKey: "admin-sms-deliveries",
+    pageSize: 50,
   });
 
-  const { data: auditLogs = [], isLoading: aLoad } = useQuery({
-    queryKey: ["admin-sms-audit"],
-    queryFn: async () => {
-      const { data } = await supabase.from("sms_audit_log").select("*").order("created_at", { ascending: false }).limit(200);
-      return data || [];
-    },
+  const { data: auditLogs, isLoading: aLoad, page: aPage, totalPages: aTotalPages, totalCount: aTotalCount, pageSize: aPageSize, nextPage: aNext, prevPage: aPrev } = usePaginatedQuery({
+    table: "sms_audit_log",
+    queryKey: "admin-sms-audit",
+    pageSize: 50,
   });
 
   const delivered = deliveries.filter(d => d.status === "delivered").length;
@@ -83,6 +81,7 @@ export default function SmsTab() {
               </tbody>
             </table>
           </div>
+          <PaginationControls page={dPage} totalPages={dTotalPages} totalCount={dTotalCount} pageSize={dPageSize} onPrev={dPrev} onNext={dNext} />
         </TabsContent>
 
         <TabsContent value="audit">
@@ -106,6 +105,7 @@ export default function SmsTab() {
               </tbody>
             </table>
           </div>
+          <PaginationControls page={aPage} totalPages={aTotalPages} totalCount={aTotalCount} pageSize={aPageSize} onPrev={aPrev} onNext={aNext} />
         </TabsContent>
       </Tabs>
     </div>

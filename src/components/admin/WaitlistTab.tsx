@@ -1,17 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { usePaginatedQuery } from "@/hooks/usePaginatedQuery";
+import PaginationControls from "./PaginationControls";
 import AdminSectionDashboard from "./AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw } from "lucide-react";
 import ExportCsvButton from "./ExportCsvButton";
 
 export default function WaitlistTab() {
-  const { data: waitlist = [], isLoading } = useQuery({
-    queryKey: ["admin-waitlist"],
-    queryFn: async () => {
-      const { data } = await supabase.from("smart_wristband_waitlist").select("*").order("created_at", { ascending: false }).limit(200);
-      return data || [];
-    },
+  const { data: waitlist, isLoading, page, totalPages, totalCount, pageSize, nextPage, prevPage } = usePaginatedQuery({
+    table: "smart_wristband_waitlist",
+    queryKey: "admin-waitlist",
+    pageSize: 50,
   });
 
   const { data: repostLogs = [] } = useQuery({
@@ -58,8 +58,7 @@ export default function WaitlistTab() {
           </tbody>
         </table>
       </div>
-
-      {/* Repost Logs */}
+      <PaginationControls page={page} totalPages={totalPages} totalCount={totalCount} pageSize={pageSize} onPrev={prevPage} onNext={nextPage} />
       {repostLogs.length > 0 && (
         <div className="bg-card border border-border/40 rounded-xl overflow-x-auto">
           <div className="px-4 py-3 border-b border-border/20 bg-secondary/20">
