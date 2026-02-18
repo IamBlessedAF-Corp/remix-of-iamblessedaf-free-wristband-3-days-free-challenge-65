@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import AdminSectionDashboard from "./AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RefreshCw, MessageSquare, Calendar, Heart, Mail, LayoutDashboard } from "lucide-react";
+import { RefreshCw, MessageSquare, Calendar, Heart, Mail, LayoutDashboard, FileDown } from "lucide-react";
 import ExportCsvButton from "./ExportCsvButton";
+import { Button } from "@/components/ui/button";
 import EngagementBlueprintPanel from "./EngagementBlueprintPanel";
 
 export default function MessagingTab() {
@@ -63,6 +64,41 @@ export default function MessagingTab() {
             <TabsTrigger value="followups" className="gap-1 text-xs"><Calendar className="w-3.5 h-3.5" /> Follow-ups</TabsTrigger>
             <TabsTrigger value="tgf" className="gap-1 text-xs"><Heart className="w-3.5 h-3.5" /> TGF Contacts</TabsTrigger>
           </TabsList>
+          {activeTab === "blueprint" && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 text-xs h-8"
+              onClick={() => {
+                const el = document.getElementById("engagement-blueprint-content");
+                if (!el) return;
+                const printWindow = window.open("", "_blank");
+                if (!printWindow) return;
+                printWindow.document.write(`
+                  <html><head><title>Engagement Blueprint</title>
+                  <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 24px; color: #1a1a1a; background: #fff; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 11px; }
+                    th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
+                    th { background: #f5f5f5; font-weight: 600; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; }
+                    h1 { font-size: 18px; margin-bottom: 4px; }
+                    h2 { font-size: 14px; margin: 16px 0 8px; }
+                    .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 600; background: #f0f0f0; }
+                    @media print { body { padding: 0; } }
+                  </style></head><body>
+                  <h1>📋 Engagement Blueprint</h1>
+                  <p style="color:#666;font-size:12px;margin-bottom:20px;">Generated ${new Date().toLocaleString()}</p>
+                  ${el.innerHTML}
+                  <script>window.onload=function(){window.print();}<\/script>
+                  </body></html>
+                `);
+                printWindow.document.close();
+              }}
+            >
+              <FileDown className="w-3.5 h-3.5" />
+              Download PDF
+            </Button>
+          )}
           {activeTab === "messages" && (
             <ExportCsvButton data={messages.map(m => ({ friend_name: m.friend_name, day_number: m.day_number, message_body: m.message_body, status: m.status, scheduled_send_at: m.scheduled_send_at }))} filename="messages.csv" columns={["friend_name", "day_number", "message_body", "status", "scheduled_send_at"]} />
           )}
@@ -75,7 +111,9 @@ export default function MessagingTab() {
         </div>
 
         <TabsContent value="blueprint">
-          <EngagementBlueprintPanel />
+          <div id="engagement-blueprint-content">
+            <EngagementBlueprintPanel />
+          </div>
         </TabsContent>
 
         <TabsContent value="messages">
