@@ -43,7 +43,7 @@ import SmsTab from "@/components/admin/SmsTab";
 import GamificationTab from "@/components/admin/GamificationTab";
 import AffiliatesTab from "@/components/admin/AffiliatesTab";
 import WaitlistTab from "@/components/admin/WaitlistTab";
-import RolesTab, { getRolePermissions } from "@/components/admin/RolesTab";
+import RolesTab, { getRolePermissions, fetchRolePermissions } from "@/components/admin/RolesTab";
 
 // Lazy load the heavy FunnelMap
 const FunnelMap = lazy(() => import("@/pages/FunnelMap"));
@@ -184,6 +184,9 @@ export default function AdminHub() {
    const [activeTab, setActiveTab] = useState<TabId>("dashboard");
    const [sidebarOpen, setSidebarOpen] = useState(true);
    const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+
+   // Preload role permissions from DB so getRolePermissions() has cached data
+   useQuery({ queryKey: ["role-permissions"], queryFn: fetchRolePermissions });
 
    useEffect(() => {
     const handler = (e: Event) => {
