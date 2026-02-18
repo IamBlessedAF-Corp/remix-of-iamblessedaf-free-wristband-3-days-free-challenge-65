@@ -20,6 +20,7 @@ const REALTIME_TABLES = [
   { table: "creator_profiles", queryKeys: ["creators", "creators-count-live", "creator-profile", "leaderboard"] },
   { table: "changelog_entries", queryKeys: ["changelog-entries"] },
   { table: "query_performance_logs", queryKeys: ["query-performance-logs", "query-performance-stats"] },
+  { table: "audit_log", queryKeys: ["audit-log"] },
 ] as const;
 
 export function useRealtimeSync() {
@@ -74,6 +75,11 @@ export function useRealtimeSync() {
         "postgres_changes",
         { event: "*", schema: "public", table: "query_performance_logs" },
         () => scheduleInvalidation(REALTIME_TABLES[5].queryKeys)
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "audit_log" },
+        () => scheduleInvalidation(REALTIME_TABLES[6].queryKeys)
       )
       .subscribe();
 
