@@ -24,23 +24,29 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Use service role client for all admin operations
+    const adminClient = createClient(supabaseUrl, serviceKey);
+
+    // Verify caller identity via getClaims
     const anonClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-    const { data: { user: caller } } = await anonClient.auth.getUser();
-    if (!caller) {
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await anonClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    const callerId = claimsData.claims.sub;
+
     // Check caller has admin or super_admin role
-    const adminClient = createClient(supabaseUrl, serviceKey);
     const { data: callerRoles } = await adminClient
       .from("user_roles")
       .select("role")
-      .eq("user_id", caller.id)
+      .eq("user_id", callerId)
       .in("role", ["admin", "super_admin"]);
 
     if (!callerRoles || callerRoles.length === 0) {
