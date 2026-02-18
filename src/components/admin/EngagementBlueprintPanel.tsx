@@ -461,7 +461,7 @@ function EditableMetaField({
 
 /* ─────────────── Copy Edit Dialog ─────────────── */
 
-const ADMIN_PASSWORD = "BlessedAdmin2025!";
+// Admin password check removed — authorization enforced via RLS policies on campaign_config
 
 const MSG_COPY_MAP: Record<string, { copyKey: string; affectedPages: string[] }> = {
   "ch-welcome-sms": { copyKey: "copy_sms_welcome", affectedPages: ["Challenge Setup"] },
@@ -532,8 +532,6 @@ function CopyEditDialog({
 
   const handleSave = async () => {
     if (draft === originalRef.current) { onOpenChange(false); return; }
-    if (isStructural && !needsPassword) { setNeedsPassword(true); return; }
-    if (isStructural && password !== ADMIN_PASSWORD) { setPasswordError(true); return; }
 
     setSaving(true);
     try {

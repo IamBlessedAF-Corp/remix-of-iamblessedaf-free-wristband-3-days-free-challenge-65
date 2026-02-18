@@ -75,12 +75,20 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Get public URL
-    const { data: urlData } = supabase.storage
+    // Get signed URL (bucket is private)
+    const { data: urlData, error: signError } = await supabase.storage
       .from("board-screenshots")
-      .getPublicUrl(path);
+      .createSignedUrl(path, 86400 * 7); // 7-day expiry
 
-    const publicUrl = urlData.publicUrl;
+    if (signError || !urlData?.signedUrl) {
+      console.error("Signed URL error:", signError);
+      return new Response(JSON.stringify({ error: "Failed to generate URL" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const publicUrl = urlData.signedUrl;
 
     // Update card screenshots array
     const { data: card } = await supabase
