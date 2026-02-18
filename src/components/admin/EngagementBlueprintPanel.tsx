@@ -4,15 +4,20 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   MessageSquare, Mail, Clock, Users, Zap, Calendar,
   ArrowRight, AlertTriangle, CheckCircle2, Repeat, Timer,
   Send, Bell, Gift, Heart, Trophy, Shield, Smartphone,
-  Power, Loader2, Pencil, Check, X,
+  Power, Loader2, Pencil, Check, X, Eye, Lock, Save,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from "@/components/ui/dialog";
 import { useCampaignConfig } from "@/hooks/useCampaignConfig";
 import { toast } from "sonner";
+import { useCopyValue, COPY_DEFAULTS } from "@/hooks/useCopyValue";
 /* ─────────────────────── Types ─────────────────────── */
 
 interface MessageSpec {
@@ -453,11 +458,186 @@ function EditableMetaField({
   );
 }
 
+/* ─────────────── Copy Edit Dialog ─────────────── */
+
+const ADMIN_PASSWORD = "BlessedAdmin2025!";
+
+const MSG_COPY_MAP: Record<string, { copyKey: string; affectedPages: string[] }> = {
+  "ch-welcome-sms": { copyKey: "copy_sms_welcome", affectedPages: ["Challenge Setup"] },
+  "ch-welcome-email": { copyKey: "copy_email_welcome_body", affectedPages: ["send-welcome-email"] },
+  "ch-day1-msg": { copyKey: "copy_sms_1111", affectedPages: ["Daily Automation"] },
+  "ch-day2-msg": { copyKey: "copy_sms_day2_followup", affectedPages: ["Followup Sequences"] },
+  "ch-day3-msg": { copyKey: "copy_sms_1111", affectedPages: ["Daily Automation"] },
+  "rem-3pm": { copyKey: "copy_sms_1111", affectedPages: ["Daily Automation"] },
+  "fu-step1": { copyKey: "copy_sms_day2_followup", affectedPages: ["Followup Sequences"] },
+  "fu-step2": { copyKey: "copy_sms_day2_followup", affectedPages: ["Followup Sequences"] },
+  "tgf-weekly": { copyKey: "copy_sms_tgf_friday", affectedPages: ["TGF Automation"] },
+  "otp-sms": { copyKey: "copy_sms_welcome", affectedPages: ["OTP Auth"] },
+  "otp-email": { copyKey: "copy_email_welcome_subject", affectedPages: ["OTP Auth"] },
+  "wel-challenge": { copyKey: "copy_email_welcome_body", affectedPages: ["send-welcome-email"] },
+  "wel-expert": { copyKey: "copy_email_expert_subject", affectedPages: ["send-expert-welcome"] },
+  "wel-nm": { copyKey: "copy_email_nm_subject", affectedPages: ["send-network-marketer-welcome"] },
+  "wel-wristband": { copyKey: "copy_email_wristband_subject", affectedPages: ["send-wristband-welcome"] },
+  "digest-weekly": { copyKey: "copy_email_weekly_digest_subject", affectedPages: ["send-weekly-digest"] },
+  "clip-approved": { copyKey: "copy_clipper_hero", affectedPages: ["/clipper-dashboard"] },
+  "clip-milestone": { copyKey: "copy_clipper_bonus_100k", affectedPages: ["/clipper-dashboard"] },
+  "tier-silver": { copyKey: "copy_email_tier_milestone", affectedPages: ["send-tier-milestone-email"] },
+  "tier-gold": { copyKey: "copy_email_tier_milestone", affectedPages: ["send-tier-milestone-email"] },
+  "tier-diamond": { copyKey: "copy_email_tier_milestone", affectedPages: ["send-tier-milestone-email"] },
+  "wa-invite": { copyKey: "copy_whatsapp_invite", affectedPages: ["ChallengeThanks", "Portal"] },
+  "gift-sms-msg": { copyKey: "copy_viral_nudge_text", affectedPages: ["ViralShareNudge"] },
+};
+
+function CopyEditDialog({
+  open,
+  onOpenChange,
+  message,
+  groupCampaign,
+  saveChanges,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  message: MessageSpec | null;
+  groupCampaign: string;
+  saveChanges: (changes: { key: string; label: string; oldValue: string; newValue: string; affected_areas: string[]; category: string }[]) => Promise<void>;
+}) {
+  const [draft, setDraft] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [needsPassword, setNeedsPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+  const originalRef = useRef("");
+
+  const openWith = (msg: MessageSpec) => {
+    originalRef.current = msg.content_preview;
+    setDraft(msg.content_preview);
+    setPassword("");
+    setPasswordError(false);
+    setNeedsPassword(false);
+  };
+
+  if (!message) return null;
+
+  const mapping = MSG_COPY_MAP[message.id];
+  const affectedPages = mapping?.affectedPages || [];
+  const isStructural = affectedPages.length > 2;
+  const charLimit = message.channel === "sms" ? 160 : message.channel === "email" ? 200 : 250;
+  const charCount = draft.length;
+  const isOverLimit = charCount > charLimit;
+
+  const handleSave = async () => {
+    if (draft === originalRef.current) { onOpenChange(false); return; }
+    if (isStructural && !needsPassword) { setNeedsPassword(true); return; }
+    if (isStructural && password !== ADMIN_PASSWORD) { setPasswordError(true); return; }
+
+    setSaving(true);
+    try {
+      const configKey = mapping?.copyKey || `copy_blueprint_${message.id}`;
+      await saveChanges([{
+        key: configKey,
+        label: `${groupCampaign} — ${message.name}`,
+        oldValue: originalRef.current,
+        newValue: draft,
+        affected_areas: affectedPages,
+        category: "copy",
+      }]);
+      toast.success(`"${message.name}" copy updated ✅`);
+      onOpenChange(false);
+    } catch {
+      toast.error("Failed to save copy");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-base">
+            <Pencil className="w-4 h-4 text-primary" />
+            Edit Copy — {message.name}
+          </DialogTitle>
+          <DialogDescription className="text-xs">
+            Campaign: <strong>{groupCampaign}</strong> · Channel:{" "}
+            <Badge variant="outline" className={`text-[9px] ml-1 ${channelColors[message.channel]}`}>
+              {message.channel.toUpperCase()}
+            </Badge>
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-3">
+          {affectedPages.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-[10px] text-muted-foreground">Affects:</span>
+              {affectedPages.map(p => (
+                <Badge key={p} variant="outline" className="text-[9px]">{p}</Badge>
+              ))}
+              {isStructural && (
+                <Badge className="text-[9px] bg-amber-500/15 text-amber-400 border-amber-500/30 ml-1">
+                  <Lock className="w-2.5 h-2.5 mr-0.5" /> Structural
+                </Badge>
+              )}
+            </div>
+          )}
+
+          <Textarea
+            value={draft}
+            onChange={e => setDraft(e.target.value)}
+            rows={4}
+            className="text-sm font-mono"
+            placeholder="Enter message copy..."
+          />
+
+          <div className="flex items-center justify-between text-[10px]">
+            <span className={isOverLimit ? "text-destructive font-bold" : "text-muted-foreground"}>
+              {charCount}/{charLimit} chars {isOverLimit && "⚠️ Over limit!"}
+            </span>
+            <span className="text-muted-foreground">
+              Variables: <code className="bg-secondary/50 px-1 rounded">{"{name}"}</code>{" "}
+              <code className="bg-secondary/50 px-1 rounded">{"{friend_name}"}</code>{" "}
+              <code className="bg-secondary/50 px-1 rounded">{"{link}"}</code>
+            </span>
+          </div>
+
+          {needsPassword && (
+            <div className="space-y-2 p-3 border border-amber-500/30 rounded-lg bg-amber-500/5">
+              <p className="text-xs text-amber-400 flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5" />
+                Structural change ({affectedPages.length} areas). Enter admin password.
+              </p>
+              <Input
+                type="password"
+                placeholder="Admin password"
+                value={password}
+                onChange={e => { setPassword(e.target.value); setPasswordError(false); }}
+                className={`text-sm ${passwordError ? "border-destructive" : ""}`}
+                onKeyDown={e => { if (e.key === "Enter") handleSave(); }}
+              />
+              {passwordError && <p className="text-[10px] text-destructive">Incorrect password</p>}
+            </div>
+          )}
+        </div>
+
+        <DialogFooter className="gap-2">
+          <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)} disabled={saving}>Cancel</Button>
+          <Button size="sm" onClick={handleSave} disabled={saving || isOverLimit}>
+            {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : <Save className="w-3.5 h-3.5 mr-1" />}
+            {needsPassword && !saving ? "Confirm & Save" : "Save Copy"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 /* ─────────────────────── Component ─────────────────────── */
 
 export default function EngagementBlueprintPanel() {
   const { configs, loading, getValue, saveChanges, refresh } = useCampaignConfig();
   const [togglingKeys, setTogglingKeys] = useState<Set<string>>(new Set());
+  const [editingMsg, setEditingMsg] = useState<MessageSpec | null>(null);
+  const [editingCampaign, setEditingCampaign] = useState("");
 
   // Build statuses map from DB
   const statuses: Record<string, string> = {};
@@ -654,14 +834,17 @@ export default function EngagementBlueprintPanel() {
                             </Badge>
                           </td>
                           <td className="py-2.5 px-3 text-muted-foreground max-w-[250px]">
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="truncate block cursor-help">{msg.content_preview}</span>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="max-w-xs text-xs">
-                                {msg.content_preview}
-                              </TooltipContent>
-                            </Tooltip>
+                            <button
+                              type="button"
+                              className="truncate block text-left w-full cursor-pointer hover:text-foreground group/preview transition-colors"
+                              onClick={() => { setEditingMsg(msg); setEditingCampaign(group.campaign); }}
+                            >
+                              <span className="flex items-center gap-1">
+                                <Eye className="w-3 h-3 opacity-0 group-hover/preview:opacity-60 shrink-0 transition-opacity" />
+                                <span className="truncate">{msg.content_preview}</span>
+                                <Pencil className="w-2.5 h-2.5 opacity-0 group-hover/preview:opacity-60 shrink-0 transition-opacity" />
+                              </span>
+                            </button>
                           </td>
                           <td className="py-2.5 px-3 text-muted-foreground">
                             <span className="flex items-center gap-1">
@@ -685,6 +868,15 @@ export default function EngagementBlueprintPanel() {
             );
           })}
         </div>
+
+        {/* Copy Edit Dialog */}
+        <CopyEditDialog
+          open={!!editingMsg}
+          onOpenChange={(o) => { if (!o) setEditingMsg(null); }}
+          message={editingMsg}
+          groupCampaign={editingCampaign}
+          saveChanges={saveChanges}
+        />
       </div>
     </TooltipProvider>
   );
