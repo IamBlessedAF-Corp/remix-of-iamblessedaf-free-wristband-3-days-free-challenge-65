@@ -41,7 +41,7 @@ export function useClipperEconomy(userId: string | undefined) {
     monthlyViews: 0,
     lifetimeViews: 0,
     riskThrottleActive: false,
-    currentRpm: 0.22,
+    currentRpm: 0, // Will be set from DB, no hardcoded default
     payouts: [],
     loading: true,
   });
@@ -105,7 +105,7 @@ export function useClipperEconomy(userId: string | undefined) {
         monthlyViews,
         lifetimeViews,
         riskThrottleActive: throttle?.is_active || false,
-        currentRpm: (throttle as any)?.rpm_override ?? 0.22,
+        currentRpm: (throttle as any)?.rpm_override ?? 0, // No hardcoded fallback; 0 = no override
         payouts: (payouts || []).map((p: any) => ({
           weekKey: p.week_key,
           status: p.status,

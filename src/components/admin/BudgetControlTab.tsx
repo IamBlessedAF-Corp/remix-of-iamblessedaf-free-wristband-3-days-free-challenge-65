@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Shield, DollarSign, AlertTriangle, CheckCircle, Clock,
@@ -12,6 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useBudgetControl, type BudgetSegment } from "@/hooks/useBudgetControl";
+import { useRealEconomyMetrics } from "@/hooks/useRealEconomyMetrics";
 import { downloadCsv } from "@/utils/csvExport";
 
 const fmt$ = (cents: number) => `$${(cents / 100).toFixed(2)}`;
@@ -311,14 +312,26 @@ const SegmentBudgets = ({ budget }: { budget: ReturnType<typeof useBudgetControl
 
 // ─── Section 3: Simulation ───
 const SimulationEngine = ({ budget }: { budget: ReturnType<typeof useBudgetControl> }) => {
-  const [rpm, setRpm] = useState(2.22);
-  const [weeklyLimit, setWeeklyLimit] = useState((budget.cycle?.global_weekly_limit_cents || 500000) / 100);
+  const { realRpm, realAvgEarningsPerClipCents, realAvgViewsPerClip } = useRealEconomyMetrics();
+  // Initialize RPM from real data (no hardcoded default)
+  const [rpm, setRpm] = useState(realRpm);
+  const [weeklyLimit, setWeeklyLimit] = useState((budget.cycle?.global_weekly_limit_cents || 0) / 100);
+
+  // Update RPM when real data loads
+  useEffect(() => {
+    if (rpm === 0 && realRpm > 0) setRpm(realRpm);
+  }, [realRpm]);
 
   // Auto-run simulation on mount and whenever inputs change
-  const result = budget.simulate({ rpm, weeklyLimit: Math.round(weeklyLimit * 100) });
+  const result = budget.simulate({
+    rpm,
+    weeklyLimit: Math.round(weeklyLimit * 100),
+    realAvgPerClipCents: realAvgEarningsPerClipCents,
+    realAvgViewsPerClip,
+  });
   const realSpend = budget.realSpendCents;
   const simSpend = result.day7Forecast;
-  const avgPerClip = (result.avgEarningsPerClipCents || 300) / 100;
+  const avgPerClip = (result.avgEarningsPerClipCents || 0) / 100;
 
   return (
     <div className="bg-card border border-border/40 rounded-xl p-5 space-y-4">
