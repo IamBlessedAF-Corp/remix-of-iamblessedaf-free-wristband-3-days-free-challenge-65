@@ -104,7 +104,7 @@ const ChallengeThanks = () => {
           let referrerUserId: string | null = null;
           if (storedRef) {
             const { data: referrer } = await supabase
-              .from("creator_profiles")
+              .from("creator_profiles_public")
               .select("user_id")
               .eq("referral_code", storedRef)
               .maybeSingle();

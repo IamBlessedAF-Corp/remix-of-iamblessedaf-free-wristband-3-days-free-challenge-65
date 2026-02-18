@@ -1819,6 +1819,16 @@ export type Database = {
       }
     }
     Functions: {
+      bc_claim_daily_bonus: { Args: never; Returns: Json }
+      bc_earn_coins: {
+        Args: { p_amount: number; p_metadata?: Json; p_reason: string }
+        Returns: Json
+      }
+      bc_redeem_item: { Args: { p_item_id: string }; Returns: Json }
+      bc_spend_coins: {
+        Args: { p_amount: number; p_metadata?: Json; p_reason: string }
+        Returns: Json
+      }
       cleanup_expired_otps: { Args: never; Returns: undefined }
       confirm_blessing: { Args: { token: string }; Returns: Json }
       generate_referral_code: { Args: never; Returns: string }

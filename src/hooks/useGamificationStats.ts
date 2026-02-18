@@ -216,33 +216,15 @@ export function useGamificationStats() {
     });
     notifyCoinEarn(r.coins);
 
-    // Also sync to DB wallet if user is authenticated
+    // Also sync to DB wallet if user is authenticated (via server-side RPC)
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const from = (table: string) => supabase.from(table as any);
-        const { data: wallet } = await from("bc_wallets")
-          .select("id, balance, lifetime_earned")
-          .eq("user_id", user.id)
-          .maybeSingle();
-        if (wallet) {
-          const w = wallet as any;
-          const newBalance = w.balance + r.coins;
-          await Promise.all([
-            (from("bc_wallets") as any)
-              .update({ balance: newBalance, lifetime_earned: w.lifetime_earned + r.coins })
-              .eq("id", w.id),
-            from("bc_transactions").insert({
-              user_id: user.id,
-              wallet_id: w.id,
-              type: "earn",
-              amount: r.coins,
-              reason: "checkout",
-              metadata: { tier, hearts: r.hearts, meals: r.meals },
-              balance_after: newBalance,
-            } as any),
-          ]);
-        }
+        await supabase.rpc('bc_earn_coins' as any, {
+          p_amount: r.coins,
+          p_reason: 'checkout',
+          p_metadata: { tier, hearts: r.hearts, meals: r.meals },
+        });
       }
     } catch (err) {
       console.error("BC wallet sync error (non-blocking):", err);

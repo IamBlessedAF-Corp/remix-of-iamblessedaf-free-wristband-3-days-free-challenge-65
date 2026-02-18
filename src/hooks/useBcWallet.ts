@@ -50,7 +50,7 @@ export interface BcRedemption {
   created_at: string;
 }
 
-const from = (table: string) => supabase.from(table as any);
+const from = (table: string) => supabase.from(table as any); // used for read queries
 
 export function useBcWallet() {
   const [wallet, setWallet] = useState<BcWallet | null>(null);
@@ -169,112 +169,50 @@ export function useBcWallet() {
     fetchStore();
   }, [fetchStore]);
 
-  /** Earn BC — adds to wallet and logs transaction */
+  /** Earn BC — server-side via RPC */
   const earnCoins = useCallback(async (amount: number, reason: string, metadata: Record<string, any> = {}) => {
     if (!wallet || !userId) return;
 
-    const newBalance = wallet.balance + amount;
+    const { data, error } = await supabase.rpc('bc_earn_coins' as any, {
+      p_amount: amount,
+      p_reason: reason,
+      p_metadata: metadata,
+    });
+    if (error) { console.error("bc_earn_coins error:", error); return; }
+    await fetchWallet();
+  }, [wallet, userId, fetchWallet]);
 
-    await Promise.all([
-      (from("bc_wallets") as any)
-        .update({
-          balance: newBalance,
-          lifetime_earned: wallet.lifetime_earned + amount,
-        })
-        .eq("id", wallet.id),
-      from("bc_transactions").insert({
-        user_id: userId,
-        wallet_id: wallet.id,
-        type: "earn",
-        amount,
-        reason,
-        metadata,
-        balance_after: newBalance,
-      } as any),
-    ]);
-
-    setWallet((w) => w ? { ...w, balance: newBalance, lifetime_earned: w.lifetime_earned + amount } : w);
-    setTransactions((prev) => [{
-      id: crypto.randomUUID(),
-      user_id: userId,
-      wallet_id: wallet.id,
-      type: "earn",
-      amount,
-      reason,
-      metadata,
-      balance_after: newBalance,
-      created_at: new Date().toISOString(),
-    }, ...prev]);
-  }, [wallet, userId]);
-
-  /** Spend BC — deducts from wallet and logs transaction */
+  /** Spend BC — server-side via RPC */
   const spendCoins = useCallback(async (amount: number, reason: string, metadata: Record<string, any> = {}): Promise<boolean> => {
     if (!wallet || !userId || wallet.balance < amount) return false;
 
-    const newBalance = wallet.balance - amount;
-
-    await Promise.all([
-      (from("bc_wallets") as any)
-        .update({
-          balance: newBalance,
-          lifetime_spent: wallet.lifetime_spent + amount,
-        })
-        .eq("id", wallet.id),
-      from("bc_transactions").insert({
-        user_id: userId,
-        wallet_id: wallet.id,
-        type: "spend",
-        amount,
-        reason,
-        metadata,
-        balance_after: newBalance,
-      } as any),
-    ]);
-
-    setWallet((w) => w ? { ...w, balance: newBalance, lifetime_spent: w.lifetime_spent + amount } : w);
-    setTransactions((prev) => [{
-      id: crypto.randomUUID(),
-      user_id: userId,
-      wallet_id: wallet.id,
-      type: "spend",
-      amount,
-      reason,
-      metadata,
-      balance_after: newBalance,
-      created_at: new Date().toISOString(),
-    }, ...prev]);
-
+    const { data, error } = await supabase.rpc('bc_spend_coins' as any, {
+      p_amount: amount,
+      p_reason: reason,
+      p_metadata: metadata,
+    });
+    if (error) { console.error("bc_spend_coins error:", error); return false; }
+    const result = data as any;
+    if (result && !result.success) return false;
+    await fetchWallet();
     return true;
-  }, [wallet, userId]);
+  }, [wallet, userId, fetchWallet]);
 
-  /** Redeem a store item */
+  /** Redeem a store item — server-side via RPC */
   const redeemItem = useCallback(async (item: BcStoreItem): Promise<boolean> => {
     if (!wallet || !userId || wallet.balance < item.cost_bc) return false;
 
-    const success = await spendCoins(item.cost_bc, "store_redeem", {
-      store_item_id: item.id,
-      item_name: item.name,
+    const { data, error } = await supabase.rpc('bc_redeem_item' as any, {
+      p_item_id: item.id,
     });
-    if (!success) return false;
-
-    const code = `BC-${Date.now().toString(36).toUpperCase()}`;
-
-    const { data } = await from("bc_redemptions").insert({
-      user_id: userId,
-      store_item_id: item.id,
-      cost_bc: item.cost_bc,
-      status: "pending",
-      redemption_code: code,
-    } as any).select().single();
-
-    if (data) {
-      setRedemptions((prev) => [data as unknown as BcRedemption, ...prev]);
-    }
-
+    if (error) { console.error("bc_redeem_item error:", error); return false; }
+    const result = data as any;
+    if (result && !result.success) return false;
+    await fetchWallet();
     return true;
-  }, [wallet, userId, spendCoins]);
+  }, [wallet, userId, fetchWallet]);
 
-  /** Check and award daily login bonus */
+  /** Check and award daily login bonus — server-side via RPC */
   const claimDailyBonus = useCallback(async (): Promise<{ awarded: boolean; amount: number; streak: number }> => {
     if (!wallet || !userId) return { awarded: false, amount: 0, streak: 0 };
 
@@ -283,45 +221,12 @@ export function useBcWallet() {
       return { awarded: false, amount: 0, streak: wallet.streak_days };
     }
 
-    // Check if streak continues (last bonus was yesterday)
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
-    const isConsecutive = wallet.last_login_bonus_at === yesterday;
-    const newStreak = isConsecutive ? wallet.streak_days + 1 : 1;
-
-    // Streak multiplier: base 10 + 5 per streak day (capped at 50)
-    const bonusAmount = Math.min(10 + (newStreak - 1) * 5, 50);
-    const newBalance = wallet.balance + bonusAmount;
-
-    await Promise.all([
-      (from("bc_wallets") as any)
-        .update({
-          balance: newBalance,
-          lifetime_earned: wallet.lifetime_earned + bonusAmount,
-          streak_days: newStreak,
-          last_login_bonus_at: today,
-        })
-        .eq("id", wallet.id),
-      from("bc_transactions").insert({
-        user_id: userId,
-        wallet_id: wallet.id,
-        type: "earn",
-        amount: bonusAmount,
-        reason: "daily_login",
-        metadata: { streak: newStreak, date: today },
-        balance_after: newBalance,
-      } as any),
-    ]);
-
-    setWallet((w) => w ? {
-      ...w,
-      balance: newBalance,
-      lifetime_earned: w.lifetime_earned + bonusAmount,
-      streak_days: newStreak,
-      last_login_bonus_at: today,
-    } : w);
-
-    return { awarded: true, amount: bonusAmount, streak: newStreak };
-  }, [wallet, userId]);
+    const { data, error } = await supabase.rpc('bc_claim_daily_bonus' as any);
+    if (error) { console.error("bc_claim_daily_bonus error:", error); return { awarded: false, amount: 0, streak: 0 }; }
+    const result = data as any;
+    if (result?.awarded) await fetchWallet();
+    return { awarded: result?.awarded || false, amount: result?.amount || 0, streak: result?.streak || 0 };
+  }, [wallet, userId, fetchWallet]);
 
   return {
     wallet,

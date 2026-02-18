@@ -50,7 +50,7 @@ export default function PortalAccountSettings({ userId, userEmail, profile }: Po
   const validateReferrer = async (code: string) => {
     if (!code.trim()) { setReferrerValid(null); return; }
     const { data } = await supabase
-      .from("creator_profiles")
+      .from("creator_profiles_public")
       .select("id")
       .eq("referral_code", code.trim().toLowerCase())
       .maybeSingle();
@@ -68,7 +68,8 @@ export default function PortalAccountSettings({ userId, userEmail, profile }: Po
         return;
       }
       // Check uniqueness
-      const { data: existing } = await (from("creator_profiles") as any)
+      const { data: existing } = await supabase
+        .from("creator_profiles_public")
         .select("id")
         .eq("referral_code", code)
         .neq("user_id", userId)
@@ -87,7 +88,8 @@ export default function PortalAccountSettings({ userId, userEmail, profile }: Po
           setSaving(false);
           return;
         }
-        const { data: refExists } = await (from("creator_profiles") as any)
+        const { data: refExists } = await supabase
+          .from("creator_profiles_public")
           .select("id")
           .eq("referral_code", refBy)
           .maybeSingle();
