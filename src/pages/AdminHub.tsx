@@ -44,6 +44,7 @@ import GamificationTab from "@/components/admin/GamificationTab";
 import AffiliatesTab from "@/components/admin/AffiliatesTab";
 import WaitlistTab from "@/components/admin/WaitlistTab";
 import RolesTab, { getRolePermissions, fetchRolePermissions } from "@/components/admin/RolesTab";
+import ChangelogTab from "@/components/admin/ChangelogTab";
 
 // Lazy load the heavy FunnelMap
 const FunnelMap = lazy(() => import("@/pages/FunnelMap"));
@@ -1092,36 +1093,7 @@ const RoadmapContent = lazy(() => import("@/pages/Roadmap"));
 // 1️⃣2️⃣ LOGS
 // ═══════════════════════════════════════════════
 function LogsTab() {
-  const budget = useBudgetControl();
-  if (budget.loading) return <div className="flex justify-center py-20"><RefreshCw className="w-6 h-6 animate-spin text-primary" /></div>;
-  return (
-    <div className="space-y-4">
-      <AdminSectionDashboard
-        title="Audit Logs"
-        description="Who changed what, when, and rollback options"
-        kpis={[
-          { label: "Total Events", value: budget.events.length },
-          { label: "Today", value: budget.events.filter(e => new Date(e.created_at).toDateString() === new Date().toDateString()).length },
-          { label: "Last Action", value: budget.events[0]?.action || "—" },
-        ]}
-      />
-      {budget.events.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-8">No events logged yet.</p>
-      ) : (
-        <div className="space-y-2">
-          {budget.events.map(evt => (
-            <div key={evt.id} className="bg-card border border-border/30 rounded-lg p-3 text-xs">
-              <div className="flex items-center justify-between mb-1">
-                <Badge variant="outline" className="text-[10px]">{evt.action}</Badge>
-                <span className="text-muted-foreground">{new Date(evt.created_at).toLocaleString()}</span>
-              </div>
-              {evt.notes && <p className="text-muted-foreground">{evt.notes}</p>}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  return <ChangelogTab />;
 }
 
 // ═══════════════════════════════════════════════

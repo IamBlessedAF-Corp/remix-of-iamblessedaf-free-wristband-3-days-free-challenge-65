@@ -626,6 +626,39 @@ export type Database = {
         }
         Relationships: []
       }
+      changelog_entries: {
+        Row: {
+          affected_areas: string[]
+          change_details: string | null
+          code_changes: Json | null
+          created_at: string
+          created_by: string | null
+          id: string
+          prompt_summary: string
+          tags: string[] | null
+        }
+        Insert: {
+          affected_areas?: string[]
+          change_details?: string | null
+          code_changes?: Json | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          prompt_summary: string
+          tags?: string[] | null
+        }
+        Update: {
+          affected_areas?: string[]
+          change_details?: string | null
+          code_changes?: Json | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          prompt_summary?: string
+          tags?: string[] | null
+        }
+        Relationships: []
+      }
       clip_submissions: {
         Row: {
           baseline_view_count: number
