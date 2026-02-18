@@ -200,9 +200,9 @@ function CopyRow({ item, savedValue, onSave }: {
   const handleSave = () => { onSave(item.key, value, item, currentValue); setEditing(false); };
 
   return (
-    <div className={cn("border rounded-lg overflow-hidden transition-all", expanded ? "border-primary/40 bg-card/80" : "border-border/20 hover:border-border/40")}>
-      <button onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-secondary/10 transition-colors">
+    <div className={cn("border rounded-lg transition-all", expanded ? "border-primary/40 bg-card/80" : "border-border/20 hover:border-border/40")}>
+      <div className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-secondary/10 transition-colors cursor-pointer"
+        role="button" tabIndex={0} onClick={() => setExpanded(!expanded)} onKeyDown={(e) => e.key === "Enter" && setExpanded(!expanded)}>
         {expanded ? <ChevronDown className="w-4 h-4 text-primary shrink-0" /> : <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -215,7 +215,7 @@ function CopyRow({ item, savedValue, onSave }: {
           {item.channel && <SmartTagBadge tag={item.channel} />}
           {item.frequency && <SmartTagBadge tag={item.frequency} />}
         </div>
-      </button>
+      </div>
 
       {expanded && (
         <div className="border-t border-border/20 px-4 pb-4 pt-3 space-y-3">
