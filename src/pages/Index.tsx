@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Brain, Heart, Users, Zap } from "lucide-react";
@@ -8,25 +8,14 @@ import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 import { useAuth } from "@/hooks/useAuth";
 import GratitudeEngineLoop from "@/components/offer/GratitudeEngineLoop";
 import { useCopyMulti } from "@/hooks/useCopyValue";
-import { getFunnelResumeRoute } from "@/hooks/useFunnelProgress";
 import logo from "@/assets/logo.png";
 import wristbandImg from "@/assets/wristband-gift.avif";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const copy = useCopyMulti(["hero_headline", "hero_subheadline", "claim_cta"]);
-
-  // If user is already authenticated, resume their funnel position
-  useEffect(() => {
-    if (!loading && user) {
-      const resumeRoute = getFunnelResumeRoute();
-      if (resumeRoute && resumeRoute !== "/") {
-        navigate(resumeRoute, { replace: true });
-      }
-    }
-  }, [user, loading, navigate]);
 
   const handleClaim = () => {
     if (user) {

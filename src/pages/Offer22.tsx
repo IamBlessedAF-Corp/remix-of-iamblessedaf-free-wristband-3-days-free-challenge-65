@@ -13,11 +13,22 @@ import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 import { supabase } from "@/integrations/supabase/client";
 
 type Step = "free-wristband" | "gratitude-intro" | "gratitude-setup" | "upsell-22";
+const STEP_KEY = "offer22-step";
 
 const Offer22 = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [step, setStep] = useState<Step>("free-wristband");
+  const [step, setStepRaw] = useState<Step>(() => {
+    const saved = sessionStorage.getItem(STEP_KEY);
+    if (saved && ["free-wristband", "gratitude-intro", "gratitude-setup", "upsell-22"].includes(saved)) {
+      return saved as Step;
+    }
+    return "free-wristband";
+  });
+  const setStep = (newStep: Step) => {
+    sessionStorage.setItem(STEP_KEY, newStep);
+    setStepRaw(newStep);
+  };
   const [showAuth, setShowAuth] = useState(false);
   const [senderName, setSenderName] = useState<string | null>(null);
   const { startCheckout, loading } = useStripeCheckout();
@@ -65,7 +76,7 @@ const Offer22 = () => {
           localStorage.removeItem("referral_code");
         }
 
-        // Only redirect if they already completed the full funnel + invite flow
+        // If they completed the full funnel + invite flow → affiliate portal
         if (data?.congrats_completed) {
           navigate("/affiliate-portal", { replace: true });
         }
