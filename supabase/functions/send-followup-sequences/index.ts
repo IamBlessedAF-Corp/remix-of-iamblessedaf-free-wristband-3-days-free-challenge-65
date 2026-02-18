@@ -9,8 +9,13 @@ const corsHeaders = {
 /**
  * send-followup-sequences
  * Called by pg_cron every 30 minutes.
- * Sends SMS/email follow-ups to collect Friend 2 & 3 names
- * after the initial gratitude challenge signup.
+ * Sends SMS follow-ups to collect Friend 2 & 3 names.
+ *
+ * FIX HISTORY:
+ * - 2026-02-18: Added PAUSE guard (was missing → infinite retry loop causing 29K+ messages)
+ * - 2026-02-18: Route through sms-router instead of direct Twilio calls
+ * - 2026-02-18: Mark sequences as 'failed' on send errors (was staying 'pending' forever)
+ * - 2026-02-18: Skip participants with PAUSED- prefixed phone numbers
  */
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -21,24 +26,26 @@ Deno.serve(async (req: Request) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabase = createClient(supabaseUrl, serviceKey);
 
-  const twilioSid = Deno.env.get("TWILIO_ACCOUNT_SID");
-  const twilioAuth = Deno.env.get("TWILIO_AUTH_TOKEN");
-  const twilioPhone = Deno.env.get("TWILIO_PHONE_NUMBER");
-  const msgServiceSid = Deno.env.get("TWILIO_MESSAGING_SERVICE_SID");
-  const resendApiKey = Deno.env.get("RESEND_API_KEY");
+  // ── PAUSE GUARD: Check campaign_config before doing anything ──
+  const { data: pauseConfig } = await supabase
+    .from("campaign_config")
+    .select("value")
+    .eq("key", "engagement_followup_friends")
+    .maybeSingle();
 
-  if (!twilioSid || !twilioAuth || (!twilioPhone && !msgServiceSid)) {
+  if (pauseConfig?.value === "paused") {
+    console.log("send-followup-sequences: PAUSED via campaign_config — skipping all sends");
     return new Response(
-      JSON.stringify({ error: "Twilio not configured" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ paused: true, reason: "Flow disabled in Engagement Blueprint" }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
   const now = new Date().toISOString();
-  const results = { smsSent: 0, emailsSent: 0, errors: [] as string[] };
+  const results = { smsSent: 0, skipped: 0, failed: 0, errors: [] as string[] };
 
   try {
-    // Find due follow-up sequences
+    // Find due follow-up sequences (only 'pending', not 'paused' or 'failed')
     const { data: sequences, error: sErr } = await supabase
       .from("followup_sequences")
       .select("id, participant_id, step_number, channel")
@@ -54,7 +61,15 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    for (const seq of sequences || []) {
+    if (!sequences || sequences.length === 0) {
+      console.log("send-followup-sequences: No pending sequences found");
+      return new Response(
+        JSON.stringify({ ...results, message: "No pending sequences" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    for (const seq of sequences) {
       // Get participant info
       const { data: participant } = await supabase
         .from("challenge_participants")
@@ -62,80 +77,90 @@ Deno.serve(async (req: Request) => {
         .eq("id", seq.participant_id)
         .single();
 
-      if (!participant) continue;
+      if (!participant) {
+        // Participant deleted — mark sequence as failed
+        await supabase
+          .from("followup_sequences")
+          .update({ status: "failed", sent_at: now })
+          .eq("id", seq.id);
+        results.failed++;
+        continue;
+      }
 
-      // Determine what we're asking for based on step
-      let msgBody = "";
-      const name = participant.display_name || "Friend";
+      // ── Skip PAUSED phone numbers (prefixed with PAUSED-) ──
+      if (!participant.phone || participant.phone.startsWith("PAUSED")) {
+        await supabase
+          .from("followup_sequences")
+          .update({ status: "paused", sent_at: now })
+          .eq("id", seq.id);
+        results.skipped++;
+        continue;
+      }
 
-      if (seq.step_number === 1 && !participant.friend_2_name) {
-        // Ask for Friend 2 — "Someone Who Helped You"
-        msgBody = `Hey ${name}! 🙏\n\nYour gratitude to ${participant.friend_1_name} was powerful.\n\nDay 2 question: Who's someone who helped you when they didn't have to?\n\nReply with their name and we'll set up your next 11:11 message! 💛\n\n— Blessed AF`;
-      } else if (seq.step_number === 2 && !participant.friend_3_name) {
-        // Ask for Friend 3 — "Someone Unexpected"
-        msgBody = `Hey ${name}! 🙏\n\nYou're on a roll! Two friends, two gratitude texts.\n\nDay 3 question: Who's someone unexpected you're grateful for? A teacher, coworker, or someone who surprised you.\n\nReply with their name! 💛\n\n— Blessed AF`;
-      } else {
-        // Already have the friend, skip
+      // ── Skip if SMS opt-out ──
+      if (!participant.opted_in_sms) {
         await supabase
           .from("followup_sequences")
           .update({ status: "skipped", sent_at: now })
           .eq("id", seq.id);
+        results.skipped++;
         continue;
       }
 
-      if (seq.channel === "sms" && participant.opted_in_sms) {
-        // Send SMS
-        const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`;
-        const formData = new URLSearchParams();
-        formData.append("To", participant.phone);
-        if (msgServiceSid) {
-          formData.append("MessagingServiceSid", msgServiceSid);
-        } else {
-          formData.append("From", twilioPhone!);
-        }
-        formData.append("Body", msgBody);
+      // Determine what we're asking for based on step
+      const name = participant.display_name || "Friend";
+      let templateKey = "";
+      let variables: Record<string, string> = {};
 
-        const res = await fetch(twilioUrl, {
-          method: "POST",
-          headers: {
-            Authorization: `Basic ${btoa(`${twilioSid}:${twilioAuth}`)}`,
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: formData,
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          await supabase
-            .from("followup_sequences")
-            .update({ status: "sent", sent_at: now })
-            .eq("id", seq.id);
-
-          await supabase.from("sms_deliveries").insert({
-            recipient_phone: participant.phone,
-            message: msgBody.slice(0, 1000),
-            twilio_sid: data.sid,
-            status: "sent",
-            source_page: `followup-step-${seq.step_number}`,
-          });
-
-          results.smsSent++;
-        } else {
-          const errText = await res.text();
-          console.error(`Followup SMS failed for ${seq.id}:`, errText);
-          results.errors.push(`${seq.id}: ${errText.slice(0, 100)}`);
-        }
-      } else if (seq.channel === "email" && resendApiKey) {
-        // Send email via Resend (future expansion)
-        // For now, mark as pending-email
+      if (seq.step_number === 1 && !participant.friend_2_name) {
+        templateKey = "custom-transactional";
+        variables = {
+          body: `Hey ${name}! 🙏\n\nYour gratitude to ${participant.friend_1_name} was powerful.\n\nDay 2 question: Who's someone who helped you when they didn't have to?\n\nReply with their name and we'll set up your next 11:11 message! 💛\n\n— Blessed AF`,
+        };
+      } else if (seq.step_number === 2 && !participant.friend_3_name) {
+        templateKey = "custom-transactional";
+        variables = {
+          body: `Hey ${name}! 🙏\n\nYou're on a roll! Two friends, two gratitude texts.\n\nDay 3 question: Who's someone unexpected you're grateful for? A teacher, coworker, or someone who surprised you.\n\nReply with their name! 💛\n\n— Blessed AF`,
+        };
+      } else {
+        // Already have the friend — skip
         await supabase
           .from("followup_sequences")
-          .update({ status: "pending-email" })
+          .update({ status: "skipped", sent_at: now })
           .eq("id", seq.id);
+        results.skipped++;
+        continue;
+      }
+
+      // ── Route through sms-router (not direct Twilio) ──
+      const routerRes = await callRouter(supabaseUrl, serviceKey, {
+        to: participant.phone,
+        trafficType: "transactional",
+        templateKey,
+        variables,
+      });
+
+      if (routerRes.success) {
+        await supabase
+          .from("followup_sequences")
+          .update({ status: "sent", sent_at: now })
+          .eq("id", seq.id);
+        results.smsSent++;
+      } else {
+        // ── CRITICAL FIX: Mark as FAILED so we don't retry forever ──
+        console.error(`Followup send failed for ${seq.id}:`, routerRes.error);
+        await supabase
+          .from("followup_sequences")
+          .update({ status: "failed", sent_at: now })
+          .eq("id", seq.id);
+        results.failed++;
+        results.errors.push(`${seq.id}: ${routerRes.error}`);
       }
     }
 
-    console.log(`Followup sequences complete: ${results.smsSent} SMS, ${results.emailsSent} emails`);
+    console.log(
+      `Followup sequences complete: ${results.smsSent} sent, ${results.skipped} skipped, ${results.failed} failed`
+    );
     return new Response(JSON.stringify(results), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -147,3 +172,28 @@ Deno.serve(async (req: Request) => {
     );
   }
 });
+
+/** Call the centralized sms-router */
+async function callRouter(
+  supabaseUrl: string,
+  serviceKey: string,
+  payload: Record<string, unknown>
+): Promise<{ success: boolean; sid?: string; error?: string }> {
+  try {
+    const res = await fetch(`${supabaseUrl}/functions/v1/sms-router`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${serviceKey}`,
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      return { success: true, sid: data.sid };
+    }
+    return { success: false, error: data.error || "Router returned error" };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : "Router call failed" };
+  }
+}

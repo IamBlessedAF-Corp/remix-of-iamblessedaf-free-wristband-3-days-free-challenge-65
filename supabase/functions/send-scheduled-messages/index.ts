@@ -25,11 +25,20 @@ serve(async (req) => {
   const results = { remindersSent: 0, messagesSent: 0, errors: [] as string[] };
 
   try {
-    // 🚫 Daily reminders & messages PAUSED — re-enable when A2P registration is complete
-    console.log("send-scheduled-messages: PAUSED — skipping all sends");
-    return new Response(JSON.stringify({ paused: true, reason: "Daily reminders disabled" }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    // ── PAUSE GUARD: Check campaign_config ──
+    const { data: pauseConfig } = await supabase
+      .from("campaign_config")
+      .select("value")
+      .eq("key", "engagement_daily_reminders")
+      .maybeSingle();
+
+    if (pauseConfig?.value === "paused") {
+      console.log("send-scheduled-messages: PAUSED via campaign_config — skipping all sends");
+      return new Response(
+        JSON.stringify({ paused: true, reason: "Flow disabled in Engagement Blueprint" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     // ── 1. Send 3PM Reminders ──
     const { data: reminders, error: rErr } = await supabase

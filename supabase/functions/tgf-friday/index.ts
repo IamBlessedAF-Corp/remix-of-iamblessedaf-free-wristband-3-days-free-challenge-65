@@ -23,6 +23,21 @@ Deno.serve(async (req: Request) => {
   const results = { sent: 0, skipped: 0, errors: [] as string[] };
 
   try {
+    // ── PAUSE GUARD: Check campaign_config ──
+    const { data: pauseConfig } = await supabase
+      .from("campaign_config")
+      .select("value")
+      .eq("key", "engagement_tgf_friday")
+      .maybeSingle();
+
+    if (pauseConfig?.value === "paused") {
+      console.log("tgf-friday: PAUSED via campaign_config — skipping all sends");
+      return new Response(
+        JSON.stringify({ paused: true, reason: "Flow disabled in Engagement Blueprint" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { data: participants, error: pErr } = await supabase
       .from("challenge_participants")
       .select("id, phone, display_name, friend_1_name, friend_2_name, friend_3_name, user_id")
