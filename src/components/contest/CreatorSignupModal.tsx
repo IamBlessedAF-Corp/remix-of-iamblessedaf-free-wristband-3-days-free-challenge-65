@@ -51,7 +51,7 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
 
   // Write referral attribution to creator_profiles after any successful auth
   const writeReferralAttribution = async (userId: string) => {
-    const refCode = sessionStorage.getItem("referral_code");
+    const refCode = sessionStorage.getItem("referral_code") || localStorage.getItem("referral_code");
     if (!refCode) return;
     try {
       await supabase
@@ -59,6 +59,7 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
         .update({ referred_by_code: refCode })
         .eq("user_id", userId);
       sessionStorage.removeItem("referral_code");
+      localStorage.removeItem("referral_code");
     } catch (_) {}
   };
 
