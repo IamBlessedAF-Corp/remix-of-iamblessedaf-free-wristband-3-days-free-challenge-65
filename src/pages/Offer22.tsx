@@ -47,7 +47,7 @@ const Offer22 = () => {
         if (storedRef && data && !data.referred_by_code) {
           // Look up the referrer's user_id from their referral_code
           const { data: referrer } = await supabase
-            .from("creator_profiles")
+            .from("creator_profiles_public")
             .select("user_id")
             .eq("referral_code", storedRef)
             .maybeSingle();
