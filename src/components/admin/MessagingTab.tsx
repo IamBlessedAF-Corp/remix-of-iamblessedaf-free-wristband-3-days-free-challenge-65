@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AdminSectionDashboard from "./AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RefreshCw, MessageSquare, Calendar, Heart, Mail, LayoutDashboard, FileDown } from "lucide-react";
+import { RefreshCw, MessageSquare, Calendar, Heart, Mail, LayoutDashboard, FileDown, FileSpreadsheet } from "lucide-react";
 import ExportCsvButton from "./ExportCsvButton";
 import { Button } from "@/components/ui/button";
 import EngagementBlueprintPanel from "./EngagementBlueprintPanel";
@@ -91,16 +91,32 @@ export default function MessagingTab() {
             <TabsTrigger value="tgf" className="gap-1 text-xs"><Heart className="w-3.5 h-3.5" /> TGF Contacts</TabsTrigger>
           </TabsList>
           {activeTab === "blueprint" && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5 text-xs h-8"
-              onClick={handleDownloadPng}
-              disabled={capturing}
-            >
-              {capturing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5" />}
-              {capturing ? "Capturing…" : "Download PNG"}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5 text-xs h-8"
+                onClick={() => {
+                  const a = document.createElement("a");
+                  a.href = "/messaging-audit.csv";
+                  a.download = "messaging-audit-full.csv";
+                  a.click();
+                }}
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+                Full Messaging Audit CSV
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5 text-xs h-8"
+                onClick={handleDownloadPng}
+                disabled={capturing}
+              >
+                {capturing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5" />}
+                {capturing ? "Capturing…" : "Download PNG"}
+              </Button>
+            </div>
           )}
           {activeTab === "messages" && (
             <ExportCsvButton data={messages.map(m => ({ friend_name: m.friend_name, day_number: m.day_number, message_body: m.message_body, status: m.status, scheduled_send_at: m.scheduled_send_at }))} filename="messages.csv" columns={["friend_name", "day_number", "message_body", "status", "scheduled_send_at"]} />
