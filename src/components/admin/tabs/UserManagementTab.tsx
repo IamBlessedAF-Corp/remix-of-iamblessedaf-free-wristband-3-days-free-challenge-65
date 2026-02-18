@@ -11,6 +11,7 @@ import {
   RefreshCw, Mail, Package, Calendar, Hash, ChevronDown, ChevronUp,
 } from "lucide-react";
 import AdminSectionDashboard from "../AdminSectionDashboard";
+import ExportCsvButton from "../ExportCsvButton";
 
 const ROLE_BADGE: Record<string, { label: string; color: string; icon: any }> = {
   super_admin: { label: "Super Admin", color: "bg-amber-500/15 text-amber-400 border-amber-500/30", icon: Crown },
@@ -168,14 +169,17 @@ export default function UserManagementTab() {
       />
 
       {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by email, name, or referral code…"
-          className="pl-10 text-sm"
-        />
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by email, name, or referral code…"
+            className="pl-10 text-sm"
+          />
+        </div>
+        <ExportCsvButton data={filtered.map(u => ({ email: u.email, display_name: u.display_name, referral_code: u.referral_code, roles: u.roles.join(", "), orders: u.orders_count, blessings: u.blessings_confirmed, created_at: u.created_at }))} filename="users.csv" columns={["email", "display_name", "referral_code", "roles", "orders", "blessings", "created_at"]} />
       </div>
 
       {/* User list */}

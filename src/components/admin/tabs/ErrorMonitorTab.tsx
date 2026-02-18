@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AlertTriangle, Bug, CheckCircle, RefreshCw, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import ExportCsvButton from "@/components/admin/ExportCsvButton";
 
 interface ErrorEvent {
   id: string;
@@ -111,9 +112,12 @@ export default function ErrorMonitorTab() {
           <h2 className="text-2xl font-bold text-foreground">Error Monitoring</h2>
           <p className="text-sm text-muted-foreground">Sentry-style error tracking across frontend and backend functions</p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2">
-          <RefreshCw className="w-4 h-4" /> Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <ExportCsvButton data={errors} filename="error-events.csv" columns={["created_at", "level", "source", "message", "component", "page_url", "fingerprint", "resolved_at"]} />
+          <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2">
+            <RefreshCw className="w-4 h-4" /> Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Stats cards */}

@@ -9,6 +9,7 @@ import UtmBuilder from "@/components/admin/UtmBuilder";
 import PerLinkTrafficChart from "@/components/admin/PerLinkTrafficChart";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
+import ExportCsvButton from "@/components/admin/ExportCsvButton";
 
 export default function LinksTab() {
   const [days, setDays] = useState(30);
@@ -31,6 +32,7 @@ export default function LinksTab() {
         {[7, 30, 90].map(d => (
           <button key={d} onClick={() => setDays(d)} className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${days === d ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground bg-secondary"}`}>{d}d</button>
         ))}
+        <ExportCsvButton data={links.map(l => ({ short_code: l.short_code, destination: l.destination_url, campaign: l.campaign, clicks: l.click_count, active: l.is_active, created: l.created_at }))} filename="links.csv" columns={["short_code", "destination", "campaign", "clicks", "active", "created"]} />
         <Button variant="outline" size="sm" onClick={refetch} className="gap-1.5 ml-auto"><RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />Refresh</Button>
       </div>
       <LinkStatsCards totalLinks={stats.totalLinks} totalClicks={stats.totalClicks} activeLinks={stats.activeLinks} periodClicks={stats.dailyClicks.reduce((s: number, d: any) => s + d.clicks, 0)} />

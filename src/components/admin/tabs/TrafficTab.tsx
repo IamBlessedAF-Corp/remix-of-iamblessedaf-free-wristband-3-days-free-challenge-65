@@ -7,6 +7,7 @@ import {
   RefreshCw, Eye, Users, MousePointerClick, TrendingDown, Globe, MapPin,
   BarChart3, Mail, Activity, Clock, ArrowUpRight, ArrowDownRight, Percent,
 } from "lucide-react";
+import ExportCsvButton from "@/components/admin/ExportCsvButton";
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
@@ -171,6 +172,7 @@ export default function TrafficTab() {
             {d}d
           </button>
         ))}
+        <ExportCsvButton data={stats.dailyTraffic.map(d => ({ date: d.date, views: d.views, unique: d.unique }))} filename="traffic-daily.csv" columns={["date", "views", "unique"]} />
         <Button variant="outline" size="sm" onClick={refetch} className="gap-1.5 ml-auto">
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
           Refresh
