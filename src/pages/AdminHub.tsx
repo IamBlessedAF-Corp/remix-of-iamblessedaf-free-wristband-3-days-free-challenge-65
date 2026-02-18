@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRealtimeSync } from "@/hooks/useRealtimeSync";
 import {
   LayoutDashboard, Film, Award, Users, Link2, Settings, Blocks,
   ShieldAlert, CreditCard, Kanban, Map, ScrollText, Brain, Database,
@@ -176,6 +177,9 @@ export default function AdminHub() {
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+
+  // ─── Realtime sync: auto-invalidate React Query when hot tables change ───
+  useRealtimeSync();
 
   // Preload role permissions from DB
   useQuery({ queryKey: ["role-permissions"], queryFn: fetchRolePermissions });
