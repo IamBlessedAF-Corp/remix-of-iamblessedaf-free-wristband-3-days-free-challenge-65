@@ -12,44 +12,199 @@ interface RoadmapItemActionsProps {
   phaseName: string;
 }
 
-const from = (table: string) => supabase.from(table as any);
+const from = (table: string) => supabase.from(table as never);
 
+/* ═══════════════════════════════════════════════════════
+   LIVE SYSTEM SNAPSHOT — injected into every prompt
+   ═══════════════════════════════════════════════════════ */
+
+const LIVE_ROUTES = [
+  "/", "/challenge", "/challenge/thanks", "/r/:code", "/go/:code", "/confirm/:token",
+  "/offer/111", "/offer/111/grok", "/offer/111/gpt", "/offer/444", "/offer/11mo",
+  "/offer/1111", "/offer/4444", "/offer/success",
+  "/make-2500-with-1-ai-clip", "/2us-Clippers-Campaign",
+  "/admin", "/admin/*",
+  "/portal", "/impact", "/clipper-dashboard", "/experts", "/scripts-review",
+  "/Gratitude-Clips-Challenge", "/Traffic-Funnel",
+  "/privacy", "/terms",
+  "/Reserve-your-Neuro-Hack-Wristband-SMART", "/Reserve-a-SMART-wristband",
+  "/neuro-hacker-waitlist", "/FREE-neuro-hacker-wristband",
+  "/3300us-Credit", "/3300us-Credit-Expert", "/3300us-Credit-N-Marketer",
+  "/3300us-Credit-RE-Agent", "/3300us-Credit-Affiliate-Marketer",
+  "/3300us-Credit-Clipper", "/3300us-Credit-Influencer",
+  "/3300us-Credit-Podcast-Host", "/3300us-Credit-Gym-Owner",
+  "/3300us-Credit-Health-Coach", "/3300us-Credit-Portal",
+  "/affiliate-dashboard", "/affiliate-portal", "/diamond-ambassador",
+  "/Congrats-Neuro-Hacker", "/unsubscribe-digest", "/block-preview",
+];
+
+const LIVE_EDGE_FUNCTIONS = [
+  "auto-assign-segments", "budget-alerts", "card-ai-chat", "card-blocker-notify",
+  "clip-approved-notification", "confirm-blessing", "create-checkout",
+  "elevenlabs-conversation-token", "expert-scripts", "ingest-error",
+  "invite-user", "manage-user", "portal-daily-login", "process-board-task",
+  "process-voice-transcript", "process-weekly-payout",
+  "schedule-challenge-messages", "send-email-otp", "send-expert-welcome",
+  "send-followup-sequences", "send-network-marketer-welcome", "send-otp",
+  "send-scheduled-messages", "send-sms", "send-tier-milestone-email",
+  "send-weekly-digest", "send-welcome-email", "send-whatsapp-invite",
+  "send-wristband-welcome", "short-link", "sms-router", "sms-status-webhook",
+  "stripe-webhook", "tgf-friday", "upload-board-screenshot", "verify-backup",
+  "verify-clip", "verify-youtube-views",
+];
+
+const LIVE_HOOKS = [
+  "useABTest", "useAchievements", "useAdminAuth", "useAuth", "useAutoExecute",
+  "useBcWallet", "useBoard", "useBudgetControl", "useCampaignConfig",
+  "useClipperAdmin", "useClipperDashboard", "useClipperEconomy",
+  "useClipperLeaderboard", "useClipperSocialProof", "useCopyValue",
+  "useCountdown", "useExitIntent", "useExitIntentTracking", "useExpertScripts",
+  "useFunnelProgress", "useGamificationStats", "useGlobalMeals",
+  "useLinkAnalytics", "useLiveImpactMetrics", "useMovementCount", "usePageMeta",
+  "usePaginatedQuery", "usePortalData", "useRealtimeSync", "useReservationCount",
+  "useRoadmapCompletions", "useShortLinks", "useSimulatedStats",
+  "useSmsAuditLog", "useSmsDeliveries", "useSpinLogic", "useStripeCheckout",
+  "useTrafficAnalytics", "useUrgencyStock", "useVoiceScriptGeneration",
+  "useWristbandWaitlist",
+];
+
+const LIVE_DB_TABLES = [
+  "affiliate_tiers", "audit_log", "backup_verifications", "bc_redemptions",
+  "bc_store_items", "bc_transactions", "bc_wallets", "blessings", "board_cards",
+  "board_columns", "budget_cycles", "budget_events_log", "budget_segment_cycles",
+  "budget_segments", "campaign_config", "challenge_participants",
+  "changelog_entries", "clip_submissions", "clipper_monthly_bonuses",
+  "clipper_payouts", "clipper_risk_throttle", "clipper_segment_membership",
+  "creator_profiles", "error_events", "exit_intent_events", "expert_leads",
+  "expert_scripts", "followup_sequences", "link_clicks", "orders", "otp_codes",
+  "portal_activity", "query_performance_logs", "repost_logs",
+  "roadmap_completions", "role_permissions", "scheduled_gratitude_messages",
+  "short_links", "smart_wristband_waitlist", "user_roles",
+];
+
+const ADMIN_TABS = [
+  "Dashboard", "Clippers", "Links", "Traffic", "Payments", "Budget Control",
+  "Affiliates", "Leaderboard", "Messaging", "Challenge", "Blessings",
+  "Gamification", "Orders", "Experts", "Congrats", "Copy Manager", "Board",
+  "Roadmap", "Roles", "Database", "Integrations", "Intelligent Blocks",
+  "Alerts", "Error Monitor", "Risk Engine", "Fraud Monitor", "Forecast",
+  "Changelog", "User Management", "Waitlist", "SMS",
+];
+
+/**
+ * Generates a system-aware master prompt with safety guards.
+ * Injects the LIVE snapshot of routes, edge functions, hooks, DB tables,
+ * and admin sections so the AI agent never duplicates or disconnects work.
+ */
 function generateMasterPrompt(title: string, detail: string, phaseName: string): string {
+  const timestamp = new Date().toISOString();
+
   return `🧠 ETHEREUM MASTER DEVELOPER — EXECUTION PROMPT
+Generated: ${timestamp}
 
 📌 TASK: ${title}
 📂 PHASE: ${phaseName}
 📝 CONTEXT: ${detail}
 
-─── INSTRUCTIONS ───
-Acting as the Ethereum Master Developer agent with full autonomy:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔒 SAFETY PROTOCOL — MANDATORY BEFORE ANY CHANGES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-1. ANALYZE the current codebase for related implementations
-2. IDENTIFY all files, hooks, components, edge functions, and DB tables affected
-3. PLAN the implementation with a Six Sigma quality approach:
-   - Define acceptance criteria
-   - List all dependencies and blockers
-   - Estimate delegation score (VS/CC/HU/R/AD)
-4. IMPLEMENT with:
-   - TypeScript strict mode, no \`any\` types
-   - Semantic Tailwind tokens from design system
-   - Proper RLS policies for any new tables
-   - Edge function error handling with proper CORS
-   - Mobile-first responsive design
-5. VALIDATE:
-   - Test edge cases and error states
-   - Verify RLS policies work correctly
-   - Check mobile viewport rendering
-   - Confirm no regression on existing features
-6. DOCUMENT:
-   - Update the 📚 Documentation card on the board
-   - Add inline JSDoc comments for complex logic
+1. ⛔ DO NOT create files, routes, hooks, or edge functions that already exist (see snapshot below)
+2. ⛔ DO NOT modify supabase/config.toml, .env, client.ts, or types.ts — they are auto-generated
+3. ⛔ DO NOT add CHECK constraints with now() — use validation triggers instead
+4. ⛔ DO NOT touch auth, storage, realtime, or vault schemas
+5. ⛔ DO NOT use \`any\` types — strict TypeScript only
+6. ✅ ALWAYS add RLS policies for new tables
+7. ✅ ALWAYS use semantic Tailwind tokens (--primary, --foreground, etc.), never raw colors
+8. ✅ ALWAYS wrap new DB calls in try/catch with user-facing toast errors
+9. ✅ ALWAYS add CORS headers to edge functions
+10. ✅ ALWAYS test on mobile viewport before marking done
+11. ✅ ALWAYS invalidate relevant React Query caches after mutations
+12. ✅ ALWAYS add new tables to useRealtimeSync if they need live updates
+13. ✅ IF creating a new admin section, add it to AdminHub sidebar + GlobalSearchModal
 
-─── HORMOZI GROWTH LENS ───
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📸 LIVE SYSTEM SNAPSHOT (${timestamp})
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🗺️ ROUTES (${LIVE_ROUTES.length}):
+${LIVE_ROUTES.map(r => `  • ${r}`).join("\n")}
+
+⚡ EDGE FUNCTIONS (${LIVE_EDGE_FUNCTIONS.length}):
+${LIVE_EDGE_FUNCTIONS.map(f => `  • ${f}`).join("\n")}
+
+🪝 HOOKS (${LIVE_HOOKS.length}):
+${LIVE_HOOKS.map(h => `  • ${h}`).join("\n")}
+
+🗄️ DB TABLES (${LIVE_DB_TABLES.length}):
+${LIVE_DB_TABLES.map(t => `  • ${t}`).join("\n")}
+
+🛠️ ADMIN TABS (${ADMIN_TABS.length}):
+${ADMIN_TABS.map(t => `  • ${t}`).join("\n")}
+
+━━━━━━━━━━━━━━━━━━━━━━
+🎯 EXECUTION PROTOCOL
+━━━━━━━━━━━━━━━━━━━━━━
+
+1. ANALYZE — Cross-reference the task against the snapshot above.
+   - Which existing hooks/components/functions relate to this task?
+   - Will this modify existing tables or need new ones?
+   - Does a route already exist for this? An admin tab?
+
+2. IDENTIFY CONFLICTS — Before writing code:
+   - Search for existing implementations that overlap
+   - Check if the feature partially exists (avoid duplication)
+   - Map all affected files
+
+3. IMPLEMENT with safety:
+   - Use existing patterns: AdminSectionDashboard, usePaginatedQuery, ExportCsvButton
+   - Import from @/integrations/supabase/client (never create new clients)
+   - Use supabase.functions.invoke() for edge function calls
+   - Add ErrorBoundary wrapping for new page-level components
+   - Use captureError() from @/lib/errorCapture for async error reporting
+
+4. DATABASE SAFETY:
+   - New tables: RLS ON + policies for owner + admin access
+   - Migrations only for schema changes; use insert tool for data
+   - Add indexes for columns used in WHERE/ORDER BY on large tables
+   - Never use raw SQL from user input — always parameterized
+
+5. EDGE FUNCTION SAFETY:
+   - Rate limit: sliding window per IP (configurable)
+   - Zod validation on all inputs
+   - CORS headers on every response (including errors)
+   - Generic error messages to client (log details server-side)
+   - verify_jwt = false in config.toml, validate in code
+
+6. VALIDATE:
+   - Run existing Vitest suite: ensure 0 regressions
+   - Run Deno tests for affected edge functions
+   - Test mobile viewport (390×844)
+   - Verify RLS with both authenticated and anonymous requests
+
+7. CONNECT THE DOTS:
+   - Add to useRealtimeSync if table needs live updates
+   - Add to GlobalSearchModal index if new admin section
+   - Update roadmap_completions when done
+   - Log to changelog_entries via admin
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+📈 HORMOZI GROWTH LENS
+━━━━━━━━━━━━━━━━━━━━━━━━━━
 - How does this increase LTV?
 - How does this reduce CAC?
 - How does this improve K-factor?
 - Does this create a moat or competitive advantage?
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚨 ROLLBACK PLAN (if things break)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- All DB changes via migrations = reversible
+- Edge functions auto-deploy = redeploy previous version
+- React components lazy-loaded = isolate failures
+- ErrorBoundary catches render crashes
+- captureError() logs to error_events table
 
 Execute with conviction. Ship fast, ship right.`;
 }
@@ -81,7 +236,7 @@ export default function RoadmapItemActions({ title, detail, phaseName }: Roadmap
   const handleSendToBoard = async (columnId: string, columnName: string) => {
     setSending(true);
     try {
-      const { error } = await (from("board_cards") as any).insert({
+      const { error } = await (from("board_cards") as ReturnType<typeof from>).insert({
         column_id: columnId,
         title: title.length > 100 ? title.slice(0, 97) + "..." : title,
         description: detail || null,
@@ -89,12 +244,13 @@ export default function RoadmapItemActions({ title, detail, phaseName }: Roadmap
         priority: "medium",
         position: 999,
         labels: ["roadmap-generated"],
-      });
+      } as never);
       if (error) throw error;
       setSent(columnName);
       toast.success(`✅ Sent to ${columnName}!`);
-    } catch (err: any) {
-      toast.error(`Failed: ${err.message}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      toast.error(`Failed: ${message}`);
     } finally {
       setSending(false);
     }
@@ -105,13 +261,12 @@ export default function RoadmapItemActions({ title, detail, phaseName }: Roadmap
       <button
         onClick={(e) => { e.stopPropagation(); openPromptModal(); }}
         className="inline-flex items-center gap-1 px-2 py-1 text-[9px] font-semibold rounded-md bg-purple-500/15 text-purple-400 border border-purple-500/30 hover:bg-purple-500/25 transition-colors"
-        title="Generate Ethereum Developer Master Prompt"
+        title="Generate System-Aware Master Prompt"
       >
         <Cpu className="w-3 h-3" />
         Generate Master Prompt
       </button>
 
-      {/* Master Prompt Modal */}
       {showPrompt && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
@@ -121,11 +276,15 @@ export default function RoadmapItemActions({ title, detail, phaseName }: Roadmap
             className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col animate-in fade-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-border/50">
               <div className="flex items-center gap-2">
                 <Cpu className="w-4 h-4 text-purple-400" />
-                <h3 className="text-sm font-bold text-foreground">Ethereum Master Developer Prompt</h3>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">System-Aware Master Prompt</h3>
+                  <p className="text-[9px] text-muted-foreground">
+                    Live snapshot: {LIVE_ROUTES.length} routes • {LIVE_EDGE_FUNCTIONS.length} functions • {LIVE_DB_TABLES.length} tables • {LIVE_HOOKS.length} hooks
+                  </p>
+                </div>
               </div>
               <button
                 onClick={handleCopyPrompt}
@@ -143,7 +302,6 @@ export default function RoadmapItemActions({ title, detail, phaseName }: Roadmap
               </button>
             </div>
 
-            {/* Editable prompt area */}
             <div className="flex-1 overflow-y-auto p-4">
               <textarea
                 value={editablePrompt}
@@ -153,7 +311,6 @@ export default function RoadmapItemActions({ title, detail, phaseName }: Roadmap
               />
             </div>
 
-            {/* Footer with board send buttons */}
             <div className="px-5 py-3 border-t border-border/50 flex items-center justify-between gap-2 flex-wrap">
               <div className="flex items-center gap-2">
                 {sent ? (
