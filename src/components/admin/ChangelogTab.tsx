@@ -62,7 +62,7 @@ function timeAgo(date: string) {
   return `${days}d ago`;
 }
 
-function ActionBadge({ action }: { action: string }) {
+const ActionBadge = ({ action }: { action: string }) => {
   const colors: Record<string, string> = {
     edited: "bg-amber-500/15 text-amber-400",
     created: "bg-emerald-500/15 text-emerald-400",
@@ -74,7 +74,7 @@ function ActionBadge({ action }: { action: string }) {
       {action}
     </span>
   );
-}
+};
 
 function ChangelogItem({ entry }: { entry: ChangelogEntry }) {
   const [expanded, setExpanded] = useState(false);
