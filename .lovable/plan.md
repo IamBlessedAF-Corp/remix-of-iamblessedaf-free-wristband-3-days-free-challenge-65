@@ -1,154 +1,68 @@
 
-# Admin Hub Optimization — 5-Phase Execution Plan
 
-## Phase 1: Refactor the Monolith (Split Tabs to Files)
+# Referral Attribution: /r/CODE --> / with Full Tracking
 
-**Problem**: `AdminHub.tsx` is 1,523 lines with 15+ inline tab components. Every tab's code loads even when not visible.
+## What This Does
+When someone clicks `iamblessedaf.com/r/BLESSED7CF8`, they'll land on the main page (`/`) with the referral code saved silently. When they sign up (Google, Apple, or email), the system automatically records who referred them in the database -- before they even start the funnel.
 
-**Action**: Extract all inline tab functions into standalone files under `src/components/admin/tabs/`.
+## Changes
 
-| Inline Function | New File |
-|---|---|
-| `DashboardTab` + `RevenueIntelligenceSubTab` + `GrowthMetricsSubTab` | `tabs/DashboardTab.tsx` |
-| `ClippersTab` + `ClipRowItem` + `VideoEmbed` | `tabs/ClippersTab.tsx` |
-| `CongratsTab` | `tabs/CongratsTab.tsx` |
-| `ExpertsTab` | `tabs/ExpertsTab.tsx` |
-| `LinksTab` | `tabs/LinksTab.tsx` |
-| `CampaignSettingsTab` | (already delegates to `EditableCampaignSettings` -- just inline the wrapper) |
-| `IntelligentBlocksTab` + `BlockListItem` + `BLOCK_PREVIEWS` | `tabs/IntelligentBlocksTab.tsx` |
-| `RiskEngineTab` | `tabs/RiskEngineTab.tsx` |
-| `PaymentsTab` | `tabs/PaymentsTab.tsx` |
-| `BoardTab` | `tabs/BoardTab.tsx` |
-| `RoadmapTab` | `tabs/RoadmapTab.tsx` |
-| `LogsTab` | (one-liner, keep inline or remove) |
-| `ForecastTab` | `tabs/ForecastTab.tsx` |
-| `FraudMonitorTab` | `tabs/FraudMonitorTab.tsx` |
-| `LeaderboardTab` | `tabs/LeaderboardTab.tsx` |
-| `AlertsTab` | `tabs/AlertsTab.tsx` |
+### 1. ReferralRedirect.tsx -- Redirect to `/` instead of `/challenge`
+- Change the redirect from `/challenge?ref=CODE` to `/?ref=CODE`
+- The referral code is already being saved to `sessionStorage` downstream, but we'll make it explicit here too for safety
 
-**Result**: `AdminHub.tsx` shrinks to ~300 lines (sidebar + layout + TabContent switch). Each tab lazy-loads its own hooks (`useClipperAdmin`, `useBudgetControl`, etc.) so initial load is faster.
+### 2. Offer22.tsx (the `/` page) -- Capture `ref` param on load
+- On mount, read `?ref=` from the URL and store it in `sessionStorage` as `referral_code`
+- This persists across OAuth redirects (Google/Apple send the user away and back)
 
-Move the hardcoded `blocks` array (46 items) to `src/data/intelligentBlocks.ts`.
+### 3. CreatorSignupModal.tsx -- Write `referred_by_code` on signup
+- After successful account creation (email signup) or sign-in (OAuth), read `referral_code` from `sessionStorage`
+- Immediately upsert the `creator_profiles` row with `referred_by_code` set to the stored code
+- Clear `sessionStorage` after writing
+
+### 4. useAuth.ts -- Pass referral code in user metadata for OAuth
+- When calling `signInWithGoogle` / `signInWithApple`, append the referral code to the redirect URL so it survives the OAuth round-trip (e.g., `redirect_uri=origin/?ref=CODE`)
+
+### 5. ChallengeThanks.tsx -- Also write `referred_by_code` when creating profile
+- The profile auto-creation logic (line ~101) already creates a `creator_profiles` row but doesn't set `referred_by_code`
+- Add: read `referral_code` from `sessionStorage` and include it in the insert
 
 ---
 
-## Phase 2: User Management UI
-
-**Problem**: The `manage-user` and `invite-user` Edge Functions exist but there's no UI beyond basic role invitation to search users, reset passwords, disable accounts, or view user details.
-
-**Action**: Create `src/components/admin/tabs/UserManagementTab.tsx` and add it to the sidebar under "Operations".
-
-**Features**:
-- Search users by email (queries `creator_profiles` + `user_roles`)
-- View user details: email, role, referral code, created_at, orders count
-- Reset password (calls `manage-user` Edge Function)
-- Disable/enable account
-- Change role (admin/developer/user)
-- Add new sidebar entry: `{ id: "users", label: "Users", icon: Users }` under Operations group
-
-**Database**: No schema changes needed -- uses existing `creator_profiles`, `user_roles`, and `manage-user` Edge Function.
-
----
-
-## Phase 3: Export CSV on All Tables
-
-**Problem**: No export capability on any admin table. Data is trapped in the UI.
-
-**Action**: Create a reusable `ExportCsvButton` component and add it to every table tab.
-
-**Implementation**:
-- Create `src/components/admin/ExportCsvButton.tsx` -- a small button that takes `data: Record<string, any>[]`, `filename: string`, and optional `columns: string[]`
-- Uses the existing `downloadCsv` utility from `src/utils/csvExport.ts`
-- Generic: auto-generates headers from object keys, or uses provided column list
-
-**Tabs to add export**:
-| Tab | Data Source |
-|---|---|
-| Orders | `orders` query |
-| Waitlist | `smart_wristband_waitlist` query |
-| SMS Deliveries | `sms_deliveries` query |
-| SMS Audit | `sms_audit_log` query |
-| Experts | `expert_leads` query |
-| Clips | `clip_submissions` via `useClipperAdmin` |
-| Blessings | `blessings` + `creator_profiles` |
-| Affiliates | `affiliate_tiers` |
-| Leaderboard | clipper aggregated data |
-| Links | already has export via `useLinkAnalytics` |
-| Challenge | `challenge_participants` |
-
----
-
-## Phase 4: Global Search (Cmd+K)
-
-**Problem**: No way to quickly find a user, order, clip, or config across 25+ tabs.
-
-**Action**: Create `src/components/admin/GlobalSearchModal.tsx` using the existing `cmdk` package (already installed).
-
-**Features**:
-- Triggered by Cmd+K / Ctrl+K keyboard shortcut from anywhere in admin
-- Also accessible via a search icon in the sidebar header
-- Searches across:
-  - Tab names (navigate to tab)
-  - Orders (by email, tier)
-  - Creator profiles (by name, email, referral code)
-  - Clip submissions (by URL, platform)
-  - Waitlist entries (by email)
-- Results grouped by category with icons
-- Clicking a result navigates to the relevant tab (using existing `admin-navigate-tab` custom event)
-- Debounced queries (300ms) to avoid spamming the database
-
-**Integration**: Add the modal to `AdminHub.tsx` layout (outside the tab content area). Wire Cmd+K listener.
-
----
-
-## Phase 5: Pagination on Heavy Tables
-
-**Problem**: Orders, Waitlist, SMS, and Clips all use `.limit(200)` which will break with scale and already truncates data.
-
-**Action**: Create a reusable `usePaginatedQuery` hook and update the 5 heaviest tabs.
-
-**Hook API**:
-```text
-usePaginatedQuery({
-  table: "orders",
-  pageSize: 50,
-  orderBy: "created_at",
-  filters?: { column, value }[]
-})
---> { data, page, totalPages, nextPage, prevPage, isLoading }
-```
-
-**Implementation approach**:
-- Uses Supabase `.range(from, to)` for offset pagination
-- Gets total count with `select("*", { count: "exact", head: true })` 
-- Reusable `PaginationControls` component using the existing `src/components/ui/pagination.tsx`
-
-**Tabs to paginate**:
-| Tab | Table | Current Limit |
-|---|---|---|
-| Orders | `orders` | 200 |
-| Waitlist | `smart_wristband_waitlist` | 200 |
-| SMS Deliveries | `sms_deliveries` | 200 |
-| SMS Audit | `sms_audit_log` | 200 |
-| Clips (via ClippersTab) | `clip_submissions` | all |
-| Expert Leads | `expert_leads` | all |
-
----
-
-## Execution Order
+## Technical Details
 
 ```text
-Phase 1 (Refactor)  -->  Foundation for everything else
-Phase 2 (Users)     -->  Critical gap, standalone
-Phase 3 (CSV)       -->  Quick wins, touches each tab file
-Phase 4 (Cmd+K)     -->  Standalone overlay
-Phase 5 (Pagination) --> Touches each tab's data fetching
+Flow:
+  /r/BLESSED7CF8
+       |
+       v
+  ReferralRedirect --> navigate("/?ref=BLESSED7CF8")
+       |
+       v
+  Offer22 mounts --> reads ?ref=BLESSED7CF8 --> sessionStorage.setItem("referral_code", "BLESSED7CF8")
+       |
+       v
+  User clicks "Claim" --> CreatorSignupModal opens
+       |
+       +--[Google/Apple]--> OAuth redirect (redirect_uri includes ?ref=CODE) --> returns to / --> sessionStorage still has code
+       +--[Email+OTP]----> signup completes inline
+       |
+       v
+  onSuccess fires --> read sessionStorage("referral_code") --> upsert creator_profiles.referred_by_code = "BLESSED7CF8"
+       |
+       v
+  sessionStorage.removeItem("referral_code") --> done
 ```
 
-## Technical Notes
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/pages/ReferralRedirect.tsx` | Redirect to `/?ref=CODE` instead of `/challenge?ref=CODE` |
+| `src/pages/Offer22.tsx` | Read `?ref` param on mount, save to `sessionStorage` |
+| `src/components/contest/CreatorSignupModal.tsx` | After signup/signin success, write `referred_by_code` to `creator_profiles` |
+| `src/hooks/useAuth.ts` | Include `?ref=CODE` in OAuth redirect URLs so code survives round-trip |
+| `src/pages/ChallengeThanks.tsx` | Include `referred_by_code` from `sessionStorage` when auto-creating profile |
 
-- No database migrations needed for any phase
-- All changes are frontend-only except Phase 2 which uses existing Edge Functions
-- Phase 1 must go first since all other phases touch tab files
-- Phases 2-4 can run in parallel after Phase 1
-- Phase 5 should go last since it changes data fetching patterns in tabs
+### No Database Changes Needed
+The `creator_profiles` table already has a `referred_by_code` column -- we just need to populate it at signup time.
+
