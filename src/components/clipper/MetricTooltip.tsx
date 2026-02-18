@@ -1,9 +1,10 @@
 import { useState } from "react";
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
@@ -28,12 +29,6 @@ const statusStyles = {
   neutral: "text-primary decoration-primary",
 };
 
-const statusGlow = {
-  passing: "drop-shadow-[0_0_6px_hsl(142_70%_45%/0.5)]",
-  failing: "drop-shadow-[0_0_6px_hsl(var(--destructive)/0.5)]",
-  neutral: "drop-shadow-[0_0_6px_hsl(var(--primary)/0.5)]",
-};
-
 const MetricTooltip = ({
   label,
   value,
@@ -48,38 +43,39 @@ const MetricTooltip = ({
 
   return (
     <>
-      <HoverCard openDelay={100}>
-        <HoverCardTrigger asChild>
-          <button
-            type="button"
-            onClick={() => setExpanded(true)}
-            className={`inline font-bold underline underline-offset-2 cursor-pointer hover:opacity-80 transition-all animate-pulse hover:animate-none ${statusStyles[status]} hover:${statusGlow[status]}`}
-          >
-            {children || label}
-          </button>
-        </HoverCardTrigger>
-        <HoverCardContent className="w-80 text-left" side="top">
-          <div className="space-y-2">
-            <p className="text-sm font-black text-foreground">{label}</p>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              {description}
-            </p>
-            <div className="flex items-center gap-3 text-xs">
-              <span className="text-muted-foreground">Current:</span>
-              <span className={`font-bold ${status === "passing" ? "text-emerald-400" : status === "failing" ? "text-destructive" : "text-foreground"}`}>
-                {value}
-              </span>
-              {required && (
-                <>
-                  <span className="text-muted-foreground">Required:</span>
-                  <span className="font-bold text-foreground">{required}</span>
-                </>
-              )}
+      <TooltipProvider delayDuration={100}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={() => setExpanded(true)}
+              className={`inline font-bold underline underline-offset-2 cursor-pointer hover:opacity-80 transition-all animate-pulse hover:animate-none ${statusStyles[status]}`}
+            >
+              {children || label}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="top" className="max-w-[320px]">
+            <div className="space-y-2">
+              <p className="text-sm font-black text-popover-foreground">{label}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
+              <div className="flex items-center gap-3 text-xs">
+                <span className="text-muted-foreground">Current:</span>
+                <span className={`font-bold ${status === "passing" ? "text-emerald-400" : status === "failing" ? "text-destructive" : "text-popover-foreground"}`}>
+                  {value}
+                </span>
+                {required && (
+                  <>
+                    <span className="text-muted-foreground">Required:</span>
+                    <span className="font-bold text-popover-foreground">{required}</span>
+                  </>
+                )}
+              </div>
+              <p className="text-[10px] text-primary italic">Tap for details →</p>
             </div>
-            <p className="text-[10px] text-primary italic">Tap for details →</p>
-          </div>
-        </HoverCardContent>
-      </HoverCard>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       <Dialog open={expanded} onOpenChange={setExpanded}>
         <DialogContent className="max-w-sm">
