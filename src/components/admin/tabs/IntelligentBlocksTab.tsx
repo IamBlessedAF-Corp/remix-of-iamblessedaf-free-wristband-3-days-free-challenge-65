@@ -110,7 +110,7 @@ function BlockListItem({ block: b, catColors }: { block: BlockDef; catColors: Re
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-secondary/20 transition-colors"
       >
-        <div className="w-14 h-10 rounded-lg border border-border/40 bg-background overflow-hidden shrink-0 relative group-hover:border-primary/30 transition-colors">
+        <div className="w-20 h-14 rounded-lg border border-border/40 bg-background overflow-hidden shrink-0 relative group-hover:border-primary/30 transition-colors">
           {BLOCK_PREVIEWS[b.category] || BLOCK_PREVIEWS["Content"]}
         </div>
         <div className="flex-1 min-w-0">
@@ -150,11 +150,11 @@ function BlockListItem({ block: b, catColors }: { block: BlockDef; catColors: Re
               <span className="text-[9px] font-mono text-muted-foreground truncate">{b.usedIn[0] || "/"}</span>
               <button onClick={(e) => { e.stopPropagation(); window.open(previewUrl, "_blank"); }}
                 className="text-[9px] text-primary hover:underline flex items-center gap-0.5">
-                Open <ExternalLink className="w-2.5 h-2.5" />
+                Open full page <ExternalLink className="w-2.5 h-2.5" />
               </button>
             </div>
-            <div className="w-full h-32 relative">
-              <iframe src={previewUrl} className="w-[200%] h-[200%] origin-top-left scale-50 pointer-events-none" title={`Preview: ${b.name}`} loading="lazy" sandbox="allow-scripts allow-same-origin" />
+            <div className="w-full" style={{ height: "480px", position: "relative" }}>
+              <iframe src={previewUrl} className="pointer-events-none" style={{ width: "1440px", height: "900px", transform: "scale(0.533)", transformOrigin: "top left" }} title={`Preview: ${b.name}`} loading="lazy" sandbox="allow-scripts allow-same-origin" />
             </div>
           </div>
         </div>

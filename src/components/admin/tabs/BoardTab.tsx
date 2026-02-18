@@ -22,6 +22,7 @@ export default function BoardTab() {
       <AdminSectionDashboard
         title="Kanban Board"
         description="Ideas → In Development → Testing → Live → Optimizing"
+        defaultCollapsed={true}
         kpis={[
           { label: "Total Cards", value: board.cards.length },
           { label: "Columns", value: board.columns.length },
