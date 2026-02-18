@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Shield, Plus, Trash2, Users, Crown, Code, ShieldCheck } from "lucide-react";
+import { Shield, Plus, Trash2, Users, Crown, Code, ShieldCheck, Mail, UserPlus, Loader2 } from "lucide-react";
 import AdminSectionDashboard from "./AdminSectionDashboard";
 
 const ROLE_CONFIG: Record<string, { label: string; color: string; icon: any; description: string }> = {
@@ -20,6 +20,13 @@ const ASSIGNABLE_ROLES = ["admin", "developer", "user"];
 
 export default function RolesTab() {
   const qc = useQueryClient();
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteName, setInviteName] = useState("");
+  const [invitePhone, setInvitePhone] = useState("");
+  const [inviteRole, setInviteRole] = useState("developer");
+  const [invitePassword, setInvitePassword] = useState("");
+
+  // Existing role assign state
   const [newEmail, setNewEmail] = useState("");
   const [newRole, setNewRole] = useState("admin");
 
@@ -28,7 +35,6 @@ export default function RolesTab() {
     queryFn: async () => {
       const { data, error } = await (supabase.from("user_roles" as any) as any).select("*");
       if (error) throw error;
-      // Get emails from creator_profiles
       const userIds = (data || []).map((r: any) => r.user_id);
       const { data: profiles } = await supabase.from("creator_profiles").select("user_id, email, display_name").in("user_id", userIds);
       const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
@@ -40,16 +46,34 @@ export default function RolesTab() {
     },
   });
 
+  const inviteUser = useMutation({
+    mutationFn: async (params: { email: string; password: string; role: string; display_name: string; phone: string }) => {
+      const { data, error } = await supabase.functions.invoke("invite-user", {
+        body: params,
+      });
+      if (error) throw new Error(error.message || "Failed to invite user");
+      if (data?.error) throw new Error(data.error);
+      return data;
+    },
+    onSuccess: (data) => {
+      toast.success(`✅ ${data.email} invited as ${data.role}. Invitation email sent!`);
+      qc.invalidateQueries({ queryKey: ["admin-roles"] });
+      setInviteEmail("");
+      setInviteName("");
+      setInvitePhone("");
+      setInvitePassword("");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
   const addRole = useMutation({
     mutationFn: async ({ email, role }: { email: string; role: string }) => {
-      // Find user_id from creator_profiles by email
       const { data: profile, error: pErr } = await supabase
         .from("creator_profiles")
         .select("user_id")
         .eq("email", email)
         .maybeSingle();
       if (pErr || !profile) throw new Error("User not found with that email. They must have a creator profile first.");
-      
       const { error } = await (supabase.from("user_roles" as any) as any)
         .insert({ user_id: profile.user_id, role });
       if (error) {
@@ -69,6 +93,13 @@ export default function RolesTab() {
     onSuccess: () => { toast.success("Role removed"); qc.invalidateQueries({ queryKey: ["admin-roles"] }); },
     onError: (e: any) => toast.error(e.message),
   });
+
+  const generatePassword = () => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@$#";
+    let pw = "Blessed$";
+    for (let i = 0; i < 8; i++) pw += chars[Math.floor(Math.random() * chars.length)];
+    setInvitePassword(pw);
+  };
 
   const superAdminCount = roles.filter((r: any) => r.role === "super_admin").length;
   const adminCount = roles.filter((r: any) => r.role === "admin").length;
@@ -103,20 +134,73 @@ export default function RolesTab() {
         })}
       </div>
 
-      {/* Add role */}
+      {/* Invite new user */}
+      <div className="border border-primary/30 rounded-xl p-5 bg-primary/5">
+        <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+          <UserPlus className="w-4 h-4 text-primary" /> Invite New Team Member
+        </h3>
+        <p className="text-xs text-muted-foreground mb-4">
+          Creates a new account, assigns a role, and sends an invitation email with login credentials.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Full Name</label>
+            <Input value={inviteName} onChange={e => setInviteName(e.target.value)} placeholder="Diana Surita" className="text-sm" />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Email</label>
+            <Input value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} placeholder="user@example.com" className="text-sm" />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Phone (optional)</label>
+            <Input value={invitePhone} onChange={e => setInvitePhone(e.target.value)} placeholder="+573025880823" className="text-sm" />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Role</label>
+            <Select value={inviteRole} onValueChange={setInviteRole}>
+              <SelectTrigger className="text-sm"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {ASSIGNABLE_ROLES.map(r => (
+                  <SelectItem key={r} value={r}>{ROLE_CONFIG[r]?.label || r}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="sm:col-span-2">
+            <label className="text-xs text-muted-foreground mb-1 block">Temporary Password</label>
+            <div className="flex gap-2">
+              <Input value={invitePassword} onChange={e => setInvitePassword(e.target.value)} placeholder="Click generate →" className="text-sm font-mono flex-1" />
+              <Button size="sm" variant="outline" onClick={generatePassword} type="button">Generate</Button>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4">
+          <Button
+            onClick={() => inviteUser.mutate({
+              email: inviteEmail,
+              password: invitePassword,
+              role: inviteRole,
+              display_name: inviteName,
+              phone: invitePhone,
+            })}
+            disabled={!inviteEmail || !invitePassword || !inviteName || inviteUser.isPending}
+            className="gap-2"
+          >
+            {inviteUser.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+            Create Account & Send Invitation
+          </Button>
+        </div>
+      </div>
+
+      {/* Assign role to existing user */}
       <div className="border border-border/30 rounded-xl p-4 bg-card/50">
         <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-          <Plus className="w-4 h-4" /> Assign Role
+          <Plus className="w-4 h-4" /> Assign Role to Existing User
         </h3>
         <div className="flex gap-2 items-end flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <label className="text-xs text-muted-foreground mb-1 block">User Email</label>
-            <Input
-              value={newEmail}
-              onChange={e => setNewEmail(e.target.value)}
-              placeholder="user@example.com"
-              className="text-sm"
-            />
+            <Input value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="user@example.com" className="text-sm" />
           </div>
           <div className="w-40">
             <label className="text-xs text-muted-foreground mb-1 block">Role</label>
