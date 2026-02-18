@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Film, Award, Users, Link2, Settings, Blocks,
   ShieldAlert, CreditCard, Kanban, Map, ScrollText, Brain,
   Trophy, Bell, LogOut, RefreshCw, Menu, ChevronLeft, Shield,
-  DollarSign, Zap, Target, ChevronDown, ChevronRight,
+  DollarSign, Zap, Target, ChevronDown, ChevronRight, Search,
 } from "lucide-react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useQuery } from "@tanstack/react-query";
@@ -40,6 +40,7 @@ import WaitlistTab from "@/components/admin/WaitlistTab";
 import RolesTab from "@/components/admin/RolesTab";
 import ChangelogTab from "@/components/admin/ChangelogTab";
 import BudgetControlTab from "@/components/admin/BudgetControlTab";
+import GlobalSearchModal from "@/components/admin/GlobalSearchModal";
 
 // ─── Tab definitions ───
 const ALL_TAB_IDS = [
@@ -199,13 +200,17 @@ export default function AdminHub() {
 
   return (
     <div className="min-h-screen bg-background flex w-full">
+      <GlobalSearchModal />
       {/* Sidebar */}
       <aside className={cn("bg-card border-r border-border/50 flex flex-col transition-all duration-200 shrink-0 sticky top-0 h-screen overflow-y-auto", sidebarOpen ? "w-56" : "w-14")}>
         <div className="flex items-center gap-2 px-3 py-4 border-b border-border/30">
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-muted-foreground hover:text-foreground transition-colors">
             {sidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
-          {sidebarOpen && <span className="text-sm font-bold text-foreground truncate">Growth Intelligence OS</span>}
+          {sidebarOpen && <span className="text-sm font-bold text-foreground truncate flex-1">Growth Intelligence OS</span>}
+          <button onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))} className="text-muted-foreground hover:text-foreground transition-colors" title="Search (⌘K)">
+            <Search className="w-4 h-4" />
+          </button>
         </div>
         <nav className="flex-1 py-2 space-y-0.5 px-2">
           {(() => {
