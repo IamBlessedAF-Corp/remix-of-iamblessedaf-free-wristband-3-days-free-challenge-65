@@ -11,6 +11,35 @@ const OTP_EXPIRY_MINUTES = 10;
 const MAX_ATTEMPTS = 5;
 const RATE_LIMIT_SECONDS = 60;
 
+/** IP-based rate limiter: max 10 OTP requests per hour per IP */
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 3_600_000; // 1 hour
+const RATE_LIMIT_MAX_PER_IP = 10;
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const attempts = (rateLimitMap.get(key) || []).filter(
+    (t) => now - t < RATE_LIMIT_WINDOW_MS
+  );
+  if (attempts.length >= RATE_LIMIT_MAX_PER_IP) {
+    rateLimitMap.set(key, attempts);
+    return true;
+  }
+  attempts.push(now);
+  rateLimitMap.set(key, attempts);
+  return false;
+}
+
+// Cleanup stale entries every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, attempts] of rateLimitMap.entries()) {
+    const recent = attempts.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+    if (recent.length === 0) rateLimitMap.delete(key);
+    else rateLimitMap.set(key, recent);
+  }
+}, 300_000);
+
 function generateOtp(): string {
   const digits = "0123456789";
   let code = "";
@@ -25,6 +54,19 @@ function generateOtp(): string {
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // IP-based rate limiting
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("cf-connecting-ip") ||
+    "unknown";
+
+  if (isRateLimited(ip)) {
+    return new Response(
+      JSON.stringify({ error: "Too many requests. Please try again later." }),
+      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
