@@ -36,6 +36,20 @@ const STEPS: Step[] = [
   "confirmation",
 ];
 
+const SS_KEY = "gratitude_setup_state";
+
+const loadState = () => {
+  try {
+    const raw = sessionStorage.getItem(SS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return null;
+};
+
+const saveState = (state: Record<string, unknown>) => {
+  try { sessionStorage.setItem(SS_KEY, JSON.stringify(state)); } catch {}
+};
+
 const STEP_LABELS = [
   { label: "Why It Works", done: true },
   { label: "Name Your Friend", done: false },
@@ -50,15 +64,29 @@ const anim = {
 };
 
 const GratitudeSetupFlow = ({ onComplete, onSkip }: GratitudeSetupFlowProps) => {
-  const [currentStep, setCurrentStep] = useState<Step>("name-friend");
-  const [bestFriend, setBestFriend] = useState("");
-  const [gratitudeMemory, setGratitudeMemory] = useState("");
-  const [countryCode, setCountryCode] = useState("+1");
-  const [phoneLocal, setPhoneLocal] = useState("");
-  const [agreedToSms, setAgreedToSms] = useState(false);
+  const saved = loadState();
+  const [currentStep, setCurrentStepRaw] = useState<Step>(
+    saved?.step && STEPS.includes(saved.step) ? saved.step : "name-friend"
+  );
+  const [bestFriend, setBestFriendRaw] = useState(saved?.bestFriend ?? "");
+  const [gratitudeMemory, setGratitudeMemoryRaw] = useState(saved?.gratitudeMemory ?? "");
+  const [countryCode, setCountryCodeRaw] = useState(saved?.countryCode ?? "+1");
+  const [phoneLocal, setPhoneLocalRaw] = useState(saved?.phoneLocal ?? "");
+  const [agreedToSms, setAgreedToSmsRaw] = useState(saved?.agreedToSms ?? false);
   const [saving, setSaving] = useState(false);
   const [showCountryCodes, setShowCountryCodes] = useState(false);
-  
+
+  const persist = (patch: Record<string, unknown>) => {
+    const cur = loadState() || {};
+    saveState({ ...cur, ...patch });
+  };
+  const setCurrentStep = (v: Step) => { setCurrentStepRaw(v); persist({ step: v }); };
+  const setBestFriend = (v: string) => { setBestFriendRaw(v); persist({ bestFriend: v }); };
+  const setGratitudeMemory = (v: string) => { setGratitudeMemoryRaw(v); persist({ gratitudeMemory: v }); };
+  const setCountryCode = (v: string) => { setCountryCodeRaw(v); persist({ countryCode: v }); };
+  const setPhoneLocal = (v: string) => { setPhoneLocalRaw(v); persist({ phoneLocal: v }); };
+  const setAgreedToSms = (v: boolean) => { setAgreedToSmsRaw(v); persist({ agreedToSms: v }); };
+
 
   const phone = `${countryCode}${phoneLocal}`;
 
