@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Film, Award, Users, Link2, Settings, Blocks,
   ShieldAlert, CreditCard, Kanban, Map, ScrollText, Brain,
   Trophy, Bell, LogOut, RefreshCw, Menu, ChevronLeft, Shield,
-  DollarSign, Zap, Target, ChevronDown, ChevronRight, Search,
+  DollarSign, Zap, Target, ChevronDown, ChevronRight, Search, Globe,
 } from "lucide-react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useQuery } from "@tanstack/react-query";
@@ -28,6 +28,7 @@ import FraudMonitorTab from "@/components/admin/tabs/FraudMonitorTab";
 import LeaderboardTab from "@/components/admin/tabs/LeaderboardTab";
 import AlertsTab from "@/components/admin/tabs/AlertsTab";
 import UserManagementTab from "@/components/admin/tabs/UserManagementTab";
+import IntegrationsTab from "@/components/admin/tabs/IntegrationsTab";
 
 import EditableCampaignSettings from "@/components/admin/EditableCampaignSettings";
 import OrdersTab from "@/components/admin/OrdersTab";
@@ -49,6 +50,7 @@ const ALL_TAB_IDS = [
   "roadmap", "logs", "forecast", "fraud", "leaderboard",
   "alerts", "budget", "orders", "blessings", "challenge",
   "sms", "gamification", "affiliates", "waitlist", "roles", "users",
+  "integrations",
 ] as const;
 
 type TabId = typeof ALL_TAB_IDS[number];
@@ -118,6 +120,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
       { id: "logs", label: "Logs", icon: ScrollText },
       { id: "roles", label: "Roles", icon: Shield },
       { id: "users", label: "Users", icon: Users },
+      { id: "integrations", label: "Integrations & API", icon: Globe },
     ],
   },
 ];
@@ -151,6 +154,7 @@ function TabContent({ tab }: { tab: TabId }) {
     case "waitlist": return <WaitlistTab />;
     case "roles": return <RolesTab />;
     case "users": return <UserManagementTab />;
+    case "integrations": return <IntegrationsTab />;
     default: return null;
   }
 }
