@@ -133,9 +133,40 @@ Deno.serve(async (req) => {
         if (hasCampaignTag && hasOwnership && clip.status === "pending") {
           updateData.status = "verified";
           updateData.verified_at = new Date().toISOString();
-          const netViews = Math.max(0, liveViewCount - (updateData.baseline_view_count || clip.baseline_view_count || 0));
-          const rpmEarnings = Math.round((netViews / 1000) * 22);
-          updateData.earnings_cents = Math.max(222, rpmEarnings);
+          
+          // Calculate net views for activation check
+          const baseline = updateData.baseline_view_count || clip.baseline_view_count || 0;
+          const netViews = Math.max(0, liveViewCount - baseline);
+          updateData.net_views = netViews;
+          
+          // Earnings only activate after 1,000+ net views
+          // Other quality thresholds (CTR, RegRate, Day1Post) are checked during weekly payout
+          if (netViews >= 1000) {
+            const rpmEarnings = Math.round((netViews / 1000) * 22);
+            updateData.earnings_cents = Math.max(222, rpmEarnings);
+            updateData.is_activated = true;
+          } else {
+            // Verified but not yet earning — needs more views
+            updateData.earnings_cents = 0;
+            updateData.is_activated = false;
+          }
+        }
+        
+        // Also update earnings for already-verified clips based on current views
+        if (clip.status === "verified" && !hasCampaignTag) {
+          // Already verified, just update view-based earnings
+          const baseline = clip.baseline_view_count || 0;
+          const netViews = Math.max(0, liveViewCount - baseline);
+          updateData.net_views = netViews;
+          
+          if (netViews >= 1000) {
+            const rpmEarnings = Math.round((netViews / 1000) * 22);
+            updateData.earnings_cents = Math.max(222, rpmEarnings);
+            updateData.is_activated = true;
+          } else {
+            updateData.earnings_cents = 0;
+            updateData.is_activated = false;
+          }
         }
 
         const { error: updateError } = await supabase
