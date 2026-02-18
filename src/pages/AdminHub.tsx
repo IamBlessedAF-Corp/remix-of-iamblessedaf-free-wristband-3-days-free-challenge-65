@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Film, Award, Users, Link2, Settings, Blocks,
   ShieldAlert, CreditCard, Kanban, Map, ScrollText, Brain, Database,
   Trophy, Bell, LogOut, RefreshCw, Menu, ChevronLeft, Shield,
-  DollarSign, Zap, Target, ChevronDown, ChevronRight, Search, Globe, Type, MessageSquare, BarChart3,
+  DollarSign, Zap, Target, ChevronDown, ChevronRight, Search, Globe, Type, MessageSquare, BarChart3, TrendingUp,
 } from "lucide-react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useQuery } from "@tanstack/react-query";
@@ -42,6 +42,7 @@ import CopyManagerTab from "@/components/admin/CopyManagerTab";
 import SmsTab from "@/components/admin/SmsTab";
 import GamificationTab from "@/components/admin/GamificationTab";
 import AffiliatesTab from "@/components/admin/AffiliatesTab";
+import ReferralAttributionFunnel from "@/components/admin/ReferralAttributionFunnel";
 import WaitlistTab from "@/components/admin/WaitlistTab";
 import RolesTab from "@/components/admin/RolesTab";
 import ChangelogTab from "@/components/admin/ChangelogTab";
@@ -55,7 +56,7 @@ const ALL_TAB_IDS = [
   "campaign", "blocks", "risk", "payments", "board",
   "roadmap", "logs", "forecast", "fraud", "leaderboard",
   "alerts", "budget", "orders", "blessings", "challenge",
-  "messaging", "copymanager", "sms", "gamification", "affiliates", "waitlist", "roles", "users",
+  "messaging", "copymanager", "sms", "gamification", "affiliates", "referrals", "waitlist", "roles", "users",
   "integrations", "database", "auditlog",
 ] as const;
 
@@ -77,6 +78,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
       { id: "leaderboard", label: "Leaderboard", icon: Trophy },
       { id: "blessings", label: "Blessings & Creators", icon: Award },
       { id: "affiliates", label: "Affiliate Tiers", icon: Target },
+      { id: "referrals", label: "Referral Funnel", icon: TrendingUp },
     ],
   },
   {
@@ -165,6 +167,7 @@ function TabContent({ tab }: { tab: TabId }) {
     case "sms": return <SmsTab />;
     case "gamification": return <GamificationTab />;
     case "affiliates": return <AffiliatesTab />;
+    case "referrals": return <ReferralAttributionFunnel />;
     case "waitlist": return <WaitlistTab />;
     case "roles": return <RolesTab />;
     case "users": return <UserManagementTab />;
