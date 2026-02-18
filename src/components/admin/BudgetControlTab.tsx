@@ -313,18 +313,18 @@ const SegmentBudgets = ({ budget }: { budget: ReturnType<typeof useBudgetControl
 const SimulationEngine = ({ budget }: { budget: ReturnType<typeof useBudgetControl> }) => {
   const [rpm, setRpm] = useState(0.22);
   const [weeklyLimit, setWeeklyLimit] = useState((budget.cycle?.global_weekly_limit_cents || 500000) / 100);
-  const [result, setResult] = useState<ReturnType<typeof budget.simulate> | null>(null);
 
-  const runSim = () => {
-    const r = budget.simulate({ rpm, weeklyLimit: Math.round(weeklyLimit * 100) });
-    setResult(r);
-  };
+  // Auto-run simulation on mount and whenever inputs change
+  const result = budget.simulate({ rpm, weeklyLimit: Math.round(weeklyLimit * 100) });
+  const realSpend = budget.realSpendCents;
+  const simSpend = result.day7Forecast;
 
   return (
     <div className="bg-card border border-border/40 rounded-xl p-5 space-y-4">
       <div className="flex items-center gap-2">
         <Activity className="w-4 h-4 text-primary" />
         <h3 className="text-sm font-bold text-foreground">What-If Simulation</h3>
+        <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px] ml-auto">Auto-updating</Badge>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         <div>
@@ -336,27 +336,52 @@ const SimulationEngine = ({ budget }: { budget: ReturnType<typeof useBudgetContr
           <Input type="number" value={weeklyLimit} onChange={(e) => setWeeklyLimit(Number(e.target.value))} className="h-8 text-sm" />
         </div>
         <div className="flex items-end">
-          <Button size="sm" onClick={runSim} className="gap-1 w-full">
-            <Zap className="w-3 h-3" /> Run Simulation
-          </Button>
+          <div className="bg-secondary/30 rounded-lg p-2 w-full text-center">
+            <p className="text-[10px] text-muted-foreground uppercase">Max Views Supported</p>
+            <p className="text-sm font-bold text-foreground">{(result.maxViews || 0).toLocaleString()}</p>
+          </div>
         </div>
       </div>
-      {result && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          {[
-            { label: "7-Day Forecast", value: result.day7Forecast },
-            { label: "30-Day Projection", value: result.day30Projection },
-            { label: "Worst Case", value: result.worstCase },
-            { label: "Risk-Adjusted", value: result.riskAdjusted },
-            { label: "Safe Limit", value: result.safeLimit },
-          ].map((item) => (
-            <div key={item.label} className="bg-secondary/30 rounded-lg p-3 text-center">
-              <p className="text-[10px] text-muted-foreground uppercase">{item.label}</p>
-              <p className="text-lg font-bold text-foreground">{fmt$(item.value)}</p>
-            </div>
-          ))}
+
+      {/* Real vs Simulated comparison */}
+      <div className="bg-secondary/20 border border-border/30 rounded-lg p-4 space-y-3">
+        <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+          <BarChart3 className="w-3.5 h-3.5 text-primary" /> Real vs. Simulated (This Week)
+        </h4>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <p className="text-[10px] text-muted-foreground uppercase">Real Spend</p>
+            <p className="text-xl font-bold text-foreground">{fmt$(realSpend)}</p>
+            <Progress value={Math.min(100, (realSpend / Math.round(weeklyLimit * 100)) * 100)} className="h-2" />
+            <p className="text-[10px] text-muted-foreground">{Math.round((realSpend / Math.round(weeklyLimit * 100)) * 100)}% of budget</p>
+          </div>
+          <div className="space-y-1.5">
+            <p className="text-[10px] text-muted-foreground uppercase">Simulated (Full Budget)</p>
+            <p className="text-xl font-bold text-primary">{fmt$(simSpend)}</p>
+            <Progress value={100} className="h-2" />
+            <p className="text-[10px] text-muted-foreground">100% utilization scenario</p>
+          </div>
         </div>
-      )}
+        <div className="flex items-center gap-2 text-xs text-muted-foreground border-t border-border/20 pt-2">
+          <TrendingUp className="w-3 h-3" />
+          <span>Gap: <strong className="text-foreground">{fmt$(simSpend - realSpend)}</strong> remaining capacity this week</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        {[
+          { label: "7-Day Forecast", value: result.day7Forecast },
+          { label: "30-Day Projection", value: result.day30Projection },
+          { label: "Worst Case", value: result.worstCase },
+          { label: "Risk-Adjusted", value: result.riskAdjusted },
+          { label: "Safe Limit", value: result.safeLimit },
+        ].map((item) => (
+          <div key={item.label} className="bg-secondary/30 rounded-lg p-3 text-center">
+            <p className="text-[10px] text-muted-foreground uppercase">{item.label}</p>
+            <p className="text-lg font-bold text-foreground">{fmt$(item.value)}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

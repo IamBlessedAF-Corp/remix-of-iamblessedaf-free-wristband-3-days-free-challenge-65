@@ -42,17 +42,19 @@ export default function BoardLoginForm({ signInWithEmail }: BoardLoginFormProps)
           <CardDescription>Sign in with your credentials</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4" autoComplete="on">
             <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Label htmlFor="admin-email">Email</Label>
+              <Input id="admin-email" name="email" type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="admin-password">Password</Label>
               <div className="relative mt-1">
                 <Input
-                  id="password"
+                  id="admin-password"
+                  name="password"
                   type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
