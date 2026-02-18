@@ -271,22 +271,26 @@ export function useBudgetControl() {
   }, []);
 
   // ── Simulation ──
+  // Accepts optional real metrics for data-driven defaults
   const simulate = useCallback((params: {
     rpm?: number;
     weeklyLimit?: number;
     bonusChange?: number;
     segmentIds?: string[];
+    realAvgPerClipCents?: number;
+    realAvgViewsPerClip?: number;
   }) => {
-    const rpm = params.rpm || 0.22;
-    const weeklyLimitCents = params.weeklyLimit || cycle?.global_weekly_limit_cents || 500000;
+    // RPM: prefer explicit param, no hardcoded fallback
+    const rpm = params.rpm || 0;
+    const weeklyLimitCents = params.weeklyLimit || cycle?.global_weekly_limit_cents || 0;
     const weeklyLimitDollars = weeklyLimitCents / 100;
 
     // Core math: how many views can the budget support at this RPM?
-    const maxViews = Math.round(weeklyLimitDollars / rpm * 1000);
-    // Average earnings per clip = RPM * (avgViews / 1000)
-    // With $0.22 RPM and ~13,636 views per clip → ~$3 per clip
-    const avgEarningsPerClipCents = Math.round(rpm * 1000 * (maxViews / 1000 / Math.max(1, Math.round(weeklyLimitDollars / 3))) / 1000 * 100);
-    const effectiveAvgPerClip = avgEarningsPerClipCents > 0 ? avgEarningsPerClipCents : Math.round(rpm * 13636 / 1000 * 100);
+    const maxViews = rpm > 0 ? Math.round(weeklyLimitDollars / rpm * 1000) : 0;
+    // Use real avg earnings per clip if available, otherwise derive from RPM + real avg views
+    const realAvgViews = params.realAvgViewsPerClip || 0;
+    const effectiveAvgPerClip = params.realAvgPerClipCents
+      || (rpm > 0 && realAvgViews > 0 ? Math.round(rpm * realAvgViews / 1000 * 100) : 0);
     const totalClips = effectiveAvgPerClip > 0 ? Math.floor(weeklyLimitCents / effectiveAvgPerClip) : 0;
     
     // Distribute across segments

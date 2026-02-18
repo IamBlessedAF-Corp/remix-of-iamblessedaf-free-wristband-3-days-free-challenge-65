@@ -1,19 +1,9 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useRealEconomyMetrics } from "@/hooks/useRealEconomyMetrics";
 import AdminSectionDashboard from "./AdminSectionDashboard";
 import { RefreshCw } from "lucide-react";
-
-/** Tier pricing map (cents) for CAC estimation */
-const TIER_PRICE_MAP: Record<string, number> = {
-  "free-wristband": 0,
-  "wristband-22": 2200,
-  "pack-111": 11100,
-  "pack-444": 44400,
-  "pack-1111": 111100,
-  "pack-4444": 444400,
-  "monthly-11": 1100,
-};
 
 interface OrderRow {
   id: string;
@@ -28,8 +18,11 @@ interface OrderRow {
 /**
  * Revenue LTV Dashboard — tracks per-tier revenue, repeat purchase rate,
  * customer LTV, and CAC payback period from the orders table.
+ * ALL metrics derived from real data — no hardcoded constants.
  */
 export default function RevenueLtvDashboard() {
+  const { realCacCents } = useRealEconomyMetrics();
+
   const { data: orders, isLoading } = useQuery({
     queryKey: ["revenue-ltv-orders"],
     queryFn: async () => {
@@ -78,9 +71,10 @@ export default function RevenueLtvDashboard() {
     // Average LTV per customer
     const avgLtv = uniqueCustomers > 0 ? Math.round(totalRevenue / uniqueCustomers) : 0;
 
-    // CAC payback: assume $22 wristband is the acquisition cost (2200 cents)
-    const acquisitionCost = 2200;
-    const cacPayback = avgLtv > 0 ? `${(acquisitionCost / avgLtv).toFixed(1)}x` : "—";
+    // CAC payback: uses real CAC derived from avg first-order amount
+    const cacPayback = avgLtv > 0 && realCacCents > 0
+      ? `${(realCacCents / avgLtv).toFixed(1)}x`
+      : "—";
 
     // Per-tier revenue
     const tierRevenueMap: Record<string, number> = {};
@@ -130,7 +124,7 @@ export default function RevenueLtvDashboard() {
       tierCount,
       repeatVsNew,
     };
-  }, [orders]);
+  }, [orders, realCacCents]);
 
   if (isLoading) {
     return (
@@ -143,7 +137,7 @@ export default function RevenueLtvDashboard() {
   return (
     <AdminSectionDashboard
       title="Revenue & LTV Intelligence"
-      description="Per-tier revenue, repeat purchase rate, customer LTV, CAC payback"
+      description={`Per-tier revenue, repeat purchase rate, customer LTV, CAC payback · CAC: $${(realCacCents / 100).toFixed(2)} (real avg first order)`}
       kpis={[
         { label: "Total Revenue", value: `$${(metrics.totalRevenue / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}` },
         { label: "Avg Order Value", value: `$${(metrics.avgOrderValue / 100).toFixed(2)}` },
