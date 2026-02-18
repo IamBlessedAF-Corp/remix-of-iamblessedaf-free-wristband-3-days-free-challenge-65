@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import html2canvas from "html2canvas";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import AdminSectionDashboard from "./AdminSectionDashboard";
@@ -8,9 +9,34 @@ import { RefreshCw, MessageSquare, Calendar, Heart, Mail, LayoutDashboard, FileD
 import ExportCsvButton from "./ExportCsvButton";
 import { Button } from "@/components/ui/button";
 import EngagementBlueprintPanel from "./EngagementBlueprintPanel";
+import { toast } from "sonner";
 
 export default function MessagingTab() {
   const [activeTab, setActiveTab] = useState("blueprint");
+  const [capturing, setCapturing] = useState(false);
+
+  const handleDownloadPng = useCallback(async () => {
+    const el = document.getElementById("engagement-blueprint-content");
+    if (!el) return;
+    setCapturing(true);
+    try {
+      const canvas = await html2canvas(el, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      const link = document.createElement("a");
+      link.download = `engagement-blueprint-${new Date().toISOString().slice(0, 10)}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch (err) {
+      console.error("Screenshot capture failed:", err);
+      toast.error("Failed to capture blueprint. Try again.");
+    } finally {
+      setCapturing(false);
+    }
+  }, []);
   const { data: messages = [], isLoading } = useQuery({
     queryKey: ["admin-scheduled-messages"],
     queryFn: async () => {
@@ -69,34 +95,11 @@ export default function MessagingTab() {
               size="sm"
               variant="outline"
               className="gap-1.5 text-xs h-8"
-              onClick={() => {
-                const el = document.getElementById("engagement-blueprint-content");
-                if (!el) return;
-                const printWindow = window.open("", "_blank");
-                if (!printWindow) return;
-                printWindow.document.write(`
-                  <html><head><title>Engagement Blueprint</title>
-                  <style>
-                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 24px; color: #1a1a1a; background: #fff; }
-                    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 11px; }
-                    th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
-                    th { background: #f5f5f5; font-weight: 600; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; }
-                    h1 { font-size: 18px; margin-bottom: 4px; }
-                    h2 { font-size: 14px; margin: 16px 0 8px; }
-                    .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 600; background: #f0f0f0; }
-                    @media print { body { padding: 0; } }
-                  </style></head><body>
-                  <h1>📋 Engagement Blueprint</h1>
-                  <p style="color:#666;font-size:12px;margin-bottom:20px;">Generated ${new Date().toLocaleString()}</p>
-                  ${el.innerHTML}
-                  <script>window.onload=function(){window.print();}<\/script>
-                  </body></html>
-                `);
-                printWindow.document.close();
-              }}
+              onClick={handleDownloadPng}
+              disabled={capturing}
             >
-              <FileDown className="w-3.5 h-3.5" />
-              Download PDF
+              {capturing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5" />}
+              {capturing ? "Capturing…" : "Download PNG"}
             </Button>
           )}
           {activeTab === "messages" && (
