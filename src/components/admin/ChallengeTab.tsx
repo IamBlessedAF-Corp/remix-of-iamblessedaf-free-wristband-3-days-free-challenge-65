@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { RefreshCw, Pencil, CheckCircle, X, MessageSquare, Users, Calendar, Heart } from "lucide-react";
+import ExportCsvButton from "./ExportCsvButton";
 
 export default function ChallengeTab() {
   const qc = useQueryClient();
@@ -78,12 +79,15 @@ export default function ChallengeTab() {
       />
 
       <Tabs defaultValue="participants" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="participants" className="gap-1 text-xs"><Users className="w-3.5 h-3.5" /> Participants</TabsTrigger>
-          <TabsTrigger value="messages" className="gap-1 text-xs"><MessageSquare className="w-3.5 h-3.5" /> Messages</TabsTrigger>
-          <TabsTrigger value="followups" className="gap-1 text-xs"><Calendar className="w-3.5 h-3.5" /> Follow-ups</TabsTrigger>
-          <TabsTrigger value="tgf" className="gap-1 text-xs"><Heart className="w-3.5 h-3.5" /> TGF Contacts</TabsTrigger>
-        </TabsList>
+        <div className="flex items-center justify-between">
+          <TabsList>
+            <TabsTrigger value="participants" className="gap-1 text-xs"><Users className="w-3.5 h-3.5" /> Participants</TabsTrigger>
+            <TabsTrigger value="messages" className="gap-1 text-xs"><MessageSquare className="w-3.5 h-3.5" /> Messages</TabsTrigger>
+            <TabsTrigger value="followups" className="gap-1 text-xs"><Calendar className="w-3.5 h-3.5" /> Follow-ups</TabsTrigger>
+            <TabsTrigger value="tgf" className="gap-1 text-xs"><Heart className="w-3.5 h-3.5" /> TGF Contacts</TabsTrigger>
+          </TabsList>
+          <ExportCsvButton data={participants} filename="challenge-participants.csv" columns={["display_name", "phone", "friend_1_name", "friend_2_name", "friend_3_name", "current_streak", "challenge_status", "created_at"]} />
+        </div>
 
         <TabsContent value="participants">
           <div className="bg-card border border-border/40 rounded-xl overflow-x-auto">

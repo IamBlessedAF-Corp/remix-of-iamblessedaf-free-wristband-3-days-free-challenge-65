@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { RefreshCw, Pencil, CheckCircle, X, Coins, Store, Gift, History } from "lucide-react";
+import ExportCsvButton from "./ExportCsvButton";
 
 export default function GamificationTab() {
   const qc = useQueryClient();
@@ -89,12 +90,15 @@ export default function GamificationTab() {
       />
 
       <Tabs defaultValue="store" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="store" className="gap-1 text-xs"><Store className="w-3.5 h-3.5" /> Store Items</TabsTrigger>
-          <TabsTrigger value="wallets" className="gap-1 text-xs"><Coins className="w-3.5 h-3.5" /> Wallets</TabsTrigger>
-          <TabsTrigger value="transactions" className="gap-1 text-xs"><History className="w-3.5 h-3.5" /> Transactions</TabsTrigger>
-          <TabsTrigger value="redemptions" className="gap-1 text-xs"><Gift className="w-3.5 h-3.5" /> Redemptions</TabsTrigger>
-        </TabsList>
+        <div className="flex items-center justify-between">
+          <TabsList>
+            <TabsTrigger value="store" className="gap-1 text-xs"><Store className="w-3.5 h-3.5" /> Store Items</TabsTrigger>
+            <TabsTrigger value="wallets" className="gap-1 text-xs"><Coins className="w-3.5 h-3.5" /> Wallets</TabsTrigger>
+            <TabsTrigger value="transactions" className="gap-1 text-xs"><History className="w-3.5 h-3.5" /> Transactions</TabsTrigger>
+            <TabsTrigger value="redemptions" className="gap-1 text-xs"><Gift className="w-3.5 h-3.5" /> Redemptions</TabsTrigger>
+          </TabsList>
+          <ExportCsvButton data={wallets} filename="bc-wallets.csv" columns={["user_id", "balance", "lifetime_earned", "lifetime_spent", "streak_days"]} />
+        </div>
 
         <TabsContent value="store">
           <div className="bg-card border border-border/40 rounded-xl overflow-x-auto">

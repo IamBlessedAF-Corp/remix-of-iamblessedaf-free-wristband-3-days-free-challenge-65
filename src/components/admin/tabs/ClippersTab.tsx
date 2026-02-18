@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import {
   RefreshCw, Film, CheckCircle, Clock, AlertTriangle, Trash2, ExternalLink, Play, ChevronDown, ChevronRight,
 } from "lucide-react";
+import ExportCsvButton from "@/components/admin/ExportCsvButton";
 
 const VideoEmbed = ({ url }: { url: string }) => {
   const ttId = url.match(/video\/(\d+)/)?.[1];
@@ -86,6 +87,7 @@ export default function ClippersTab() {
             ))}
           </div>
           {admin.clips.some(c => c.status === "pending") && <Button size="sm" onClick={handleBulkApprove} className="gap-1"><CheckCircle className="w-3 h-3" /> Approve All</Button>}
+          <ExportCsvButton data={filtered} filename="clips.csv" columns={["clip_url", "platform", "status", "view_count", "net_views", "earnings_cents", "submitted_at"]} />
         </div>
         {filtered.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground"><Film className="w-8 h-8 mx-auto mb-2 opacity-50" /><p className="text-sm">No clips.</p></div>

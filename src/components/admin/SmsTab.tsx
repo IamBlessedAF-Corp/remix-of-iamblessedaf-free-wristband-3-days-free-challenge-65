@@ -4,6 +4,7 @@ import AdminSectionDashboard from "./AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RefreshCw, MessageCircle, Shield } from "lucide-react";
+import ExportCsvButton from "./ExportCsvButton";
 
 export default function SmsTab() {
   const { data: deliveries = [], isLoading: dLoad } = useQuery({
@@ -51,10 +52,13 @@ export default function SmsTab() {
       />
 
       <Tabs defaultValue="deliveries" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="deliveries" className="gap-1 text-xs"><MessageCircle className="w-3.5 h-3.5" /> Deliveries</TabsTrigger>
-          <TabsTrigger value="audit" className="gap-1 text-xs"><Shield className="w-3.5 h-3.5" /> Audit Log</TabsTrigger>
-        </TabsList>
+        <div className="flex items-center justify-between">
+          <TabsList>
+            <TabsTrigger value="deliveries" className="gap-1 text-xs"><MessageCircle className="w-3.5 h-3.5" /> Deliveries</TabsTrigger>
+            <TabsTrigger value="audit" className="gap-1 text-xs"><Shield className="w-3.5 h-3.5" /> Audit Log</TabsTrigger>
+          </TabsList>
+          <ExportCsvButton data={deliveries} filename="sms-deliveries.csv" columns={["recipient_name", "recipient_phone", "message", "status", "source_page", "created_at"]} />
+        </div>
 
         <TabsContent value="deliveries">
           <div className="bg-card border border-border/40 rounded-xl overflow-x-auto">

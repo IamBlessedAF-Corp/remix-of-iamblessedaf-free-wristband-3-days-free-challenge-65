@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw } from "lucide-react";
+import ExportCsvButton from "@/components/admin/ExportCsvButton";
 
 export default function ExpertsTab() {
   const { data: leads = [], isLoading } = useQuery({
@@ -41,6 +42,10 @@ export default function ExpertsTab() {
         ]}
       />
       <div className="bg-card border border-border/40 rounded-xl overflow-hidden">
+        <div className="px-4 py-3 border-b border-border/20 bg-secondary/20 flex items-center justify-between">
+          <span className="text-xs font-bold text-foreground uppercase">Expert Leads</span>
+          <ExportCsvButton data={leads} filename="expert-leads.csv" columns={["full_name", "email", "niche", "status", "source_page", "created_at"]} />
+        </div>
         <table className="w-full text-sm">
           <thead><tr className="text-[10px] text-muted-foreground uppercase tracking-wider border-b border-border/20 bg-secondary/30">
             <th className="text-left py-2 px-3">Name</th><th className="text-left py-2 px-3">Email</th><th className="text-left py-2 px-3">Niche</th><th className="text-left py-2 px-3">Status</th><th className="text-left py-2 px-3">Date</th>
