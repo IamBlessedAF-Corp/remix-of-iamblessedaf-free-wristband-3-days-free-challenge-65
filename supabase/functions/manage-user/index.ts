@@ -62,7 +62,18 @@ Deno.serve(async (req) => {
         });
       }
 
-      const { error } = await adminClient.auth.admin.updateUser(user_id, { password: new_password });
+      // Use REST API directly since esm.sh client may not expose auth.admin
+      const updateRes = await fetch(`${supabaseUrl}/auth/v1/admin/users/${user_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${serviceKey}`,
+          "apikey": serviceKey,
+        },
+        body: JSON.stringify({ password: new_password }),
+      });
+      const updateData = await updateRes.json();
+      const error = updateRes.ok ? null : { message: updateData?.msg || updateData?.error || "Failed to update password" };
       if (error) {
         return new Response(JSON.stringify({ error: error.message }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
