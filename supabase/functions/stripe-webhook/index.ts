@@ -52,6 +52,15 @@ serve(async (req) => {
 
     console.log(`[stripe-webhook] Checkout completed: tier=${tier}, amount=${amountTotal}, email=${customerEmail}`);
 
+    // Mark abandoned cart as completed
+    const { error: cartError } = await supabase
+      .from("abandoned_carts")
+      .update({ status: "completed", completed_at: new Date().toISOString() })
+      .eq("stripe_session_id", session.id);
+    if (cartError) {
+      console.error("[stripe-webhook] Abandoned cart update error:", cartError);
+    }
+
     // Insert order record
     const { error: orderError } = await supabase.from("orders").insert({
       stripe_session_id: session.id,

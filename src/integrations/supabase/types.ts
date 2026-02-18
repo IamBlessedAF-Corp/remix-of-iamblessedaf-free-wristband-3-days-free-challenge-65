@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      abandoned_carts: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          customer_email: string | null
+          id: string
+          recovery_channel: string | null
+          recovery_sent_at: string | null
+          status: string
+          stripe_session_id: string
+          tier: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          customer_email?: string | null
+          id?: string
+          recovery_channel?: string | null
+          recovery_sent_at?: string | null
+          status?: string
+          stripe_session_id: string
+          tier: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          customer_email?: string | null
+          id?: string
+          recovery_channel?: string | null
+          recovery_sent_at?: string | null
+          status?: string
+          stripe_session_id?: string
+          tier?: string
+        }
+        Relationships: []
+      }
       affiliate_tiers: {
         Row: {
           created_at: string
