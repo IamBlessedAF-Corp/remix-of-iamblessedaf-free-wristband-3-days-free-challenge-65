@@ -1,4 +1,5 @@
 import { Link2, MousePointerClick, Zap, TrendingUp } from "lucide-react";
+import SmartHover from "@/components/admin/SmartHover";
 
 interface Props {
   totalLinks: number;
@@ -21,7 +22,9 @@ export default function LinkStatsCards({ totalLinks, totalClicks, activeLinks, p
         <div key={c.label} className="bg-card border border-border/50 rounded-xl p-5">
           <div className="flex items-center gap-2 mb-2">
             <c.icon className={`w-4 h-4 ${c.color}`} />
-            <span className="text-xs text-muted-foreground font-medium">{c.label}</span>
+            <span className="text-xs text-muted-foreground font-medium">
+              <SmartHover label={c.label}>{c.label}</SmartHover>
+            </span>
           </div>
           <p className="text-2xl font-bold text-foreground">{c.value.toLocaleString()}</p>
         </div>
