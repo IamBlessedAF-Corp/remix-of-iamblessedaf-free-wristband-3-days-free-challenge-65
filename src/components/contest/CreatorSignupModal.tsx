@@ -278,9 +278,7 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
                 <Button variant="outline" className="w-full h-12" onClick={handleGoogleSignIn} disabled={isLoading}>
                   <GoogleIcon /><span className="ml-2">Continue with Google</span>
                 </Button>
-                <Button variant="outline" className="w-full h-12 bg-foreground text-background hover:bg-foreground/90" onClick={handleAppleSignIn} disabled={isLoading}>
-                  <AppleIcon /><span className="ml-2">Continue with Apple</span>
-                </Button>
+                {/* Apple login hidden for now */}
               </div>
 
               <div className="flex items-center gap-4 mb-4">
