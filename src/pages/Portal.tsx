@@ -13,14 +13,16 @@ import PortalReferralHub from "@/components/portal/PortalReferralHub";
 import PortalRewardsStore from "@/components/portal/PortalRewardsStore";
 import PortalMissions from "@/components/portal/PortalMissions";
 import PortalActivityFeed from "@/components/portal/PortalActivityFeed";
+import EmbeddedClipperDashboard from "@/components/portal/EmbeddedClipperDashboard";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import logoImg from "@/assets/logo.png";
 
-type Tab = "dashboard" | "leaderboard" | "referrals" | "store" | "missions";
+type Tab = "dashboard" | "leaderboard" | "referrals" | "store" | "missions" | "clipper";
 
 const TABS: { id: Tab; label: string; icon: any }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "clipper", label: "Clip & Earn", icon: Rocket },
   { id: "leaderboard", label: "Leaderboard", icon: Trophy },
   { id: "referrals", label: "Referrals", icon: Share2 },
   { id: "missions", label: "Missions", icon: Target },
@@ -226,6 +228,9 @@ const Portal = () => {
                 userId={user.id}
                 onBlessingCreated={portalData.refreshBlessings}
               />
+            )}
+            {activeTab === "clipper" && (
+              <EmbeddedClipperDashboard userId={user.id} />
             )}
             {activeTab === "missions" && <PortalMissions />}
             {activeTab === "store" && (

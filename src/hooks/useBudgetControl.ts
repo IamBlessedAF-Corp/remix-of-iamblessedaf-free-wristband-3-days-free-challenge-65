@@ -252,6 +252,24 @@ export function useBudgetControl() {
       });
   };
 
+  // ── Real spend data ──
+  const [realSpendCents, setRealSpendCents] = useState(0);
+
+  useEffect(() => {
+    const fetchRealSpend = async () => {
+      try {
+        const { start, end } = getWeekBounds();
+        const { data } = await (supabase.from("clipper_payouts" as any) as any)
+          .select("total_cents")
+          .gte("created_at", start)
+          .lte("created_at", end);
+        const total = (data || []).reduce((sum: number, r: any) => sum + (r.total_cents || 0), 0);
+        setRealSpendCents(total);
+      } catch { /* ignore */ }
+    };
+    fetchRealSpend();
+  }, []);
+
   // ── Simulation ──
   const simulate = useCallback((params: {
     rpm?: number;
@@ -262,10 +280,10 @@ export function useBudgetControl() {
     const rpm = params.rpm || 0.22;
     const weeklyLimit = params.weeklyLimit || cycle?.global_weekly_limit_cents || 500000;
 
-    // Estimate based on current data
-    const totalWeeklyViews = 50000; // placeholder - would come from real data
-    const weeklyBase = Math.round((totalWeeklyViews / 1000) * rpm * 100);
-    const day7 = Math.min(weeklyBase, weeklyLimit);
+    // Use the entire weekly budget as "what-if" capacity
+    const maxViews = Math.round((weeklyLimit / 100) / rpm * 1000);
+    const weeklyBase = weeklyLimit; // Simulate using full budget
+    const day7 = weeklyBase;
     const day30 = day7 * 4;
     const worstCase = Math.round(day30 * 1.5);
     const riskAdj = Math.round(day30 * 0.8);
@@ -276,11 +294,14 @@ export function useBudgetControl() {
       worstCase,
       riskAdjusted: riskAdj,
       safeLimit: Math.round(riskAdj * 1.1),
+      maxViews,
+      realSpendCents,
     };
-  }, [cycle]);
+  }, [cycle, realSpendCents]);
 
   return {
     cycle, segments, segmentCycles, events, members, loading,
+    realSpendCents,
     refresh: fetchAll,
     updateCycleStatus, updateCycleLimits,
     createSegment, updateSegment, deleteSegment,
