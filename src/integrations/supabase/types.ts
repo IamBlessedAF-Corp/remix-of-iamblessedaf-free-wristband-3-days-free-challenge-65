@@ -1241,6 +1241,45 @@ export type Database = {
         }
         Relationships: []
       }
+      query_performance_logs: {
+        Row: {
+          connection_info: Json | null
+          created_at: string
+          function_name: string | null
+          id: string
+          metadata: Json | null
+          query_duration_ms: number
+          query_fingerprint: string | null
+          row_count: number | null
+          severity: string
+          source: string
+        }
+        Insert: {
+          connection_info?: Json | null
+          created_at?: string
+          function_name?: string | null
+          id?: string
+          metadata?: Json | null
+          query_duration_ms?: number
+          query_fingerprint?: string | null
+          row_count?: number | null
+          severity?: string
+          source?: string
+        }
+        Update: {
+          connection_info?: Json | null
+          created_at?: string
+          function_name?: string | null
+          id?: string
+          metadata?: Json | null
+          query_duration_ms?: number
+          query_fingerprint?: string | null
+          row_count?: number | null
+          severity?: string
+          source?: string
+        }
+        Relationships: []
+      }
       repost_logs: {
         Row: {
           clip_id: string

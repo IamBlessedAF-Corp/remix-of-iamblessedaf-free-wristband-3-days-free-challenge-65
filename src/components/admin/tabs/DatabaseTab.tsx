@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Database, Search, ChevronDown, ChevronRight, Download, Eye, Rows3, Columns3, RefreshCw } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Database, Search, ChevronDown, ChevronRight, Download, Eye, Rows3, Columns3, RefreshCw, Activity } from "lucide-react";
+import DbMonitoringPanel from "@/components/admin/DbMonitoringPanel";
 import { downloadCsv } from "@/utils/csvExport";
 
 // All public tables in the project
@@ -49,6 +51,7 @@ const DB_TABLES = [
   { name: "smart_wristband_waitlist", label: "Wristband Waitlist", category: "Engagement" },
   { name: "sms_audit_log", label: "SMS Audit Log", category: "Engagement" },
   { name: "sms_deliveries", label: "SMS Deliveries", category: "Engagement" },
+  { name: "query_performance_logs", label: "Query Perf Logs", category: "Operations" },
 ] as const;
 
 type TableName = typeof DB_TABLES[number]["name"];
@@ -231,41 +234,55 @@ export default function DatabaseTab() {
   });
 
   return (
-    <div className="space-y-4">
+    <Tabs defaultValue="explorer" className="space-y-4">
       <div className="flex items-center gap-3">
         <Database className="w-5 h-5 text-primary" />
-        <div>
-          <h2 className="text-lg font-bold text-foreground">Database Explorer</h2>
-          <p className="text-xs text-muted-foreground">{DB_TABLES.length} tables · Preview data, columns & export</p>
+        <div className="flex-1">
+          <h2 className="text-lg font-bold text-foreground">Database</h2>
+          <p className="text-xs text-muted-foreground">{DB_TABLES.length} tables · Explorer, monitoring & pooling</p>
         </div>
+        <TabsList className="h-8">
+          <TabsTrigger value="explorer" className="text-xs gap-1.5 h-7">
+            <Database className="w-3 h-3" /> Explorer
+          </TabsTrigger>
+          <TabsTrigger value="monitoring" className="text-xs gap-1.5 h-7">
+            <Activity className="w-3 h-3" /> Monitoring
+          </TabsTrigger>
+        </TabsList>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-3 flex flex-col sm:flex-row gap-2 items-start sm:items-center">
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <Input placeholder="Search tables…" value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-8 text-xs" />
-          </div>
-          <div className="flex gap-1 flex-wrap">
-            <Button size="sm" variant={categoryFilter === "all" ? "default" : "outline"} className="h-7 text-[10px]" onClick={() => setCategoryFilter("all")}>All</Button>
-            {categories.map(c => (
-              <Button key={c} size="sm" variant={categoryFilter === c ? "default" : "outline"} className="h-7 text-[10px]" onClick={() => setCategoryFilter(c)}>{c}</Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <TabsContent value="explorer" className="space-y-4 mt-0">
+        {/* Filters */}
+        <Card>
+          <CardContent className="p-3 flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input placeholder="Search tables…" value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-8 text-xs" />
+            </div>
+            <div className="flex gap-1 flex-wrap">
+              <Button size="sm" variant={categoryFilter === "all" ? "default" : "outline"} className="h-7 text-[10px]" onClick={() => setCategoryFilter("all")}>All</Button>
+              {categories.map(c => (
+                <Button key={c} size="sm" variant={categoryFilter === c ? "default" : "outline"} className="h-7 text-[10px]" onClick={() => setCategoryFilter(c)}>{c}</Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Table list */}
-      <Card>
-        <CardContent className="p-0">
-          {filtered.length === 0 ? (
-            <p className="p-6 text-center text-sm text-muted-foreground">No tables match your search</p>
-          ) : (
-            filtered.map(table => <TableRow_ key={table.name} table={table} />)
-          )}
-        </CardContent>
-      </Card>
-    </div>
+        {/* Table list */}
+        <Card>
+          <CardContent className="p-0">
+            {filtered.length === 0 ? (
+              <p className="p-6 text-center text-sm text-muted-foreground">No tables match your search</p>
+            ) : (
+              filtered.map(table => <TableRow_ key={table.name} table={table} />)
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="monitoring" className="mt-0">
+        <DbMonitoringPanel />
+      </TabsContent>
+    </Tabs>
   );
 }
