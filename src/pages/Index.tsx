@@ -7,6 +7,7 @@ import GamificationHeader from "@/components/funnel/GamificationHeader";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 import { useAuth } from "@/hooks/useAuth";
 import GratitudeEngineLoop from "@/components/offer/GratitudeEngineLoop";
+import { useCopyMulti } from "@/hooks/useCopyValue";
 import logo from "@/assets/logo.png";
 import wristbandImg from "@/assets/wristband-gift.avif";
 
@@ -14,7 +15,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
-
+  const copy = useCopyMulti(["hero_headline", "hero_subheadline", "claim_cta"]);
   const handleClaim = () => {
     if (user) {
       navigate("/challenge");
@@ -46,18 +47,10 @@ const Index = () => {
           {/* Hook headline — Hormozi style */}
           <div className="space-y-2">
             <h1 className="text-3xl md:text-4xl font-extrabold text-foreground leading-tight">
-              Feel Up to{" "}
-              <motion.span
-                className="text-primary inline-block"
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 2 }}
-              >
-                27× Happier
-              </motion.span>{" "}
-              in 3 Days
+              {copy.hero_headline}
             </h1>
             <p className="text-base text-muted-foreground">
-              No journals. No apps. No fluff. Just neuroscience.
+              {copy.hero_subheadline || "No journals. No apps. No fluff. Just neuroscience."}
             </p>
           </div>
 
@@ -160,7 +153,7 @@ const Index = () => {
               className="w-full min-h-[56px] h-auto py-3 text-base md:text-lg font-bold btn-glow px-4 text-center leading-tight"
             >
               <Sparkles className="w-5 h-5 mr-2 flex-shrink-0" />
-              Claim My FREE Neuro-Hacker Wristband & Join
+              {copy.claim_cta || "Claim My FREE Neuro-Hacker Wristband & Join"}
               <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
             </Button>
 
