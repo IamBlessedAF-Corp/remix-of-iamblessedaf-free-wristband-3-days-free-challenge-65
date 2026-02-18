@@ -46,6 +46,7 @@ import AffiliatePortal from "./pages/AffiliatePortal";
 import DiamondAmbassador from "./pages/DiamondAmbassador";
 import UnsubscribeDigest from "./pages/UnsubscribeDigest";
 import CongratsNeuroHacker from "./pages/CongratsNeuroHacker";
+import BlockPreview from "./pages/BlockPreview";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -133,6 +134,7 @@ const App = () => (
           <Route path="/network-marketers" element={<Navigate to="/3300us-Credit-N-Marketer" replace />} />
           <Route path="/realtors-list-activation" element={<Navigate to="/3300us-Credit-RE-Agent" replace />} />
 
+          <Route path="/block-preview" element={<BlockPreview />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
