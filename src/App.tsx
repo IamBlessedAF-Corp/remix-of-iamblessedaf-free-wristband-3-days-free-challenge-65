@@ -1,52 +1,56 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Offer22 from "./pages/Offer22";
-import Challenge from "./pages/Challenge";
-import ChallengeThanks from "./pages/ChallengeThanks";
-import ReferralRedirect from "./pages/ReferralRedirect";
-import GoRedirect from "./pages/GoRedirect";
-import Confirm from "./pages/Confirm";
-import Offer111 from "./pages/Offer111";
-import Offer111Grok from "./pages/Offer111Grok";
-import Offer111Gpt from "./pages/Offer111Gpt";
-import Offer444 from "./pages/Offer444";
-import OfferMonthly from "./pages/OfferMonthly";
-import Offer1111 from "./pages/Offer1111";
-import Offer4444 from "./pages/Offer4444";
-import OfferSuccess from "./pages/OfferSuccess";
-import AIVideoContest from "./pages/AIVideoContest";
-import AdminHub from "./pages/AdminHub";
-import Portal from "./pages/Portal";
-import Impact from "./pages/Impact";
-import ClipperDashboard from "./pages/ClipperDashboard";
-import Experts from "./pages/Experts";
-import ScriptsReview from "./pages/ScriptsReview";
-import GratitudeClippers from "./pages/GratitudeClippers";
-import FunnelMap from "./pages/FunnelMap";
-import Privacy from "./pages/Privacy";
-import Terms from "./pages/Terms";
-import SmartWristband from "./pages/SmartWristband";
-import ReserveSmartWristband from "./pages/ReserveSmartWristband";
-import FreeNeuroHackerWristband from "./pages/FreeNeuroHackerWristband";
-import NotFound from "./pages/NotFound";
-import CreditExpert from "./pages/CreditExpert";
-import CreditNMarketer from "./pages/CreditNMarketer";
-import CreditREAgent from "./pages/CreditREAgent";
-import CreditAffiliateMarketer from "./pages/CreditAffiliateMarketer";
-import CreditClipper from "./pages/CreditClipper";
-import CreditInfluencer from "./pages/CreditInfluencer";
-import CreditPodcastHost from "./pages/CreditPodcastHost";
-import CreditGymOwner from "./pages/CreditGymOwner";
-import CreditHealthCoach from "./pages/CreditHealthCoach";
-import CreditPortal from "./pages/CreditPortal";
-import AffiliatePortal from "./pages/AffiliatePortal";
-import DiamondAmbassador from "./pages/DiamondAmbassador";
-import UnsubscribeDigest from "./pages/UnsubscribeDigest";
-import CongratsNeuroHacker from "./pages/CongratsNeuroHacker";
-import BlockPreview from "./pages/BlockPreview";
+import { RefreshCw } from "lucide-react";
+
+// ─── Lazy-loaded pages ───
+const Offer22 = lazy(() => import("./pages/Offer22"));
+const Challenge = lazy(() => import("./pages/Challenge"));
+const ChallengeThanks = lazy(() => import("./pages/ChallengeThanks"));
+const ReferralRedirect = lazy(() => import("./pages/ReferralRedirect"));
+const GoRedirect = lazy(() => import("./pages/GoRedirect"));
+const Confirm = lazy(() => import("./pages/Confirm"));
+const Offer111 = lazy(() => import("./pages/Offer111"));
+const Offer111Grok = lazy(() => import("./pages/Offer111Grok"));
+const Offer111Gpt = lazy(() => import("./pages/Offer111Gpt"));
+const Offer444 = lazy(() => import("./pages/Offer444"));
+const OfferMonthly = lazy(() => import("./pages/OfferMonthly"));
+const Offer1111 = lazy(() => import("./pages/Offer1111"));
+const Offer4444 = lazy(() => import("./pages/Offer4444"));
+const OfferSuccess = lazy(() => import("./pages/OfferSuccess"));
+const AIVideoContest = lazy(() => import("./pages/AIVideoContest"));
+const AdminHub = lazy(() => import("./pages/AdminHub"));
+const Portal = lazy(() => import("./pages/Portal"));
+const Impact = lazy(() => import("./pages/Impact"));
+const ClipperDashboard = lazy(() => import("./pages/ClipperDashboard"));
+const Experts = lazy(() => import("./pages/Experts"));
+const ScriptsReview = lazy(() => import("./pages/ScriptsReview"));
+const GratitudeClippers = lazy(() => import("./pages/GratitudeClippers"));
+const FunnelMap = lazy(() => import("./pages/FunnelMap"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Terms = lazy(() => import("./pages/Terms"));
+const SmartWristband = lazy(() => import("./pages/SmartWristband"));
+const ReserveSmartWristband = lazy(() => import("./pages/ReserveSmartWristband"));
+const FreeNeuroHackerWristband = lazy(() => import("./pages/FreeNeuroHackerWristband"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const CreditExpert = lazy(() => import("./pages/CreditExpert"));
+const CreditNMarketer = lazy(() => import("./pages/CreditNMarketer"));
+const CreditREAgent = lazy(() => import("./pages/CreditREAgent"));
+const CreditAffiliateMarketer = lazy(() => import("./pages/CreditAffiliateMarketer"));
+const CreditClipper = lazy(() => import("./pages/CreditClipper"));
+const CreditInfluencer = lazy(() => import("./pages/CreditInfluencer"));
+const CreditPodcastHost = lazy(() => import("./pages/CreditPodcastHost"));
+const CreditGymOwner = lazy(() => import("./pages/CreditGymOwner"));
+const CreditHealthCoach = lazy(() => import("./pages/CreditHealthCoach"));
+const CreditPortal = lazy(() => import("./pages/CreditPortal"));
+const AffiliatePortal = lazy(() => import("./pages/AffiliatePortal"));
+const DiamondAmbassador = lazy(() => import("./pages/DiamondAmbassador"));
+const UnsubscribeDigest = lazy(() => import("./pages/UnsubscribeDigest"));
+const CongratsNeuroHacker = lazy(() => import("./pages/CongratsNeuroHacker"));
+const BlockPreview = lazy(() => import("./pages/BlockPreview"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,82 +62,88 @@ const queryClient = new QueryClient({
   },
 });
 
+const PageLoader = () => (
+  <div className="min-h-screen bg-background flex items-center justify-center">
+    <RefreshCw className="w-6 h-6 animate-spin text-primary" />
+  </div>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Offer22 />} />
-          <Route path="/challenge" element={<Challenge />} />
-          <Route path="/challenge/thanks" element={<ChallengeThanks />} />
-          <Route path="/r/:code" element={<ReferralRedirect />} />
-          <Route path="/go/:code" element={<GoRedirect />} />
-          <Route path="/confirm/:token" element={<Confirm />} />
-          <Route path="/offer/111" element={<Offer111 />} />
-          <Route path="/offer/111/grok" element={<Offer111Grok />} />
-          <Route path="/offer/111/gpt" element={<Offer111Gpt />} />
-          <Route path="/offer/444" element={<Offer444 />} />
-          <Route path="/offer/11mo" element={<OfferMonthly />} />
-          <Route path="/offer/1111" element={<Offer1111 />} />
-          <Route path="/offer/4444" element={<Offer4444 />} />
-          <Route path="/offer/success" element={<OfferSuccess />} />
-          <Route path="/make-2500-with-1-ai-clip" element={<AIVideoContest />} />
-          <Route path="/2us-Clippers-Campaign" element={<AIVideoContest />} />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Offer22 />} />
+            <Route path="/challenge" element={<Challenge />} />
+            <Route path="/challenge/thanks" element={<ChallengeThanks />} />
+            <Route path="/r/:code" element={<ReferralRedirect />} />
+            <Route path="/go/:code" element={<GoRedirect />} />
+            <Route path="/confirm/:token" element={<Confirm />} />
+            <Route path="/offer/111" element={<Offer111 />} />
+            <Route path="/offer/111/grok" element={<Offer111Grok />} />
+            <Route path="/offer/111/gpt" element={<Offer111Gpt />} />
+            <Route path="/offer/444" element={<Offer444 />} />
+            <Route path="/offer/11mo" element={<OfferMonthly />} />
+            <Route path="/offer/1111" element={<Offer1111 />} />
+            <Route path="/offer/4444" element={<Offer4444 />} />
+            <Route path="/offer/success" element={<OfferSuccess />} />
+            <Route path="/make-2500-with-1-ai-clip" element={<AIVideoContest />} />
+            <Route path="/2us-Clippers-Campaign" element={<AIVideoContest />} />
 
-          {/* ═══ Unified Admin Hub ═══ */}
-          <Route path="/admin" element={<AdminHub />} />
+            {/* ═══ Unified Admin Hub ═══ */}
+            <Route path="/admin" element={<AdminHub />} />
+            <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
+            <Route path="/board" element={<Navigate to="/admin" replace />} />
+            <Route path="/roadmap" element={<Navigate to="/admin" replace />} />
 
-          {/* Legacy admin redirects → unified /admin */}
-          <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
-          <Route path="/board" element={<Navigate to="/admin" replace />} />
-          <Route path="/roadmap" element={<Navigate to="/admin" replace />} />
+            <Route path="/portal" element={<Portal />} />
+            <Route path="/impact" element={<Impact />} />
+            <Route path="/clipper-dashboard" element={<ClipperDashboard />} />
+            <Route path="/experts" element={<Experts />} />
+            <Route path="/scripts-review" element={<ScriptsReview />} />
+            <Route path="/Gratitude-Clips-Challenge" element={<GratitudeClippers />} />
+            <Route path="/Gratitude-Clippers" element={<Navigate to="/Gratitude-Clips-Challenge" replace />} />
+            <Route path="/Traffic-Funnel" element={<FunnelMap />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/Reserve-your-Neuro-Hack-Wristband-SMART" element={<SmartWristband />} />
+            <Route path="/Reserve-a-SMART-wristband" element={<ReserveSmartWristband />} />
+            <Route path="/neuro-hacker-waitlist" element={<SmartWristband />} />
+            <Route path="/FREE-neuro-hacker-wristband" element={<FreeNeuroHackerWristband />} />
 
-          <Route path="/portal" element={<Portal />} />
-          <Route path="/impact" element={<Impact />} />
-          <Route path="/clipper-dashboard" element={<ClipperDashboard />} />
-          <Route path="/experts" element={<Experts />} />
-          <Route path="/scripts-review" element={<ScriptsReview />} />
-          <Route path="/Gratitude-Clips-Challenge" element={<GratitudeClippers />} />
-          <Route path="/Gratitude-Clippers" element={<Navigate to="/Gratitude-Clips-Challenge" replace />} />
-          <Route path="/Traffic-Funnel" element={<FunnelMap />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/Reserve-your-Neuro-Hack-Wristband-SMART" element={<SmartWristband />} />
-          <Route path="/Reserve-a-SMART-wristband" element={<ReserveSmartWristband />} />
-          <Route path="/neuro-hacker-waitlist" element={<SmartWristband />} />
-          <Route path="/FREE-neuro-hacker-wristband" element={<FreeNeuroHackerWristband />} />
+            {/* ═══ $3,300 Credit Funnels ═══ */}
+            <Route path="/3300us-Credit" element={<CreditPortal />} />
+            <Route path="/3300us-Credit-Expert" element={<CreditExpert />} />
+            <Route path="/3300us-Credit-N-Marketer" element={<CreditNMarketer />} />
+            <Route path="/3300us-Credit-RE-Agent" element={<CreditREAgent />} />
+            <Route path="/3300us-Credit-Affiliate-Marketer" element={<CreditAffiliateMarketer />} />
+            <Route path="/3300us-Credit-Marketer" element={<CreditAffiliateMarketer />} />
+            <Route path="/3300us-Credit-Clipper" element={<CreditClipper />} />
+            <Route path="/3300us-Credit-Influencer" element={<CreditInfluencer />} />
+            <Route path="/3300us-Credit-Podcast-Host" element={<CreditPodcastHost />} />
+            <Route path="/3300us-Credit-Gym-Owner" element={<CreditGymOwner />} />
+            <Route path="/3300us-Credit-Health-Coach" element={<CreditHealthCoach />} />
 
-          {/* ═══ $3,300 Credit Funnels ═══ */}
-          <Route path="/3300us-Credit" element={<CreditPortal />} />
-          <Route path="/3300us-Credit-Expert" element={<CreditExpert />} />
-          <Route path="/3300us-Credit-N-Marketer" element={<CreditNMarketer />} />
-          <Route path="/3300us-Credit-RE-Agent" element={<CreditREAgent />} />
-          <Route path="/3300us-Credit-Affiliate-Marketer" element={<CreditAffiliateMarketer />} />
-          <Route path="/3300us-Credit-Marketer" element={<CreditAffiliateMarketer />} />
-          <Route path="/3300us-Credit-Clipper" element={<CreditClipper />} />
-          <Route path="/3300us-Credit-Influencer" element={<CreditInfluencer />} />
-          <Route path="/3300us-Credit-Podcast-Host" element={<CreditPodcastHost />} />
-          <Route path="/3300us-Credit-Gym-Owner" element={<CreditGymOwner />} />
-          <Route path="/3300us-Credit-Health-Coach" element={<CreditHealthCoach />} />
+            {/* ═══ Affiliate Portal ═══ */}
+            <Route path="/3300us-Credit-Portal" element={<AffiliatePortal />} />
+            <Route path="/affiliate-dashboard" element={<AffiliatePortal />} />
+            <Route path="/affiliate-portal" element={<AffiliatePortal />} />
+            <Route path="/diamond-ambassador" element={<DiamondAmbassador />} />
+            <Route path="/Congrats-Neuro-Hacker" element={<CongratsNeuroHacker />} />
+            <Route path="/unsubscribe-digest" element={<UnsubscribeDigest />} />
 
-          {/* ═══ Affiliate Portal ═══ */}
-          <Route path="/3300us-Credit-Portal" element={<AffiliatePortal />} />
-          <Route path="/affiliate-dashboard" element={<AffiliatePortal />} />
-          <Route path="/affiliate-portal" element={<AffiliatePortal />} />
-          <Route path="/diamond-ambassador" element={<DiamondAmbassador />} />
-          <Route path="/Congrats-Neuro-Hacker" element={<CongratsNeuroHacker />} />
-          <Route path="/unsubscribe-digest" element={<UnsubscribeDigest />} />
+            {/* Legacy redirects */}
+            <Route path="/experts-leads" element={<Navigate to="/3300us-Credit-Expert" replace />} />
+            <Route path="/network-marketers" element={<Navigate to="/3300us-Credit-N-Marketer" replace />} />
+            <Route path="/realtors-list-activation" element={<Navigate to="/3300us-Credit-RE-Agent" replace />} />
 
-          {/* Legacy redirects */}
-          <Route path="/experts-leads" element={<Navigate to="/3300us-Credit-Expert" replace />} />
-          <Route path="/network-marketers" element={<Navigate to="/3300us-Credit-N-Marketer" replace />} />
-          <Route path="/realtors-list-activation" element={<Navigate to="/3300us-Credit-RE-Agent" replace />} />
-
-          <Route path="/block-preview" element={<BlockPreview />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            <Route path="/block-preview" element={<BlockPreview />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

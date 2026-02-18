@@ -21,8 +21,23 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-function extractComponentName(comp: string): string {
-  return comp.split("/")[0].split("(")[0].replace(/\s/g, "").replace("Inline", "").trim();
+/** Map block component field → actual key in BlockPreview COMPONENT_MAP */
+const PREVIEW_COMPONENT_MAP: Record<string, string> = {
+  "GrokQuotesSection / GptQuotesSection": "GrokQuotesSection",
+  "Inline <img> hawkins-scale.jpg": "",
+  "Inline section + logo": "",
+  "Inline badge": "",
+  "Index page inline": "",
+  "ProductSections (wristband)": "WristbandProductCard",
+  "FriendShirtSection": "ProductSections",
+};
+
+function resolvePreviewComponent(comp: string): string {
+  // Direct map override
+  if (PREVIEW_COMPONENT_MAP[comp] !== undefined) return PREVIEW_COMPONENT_MAP[comp];
+  // Extract first valid component name
+  const name = comp.split("/")[0].split("(")[0].replace(/\s/g, "").replace("Inline", "").trim();
+  return name;
 }
 
 function BlockListItem({
@@ -39,8 +54,9 @@ function BlockListItem({
   const [expanded, setExpanded] = useState(false);
   const [editingCopy, setEditingCopy] = useState(false);
   const [copyText, setCopyText] = useState(b.desc);
-  const compName = extractComponentName(b.component);
-  const previewUrl = `/block-preview?component=${encodeURIComponent(compName)}`;
+  const compName = resolvePreviewComponent(b.component);
+  const hasPreview = compName.length > 0;
+  const previewUrl = hasPreview ? `/block-preview?component=${encodeURIComponent(compName)}` : "";
 
   return (
     <div className="border border-border/30 rounded-xl bg-card/60 hover:border-border/50 transition-all group">
@@ -48,16 +64,19 @@ function BlockListItem({
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-4 px-4 py-3 text-left hover:bg-secondary/20 transition-colors"
       >
-        {/* Thumbnail */}
-        <div className="w-[180px] h-[120px] rounded-xl border border-border/40 bg-background overflow-hidden shrink-0 relative group-hover:border-primary/30 transition-colors">
-          <iframe
-            src={previewUrl}
-            className="pointer-events-none"
-            style={{ width: "430px", height: "600px", transform: "scale(0.42)", transformOrigin: "top left" }}
-            title={`Thumb: ${b.name}`}
-            loading="lazy"
-            sandbox="allow-scripts allow-same-origin"
-          />
+        {/* Lightweight thumbnail — NO iframe until expanded */}
+        <div className="w-[140px] h-[90px] rounded-lg border border-border/40 bg-secondary/20 overflow-hidden shrink-0 flex items-center justify-center">
+          {hasPreview ? (
+            <div className="text-center">
+              <b.icon className="w-6 h-6 text-primary/40 mx-auto mb-1" />
+              <span className="text-[8px] text-muted-foreground font-mono">{compName}</span>
+            </div>
+          ) : (
+            <div className="text-center">
+              <b.icon className="w-6 h-6 text-muted-foreground/30 mx-auto mb-1" />
+              <span className="text-[8px] text-muted-foreground/50">Inline</span>
+            </div>
+          )}
         </div>
 
         <div className="flex-1 min-w-0">
@@ -80,9 +99,7 @@ function BlockListItem({
 
         <div className="flex items-center gap-2 shrink-0">
           {b.liveValue !== undefined && (
-            <Badge variant="outline" className="text-[9px] border-emerald-500/30 text-emerald-500 bg-emerald-500/5">
-              🟢 {b.liveValue}
-            </Badge>
+            <SmartTagBadge tag={`${b.liveValue}`} className="border-emerald-500/30 text-emerald-500 bg-emerald-500/5" />
           )}
           {expanded ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
         </div>
@@ -121,7 +138,7 @@ function BlockListItem({
               <div className="space-y-2">
                 <Textarea value={copyText} onChange={e => setCopyText(e.target.value)} className="text-xs min-h-[60px]" />
                 <div className="flex gap-1.5">
-                  <Button size="sm" className="h-6 text-[10px] gap-1" onClick={() => { setEditingCopy(false); toast.success("Descripción del bloque actualizada"); }}>
+                  <Button size="sm" className="h-6 text-[10px] gap-1" onClick={() => { setEditingCopy(false); toast.success("Descripción actualizada"); }}>
                     <Save className="w-3 h-3" /> Guardar
                   </Button>
                   <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => { setEditingCopy(false); setCopyText(b.desc); }}>
@@ -134,10 +151,10 @@ function BlockListItem({
             )}
           </div>
 
-          {/* Actions: Duplicate / Remove */}
+          {/* Actions */}
           <div className="flex items-center gap-2 pt-1">
             <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1" onClick={(e) => { e.stopPropagation(); onDuplicate(b); }}>
-              <Copy className="w-3 h-3" /> Duplicar bloque
+              <Copy className="w-3 h-3" /> Duplicar
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -149,34 +166,40 @@ function BlockListItem({
                 <AlertDialogHeader>
                   <AlertDialogTitle>¿Remover "{b.name}"?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Este bloque se usa en {b.usedIn.length} página(s): {b.usedIn.join(", ")}. 
-                    Removerlo lo ocultará del registro pero no eliminará el componente del código.
+                    Este bloque se usa en {b.usedIn.length} página(s): {b.usedIn.join(", ")}.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => onRemove(b)} className="bg-red-600 hover:bg-red-700">
-                    Remover
-                  </AlertDialogAction>
+                  <AlertDialogAction onClick={() => onRemove(b)} className="bg-red-600 hover:bg-red-700">Remover</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
           </div>
 
-          {/* Full preview */}
-          <div className="rounded-xl border border-border/30 overflow-hidden bg-background">
-            <div className="flex items-center justify-between px-3 py-2 bg-secondary/30 border-b border-border/20">
-              <span className="text-[10px] font-mono text-muted-foreground">{b.name} — Isolated Preview</span>
-              <button onClick={(e) => { e.stopPropagation(); window.open(previewUrl, "_blank"); }}
-                className="text-[10px] text-primary hover:underline flex items-center gap-1">
-                <Maximize2 className="w-3 h-3" /> Full screen
-              </button>
+          {/* Full preview — only loads iframe when expanded */}
+          {hasPreview && (
+            <div className="rounded-xl border border-border/30 overflow-hidden bg-background">
+              <div className="flex items-center justify-between px-3 py-2 bg-secondary/30 border-b border-border/20">
+                <span className="text-[10px] font-mono text-muted-foreground">{b.name} — Preview</span>
+                <button onClick={(e) => { e.stopPropagation(); window.open(previewUrl, "_blank"); }}
+                  className="text-[10px] text-primary hover:underline flex items-center gap-1">
+                  <Maximize2 className="w-3 h-3" /> Full screen
+                </button>
+              </div>
+              <div className="w-full overflow-hidden" style={{ height: "400px" }}>
+                <iframe src={previewUrl} className="w-full h-full border-0" title={`Preview: ${b.name}`}
+                  loading="lazy" sandbox="allow-scripts allow-same-origin" />
+              </div>
             </div>
-            <div className="w-full overflow-hidden" style={{ height: "600px" }}>
-              <iframe src={previewUrl} className="w-full h-full border-0" title={`Preview: ${b.name}`}
-                loading="lazy" sandbox="allow-scripts allow-same-origin" />
+          )}
+
+          {!hasPreview && (
+            <div className="rounded-lg border border-border/20 bg-secondary/10 px-4 py-6 text-center">
+              <b.icon className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+              <p className="text-[11px] text-muted-foreground">Inline component — no se puede previsualizar de forma aislada</p>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>
@@ -233,7 +256,7 @@ export default function IntelligentBlocksTab() {
 
   const handleRemove = (block: BlockDef) => {
     setHiddenBlocks(prev => new Set([...prev, block.name]));
-    toast.success(`Bloque "${block.name}" removido del registro`);
+    toast.success(`Bloque "${block.name}" removido`);
   };
 
   const categories = ["all", ...Array.from(new Set(blocks.map(b => b.category)))];
@@ -243,7 +266,6 @@ export default function IntelligentBlocksTab() {
     return true;
   });
 
-  // Page-based grouping
   const pageMap = new Map<string, BlockDef[]>();
   filtered.forEach(b => {
     b.usedIn.forEach(page => {
@@ -257,33 +279,23 @@ export default function IntelligentBlocksTab() {
     <div className="space-y-6">
       <AdminSectionDashboard
         title="Intelligent Blocks Registry"
-        description={`${blocks.length} reusable components across the entire funnel`}
+        description={`${blocks.length} reusable components across the funnel`}
         kpis={[
           { label: "Total Blocks", value: blocks.length },
           { label: "Categories", value: categories.length - 1 },
-          { label: "Funnel Pages", value: Array.from(new Set(blocks.flatMap(b => b.usedIn))).length },
-          { label: "Content", value: blocks.filter(b => b.category === "Content").length },
-          { label: "Product", value: blocks.filter(b => b.category === "Product").length },
-          { label: "System (Live)", value: blocks.filter(b => b.category === "System").length },
+          { label: "Pages", value: Array.from(new Set(blocks.flatMap(b => b.usedIn))).length },
+          { label: "With Preview", value: blocks.filter(b => resolvePreviewComponent(b.component).length > 0).length },
         ]}
         charts={[
-          { type: "pie", title: "Blocks by Category", data: categories.filter(c => c !== "all").map(c => ({ name: c, value: blocks.filter(b => b.category === c).length })) },
-          { type: "bar", title: "Pages Using Blocks", data: [
-            { name: "/offer/111", value: blocks.filter(b => b.usedIn.includes("/offer/111")).length },
-            { name: "Grok", value: blocks.filter(b => b.usedIn.includes("/offer/111-grok")).length },
-            { name: "GPT", value: blocks.filter(b => b.usedIn.includes("/offer/111-gpt")).length },
-            { name: "/", value: blocks.filter(b => b.usedIn.includes("/")).length },
-            { name: "Portal", value: blocks.filter(b => b.usedIn.includes("/portal")).length },
-          ]},
+          { type: "pie", title: "By Category", data: categories.filter(c => c !== "all").map(c => ({ name: c, value: blocks.filter(b => b.category === c).length })) },
         ]}
       />
 
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-2">
-        {/* View toggle */}
         <div className="flex items-center bg-secondary/50 rounded-lg p-0.5 mr-2">
           <button onClick={() => setViewMode("category")}
-            className={cn("px-2.5 py-1 text-[10px] font-semibold rounded-md transition-colors flex items-center gap-1",
+            className={cn("px-2.5 py-1 text-[10px] font-semibold rounded-md transition-colors",
               viewMode === "category" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
             Por Categoría
           </button>
@@ -328,7 +340,6 @@ export default function IntelligentBlocksTab() {
   );
 }
 
-// ─── Page-based block group ───
 function PageBlockGroup({
   page, blocks, catColors, onDuplicate, onRemove,
 }: {
@@ -347,9 +358,7 @@ function PageBlockGroup({
         <Badge variant="outline" className="text-[9px]">{blocks.length} blocks</Badge>
         {isRoute && (
           <button onClick={(e) => { e.stopPropagation(); window.open(`${window.location.origin}${page}`, "_blank"); }}
-            className="text-[9px] text-primary hover:underline ml-auto">
-            Abrir ↗
-          </button>
+            className="text-[9px] text-primary hover:underline ml-auto">Abrir ↗</button>
         )}
       </button>
       {expanded && (
