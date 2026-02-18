@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Film, Award, Users, Link2, Settings, Blocks,
   ShieldAlert, CreditCard, Kanban, Map, ScrollText, Brain,
   Trophy, Bell, LogOut, RefreshCw, Menu, ChevronLeft, Shield,
-  DollarSign, Zap, Target, ChevronDown, ChevronRight, Search, Globe,
+  DollarSign, Zap, Target, ChevronDown, ChevronRight, Search, Globe, Type, MessageSquare,
 } from "lucide-react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useQuery } from "@tanstack/react-query";
@@ -34,6 +34,8 @@ import EditableCampaignSettings from "@/components/admin/EditableCampaignSetting
 import OrdersTab from "@/components/admin/OrdersTab";
 import BlessingsTab from "@/components/admin/BlessingsTab";
 import ChallengeTab from "@/components/admin/ChallengeTab";
+import MessagingTab from "@/components/admin/MessagingTab";
+import CopyManagerTab from "@/components/admin/CopyManagerTab";
 import SmsTab from "@/components/admin/SmsTab";
 import GamificationTab from "@/components/admin/GamificationTab";
 import AffiliatesTab from "@/components/admin/AffiliatesTab";
@@ -49,7 +51,7 @@ const ALL_TAB_IDS = [
   "campaign", "blocks", "risk", "payments", "board",
   "roadmap", "logs", "forecast", "fraud", "leaderboard",
   "alerts", "budget", "orders", "blessings", "challenge",
-  "sms", "gamification", "affiliates", "waitlist", "roles", "users",
+  "messaging", "copymanager", "sms", "gamification", "affiliates", "waitlist", "roles", "users",
   "integrations",
 ] as const;
 
@@ -97,7 +99,9 @@ const SIDEBAR_MENU: SidebarEntry[] = [
     group: "Engagement",
     icon: Zap,
     items: [
-      { id: "challenge", label: "Challenge & Messaging", icon: Target },
+      { id: "challenge", label: "Challenge", icon: Target },
+      { id: "messaging", label: "Messaging", icon: MessageSquare },
+      { id: "copymanager", label: "Copy Manager", icon: Type },
       { id: "sms", label: "SMS Intelligence", icon: Bell },
       { id: "gamification", label: "Gamification (BC)", icon: Award },
     ],
@@ -148,6 +152,8 @@ function TabContent({ tab }: { tab: TabId }) {
     case "orders": return <OrdersTab />;
     case "blessings": return <BlessingsTab />;
     case "challenge": return <ChallengeTab />;
+    case "messaging": return <MessagingTab />;
+    case "copymanager": return <CopyManagerTab />;
     case "sms": return <SmsTab />;
     case "gamification": return <GamificationTab />;
     case "affiliates": return <AffiliatesTab />;
