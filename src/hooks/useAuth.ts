@@ -44,8 +44,12 @@ export function useAuth() {
   const signInWithGoogle = async () => {
     try {
       const { lovable } = await import("@/integrations/lovable/index");
+      const refCode = sessionStorage.getItem("referral_code");
+      const redirectUri = refCode
+        ? `${window.location.origin}/?ref=${refCode}`
+        : window.location.origin;
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+        redirect_uri: redirectUri,
       });
       return { error: result.error };
     } catch (error) {
@@ -56,8 +60,12 @@ export function useAuth() {
   const signInWithApple = async () => {
     try {
       const { lovable } = await import("@/integrations/lovable/index");
+      const refCode = sessionStorage.getItem("referral_code");
+      const redirectUri = refCode
+        ? `${window.location.origin}/?ref=${refCode}`
+        : window.location.origin;
       const result = await lovable.auth.signInWithOAuth("apple", {
-        redirect_uri: window.location.origin,
+        redirect_uri: redirectUri,
       });
       return { error: result.error };
     } catch (error) {

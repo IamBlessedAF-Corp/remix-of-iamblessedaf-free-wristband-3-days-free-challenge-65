@@ -8,7 +8,7 @@ const ReferralRedirect = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(`/challenge?ref=${code || ""}`, { replace: true });
+    navigate(`/?ref=${code || ""}`, { replace: true });
   }, [code, navigate]);
 
   return (

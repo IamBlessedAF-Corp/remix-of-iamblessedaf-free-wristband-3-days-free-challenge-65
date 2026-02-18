@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import FreeWristbandStep from "@/components/offer/FreeWristbandStep";
 import UpsellWristbandStep from "@/components/offer/UpsellWristbandStep";
@@ -16,11 +16,20 @@ type Step = "free-wristband" | "gratitude-intro" | "gratitude-setup" | "upsell-2
 
 const Offer22 = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [step, setStep] = useState<Step>("free-wristband");
   const [showAuth, setShowAuth] = useState(false);
   const [senderName, setSenderName] = useState<string | null>(null);
   const { startCheckout, loading } = useStripeCheckout();
   const { user, loading: authLoading, signOut } = useAuth();
+
+  // Capture referral code from URL and persist to sessionStorage
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      sessionStorage.setItem("referral_code", ref);
+    }
+  }, [searchParams]);
 
   // Authenticated users who already completed the funnel go to portal
   useEffect(() => {
