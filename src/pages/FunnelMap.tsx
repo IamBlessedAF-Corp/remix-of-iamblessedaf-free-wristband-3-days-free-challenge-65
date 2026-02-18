@@ -13,6 +13,7 @@ import {
 import { motion } from "framer-motion";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
 import { useLiveFunnelData } from "@/hooks/useLiveFunnelData";
+import SankeyFunnelDiagram from "@/components/admin/SankeyFunnelDiagram";
 
 const FUNNEL_COLORS = [
   "hsl(var(--primary))",
@@ -33,6 +34,7 @@ export default function FunnelMap() {
     orderData,
     clipperData,
     challengeCount,
+    shareCount,
     conversionFunnel,
     isLoading,
   } = useLiveFunnelData();
@@ -83,6 +85,16 @@ export default function FunnelMap() {
           { label: "Revenue", value: `$${(totalRevenue / 100).toLocaleString()}` },
           { label: "AOV", value: `$${(aov / 100).toFixed(2)}` },
         ]}
+      />
+      {/* ═══ Sankey Flow Diagram ═══ */}
+      <SankeyFunnelDiagram
+        clicks={trafficData?.totalClicks || 0}
+        visitors={trafficData?.uniqueVisitors || 0}
+        challengeJoined={challengeCount}
+        signups={signupCount}
+        orders={totalOrders}
+        shares={shareCount}
+        totalRevenueCents={totalRevenue}
       />
 
       {/* ═══ Conversion Funnel ═══ */}
