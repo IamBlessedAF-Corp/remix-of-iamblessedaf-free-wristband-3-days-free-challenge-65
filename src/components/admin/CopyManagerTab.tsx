@@ -11,11 +11,13 @@ import {
   Type, MessageSquare, Mail, Film, Share2, Search, Save, Pencil, X,
   ChevronDown, ChevronRight, RefreshCw, Eye, AlertTriangle, Zap,
   Clock, Radio, Smartphone, Globe, Send, TrendingUp, CheckCircle,
+  Layout, FileText,
 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import SmartTagBadge from "@/components/admin/SmartTagBadge";
 
 // ─── Enhanced Copy Registry ───
 type CopyItem = {
@@ -92,31 +94,26 @@ const SECTIONS = [
   { id: "social", label: "Social & Repost", icon: Share2, color: "text-pink-400" },
 ];
 
-const CHANNEL_ICONS: Record<string, typeof Globe> = {
-  web: Globe,
-  sms: Smartphone,
-  "sms + mms": Smartphone,
-  email: Mail,
-  whatsapp: Send,
-  social: Share2,
-  "web + email": Globe,
-};
+// ─── Derive unique pages for "By Page" view ───
+function getPageGroups(): { page: string; items: CopyItem[] }[] {
+  const map = new Map<string, CopyItem[]>();
+  COPY_REGISTRY.forEach(item => {
+    item.affectedPages.forEach(page => {
+      if (!map.has(page)) map.set(page, []);
+      map.get(page)!.push(item);
+    });
+  });
+  return Array.from(map.entries())
+    .sort((a, b) => b[1].length - a[1].length)
+    .map(([page, items]) => ({ page, items }));
+}
 
 // ─── Confirmation Dialog with Admin Re-Auth ───
 function ConfirmSaveDialog({
-  open,
-  item,
-  oldValue,
-  newValue,
-  onConfirm,
-  onCancel,
+  open, item, oldValue, newValue, onConfirm, onCancel,
 }: {
-  open: boolean;
-  item: CopyItem | null;
-  oldValue: string;
-  newValue: string;
-  onConfirm: () => void;
-  onCancel: () => void;
+  open: boolean; item: CopyItem | null; oldValue: string; newValue: string;
+  onConfirm: () => void; onCancel: () => void;
 }) {
   const [adminPass, setAdminPass] = useState("");
   const [passError, setPassError] = useState("");
@@ -124,31 +121,21 @@ function ConfirmSaveDialog({
 
   if (!item) return null;
 
-  const handleConfirm = async () => {
-    if (isStructural) {
-      if (adminPass !== "BlessedAdmin2025!") {
-        setPassError("Contraseña incorrecta");
-        return;
-      }
+  const handleConfirm = () => {
+    if (isStructural && adminPass !== "BlessedAdmin2025!") {
+      setPassError("Contraseña incorrecta");
+      return;
     }
-    setAdminPass("");
-    setPassError("");
-    onConfirm();
+    setAdminPass(""); setPassError(""); onConfirm();
   };
-
-  const handleCancel = () => {
-    setAdminPass("");
-    setPassError("");
-    onCancel();
-  };
+  const handleCancel = () => { setAdminPass(""); setPassError(""); onCancel(); };
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleCancel()}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-amber-400" />
-            Confirmar cambio de copy
+            <AlertTriangle className="w-5 h-5 text-amber-400" /> Confirmar cambio de copy
           </DialogTitle>
           <DialogDescription>
             Estás a punto de modificar <strong>{item.label}</strong>. Revisa el impacto antes de guardar.
@@ -156,11 +143,11 @@ function ConfirmSaveDialog({
         </DialogHeader>
         <div className="space-y-3 text-sm">
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-            <p className="text-[10px] font-semibold text-red-400 mb-1">ANTES (se eliminará):</p>
+            <p className="text-[10px] font-semibold text-red-400 mb-1">ANTES:</p>
             <p className="text-xs text-red-300 line-through">{oldValue}</p>
           </div>
           <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
-            <p className="text-[10px] font-semibold text-emerald-400 mb-1">DESPUÉS (nuevo):</p>
+            <p className="text-[10px] font-semibold text-emerald-400 mb-1">DESPUÉS:</p>
             <p className="text-xs text-emerald-300">{newValue}</p>
           </div>
           <div className="bg-secondary/30 rounded-lg p-3">
@@ -171,7 +158,7 @@ function ConfirmSaveDialog({
               ))}
             </div>
             {item.frequency && (
-              <p className="text-[10px] text-muted-foreground mt-2">📊 Frecuencia: {item.frequency} — este cambio impactará a todos los usuarios que vean esta sección.</p>
+              <p className="text-[10px] text-muted-foreground mt-2">📊 Frecuencia: {item.frequency}</p>
             )}
           </div>
           {isStructural && (
@@ -179,13 +166,8 @@ function ConfirmSaveDialog({
               <p className="text-[10px] font-semibold text-red-400 flex items-center gap-1">
                 🔒 Cambio estructural — requiere re-autenticación admin
               </p>
-              <Input
-                type="password"
-                placeholder="Admin password"
-                value={adminPass}
-                onChange={(e) => { setAdminPass(e.target.value); setPassError(""); }}
-                className="h-8 text-xs"
-              />
+              <Input type="password" placeholder="Admin password" value={adminPass}
+                onChange={(e) => { setAdminPass(e.target.value); setPassError(""); }} className="h-8 text-xs" />
               {passError && <p className="text-[10px] text-red-400">{passError}</p>}
             </div>
           )}
@@ -201,14 +183,9 @@ function ConfirmSaveDialog({
   );
 }
 
-// ─── Expandable Copy Row ───
-function CopyRow({
-  item,
-  savedValue,
-  onSave,
-}: {
-  item: CopyItem;
-  savedValue: string | null;
+// ─── Expandable Copy Row with Smart Tags ───
+function CopyRow({ item, savedValue, onSave }: {
+  item: CopyItem; savedValue: string | null;
   onSave: (key: string, value: string, item: CopyItem, oldVal: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -217,25 +194,15 @@ function CopyRow({
   const [previewing, setPreviewing] = useState(false);
   const currentValue = savedValue || item.defaultValue;
   const isModified = savedValue !== null && savedValue !== item.defaultValue;
-  const ChannelIcon = CHANNEL_ICONS[item.channel || "web"] || Globe;
   const charCount = value.length;
   const overLimit = item.charLimit ? charCount > item.charLimit : false;
 
-  const handleSave = () => {
-    onSave(item.key, value, item, currentValue);
-    setEditing(false);
-  };
+  const handleSave = () => { onSave(item.key, value, item, currentValue); setEditing(false); };
 
   return (
-    <div className={cn(
-      "border rounded-lg overflow-hidden transition-all",
-      expanded ? "border-primary/40 bg-card/80" : "border-border/20 hover:border-border/40"
-    )}>
-      {/* Header Row - always visible */}
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-secondary/10 transition-colors"
-      >
+    <div className={cn("border rounded-lg overflow-hidden transition-all", expanded ? "border-primary/40 bg-card/80" : "border-border/20 hover:border-border/40")}>
+      <button onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-secondary/10 transition-colors">
         {expanded ? <ChevronDown className="w-4 h-4 text-primary shrink-0" /> : <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -244,80 +211,56 @@ function CopyRow({
           </div>
           <p className="text-[10px] text-muted-foreground truncate mt-0.5">{currentValue}</p>
         </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          <ChannelIcon className="w-3 h-3 text-muted-foreground" />
-          {item.frequency && (
-            <span className="text-[9px] text-muted-foreground hidden sm:block">{item.frequency}</span>
-          )}
+        <div className="flex items-center gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
+          {item.channel && <SmartTagBadge tag={item.channel} />}
+          {item.frequency && <SmartTagBadge tag={item.frequency} />}
         </div>
       </button>
 
-      {/* Expanded Content */}
       {expanded && (
         <div className="border-t border-border/20 px-4 pb-4 pt-3 space-y-3">
-          {/* Metadata Row */}
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="outline" className="text-[9px] gap-1"><Radio className="w-2.5 h-2.5" />{item.channel}</Badge>
-            {item.frequency && <Badge variant="outline" className="text-[9px] gap-1"><Clock className="w-2.5 h-2.5" />{item.frequency}</Badge>}
-            {item.trigger && <Badge variant="outline" className="text-[9px] gap-1"><Zap className="w-2.5 h-2.5" />{item.trigger}</Badge>}
-            {item.charLimit && <Badge variant="outline" className={cn("text-[9px]", overLimit ? "text-red-400 border-red-400/40" : "")}>{charCount}/{item.charLimit} chars</Badge>}
+          <div className="flex flex-wrap gap-2" onClick={e => e.stopPropagation()}>
+            {item.channel && <SmartTagBadge tag={item.channel} onEdit={(f, v) => toast.info(`Config saved: ${f} = ${v}`)} />}
+            {item.frequency && <SmartTagBadge tag={item.frequency} onEdit={(f, v) => toast.info(`Config saved: ${f} = ${v}`)} />}
+            {item.trigger && <SmartTagBadge tag={item.trigger} onEdit={(f, v) => toast.info(`Config saved: ${f} = ${v}`)} />}
+            {item.charLimit && (
+              <SmartTagBadge
+                tag={`${charCount}/${item.charLimit} chars`}
+                className={overLimit ? "text-red-400 border-red-400/40" : ""}
+                onEdit={(f, v) => toast.info(`Config saved: ${f} = ${v}`)}
+              />
+            )}
           </div>
-
-          {/* Description */}
           <p className="text-[11px] text-muted-foreground">{item.description}</p>
-
-          {/* Affected Pages */}
           <div className="flex flex-wrap gap-1">
             <span className="text-[9px] text-muted-foreground mr-1">Afecta:</span>
             {item.affectedPages.map(p => (
               <Badge key={p} variant="outline" className="text-[8px] px-1 py-0 bg-secondary/30">{p}</Badge>
             ))}
           </div>
-
-          {/* Optimization Tip */}
           {item.optimizationTip && (
             <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-2.5 flex gap-2">
               <TrendingUp className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
               <p className="text-[10px] text-blue-300/90 leading-relaxed">{item.optimizationTip}</p>
             </div>
           )}
-
-          {/* Editor / Preview */}
           {editing ? (
             <div className="space-y-2">
               {value.length > 80 || (item.charLimit && item.charLimit > 100) ? (
-                <Textarea
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                  className="text-xs min-h-[70px]"
-                  placeholder={item.defaultValue}
-                />
+                <Textarea value={value} onChange={(e) => setValue(e.target.value)} className="text-xs min-h-[70px]" placeholder={item.defaultValue} />
               ) : (
-                <Input
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                  className="text-xs h-8"
-                  placeholder={item.defaultValue}
-                />
+                <Input value={value} onChange={(e) => setValue(e.target.value)} className="text-xs h-8" placeholder={item.defaultValue} />
               )}
               {overLimit && (
                 <p className="text-[10px] text-red-400 flex items-center gap-1">
-                  <AlertTriangle className="w-3 h-3" /> Excede el límite recomendado de {item.charLimit} caracteres
+                  <AlertTriangle className="w-3 h-3" /> Excede el límite de {item.charLimit} caracteres
                 </p>
               )}
               <div className="flex gap-2">
-                <Button size="sm" className="h-7 text-[10px] gap-1" onClick={handleSave}>
-                  <Save className="w-3 h-3" /> Guardar
-                </Button>
-                <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1" onClick={() => setPreviewing(!previewing)}>
-                  <Eye className="w-3 h-3" /> {previewing ? "Ocultar preview" : "Preview"}
-                </Button>
-                <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => { setValue(item.defaultValue); }}>
-                  Reset
-                </Button>
-                <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => { setEditing(false); setValue(currentValue); }}>
-                  <X className="w-3 h-3" />
-                </Button>
+                <Button size="sm" className="h-7 text-[10px] gap-1" onClick={handleSave}><Save className="w-3 h-3" /> Guardar</Button>
+                <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1" onClick={() => setPreviewing(!previewing)}><Eye className="w-3 h-3" /> {previewing ? "Ocultar" : "Preview"}</Button>
+                <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => setValue(item.defaultValue)}>Reset</Button>
+                <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => { setEditing(false); setValue(currentValue); }}><X className="w-3 h-3" /></Button>
               </div>
               {previewing && (
                 <div className="bg-secondary/30 border border-border/30 rounded-lg p-3">
@@ -328,9 +271,7 @@ function CopyRow({
             </div>
           ) : (
             <div className="flex items-start gap-2">
-              <p className="text-xs text-foreground/80 bg-secondary/20 rounded px-2 py-1.5 font-mono flex-1">
-                {currentValue}
-              </p>
+              <p className="text-xs text-foreground/80 bg-secondary/20 rounded px-2 py-1.5 font-mono flex-1">{currentValue}</p>
               <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1 shrink-0" onClick={() => setEditing(true)}>
                 <Pencil className="w-3 h-3" /> Editar
               </Button>
@@ -342,26 +283,80 @@ function CopyRow({
   );
 }
 
+// ─── Collapsible Category Group ───
+function CategoryGroup({ category, items, getSavedValue, onSave }: {
+  category: string; items: CopyItem[];
+  getSavedValue: (key: string) => string | null;
+  onSave: (key: string, value: string, item: CopyItem, oldVal: string) => void;
+}) {
+  const [expanded, setExpanded] = useState(true);
+  const modifiedCount = items.filter(i => getSavedValue(i.key) !== null).length;
+
+  return (
+    <div className="space-y-2">
+      <button onClick={() => setExpanded(!expanded)} className="flex items-center gap-2 w-full text-left hover:opacity-80 transition-opacity">
+        {expanded ? <ChevronDown className="w-4 h-4 text-primary" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+        <h3 className="text-sm font-bold text-foreground">{category}</h3>
+        <Badge variant="outline" className="text-[9px]">{items.length}</Badge>
+        {modifiedCount > 0 && <Badge className="bg-amber-500/15 text-amber-400 border-amber-500/30 text-[9px]">{modifiedCount} mod</Badge>}
+      </button>
+      {expanded && (
+        <div className="space-y-1.5 pl-6">
+          {items.map(item => <CopyRow key={item.key} item={item} savedValue={getSavedValue(item.key)} onSave={onSave} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Page Group ───
+function PageGroup({ page, items, getSavedValue, onSave }: {
+  page: string; items: CopyItem[];
+  getSavedValue: (key: string) => string | null;
+  onSave: (key: string, value: string, item: CopyItem, oldVal: string) => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const modifiedCount = items.filter(i => getSavedValue(i.key) !== null).length;
+  const isRoute = page.startsWith("/");
+
+  return (
+    <div className="space-y-2">
+      <button onClick={() => setExpanded(!expanded)} className="flex items-center gap-2 w-full text-left hover:opacity-80 transition-opacity">
+        {expanded ? <ChevronDown className="w-4 h-4 text-primary" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+        {isRoute ? <Globe className="w-3.5 h-3.5 text-blue-400" /> : <FileText className="w-3.5 h-3.5 text-purple-400" />}
+        <h3 className="text-sm font-bold text-foreground">{page}</h3>
+        <Badge variant="outline" className="text-[9px]">{items.length} items</Badge>
+        {modifiedCount > 0 && <Badge className="bg-amber-500/15 text-amber-400 border-amber-500/30 text-[9px]">{modifiedCount} mod</Badge>}
+        {isRoute && (
+          <button onClick={(e) => { e.stopPropagation(); window.open(`${window.location.origin}${page}`, "_blank"); }}
+            className="text-[9px] text-primary hover:underline ml-auto">
+            Abrir página ↗
+          </button>
+        )}
+      </button>
+      {expanded && (
+        <div className="space-y-1.5 pl-6">
+          {items.map(item => <CopyRow key={`${page}-${item.key}`} item={item} savedValue={getSavedValue(item.key)} onSave={onSave} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Main Copy Manager Tab ───
 export default function CopyManagerTab() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [activeSection, setActiveSection] = useState("funnel");
+  const [viewMode, setViewMode] = useState<"section" | "page">("section");
   const [confirmDialog, setConfirmDialog] = useState<{
-    open: boolean;
-    item: CopyItem | null;
-    oldValue: string;
-    newValue: string;
+    open: boolean; item: CopyItem | null; oldValue: string; newValue: string;
   }>({ open: false, item: null, oldValue: "", newValue: "" });
 
   const { data: savedCopy = [], isLoading } = useQuery({
     queryKey: ["admin-copy-config"],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("campaign_config")
-        .select("*")
-        .eq("category", "copy")
-        .order("key");
+      const { data } = await supabase.from("campaign_config").select("*").eq("category", "copy").order("key");
       return data || [];
     },
   });
@@ -385,33 +380,34 @@ export default function CopyManagerTab() {
       await supabase.from("campaign_config").update({ value: newValue, updated_at: new Date().toISOString() }).eq("key", configKey);
     } else {
       await supabase.from("campaign_config").insert({
-        key: configKey,
-        label: item.label,
-        value: newValue,
-        category: "copy",
-        description: item.description,
-        affected_areas: item.affectedPages,
+        key: configKey, label: item.label, value: newValue, category: "copy",
+        description: item.description, affected_areas: item.affectedPages,
       });
     }
 
     qc.invalidateQueries({ queryKey: ["admin-copy-config"] });
-    toast.success(`✅ "${item.label}" guardado`, {
-      description: `Afecta: ${item.affectedPages.join(", ")}`,
-    });
+    toast.success(`✅ "${item.label}" guardado`, { description: `Afecta: ${item.affectedPages.join(", ")}` });
     setConfirmDialog({ open: false, item: null, oldValue: "", newValue: "" });
   };
 
   const filteredItems = COPY_REGISTRY.filter(item => {
-    const matchesSection = item.section === activeSection;
+    const matchesSection = viewMode === "page" || item.section === activeSection;
     const matchesSearch = !search ||
       item.label.toLowerCase().includes(search.toLowerCase()) ||
       item.defaultValue.toLowerCase().includes(search.toLowerCase()) ||
       item.category.toLowerCase().includes(search.toLowerCase()) ||
-      item.key.toLowerCase().includes(search.toLowerCase());
+      item.key.toLowerCase().includes(search.toLowerCase()) ||
+      item.affectedPages.some(p => p.toLowerCase().includes(search.toLowerCase()));
     return matchesSection && matchesSearch;
   });
 
   const categories = [...new Set(filteredItems.map(i => i.category))];
+
+  // Page groups (filtered)
+  const pageGroups = getPageGroups().map(pg => ({
+    ...pg,
+    items: pg.items.filter(i => filteredItems.includes(i)),
+  })).filter(pg => pg.items.length > 0);
 
   if (isLoading) return <div className="flex justify-center py-20"><RefreshCw className="w-6 h-6 animate-spin text-primary" /></div>;
 
@@ -419,12 +415,9 @@ export default function CopyManagerTab() {
 
   return (
     <div className="space-y-4">
-      {/* Confirmation Dialog */}
       <ConfirmSaveDialog
-        open={confirmDialog.open}
-        item={confirmDialog.item}
-        oldValue={confirmDialog.oldValue}
-        newValue={confirmDialog.newValue}
+        open={confirmDialog.open} item={confirmDialog.item}
+        oldValue={confirmDialog.oldValue} newValue={confirmDialog.newValue}
         onConfirm={handleConfirmSave}
         onCancel={() => setConfirmDialog({ open: false, item: null, oldValue: "", newValue: "" })}
       />
@@ -437,108 +430,75 @@ export default function CopyManagerTab() {
               <Type className="w-5 h-5 text-primary" /> Copy Manager
             </h2>
             <p className="text-xs text-muted-foreground mt-1">
-              Edita headlines, mensajes, emails y copy social de toda la plataforma. Cada cambio muestra dependencias antes de guardar.
+              Edita headlines, mensajes, emails y copy social. Hover en tags para más info.
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-primary/10 text-primary border-primary/30">
-              {COPY_REGISTRY.length} items
-            </Badge>
+            {/* View mode toggle */}
+            <div className="flex items-center bg-secondary/50 rounded-lg p-0.5">
+              <button onClick={() => setViewMode("section")}
+                className={cn("px-2.5 py-1 text-[10px] font-semibold rounded-md transition-colors flex items-center gap-1",
+                  viewMode === "section" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
+                <Type className="w-3 h-3" /> Por Sección
+              </button>
+              <button onClick={() => setViewMode("page")}
+                className={cn("px-2.5 py-1 text-[10px] font-semibold rounded-md transition-colors flex items-center gap-1",
+                  viewMode === "page" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
+                <Layout className="w-3 h-3" /> Por Página
+              </button>
+            </div>
+            <Badge className="bg-primary/10 text-primary border-primary/30">{COPY_REGISTRY.length} items</Badge>
             {totalModified > 0 && (
-              <Badge className="bg-amber-500/15 text-amber-400 border-amber-500/30">
-                {totalModified} modified
-              </Badge>
+              <Badge className="bg-amber-500/15 text-amber-400 border-amber-500/30">{totalModified} modified</Badge>
             )}
           </div>
         </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por nombre, texto, categoría..."
-            className="pl-9 h-9 text-sm"
-          />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por nombre, texto, categoría, página..." className="pl-9 h-9 text-sm" />
         </div>
       </div>
 
-      {/* Section Tabs */}
-      <Tabs value={activeSection} onValueChange={setActiveSection} className="space-y-4">
-        <TabsList className="bg-secondary/50 flex-wrap h-auto gap-1 p-1">
+      {/* Section View */}
+      {viewMode === "section" && (
+        <Tabs value={activeSection} onValueChange={setActiveSection} className="space-y-4">
+          <TabsList className="bg-secondary/50 flex-wrap h-auto gap-1 p-1">
+            {SECTIONS.map(s => (
+              <TabsTrigger key={s.id} value={s.id} className="gap-1.5 text-xs">
+                <s.icon className={cn("w-3.5 h-3.5", activeSection === s.id ? s.color : "")} />
+                {s.label}
+                <Badge variant="outline" className="text-[9px] ml-1">
+                  {COPY_REGISTRY.filter(i => i.section === s.id).length}
+                </Badge>
+              </TabsTrigger>
+            ))}
+          </TabsList>
           {SECTIONS.map(s => (
-            <TabsTrigger key={s.id} value={s.id} className="gap-1.5 text-xs">
-              <s.icon className={cn("w-3.5 h-3.5", activeSection === s.id ? s.color : "")} />
-              {s.label}
-              <Badge variant="outline" className="text-[9px] ml-1">
-                {COPY_REGISTRY.filter(i => i.section === s.id).length}
-              </Badge>
-            </TabsTrigger>
+            <TabsContent key={s.id} value={s.id} className="space-y-4">
+              {categories.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">No hay items que coincidan.</p>
+              ) : (
+                categories.map(cat => {
+                  const catItems = filteredItems.filter(i => i.category === cat);
+                  return <CategoryGroup key={cat} category={cat} items={catItems} getSavedValue={getSavedValue} onSave={handleRequestSave} />;
+                })
+              )}
+            </TabsContent>
           ))}
-        </TabsList>
+        </Tabs>
+      )}
 
-        {SECTIONS.map(s => (
-          <TabsContent key={s.id} value={s.id} className="space-y-4">
-            {categories.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">No hay items que coincidan con tu búsqueda.</p>
-            ) : (
-              categories.map(cat => {
-                const catItems = filteredItems.filter(i => i.category === cat);
-                return (
-                  <CategoryGroup
-                    key={cat}
-                    category={cat}
-                    items={catItems}
-                    getSavedValue={getSavedValue}
-                    onSave={handleRequestSave}
-                  />
-                );
-              })
-            )}
-          </TabsContent>
-        ))}
-      </Tabs>
-    </div>
-  );
-}
-
-// ─── Collapsible Category Group ───
-function CategoryGroup({
-  category,
-  items,
-  getSavedValue,
-  onSave,
-}: {
-  category: string;
-  items: CopyItem[];
-  getSavedValue: (key: string) => string | null;
-  onSave: (key: string, value: string, item: CopyItem, oldVal: string) => void;
-}) {
-  const [expanded, setExpanded] = useState(true);
-  const modifiedCount = items.filter(i => getSavedValue(i.key) !== null).length;
-
-  return (
-    <div className="space-y-2">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-2 w-full text-left hover:opacity-80 transition-opacity"
-      >
-        {expanded ? <ChevronDown className="w-3.5 h-3.5 text-primary" /> : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
-        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{category}</h3>
-        <Badge variant="outline" className="text-[9px]">{items.length}</Badge>
-        {modifiedCount > 0 && (
-          <Badge className="bg-amber-500/15 text-amber-400 border-amber-500/30 text-[9px]">{modifiedCount} mod</Badge>
-        )}
-      </button>
-      {expanded && (
-        <div className="space-y-2">
-          {items.map(item => (
-            <CopyRow
-              key={item.key}
-              item={item}
-              savedValue={getSavedValue(item.key)}
-              onSave={onSave}
-            />
-          ))}
+      {/* Page View */}
+      {viewMode === "page" && (
+        <div className="space-y-3">
+          {pageGroups.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-8">No hay items que coincidan.</p>
+          ) : (
+            pageGroups.map(pg => (
+              <PageGroup key={pg.page} page={pg.page} items={pg.items} getSavedValue={getSavedValue} onSave={handleRequestSave} />
+            ))
+          )}
         </div>
       )}
     </div>
