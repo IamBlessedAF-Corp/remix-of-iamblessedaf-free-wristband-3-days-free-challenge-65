@@ -24,13 +24,13 @@ const TIER_LABELS: Record<string, string> = {
 };
 
 const NEXT_UPSELL: Record<string, string> = {
-  "free-wristband": "/offer/111",
-  "wristband-22": "/offer/111",
-  "pack-111": "/offer/444",
-  "pack-444": "/offer/1111",
-  "pack-1111": "/offer/4444",
+  "free-wristband": "/Congrats-Neuro-Hacker",
+  "wristband-22": "/Congrats-Neuro-Hacker",
+  "pack-111": "/Congrats-Neuro-Hacker",
+  "pack-444": "/Congrats-Neuro-Hacker",
+  "pack-1111": "/Congrats-Neuro-Hacker",
   "pack-4444": "",
-  "monthly-11": "/offer/111",
+  "monthly-11": "/Congrats-Neuro-Hacker",
 };
 
 const OfferSuccess = () => {
