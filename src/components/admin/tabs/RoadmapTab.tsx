@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
 import { useBoard } from "@/hooks/useBoard";
+import { useRoadmapCompletions } from "@/hooks/useRoadmapCompletions";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
 import { PHASE_NEXT_STEPS, type NextStepItem } from "@/data/roadmapNextSteps";
 import RoadmapSearchBar, { type RoadmapFilters } from "@/components/roadmap/RoadmapSearchBar";
 import RoadmapItemActions from "@/components/roadmap/RoadmapItemActions";
 import BulkSendToBoard from "@/components/roadmap/BulkSendToBoard";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, CheckCircle2, Circle } from "lucide-react";
 
 const PHASE_LABELS: Record<string, string> = {
   foundation: "🏗️ Foundation & Security",
@@ -28,6 +29,7 @@ const PRIORITY_COLORS: Record<string, string> = {
 
 export default function RoadmapTab() {
   const board = useBoard();
+  const { isCompleted, markDone, unmarkDone } = useRoadmapCompletions();
   const totalCards = board.cards.length;
   const completedCards = board.cards.filter(c => c.completed_at).length;
   const completionPct = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
@@ -87,16 +89,26 @@ export default function RoadmapTab() {
               </button>
               {isOpen && (
                 <div className="divide-y divide-border/30">
-                  {phaseItems.map((item, idx) => (
-                    <div key={idx} className="px-4 py-2.5 flex items-start gap-3 hover:bg-secondary/20 transition-colors">
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${PRIORITY_COLORS[item.priority]}`}>{item.priority}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-foreground">{item.title}</p>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">{item.detail}</p>
+                  {phaseItems.map((item, idx) => {
+                    const done = isCompleted(item.phase, item.title);
+                    return (
+                      <div key={idx} className={`px-4 py-2.5 flex items-start gap-3 hover:bg-secondary/20 transition-colors ${done ? "opacity-60" : ""}`}>
+                        <button
+                          onClick={() => done ? unmarkDone.mutate({ title: item.title, phase: item.phase }) : markDone.mutate({ title: item.title, phase: item.phase })}
+                          className="mt-0.5 shrink-0"
+                          title={done ? "Mark as not done" : "Mark as done"}
+                        >
+                          {done ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Circle className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />}
+                        </button>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${PRIORITY_COLORS[item.priority]}`}>{item.priority}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-xs font-medium ${done ? "line-through text-muted-foreground" : "text-foreground"}`}>{item.title}</p>
+                          <p className="text-[11px] text-muted-foreground mt-0.5">{item.detail}</p>
+                        </div>
+                        <RoadmapItemActions title={item.title} detail={item.detail} phaseName={phase} />
                       </div>
-                      <RoadmapItemActions title={item.title} detail={item.detail} phaseName={phase} />
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
