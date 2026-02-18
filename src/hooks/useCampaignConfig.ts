@@ -48,14 +48,25 @@ export function useCampaignConfig() {
   }, [configs]);
 
   const saveChanges = useCallback(async (changes: PendingChange[]) => {
-    const promises = changes.map(ch =>
-      (supabase.from("campaign_config") as any)
-        .update({ value: ch.newValue, updated_at: new Date().toISOString() })
-        .eq("key", ch.key)
-    );
+    const promises = changes.map(ch => {
+      const exists = configs.find(c => c.key === ch.key);
+      if (exists) {
+        return (supabase.from("campaign_config") as any)
+          .update({ value: ch.newValue, updated_at: new Date().toISOString() })
+          .eq("key", ch.key);
+      }
+      return (supabase.from("campaign_config") as any)
+        .insert({
+          key: ch.key,
+          value: ch.newValue,
+          label: ch.label,
+          category: ch.category,
+          affected_areas: ch.affected_areas || [],
+        });
+    });
     await Promise.all(promises);
     await fetchAll();
-  }, [fetchAll]);
+  }, [fetchAll, configs]);
 
   // Helpers by category
   const byCategory = useCallback((cat: string) => configs.filter(c => c.category === cat), [configs]);
