@@ -901,6 +901,7 @@ export type Database = {
           instagram_handle: string | null
           referral_code: string
           referred_by_code: string | null
+          referred_by_user_id: string | null
           tiktok_handle: string | null
           twitter_handle: string | null
           updated_at: string
@@ -917,6 +918,7 @@ export type Database = {
           instagram_handle?: string | null
           referral_code: string
           referred_by_code?: string | null
+          referred_by_user_id?: string | null
           tiktok_handle?: string | null
           twitter_handle?: string | null
           updated_at?: string
@@ -933,6 +935,7 @@ export type Database = {
           instagram_handle?: string | null
           referral_code?: string
           referred_by_code?: string | null
+          referred_by_user_id?: string | null
           tiktok_handle?: string | null
           twitter_handle?: string | null
           updated_at?: string
