@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import AdminSectionDashboard from "./AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RefreshCw, MessageSquare, Calendar, Heart, Mail } from "lucide-react";
+import { RefreshCw, MessageSquare, Calendar, Heart, Mail, LayoutDashboard } from "lucide-react";
 import ExportCsvButton from "./ExportCsvButton";
+import EngagementBlueprintPanel from "./EngagementBlueprintPanel";
 
 export default function MessagingTab() {
   const { data: messages = [], isLoading } = useQuery({
@@ -52,15 +53,20 @@ export default function MessagingTab() {
         ]}
       />
 
-      <Tabs defaultValue="messages" className="space-y-4">
+      <Tabs defaultValue="blueprint" className="space-y-4">
         <div className="flex items-center justify-between">
           <TabsList>
+            <TabsTrigger value="blueprint" className="gap-1 text-xs"><LayoutDashboard className="w-3.5 h-3.5" /> Engagement Blueprint</TabsTrigger>
             <TabsTrigger value="messages" className="gap-1 text-xs"><MessageSquare className="w-3.5 h-3.5" /> Messages</TabsTrigger>
             <TabsTrigger value="followups" className="gap-1 text-xs"><Calendar className="w-3.5 h-3.5" /> Follow-ups</TabsTrigger>
             <TabsTrigger value="tgf" className="gap-1 text-xs"><Heart className="w-3.5 h-3.5" /> TGF Contacts</TabsTrigger>
           </TabsList>
           <ExportCsvButton data={messages} filename="messages.csv" columns={["friend_name", "day_number", "message_body", "status", "scheduled_send_at"]} />
         </div>
+
+        <TabsContent value="blueprint">
+          <EngagementBlueprintPanel />
+        </TabsContent>
 
         <TabsContent value="messages">
           <div className="bg-card border border-border/40 rounded-xl overflow-x-auto">
