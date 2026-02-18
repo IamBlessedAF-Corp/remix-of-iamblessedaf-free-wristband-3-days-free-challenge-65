@@ -182,7 +182,11 @@ export default function AdminHub() {
   const { user, isAdmin, userRole, loading: authLoading, signInWithEmail, signOut } = useAdminAuth();
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    SIDEBAR_MENU.forEach(entry => { if ("group" in entry) initial[entry.group] = true; });
+    return initial;
+  });
 
   // ─── Realtime sync: auto-invalidate React Query when hot tables change ───
   useRealtimeSync();
