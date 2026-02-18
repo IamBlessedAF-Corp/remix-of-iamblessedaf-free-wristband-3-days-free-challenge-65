@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -22,18 +22,58 @@ interface ShortLinkResult {
 /**
  * Hook to create and manage short links (Bitly-style).
  * All links use the iamblessedaf.com domain.
+ * Automatically embeds the logged-in user's referral code into destination URLs.
  */
 export function useShortLinks() {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+
+  // Fetch the user's referral code once on mount / user change
+  useEffect(() => {
+    if (!user?.id) {
+      setReferralCode(null);
+      return;
+    }
+    supabase
+      .from("creator_profiles")
+      .select("referral_code")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.referral_code) setReferralCode(data.referral_code);
+      });
+  }, [user?.id]);
+
+  /** Append the user's referral code to a URL (if available and not already present) */
+  const appendReferralCode = useCallback(
+    (url: string): string => {
+      if (!referralCode) return url;
+      try {
+        // If it's already a /r/CODE referral URL, don't modify
+        if (url.includes(`/r/${referralCode}`)) return url;
+        const parsed = new URL(url.startsWith("http") ? url : `https://iamblessedaf.com${url}`);
+        if (!parsed.searchParams.has("ref")) {
+          parsed.searchParams.set("ref", referralCode);
+        }
+        return parsed.toString();
+      } catch {
+        // If URL parsing fails, append as query string
+        const separator = url.includes("?") ? "&" : "?";
+        return `${url}${separator}ref=${referralCode}`;
+      }
+    },
+    [referralCode]
+  );
 
   /** Create a single short link */
   const createShortLink = useCallback(
     async (options: ShortLinkOptions): Promise<ShortLinkResult | null> => {
       setLoading(true);
       try {
+        const destWithRef = appendReferralCode(options.destination_url);
         const { data, error } = await supabase.functions.invoke("short-link", {
-          body: { action: "create", ...options, created_by: user?.id || undefined },
+          body: { action: "create", ...options, destination_url: destWithRef, created_by: user?.id || undefined },
         });
 
         if (error) throw error;
@@ -47,7 +87,7 @@ export function useShortLinks() {
         setLoading(false);
       }
     },
-    []
+    [appendReferralCode]
   );
 
   /** Track a click on a short link (fire-and-forget) */
@@ -95,12 +135,15 @@ export function useShortLinks() {
       campaign: string,
       sourcePage?: string
     ): Promise<string> => {
+      // Append user's referral code to destination
+      const destWithRef = appendReferralCode(destination);
+
       // Try to find an existing link for this campaign+destination first
       try {
         const { data: existing } = await supabase
           .from("short_links")
           .select("short_code")
-          .eq("destination_url", destination)
+          .eq("destination_url", destWithRef)
           .eq("campaign", campaign)
           .eq("is_active", true)
           .order("click_count", { ascending: false })
@@ -115,14 +158,14 @@ export function useShortLinks() {
       }
 
       const result = await createShortLink({
-        destination_url: destination,
+        destination_url: destWithRef,
         campaign,
         source_page: sourcePage || window.location.pathname,
       });
 
-      return result?.short_url || destination;
+      return result?.short_url || destWithRef;
     },
-    [createShortLink]
+    [createShortLink, appendReferralCode]
   );
 
   return {
@@ -130,6 +173,8 @@ export function useShortLinks() {
     trackClick,
     resolveShortCode,
     getShareUrl,
+    appendReferralCode,
+    referralCode,
     loading,
     SHORT_LINK_BASE,
   };
