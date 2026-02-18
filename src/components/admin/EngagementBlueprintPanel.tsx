@@ -1,18 +1,18 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   MessageSquare, Mail, Clock, Users, Zap, Calendar,
   ArrowRight, AlertTriangle, CheckCircle2, Repeat, Timer,
   Send, Bell, Gift, Heart, Trophy, Shield, Smartphone,
-  Power, Loader2,
+  Power, Loader2, Pencil, Check, X,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useCampaignConfig } from "@/hooks/useCampaignConfig";
 import { toast } from "sonner";
-
 /* ─────────────────────── Types ─────────────────────── */
 
 interface MessageSpec {
@@ -366,6 +366,93 @@ function GanttTimeline({ statuses }: { statuses: Record<string, string> }) {
   );
 }
 
+/* ─────────────── Inline Editable Meta Field ─────────────── */
+
+function EditableMetaField({
+  icon,
+  label,
+  configKey,
+  fallback,
+  getValue,
+  saveChanges,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  configKey: string;
+  fallback: string;
+  getValue: (key: string, fallback?: string) => string;
+  saveChanges: (changes: { key: string; label: string; oldValue: string; newValue: string; affected_areas: string[]; category: string }[]) => Promise<void>;
+}) {
+  const currentVal = getValue(configKey, fallback);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(currentVal);
+  const [saving, setSaving] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const startEdit = () => {
+    setDraft(currentVal);
+    setEditing(true);
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  const cancelEdit = () => {
+    setEditing(false);
+    setDraft(currentVal);
+  };
+
+  const save = async () => {
+    if (draft === currentVal) { setEditing(false); return; }
+    setSaving(true);
+    try {
+      await saveChanges([{
+        key: configKey,
+        label,
+        oldValue: currentVal,
+        newValue: draft,
+        affected_areas: [],
+        category: "engagement",
+      }]);
+      toast.success(`${label} updated`);
+      setEditing(false);
+    } catch {
+      toast.error("Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (editing) {
+    return (
+      <div className="flex items-center gap-1 text-[10px] min-w-0">
+        {icon}
+        <strong className="text-foreground shrink-0">{label.split("—")[0].trim()}:</strong>
+        <Input
+          ref={inputRef}
+          value={draft}
+          onChange={e => setDraft(e.target.value)}
+          onKeyDown={e => { if (e.key === "Enter") save(); if (e.key === "Escape") cancelEdit(); }}
+          className="h-5 text-[10px] px-1 py-0 bg-background border-primary/40 flex-1 min-w-[120px]"
+          disabled={saving}
+        />
+        <Button size="icon" variant="ghost" className="h-5 w-5" onClick={save} disabled={saving}>
+          {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3 text-emerald-400" />}
+        </Button>
+        <Button size="icon" variant="ghost" className="h-5 w-5" onClick={cancelEdit} disabled={saving}>
+          <X className="w-3 h-3 text-muted-foreground" />
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-1.5 text-muted-foreground text-[10px] group/meta cursor-pointer hover:text-foreground transition-colors" onClick={startEdit}>
+      {icon}
+      <span><strong className="text-foreground">{label.split("—")[0].trim()}:</strong> {currentVal}</span>
+      <Pencil className="w-2.5 h-2.5 opacity-0 group-hover/meta:opacity-60 transition-opacity shrink-0" />
+    </div>
+  );
+}
+
 /* ─────────────────────── Component ─────────────────────── */
 
 export default function EngagementBlueprintPanel() {
@@ -511,24 +598,36 @@ export default function EngagementBlueprintPanel() {
                     </div>
                   </div>
 
-                  {/* Meta row */}
-                  <div className="mt-3 grid grid-cols-2 lg:grid-cols-4 gap-2 text-[10px]">
-                    <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <Clock className="w-3 h-3 shrink-0" />
-                      <span><strong className="text-foreground">Frequency:</strong> {group.frequency}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                  {/* Editable Meta row */}
+                  <div className="mt-3 grid grid-cols-2 lg:grid-cols-4 gap-2">
+                    <EditableMetaField
+                      icon={<Clock className="w-3 h-3 shrink-0" />}
+                      label="Frequency"
+                      configKey={`${group.config_key}_frequency`}
+                      fallback={group.frequency}
+                      getValue={getValue}
+                      saveChanges={saveChanges}
+                    />
+                    <div className="flex items-center gap-1.5 text-muted-foreground text-[10px]">
                       <Zap className="w-3 h-3 shrink-0" />
                       <span><strong className="text-foreground">Function:</strong> <code className="text-[9px] bg-secondary/50 px-1 rounded">{group.edge_function}</code></span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <Users className="w-3 h-3 shrink-0" />
-                      <span><strong className="text-foreground">Per User:</strong> {group.total_per_user}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <Timer className="w-3 h-3 shrink-0" />
-                      <span><strong className="text-foreground">Timeline:</strong> {group.timeline}</span>
-                    </div>
+                    <EditableMetaField
+                      icon={<Users className="w-3 h-3 shrink-0" />}
+                      label="Per User"
+                      configKey={`${group.config_key}_per_user`}
+                      fallback={group.total_per_user}
+                      getValue={getValue}
+                      saveChanges={saveChanges}
+                    />
+                    <EditableMetaField
+                      icon={<Timer className="w-3 h-3 shrink-0" />}
+                      label="Timeline"
+                      configKey={`${group.config_key}_timeline`}
+                      fallback={group.timeline}
+                      getValue={getValue}
+                      saveChanges={saveChanges}
+                    />
                   </div>
                 </div>
 
