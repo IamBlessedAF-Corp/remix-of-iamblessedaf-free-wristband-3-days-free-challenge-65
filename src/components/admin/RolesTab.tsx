@@ -326,15 +326,15 @@ export default function RolesTab() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Full Name</label>
-            <Input value={inviteName} onChange={e => setInviteName(e.target.value)} placeholder="Diana Surita" className="text-sm" />
+            <Input value={inviteName} onChange={e => setInviteName(e.target.value)} placeholder="e.g. Jane Doe" className="text-sm" />
           </div>
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Email</label>
-            <Input value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} placeholder="user@example.com" className="text-sm" />
+            <Input value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} placeholder="e.g. jane@company.com" className="text-sm" />
           </div>
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Phone (optional)</label>
-            <Input value={invitePhone} onChange={e => setInvitePhone(e.target.value)} placeholder="+573025880823" className="text-sm" />
+            <Input value={invitePhone} onChange={e => setInvitePhone(e.target.value)} placeholder="e.g. +1 555 000 0000" className="text-sm" />
           </div>
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Role</label>
