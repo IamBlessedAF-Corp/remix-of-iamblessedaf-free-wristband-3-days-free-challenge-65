@@ -146,7 +146,8 @@ Deno.serve(async (req: Request) => {
     // ACTION: CREATE SHORT LINK (requires admin)
     // ────────────────────────────────────────────
     if (action === "create") {
-      // Allow any authenticated user to create links (no admin required)
+      const authErr = await requireAdmin(req, supabase);
+      if (authErr) return authErr;
 
       let input: z.infer<typeof CreateSchema>;
       try { input = CreateSchema.parse(body); } catch (e) {
