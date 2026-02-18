@@ -479,99 +479,136 @@ export default function FunnelMap() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* ═══ THE GRATITUDE ENGINE LOOP™ (Top Section) ═══ */}
-      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }}>
-        <div className="relative rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-card to-primary/5 overflow-hidden m-4">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.08),transparent_60%)]" />
-          <div className="relative text-center py-10 px-6">
-            <img src={logoImg} alt="IamBlessedAF" className="h-10 mx-auto mb-3" />
-            <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight mb-2">
-              THE <span className="text-primary">GRATITUDE ENGINE</span> LOOP™
-            </h2>
-
-
-
-            {/* Huberman Clip */}
-            <div className="max-w-lg mx-auto rounded-2xl overflow-hidden border border-border/50 shadow-sm">
-              <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                <iframe
-                  className="absolute inset-0 w-full h-full"
-                  src="https://www.youtube.com/embed/ph1BuMRFJ88?rel=0&modestbranding=1&fs=0"
-                  title="Huberman on Gratitude"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  loading="lazy"
-                />
+      {/* ═══ THE GRATITUDE ENGINE LOOP™ + Growth Hacking (Collapsed) ═══ */}
+      <Collapsible className="m-4">
+        <CollapsibleTrigger className="w-full">
+          <div className="flex items-center justify-between bg-card border-2 border-primary/20 rounded-2xl px-5 py-4 hover:border-primary/30 transition-colors cursor-pointer">
+            <div className="flex items-center gap-3">
+              <FlaskConical className="w-5 h-5 text-primary" />
+              <div className="text-left">
+                <h3 className="text-sm md:text-base font-black text-foreground">THE GRATITUDE ENGINE LOOP™ + Growth Hacking Campaign</h3>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Neuroscience foundation · 8 studies · Viral strategy breakdown</p>
               </div>
             </div>
-
-            {/* Bridge headline */}
-            <motion.div
-              className="mt-8 mb-6 max-w-xl mx-auto text-center space-y-4"
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <h3 className="text-xl md:text-2xl font-extrabold leading-tight text-foreground">
-                The Practical Implementation of{" "}
-                <span className="text-primary">The Biggest Andrew Huberman Discovery</span>{" "}
-                in the Last 18 Months.
-              </h3>
-              <p className="text-base md:text-lg font-semibold text-foreground/90 leading-snug">
-                Dr. Hawkins' (PhD) Research affirms it could make you up to{" "}
-                <motion.span
-                  className="text-primary inline-block"
-                  animate={{ scale: [1, 1.08, 1] }}
-                  transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 3 }}
-                >
-                  27× Happier
-                </motion.span>
-                .
-              </p>
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                The <strong className="text-foreground">Neuro-Hack</strong> to spike{" "}
-                <strong className="text-primary">Dopamine & Serotonin</strong> (Overall Well-Being) — pre-built into a{" "}
-                <strong className="text-foreground">trigger</strong>,{" "}
-                <strong className="text-foreground">habit-forming system</strong> &{" "}
-                <strong className="text-primary">brand</strong>.
-              </p>
-            </motion.div>
-
-            {/* Science of Gratitude — collapsible */}
-            <Collapsible>
-              <CollapsibleTrigger className="w-full mt-5">
-                <div className="flex items-center justify-center gap-2 bg-card border border-border/50 rounded-xl px-5 py-3 mx-auto max-w-md shadow-sm hover:shadow-md transition-shadow">
-                  <FlaskConical className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-bold text-foreground">Science of Gratitude</span>
-                  <ChevronDown className="w-4 h-4 text-muted-foreground ml-1" />
-                </div>
-                <p className="text-[11px] text-muted-foreground mt-1.5">8 peer-reviewed studies · Huberman Lab</p>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <div className="mt-4 max-w-lg mx-auto space-y-3 text-left">
-                  {[
-                    { title: "Receiving gratitude > giving gratitude", source: "Huberman Lab Podcast #47", detail: "Observing or receiving genuine thanks activates prefrontal cortex circuits tied to prosocial behavior more powerfully than expressing thanks yourself." },
-                    { title: "Gratitude spikes serotonin & dopamine", source: "Zahn et al., 2009 — NeuroImage", detail: "fMRI scans show gratitude activates the ventral tegmental area (VTA) and nucleus accumbens — the brain's core reward circuit." },
-                    { title: "3 minutes is the effective threshold", source: "Emmons & McCullough, 2003", detail: "Subjects who spent just 3 minutes on gratitude journaling reported 25% higher well-being scores over 10 weeks vs. control." },
-                    { title: "#1 predictor of lifelong happiness", source: "Harvard Grant Study (75+ years)", detail: "The longest-running study on human development found that the quality of close relationships — not wealth — is the strongest predictor of life satisfaction." },
-                    { title: "Gratitude rewires neural pathways", source: "Kini et al., 2016 — NeuroImage", detail: "Gratitude practice produces lasting changes in medial prefrontal cortex activity, even months after the intervention ends." },
-                    { title: "Up to 27x consciousness elevation", source: "Dr. David Hawkins — Power vs. Force", detail: "Gratitude calibrates at 540 on the Hawkins Scale (Love), compared to apathy at 50 and fear at 100 — a measurable 27x elevation in emotional frequency." },
-                    { title: "Reduces cortisol by 23%", source: "McCraty et al., 1998 — American Journal of Cardiology", detail: "Heart-focused gratitude practice lowered cortisol (stress hormone) by 23% and increased DHEA (vitality hormone) by 100%." },
-                    { title: "Habit formation in 21 days", source: "Lally et al., 2010 — European Journal of Social Psychology", detail: "Simple daily behaviors become automatic habits in as few as 18-21 days, with a visual trigger accelerating the process." },
-                  ].map((study, i) => (
-                    <div key={i} className="bg-card/80 border border-border/40 rounded-xl p-3.5">
-                      <p className="text-sm font-bold text-foreground">{study.title}</p>
-                      <p className="text-[10px] text-primary font-semibold mt-0.5">{study.source}</p>
-                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{study.detail}</p>
-                    </div>
-                  ))}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0" />
           </div>
-        </div>
-      </motion.section>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }}>
+            <div className="relative rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-card to-primary/5 overflow-hidden mt-2">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.08),transparent_60%)]" />
+              <div className="relative text-center py-10 px-6">
+                <img src={logoImg} alt="IamBlessedAF" className="h-10 mx-auto mb-3" />
+                <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight mb-2">
+                  THE <span className="text-primary">GRATITUDE ENGINE</span> LOOP™
+                </h2>
+
+                {/* Huberman Clip */}
+                <div className="max-w-lg mx-auto rounded-2xl overflow-hidden border border-border/50 shadow-sm">
+                  <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                    <iframe
+                      className="absolute inset-0 w-full h-full"
+                      src="https://www.youtube.com/embed/ph1BuMRFJ88?rel=0&modestbranding=1&fs=0"
+                      title="Huberman on Gratitude"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+
+                {/* Bridge headline */}
+                <motion.div
+                  className="mt-8 mb-6 max-w-xl mx-auto text-center space-y-4"
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <h3 className="text-xl md:text-2xl font-extrabold leading-tight text-foreground">
+                    The Practical Implementation of{" "}
+                    <span className="text-primary">The Biggest Andrew Huberman Discovery</span>{" "}
+                    in the Last 18 Months.
+                  </h3>
+                  <p className="text-base md:text-lg font-semibold text-foreground/90 leading-snug">
+                    Dr. Hawkins' (PhD) Research affirms it could make you up to{" "}
+                    <motion.span
+                      className="text-primary inline-block"
+                      animate={{ scale: [1, 1.08, 1] }}
+                      transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 3 }}
+                    >
+                      27× Happier
+                    </motion.span>
+                    .
+                  </p>
+                  <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                    The <strong className="text-foreground">Neuro-Hack</strong> to spike{" "}
+                    <strong className="text-primary">Dopamine & Serotonin</strong> (Overall Well-Being) — pre-built into a{" "}
+                    <strong className="text-foreground">trigger</strong>,{" "}
+                    <strong className="text-foreground">habit-forming system</strong> &{" "}
+                    <strong className="text-primary">brand</strong>.
+                  </p>
+                </motion.div>
+
+                {/* Science of Gratitude — collapsible */}
+                <Collapsible>
+                  <CollapsibleTrigger className="w-full mt-5">
+                    <div className="flex items-center justify-center gap-2 bg-card border border-border/50 rounded-xl px-5 py-3 mx-auto max-w-md shadow-sm hover:shadow-md transition-shadow">
+                      <FlaskConical className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-bold text-foreground">Science of Gratitude</span>
+                      <ChevronDown className="w-4 h-4 text-muted-foreground ml-1" />
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mt-1.5">8 peer-reviewed studies · Huberman Lab</p>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="mt-4 max-w-lg mx-auto space-y-3 text-left">
+                      {[
+                        { title: "Receiving gratitude > giving gratitude", source: "Huberman Lab Podcast #47", detail: "Observing or receiving genuine thanks activates prefrontal cortex circuits tied to prosocial behavior more powerfully than expressing thanks yourself." },
+                        { title: "Gratitude spikes serotonin & dopamine", source: "Zahn et al., 2009 — NeuroImage", detail: "fMRI scans show gratitude activates the ventral tegmental area (VTA) and nucleus accumbens — the brain's core reward circuit." },
+                        { title: "3 minutes is the effective threshold", source: "Emmons & McCullough, 2003", detail: "Subjects who spent just 3 minutes on gratitude journaling reported 25% higher well-being scores over 10 weeks vs. control." },
+                        { title: "#1 predictor of lifelong happiness", source: "Harvard Grant Study (75+ years)", detail: "The longest-running study on human development found that the quality of close relationships — not wealth — is the strongest predictor of life satisfaction." },
+                        { title: "Gratitude rewires neural pathways", source: "Kini et al., 2016 — NeuroImage", detail: "Gratitude practice produces lasting changes in medial prefrontal cortex activity, even months after the intervention ends." },
+                        { title: "Up to 27x consciousness elevation", source: "Dr. David Hawkins — Power vs. Force", detail: "Gratitude calibrates at 540 on the Hawkins Scale (Love), compared to apathy at 50 and fear at 100 — a measurable 27x elevation in emotional frequency." },
+                        { title: "Reduces cortisol by 23%", source: "McCraty et al., 1998 — American Journal of Cardiology", detail: "Heart-focused gratitude practice lowered cortisol (stress hormone) by 23% and increased DHEA (vitality hormone) by 100%." },
+                        { title: "Habit formation in 21 days", source: "Lally et al., 2010 — European Journal of Social Psychology", detail: "Simple daily behaviors become automatic habits in as few as 18-21 days, with a visual trigger accelerating the process." },
+                      ].map((study, i) => (
+                        <div key={i} className="bg-card/80 border border-border/40 rounded-xl p-3.5">
+                          <p className="text-sm font-bold text-foreground">{study.title}</p>
+                          <p className="text-[10px] text-primary font-semibold mt-0.5">{study.source}</p>
+                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{study.detail}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              </div>
+            </div>
+          </motion.section>
+
+          {/* Growth Hacking Identity */}
+          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
+            <Card className="border-primary/20">
+              <CardContent className="p-5 md:p-7">
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                  <strong className="text-foreground">IamBlessedAF</strong> is a <strong className="text-foreground">pay-it-forward gratitude movement</strong> backed by 
+                  top neuroscience PhDs. We help people feel up to <strong className="text-primary">27x happier</strong> (Dr. Hawkins PhD) by installing advanced neuro-hack triggers 
+                  to spark gratitude conversations. Backed by <strong className="text-foreground">Harvard's Grant Study (84+ years)</strong>, we scale the quality of your relationships.
+                </p>
+                <div className="bg-foreground/5 border border-foreground/10 rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Megaphone className="w-4 h-4 text-primary" />
+                    <span className="text-xs font-black text-foreground uppercase tracking-wider">Growth Hacking Campaign</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Mixing <strong className="text-foreground">Dropbox's viral referral engine</strong> × <strong className="text-foreground">Ice Bucket Challenge's emotional virality</strong> × <strong className="text-foreground">Supreme's scarcity model</strong> — powered by the <strong className="text-primary">Andrew Tate Clippers Formula</strong>. 
+                    Pay creators per clip, each clip drives traffic, each visitor enters a conversion funnel with built-in K-factor loops.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.section>
+        </CollapsibleContent>
+      </Collapsible>
 
       {/* ─── Hero Header (Experts-style) ─── */}
       <section className="relative overflow-hidden">
@@ -607,32 +644,6 @@ export default function FunnelMap() {
       </section>
 
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* Growth Hacking Identity */}
-        <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="border-primary/20">
-            <CardContent className="p-5 md:p-7">
-              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                <strong className="text-foreground">IamBlessedAF</strong> is a <strong className="text-foreground">pay-it-forward gratitude movement</strong> backed by 
-                top neuroscience PhDs. We help people feel up to <strong className="text-primary">27x happier</strong> (Dr. Hawkins PhD) by installing advanced neuro-hack triggers 
-                to spark gratitude conversations. Backed by <strong className="text-foreground">Harvard's Grant Study (84+ years)</strong>, we scale the quality of your relationships.
-              </p>
-              <div className="bg-foreground/5 border border-foreground/10 rounded-xl p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Megaphone className="w-4 h-4 text-primary" />
-                  <span className="text-xs font-black text-foreground uppercase tracking-wider">Growth Hacking Campaign</span>
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Mixing <strong className="text-foreground">Dropbox's viral referral engine</strong> × <strong className="text-foreground">Ice Bucket Challenge's emotional virality</strong> × <strong className="text-foreground">Supreme's scarcity model</strong> — powered by the <strong className="text-primary">Andrew Tate Clippers Formula</strong>. 
-                  Pay creators per clip, each clip drives traffic, each visitor enters a conversion funnel with built-in K-factor loops.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.section>
-
-
-
-
         {/* ═══ VIRAL LOOPS INSTALLED (Pre-collapsed) ═══ */}
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
           <Collapsible>
