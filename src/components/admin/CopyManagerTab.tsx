@@ -102,7 +102,7 @@ const CHANNEL_ICONS: Record<string, typeof Globe> = {
   "web + email": Globe,
 };
 
-// ─── Confirmation Dialog ───
+// ─── Confirmation Dialog with Admin Re-Auth ───
 function ConfirmSaveDialog({
   open,
   item,
@@ -118,9 +118,32 @@ function ConfirmSaveDialog({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const [adminPass, setAdminPass] = useState("");
+  const [passError, setPassError] = useState("");
+  const isStructural = item ? item.affectedPages.length > 2 : false;
+
   if (!item) return null;
+
+  const handleConfirm = async () => {
+    if (isStructural) {
+      if (adminPass !== "BlessedAdmin2025!") {
+        setPassError("Contraseña incorrecta");
+        return;
+      }
+    }
+    setAdminPass("");
+    setPassError("");
+    onConfirm();
+  };
+
+  const handleCancel = () => {
+    setAdminPass("");
+    setPassError("");
+    onCancel();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onCancel()}>
+    <Dialog open={open} onOpenChange={(v) => !v && handleCancel()}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -151,10 +174,25 @@ function ConfirmSaveDialog({
               <p className="text-[10px] text-muted-foreground mt-2">📊 Frecuencia: {item.frequency} — este cambio impactará a todos los usuarios que vean esta sección.</p>
             )}
           </div>
+          {isStructural && (
+            <div className="bg-red-500/5 border border-red-500/30 rounded-lg p-3 space-y-2">
+              <p className="text-[10px] font-semibold text-red-400 flex items-center gap-1">
+                🔒 Cambio estructural — requiere re-autenticación admin
+              </p>
+              <Input
+                type="password"
+                placeholder="Admin password"
+                value={adminPass}
+                onChange={(e) => { setAdminPass(e.target.value); setPassError(""); }}
+                className="h-8 text-xs"
+              />
+              {passError && <p className="text-[10px] text-red-400">{passError}</p>}
+            </div>
+          )}
         </div>
         <DialogFooter>
-          <Button variant="ghost" size="sm" onClick={onCancel}>Cancelar</Button>
-          <Button size="sm" onClick={onConfirm} className="bg-emerald-600 hover:bg-emerald-700">
+          <Button variant="ghost" size="sm" onClick={handleCancel}>Cancelar</Button>
+          <Button size="sm" onClick={handleConfirm} className="bg-emerald-600 hover:bg-emerald-700">
             <CheckCircle className="w-3.5 h-3.5 mr-1" /> Confirmar y guardar
           </Button>
         </DialogFooter>
