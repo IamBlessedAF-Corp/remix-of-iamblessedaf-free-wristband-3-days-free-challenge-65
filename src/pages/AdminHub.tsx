@@ -674,6 +674,193 @@ function CampaignSettingsTab() {
 // ═══════════════════════════════════════════════
 // 7️⃣ INTELLIGENT BLOCKS — full funnel component registry
 // ═══════════════════════════════════════════════
+
+// Mini wireframe preview patterns per category
+const BLOCK_PREVIEWS: Record<string, React.ReactNode> = {
+  Content: (
+    <div className="w-full h-full flex flex-col gap-0.5 p-1">
+      <div className="h-1 w-8 bg-foreground/30 rounded-full" />
+      <div className="h-0.5 w-full bg-foreground/10 rounded-full" />
+      <div className="h-0.5 w-10 bg-foreground/10 rounded-full" />
+      <div className="flex-1 rounded bg-primary/10 mt-0.5" />
+    </div>
+  ),
+  Product: (
+    <div className="w-full h-full flex gap-1 p-1 items-center">
+      <div className="w-5 h-6 rounded bg-primary/15 shrink-0" />
+      <div className="flex flex-col gap-0.5 flex-1">
+        <div className="h-1 w-6 bg-foreground/25 rounded-full" />
+        <div className="h-0.5 w-8 bg-foreground/10 rounded-full" />
+        <div className="h-1.5 w-5 bg-primary/20 rounded mt-auto" />
+      </div>
+    </div>
+  ),
+  CTA: (
+    <div className="w-full h-full flex flex-col items-center justify-center gap-0.5 p-1">
+      <div className="h-1 w-8 bg-foreground/20 rounded-full" />
+      <div className="h-3 w-11 bg-primary/30 rounded mt-0.5 flex items-center justify-center">
+        <div className="h-0.5 w-5 bg-primary-foreground/50 rounded-full" />
+      </div>
+      <div className="h-0.5 w-6 bg-foreground/10 rounded-full" />
+    </div>
+  ),
+  Hero: (
+    <div className="w-full h-full flex flex-col p-1">
+      <div className="h-1.5 w-10 bg-foreground/25 rounded-full" />
+      <div className="h-0.5 w-7 bg-foreground/10 rounded-full mt-0.5" />
+      <div className="flex-1 rounded bg-gradient-to-br from-primary/15 to-primary/5 mt-1" />
+    </div>
+  ),
+  Trust: (
+    <div className="w-full h-full flex flex-col gap-0.5 p-1">
+      <div className="flex gap-0.5">
+        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/30" />
+        <div className="h-0.5 w-6 bg-foreground/10 rounded-full mt-0.5" />
+      </div>
+      <div className="flex gap-0.5">
+        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/30" />
+        <div className="h-0.5 w-8 bg-foreground/10 rounded-full mt-0.5" />
+      </div>
+      <div className="flex gap-0.5">
+        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/30" />
+        <div className="h-0.5 w-5 bg-foreground/10 rounded-full mt-0.5" />
+      </div>
+    </div>
+  ),
+  Urgency: (
+    <div className="w-full h-full flex flex-col items-center justify-center gap-0.5 p-1">
+      <div className="h-2 w-12 bg-red-500/15 rounded flex items-center justify-center">
+        <div className="h-0.5 w-6 bg-red-500/30 rounded-full" />
+      </div>
+      <div className="flex gap-1 mt-0.5">
+        {[1,2,3,4].map(i => <div key={i} className="w-2.5 h-3 bg-foreground/10 rounded text-center text-[4px] font-mono text-foreground/20">0</div>)}
+      </div>
+    </div>
+  ),
+  Viral: (
+    <div className="w-full h-full flex flex-col p-1 gap-0.5">
+      <div className="flex gap-0.5 items-center">
+        <div className="w-1.5 h-1.5 rounded-full bg-pink-500/25" />
+        <div className="h-0.5 w-7 bg-foreground/10 rounded-full" />
+      </div>
+      <div className="h-2 w-full bg-pink-500/8 rounded flex items-center justify-center mt-auto">
+        <div className="h-0.5 w-5 bg-pink-500/20 rounded-full" />
+      </div>
+    </div>
+  ),
+  "Value Stack": (
+    <div className="w-full h-full flex flex-col gap-[2px] p-1 justify-center">
+      {[1,2,3,4].map(i => (
+        <div key={i} className="flex items-center gap-0.5">
+          <div className="w-1 h-1 rounded-full bg-primary/25 shrink-0" />
+          <div className="h-0.5 rounded-full bg-foreground/10" style={{ width: `${14 - i * 2}px` }} />
+        </div>
+      ))}
+    </div>
+  ),
+  System: (
+    <div className="w-full h-full flex flex-col p-1 gap-0.5">
+      <div className="flex items-center gap-0.5">
+        <div className="w-1 h-1 rounded bg-cyan-500/30" />
+        <div className="h-0.5 w-4 bg-foreground/10 rounded-full" />
+        <div className="ml-auto h-1 w-3 bg-emerald-500/20 rounded-full" />
+      </div>
+      <div className="flex-1 bg-cyan-500/5 rounded" />
+      <div className="h-0.5 w-8 bg-foreground/8 rounded-full" />
+    </div>
+  ),
+};
+
+function BlockListItem({ block: b, catColors }: { block: { name: string; category: string; component: string; usedIn: string[]; desc: string; icon: any; liveValue?: string | number }; catColors: Record<string, string> }) {
+  const [expanded, setExpanded] = useState(false);
+  const previewUrl = `${window.location.origin}${b.usedIn[0] || "/"}`;
+
+  return (
+    <div className="border border-border/30 rounded-xl bg-card/60 hover:border-border/50 transition-all group">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-secondary/20 transition-colors"
+      >
+        {/* Mini preview thumbnail */}
+        <div className="w-14 h-10 rounded-lg border border-border/40 bg-background overflow-hidden shrink-0 relative group-hover:border-primary/30 transition-colors">
+          {BLOCK_PREVIEWS[b.category] || BLOCK_PREVIEWS["Content"]}
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <b.icon className="w-3.5 h-3.5 text-primary shrink-0" />
+            <h3 className="text-xs font-bold text-foreground truncate">{b.name}</h3>
+            <Badge className={`text-[8px] px-1 py-0 leading-tight ${catColors[b.category] || "bg-secondary text-foreground border-border"}`}>
+              {b.category}
+            </Badge>
+          </div>
+          <p className="text-[10px] text-muted-foreground font-mono truncate mt-0.5">{b.component}</p>
+        </div>
+
+        {/* Live value + pages count */}
+        <div className="flex items-center gap-2 shrink-0">
+          {b.liveValue !== undefined && (
+            <Badge variant="outline" className="text-[8px] border-emerald-500/30 text-emerald-500 bg-emerald-500/5">
+              🟢 {b.liveValue}
+            </Badge>
+          )}
+          <span className="text-[9px] text-muted-foreground">{b.usedIn.length} {b.usedIn.length === 1 ? "page" : "pages"}</span>
+          {expanded ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
+        </div>
+      </button>
+
+      {/* Expanded detail */}
+      {expanded && (
+        <div className="border-t border-border/20 px-3 pb-3 pt-2 space-y-2">
+          <p className="text-[11px] text-muted-foreground leading-relaxed">{b.desc}</p>
+
+          {/* Pages used */}
+          <div className="flex flex-wrap gap-1.5 items-center">
+            <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">Used in:</span>
+            {b.usedIn.map(page => (
+              <button
+                key={page}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(`${window.location.origin}${page}`, "_blank");
+                }}
+                className="text-[9px] bg-primary/5 text-primary border border-primary/20 px-1.5 py-0.5 rounded-md hover:bg-primary/10 transition-colors flex items-center gap-0.5"
+              >
+                {page} <ExternalLink className="w-2.5 h-2.5" />
+              </button>
+            ))}
+          </div>
+
+          {/* Preview iframe */}
+          <div className="rounded-lg border border-border/30 overflow-hidden bg-background">
+            <div className="flex items-center justify-between px-2 py-1 bg-secondary/30 border-b border-border/20">
+              <span className="text-[9px] font-mono text-muted-foreground truncate">{b.usedIn[0] || "/"}</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(previewUrl, "_blank");
+                }}
+                className="text-[9px] text-primary hover:underline flex items-center gap-0.5"
+              >
+                Open <ExternalLink className="w-2.5 h-2.5" />
+              </button>
+            </div>
+            <div className="w-full h-32 relative">
+              <iframe
+                src={previewUrl}
+                className="w-[200%] h-[200%] origin-top-left scale-50 pointer-events-none"
+                title={`Preview: ${b.name}`}
+                loading="lazy"
+                sandbox="allow-scripts allow-same-origin"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 function IntelligentBlocksTab() {
   const admin = useClipperAdmin();
   const budget = useBudgetControl();
@@ -828,36 +1015,10 @@ function IntelligentBlocksTab() {
         </div>
       </div>
 
-      {/* Block Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      {/* Block List — smart preview */}
+      <div className="space-y-1.5">
         {filtered.map(b => (
-          <div key={b.name} className="bg-card border border-border/40 rounded-xl p-4 hover:border-primary/30 transition-colors group">
-            <div className="flex items-start gap-3 mb-2">
-              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <b.icon className="w-4 h-4 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <h3 className="text-sm font-bold text-foreground truncate">{b.name}</h3>
-                  <Badge className={`text-[9px] px-1.5 py-0 ${catColors[b.category] || "bg-secondary text-foreground border-border"}`}>
-                    {b.category}
-                  </Badge>
-                </div>
-                <p className="text-[10px] text-muted-foreground font-mono truncate">{b.component}</p>
-              </div>
-              {b.liveValue !== undefined && (
-                <Badge variant="outline" className="text-[9px] shrink-0 border-emerald-500/30 text-emerald-500 bg-emerald-500/5">
-                  🟢 {b.liveValue}
-                </Badge>
-              )}
-            </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">{b.desc}</p>
-            <div className="flex flex-wrap gap-1">
-              {b.usedIn.map(page => (
-                <span key={page} className="text-[9px] bg-secondary text-muted-foreground px-1.5 py-0.5 rounded-md">{page}</span>
-              ))}
-            </div>
-          </div>
+          <BlockListItem key={b.name} block={b} catColors={catColors} />
         ))}
       </div>
 
