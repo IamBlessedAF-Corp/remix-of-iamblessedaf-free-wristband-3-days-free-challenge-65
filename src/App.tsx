@@ -86,10 +86,7 @@ const App = () => (
           <Route path="/admin" element={<AdminHub />} />
 
           {/* Legacy admin redirects → unified /admin */}
-          <Route path="/admin/clippers" element={<Navigate to="/admin" replace />} />
-          <Route path="/admin/congrats" element={<Navigate to="/admin" replace />} />
-          <Route path="/admin/experts" element={<Navigate to="/admin" replace />} />
-          <Route path="/admin/links" element={<Navigate to="/admin" replace />} />
+          <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
           <Route path="/board" element={<Navigate to="/admin" replace />} />
           <Route path="/roadmap" element={<Navigate to="/admin" replace />} />
 
