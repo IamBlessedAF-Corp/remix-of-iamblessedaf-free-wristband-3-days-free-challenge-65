@@ -47,6 +47,7 @@ const TAB_ENTRIES = [
   { id: "affiliates", label: "Affiliate Tiers", icon: Target },
   { id: "referrals", label: "Referral Attribution Funnel", icon: Target },
   { id: "backups", label: "Backup Verification", icon: Shield },
+  { id: "errors", label: "Error Monitor", icon: ShieldAlert },
   { id: "waitlist", label: "Waitlist & Reposts", icon: ScrollText },
   { id: "roles", label: "Roles", icon: Shield },
   { id: "users", label: "Users", icon: Users },

@@ -1018,6 +1018,60 @@ export type Database = {
         }
         Relationships: []
       }
+      error_events: {
+        Row: {
+          component: string | null
+          created_at: string
+          fingerprint: string | null
+          id: string
+          level: string
+          message: string
+          metadata: Json | null
+          page_url: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          session_id: string | null
+          source: string
+          stack: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          component?: string | null
+          created_at?: string
+          fingerprint?: string | null
+          id?: string
+          level?: string
+          message: string
+          metadata?: Json | null
+          page_url?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          session_id?: string | null
+          source?: string
+          stack?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          component?: string | null
+          created_at?: string
+          fingerprint?: string | null
+          id?: string
+          level?: string
+          message?: string
+          metadata?: Json | null
+          page_url?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          session_id?: string | null
+          source?: string
+          stack?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       exit_intent_events: {
         Row: {
           created_at: string
