@@ -43,6 +43,7 @@ import SmsTab from "@/components/admin/SmsTab";
 import GamificationTab from "@/components/admin/GamificationTab";
 import AffiliatesTab from "@/components/admin/AffiliatesTab";
 import ReferralAttributionFunnel from "@/components/admin/ReferralAttributionFunnel";
+import BackupVerificationPanel from "@/components/admin/BackupVerificationPanel";
 import WaitlistTab from "@/components/admin/WaitlistTab";
 import RolesTab from "@/components/admin/RolesTab";
 import ChangelogTab from "@/components/admin/ChangelogTab";
@@ -57,7 +58,7 @@ const ALL_TAB_IDS = [
   "roadmap", "logs", "forecast", "fraud", "leaderboard",
   "alerts", "budget", "orders", "blessings", "challenge",
   "messaging", "copymanager", "sms", "gamification", "affiliates", "referrals", "waitlist", "roles", "users",
-  "integrations", "database", "auditlog",
+  "integrations", "database", "auditlog", "backups",
 ] as const;
 
 type TabId = typeof ALL_TAB_IDS[number];
@@ -130,6 +131,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
       { id: "board", label: "Board", icon: Kanban },
       { id: "logs", label: "Logs", icon: ScrollText },
       { id: "database", label: "Database", icon: Database },
+      { id: "backups", label: "Backup Verification", icon: ShieldAlert },
       { id: "auditlog", label: "Audit Log", icon: ScrollText },
       { id: "roles", label: "Roles", icon: Shield },
       { id: "users", label: "Users", icon: Users },
@@ -174,6 +176,7 @@ function TabContent({ tab }: { tab: TabId }) {
     case "integrations": return <IntegrationsTab />;
     case "database": return <DatabaseTab />;
     case "auditlog": return <AuditLogTab />;
+    case "backups": return <BackupVerificationPanel />;
     default: return null;
   }
 }

@@ -46,6 +46,7 @@ const TAB_ENTRIES = [
   { id: "gamification", label: "Gamification (BC)", icon: Award },
   { id: "affiliates", label: "Affiliate Tiers", icon: Target },
   { id: "referrals", label: "Referral Attribution Funnel", icon: Target },
+  { id: "backups", label: "Backup Verification", icon: Shield },
   { id: "waitlist", label: "Waitlist & Reposts", icon: ScrollText },
   { id: "roles", label: "Roles", icon: Shield },
   { id: "users", label: "Users", icon: Users },
