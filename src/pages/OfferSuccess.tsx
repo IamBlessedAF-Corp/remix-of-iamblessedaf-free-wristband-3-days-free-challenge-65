@@ -81,7 +81,12 @@ const OfferSuccess = () => {
       rewarded.current = true;
       rewardCheckout(tier);
       recordPurchase(tier);
-      setTimeout(() => setShowMystery(true), 2000);
+      if (isWristband22) {
+        // Skip mystery box and spinner — go straight to next upsell
+        setTimeout(() => proceedAfterMystery(), 1500);
+      } else {
+        setTimeout(() => setShowMystery(true), 2000);
+      }
     }
   }, [tier, rewardCheckout, recordPurchase]);
 
