@@ -45,6 +45,7 @@ import WaitlistTab from "@/components/admin/WaitlistTab";
 import RolesTab from "@/components/admin/RolesTab";
 import ChangelogTab from "@/components/admin/ChangelogTab";
 import BudgetControlTab from "@/components/admin/BudgetControlTab";
+import AuditLogTab from "@/components/admin/tabs/AuditLogTab";
 import GlobalSearchModal from "@/components/admin/GlobalSearchModal";
 
 // ─── Tab definitions ───
@@ -54,7 +55,7 @@ const ALL_TAB_IDS = [
   "roadmap", "logs", "forecast", "fraud", "leaderboard",
   "alerts", "budget", "orders", "blessings", "challenge",
   "messaging", "copymanager", "sms", "gamification", "affiliates", "waitlist", "roles", "users",
-  "integrations", "database",
+  "integrations", "database", "auditlog",
 ] as const;
 
 type TabId = typeof ALL_TAB_IDS[number];
@@ -125,6 +126,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
       { id: "board", label: "Board", icon: Kanban },
       { id: "logs", label: "Logs", icon: ScrollText },
       { id: "database", label: "Database", icon: Database },
+      { id: "auditlog", label: "Audit Log", icon: ScrollText },
       { id: "roles", label: "Roles", icon: Shield },
       { id: "users", label: "Users", icon: Users },
       { id: "integrations", label: "Integrations & API", icon: Globe },
@@ -165,6 +167,7 @@ function TabContent({ tab }: { tab: TabId }) {
     case "users": return <UserManagementTab />;
     case "integrations": return <IntegrationsTab />;
     case "database": return <DatabaseTab />;
+    case "auditlog": return <AuditLogTab />;
     default: return null;
   }
 }
