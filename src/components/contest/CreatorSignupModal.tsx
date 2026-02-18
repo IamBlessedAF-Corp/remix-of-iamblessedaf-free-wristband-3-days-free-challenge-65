@@ -13,6 +13,7 @@ const signupSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required").max(50),
   email: z.string().trim().email("Please enter a valid email").max(255),
   password: z.string().min(6, "Password must be at least 6 characters").max(100),
+  referralCode: z.string().trim().max(20).optional(),
 });
 
 interface CreatorSignupModalProps {
@@ -42,6 +43,9 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [referralCodeInput, setReferralCodeInput] = useState(
+    () => sessionStorage.getItem("referral_code") || localStorage.getItem("referral_code") || ""
+  );
   const [otpCode, setOtpCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ firstName?: string; email?: string; password?: string }>({});
@@ -52,9 +56,12 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
   // Write referral attribution to creator_profiles after any successful auth
   // Resolves the referral code → referrer's user_id and stores both
   const writeReferralAttribution = async (userId: string) => {
-    const refCode = sessionStorage.getItem("referral_code") || localStorage.getItem("referral_code");
+    const refCode = referralCodeInput.trim() || sessionStorage.getItem("referral_code") || localStorage.getItem("referral_code");
     if (!refCode) return;
     try {
+      // Store in sessionStorage so ChallengeThanks can use it at profile creation
+      sessionStorage.setItem("referral_code", refCode);
+
       // Look up the referrer's user_id from their referral_code
       const { data: referrer } = await supabase
         .from("creator_profiles")
@@ -67,13 +74,19 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
         updatePayload.referred_by_user_id = referrer.user_id;
       }
 
-      await supabase
+      // Try to update existing profile; if none exists yet, the code stays in sessionStorage
+      // and ChallengeThanks will include it at profile creation time
+      const { data: updated } = await supabase
         .from("creator_profiles")
         .update(updatePayload)
-        .eq("user_id", userId);
+        .eq("user_id", userId)
+        .select("id")
+        .maybeSingle();
 
-      sessionStorage.removeItem("referral_code");
-      localStorage.removeItem("referral_code");
+      if (updated) {
+        sessionStorage.removeItem("referral_code");
+        localStorage.removeItem("referral_code");
+      }
     } catch (_) {}
   };
 
@@ -93,7 +106,7 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
 
   const handleSendOtp = async () => {
     setErrors({});
-    const validateObj = { firstName, email, password };
+    const validateObj = { firstName, email, password, referralCode: referralCodeInput || undefined };
     const result = signupSchema.safeParse(validateObj);
     if (!result.success) {
       const fieldErrors: typeof errors = {};
@@ -298,7 +311,22 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                     <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10 h-12" disabled={isLoading} />
+                </div>
+                {mode === "signup" && (
+                  <div>
+                    <div className="relative">
+                      <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        placeholder="Referral code (optional)"
+                        value={referralCodeInput}
+                        onChange={(e) => setReferralCodeInput(e.target.value.toUpperCase())}
+                        className="pl-10 h-12 uppercase"
+                        disabled={isLoading}
+                        maxLength={20}
+                      />
+                    </div>
                   </div>
+                )}
                   {errors.password && <p className="text-sm text-destructive mt-1">{errors.password}</p>}
                 </div>
                 <Button type="submit" className="w-full h-12 bg-primary hover:bg-primary/90" disabled={isLoading}>
