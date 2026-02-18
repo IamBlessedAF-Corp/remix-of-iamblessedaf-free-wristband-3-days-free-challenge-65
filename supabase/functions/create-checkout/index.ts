@@ -185,6 +185,22 @@ serve(async (req) => {
 
     const session = await stripe.checkout.sessions.create(sessionParams);
 
+    // Log checkout start for abandonment recovery
+    try {
+      const supabaseAdmin = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      );
+      await supabaseAdmin.from("abandoned_carts").insert({
+        stripe_session_id: session.id,
+        tier,
+        customer_email: customerEmail || null,
+        status: "pending",
+      });
+    } catch (e) {
+      console.error("[create-checkout] Failed to log abandoned cart:", e);
+    }
+
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
