@@ -1242,6 +1242,51 @@ export type Database = {
           },
         ]
       }
+      intelligent_blocks: {
+        Row: {
+          category: string
+          component: string
+          created_at: string
+          description: string
+          icon_name: string
+          id: string
+          is_active: boolean
+          live_value_query: string | null
+          name: string
+          sort_order: number
+          updated_at: string
+          used_in: string[]
+        }
+        Insert: {
+          category: string
+          component: string
+          created_at?: string
+          description?: string
+          icon_name?: string
+          id?: string
+          is_active?: boolean
+          live_value_query?: string | null
+          name: string
+          sort_order?: number
+          updated_at?: string
+          used_in?: string[]
+        }
+        Update: {
+          category?: string
+          component?: string
+          created_at?: string
+          description?: string
+          icon_name?: string
+          id?: string
+          is_active?: boolean
+          live_value_query?: string | null
+          name?: string
+          sort_order?: number
+          updated_at?: string
+          used_in?: string[]
+        }
+        Relationships: []
+      }
       link_clicks: {
         Row: {
           browser: string | null
@@ -1493,6 +1538,45 @@ export type Database = {
           id?: string
           item_title?: string
           phase?: string
+        }
+        Relationships: []
+      }
+      roadmap_items: {
+        Row: {
+          created_at: string
+          detail: string
+          id: string
+          is_active: boolean
+          phase: string
+          priority: string
+          prompt: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string
+          id?: string
+          is_active?: boolean
+          phase: string
+          priority?: string
+          prompt?: string | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string
+          id?: string
+          is_active?: boolean
+          phase?: string
+          priority?: string
+          prompt?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
