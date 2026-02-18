@@ -26,11 +26,16 @@ export async function uploadScreenshotFile(
     return null;
   }
 
-  const { data: urlData } = supabase.storage
+  const { data: urlData, error: signError } = await supabase.storage
     .from(BUCKET)
-    .getPublicUrl(path);
+    .createSignedUrl(path, 86400 * 7); // 7-day expiry
 
-  return urlData.publicUrl;
+  if (signError || !urlData?.signedUrl) {
+    console.error("Signed URL error:", signError);
+    return null;
+  }
+
+  return urlData.signedUrl;
 }
 
 /**
