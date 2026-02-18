@@ -83,6 +83,45 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_verifications: {
+        Row: {
+          alert_sent: boolean
+          anomalies: Json
+          duration_ms: number
+          id: string
+          notes: string | null
+          status: string
+          table_details: Json
+          total_rows_snapshot: number
+          total_tables_checked: number
+          verified_at: string
+        }
+        Insert: {
+          alert_sent?: boolean
+          anomalies?: Json
+          duration_ms?: number
+          id?: string
+          notes?: string | null
+          status?: string
+          table_details?: Json
+          total_rows_snapshot?: number
+          total_tables_checked?: number
+          verified_at?: string
+        }
+        Update: {
+          alert_sent?: boolean
+          anomalies?: Json
+          duration_ms?: number
+          id?: string
+          notes?: string | null
+          status?: string
+          table_details?: Json
+          total_rows_snapshot?: number
+          total_tables_checked?: number
+          verified_at?: string
+        }
+        Relationships: []
+      }
       bc_redemptions: {
         Row: {
           cost_bc: number
