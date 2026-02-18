@@ -1,8 +1,5 @@
 import { useState } from "react";
-import { useClipperAdmin } from "@/hooks/useClipperAdmin";
-import { useBudgetControl } from "@/hooks/useBudgetControl";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useIntelligentBlocks, type IntelligentBlock } from "@/hooks/useIntelligentBlocks";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -11,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   ExternalLink, ChevronDown, ChevronRight, Maximize2, Copy, Trash2,
-  Pencil, Save, X, Globe, FileText,
+  Pencil, Save, X, Globe, FileText, RefreshCw,
+  ScrollText, Brain, Flame, Zap, Award, Users, Settings, DollarSign, Eye, Target,
+  BarChart3, ShieldAlert, Clock, AlertTriangle, AlertCircle, TrendingUp, Gauge, Trophy, CreditCard,
 } from "lucide-react";
-import { getBlocks, BLOCK_CATEGORY_COLORS, type BlockDef } from "@/data/intelligentBlocks";
 import SmartTagBadge from "@/components/admin/SmartTagBadge";
 import { toast } from "sonner";
 import {
@@ -21,7 +19,23 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-/** Map block component field → actual key in BlockPreview COMPONENT_MAP */
+const ICON_MAP: Record<string, any> = {
+  ScrollText, Brain, Flame, Zap, Award, Users, Settings, DollarSign, Eye, Target,
+  BarChart3, ShieldAlert, Clock, AlertTriangle, AlertCircle, TrendingUp, Gauge, Trophy, CreditCard,
+};
+
+const BLOCK_CATEGORY_COLORS: Record<string, string> = {
+  Content: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+  Product: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+  CTA: "bg-primary/10 text-primary border-primary/20",
+  Hero: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+  Trust: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+  Urgency: "bg-red-500/10 text-red-500 border-red-500/20",
+  Viral: "bg-pink-500/10 text-pink-500 border-pink-500/20",
+  "Value Stack": "bg-orange-500/10 text-orange-500 border-orange-500/20",
+  System: "bg-cyan-500/10 text-cyan-500 border-cyan-500/20",
+};
+
 const PREVIEW_COMPONENT_MAP: Record<string, string> = {
   "GrokQuotesSection / GptQuotesSection": "GrokQuotesSection",
   "Inline <img> hawkins-scale.jpg": "",
@@ -33,30 +47,29 @@ const PREVIEW_COMPONENT_MAP: Record<string, string> = {
 };
 
 function resolvePreviewComponent(comp: string): string {
-  // Direct map override
   if (PREVIEW_COMPONENT_MAP[comp] !== undefined) return PREVIEW_COMPONENT_MAP[comp];
-  // Extract first valid component name
   const name = comp.split("/")[0].split("(")[0].replace(/\s/g, "").replace("Inline", "").trim();
   return name;
 }
 
 function BlockListItem({
   block: b,
-  catColors,
   onDuplicate,
   onRemove,
+  onUpdateDesc,
 }: {
-  block: BlockDef;
-  catColors: Record<string, string>;
-  onDuplicate: (block: BlockDef) => void;
-  onRemove: (block: BlockDef) => void;
+  block: IntelligentBlock;
+  onDuplicate: (block: IntelligentBlock) => void;
+  onRemove: (block: IntelligentBlock) => void;
+  onUpdateDesc: (id: string, desc: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [editingCopy, setEditingCopy] = useState(false);
-  const [copyText, setCopyText] = useState(b.desc);
+  const [copyText, setCopyText] = useState(b.description);
   const compName = resolvePreviewComponent(b.component);
   const hasPreview = compName.length > 0;
   const previewUrl = hasPreview ? `/block-preview?component=${encodeURIComponent(compName)}` : "";
+  const IconComp = ICON_MAP[b.icon_name] || Zap;
 
   return (
     <div className="border border-border/30 rounded-xl bg-card/60 hover:border-border/50 transition-all group">
@@ -64,16 +77,15 @@ function BlockListItem({
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-4 px-4 py-3 text-left hover:bg-secondary/20 transition-colors"
       >
-        {/* Lightweight thumbnail — NO iframe until expanded */}
         <div className="w-[140px] h-[90px] rounded-lg border border-border/40 bg-secondary/20 overflow-hidden shrink-0 flex items-center justify-center">
           {hasPreview ? (
             <div className="text-center">
-              <b.icon className="w-6 h-6 text-primary/40 mx-auto mb-1" />
+              <IconComp className="w-6 h-6 text-primary/40 mx-auto mb-1" />
               <span className="text-[8px] text-muted-foreground font-mono">{compName}</span>
             </div>
           ) : (
             <div className="text-center">
-              <b.icon className="w-6 h-6 text-muted-foreground/30 mx-auto mb-1" />
+              <IconComp className="w-6 h-6 text-muted-foreground/30 mx-auto mb-1" />
               <span className="text-[8px] text-muted-foreground/50">Inline</span>
             </div>
           )}
@@ -81,36 +93,32 @@ function BlockListItem({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <b.icon className="w-4 h-4 text-primary shrink-0" />
+            <IconComp className="w-4 h-4 text-primary shrink-0" />
             <h3 className="text-sm font-bold text-foreground truncate">{b.name}</h3>
-            <Badge className={`text-[9px] px-1.5 py-0.5 leading-tight ${catColors[b.category] || "bg-secondary text-foreground border-border"}`}>
+            <Badge className={`text-[9px] px-1.5 py-0.5 leading-tight ${BLOCK_CATEGORY_COLORS[b.category] || "bg-secondary text-foreground border-border"}`}>
               {b.category}
             </Badge>
           </div>
           <p className="text-[11px] text-muted-foreground font-mono truncate mt-1">{b.component}</p>
-          <p className="text-[10px] text-muted-foreground mt-1 line-clamp-2">{b.desc}</p>
+          <p className="text-[10px] text-muted-foreground mt-1 line-clamp-2">{b.description}</p>
           <div className="flex gap-1 mt-2">
-            {b.usedIn.slice(0, 3).map(page => (
+            {b.used_in.slice(0, 3).map(page => (
               <Badge key={page} variant="outline" className="text-[8px] px-1 py-0 bg-secondary/30">{page}</Badge>
             ))}
-            {b.usedIn.length > 3 && <Badge variant="outline" className="text-[8px] px-1 py-0">+{b.usedIn.length - 3}</Badge>}
+            {b.used_in.length > 3 && <Badge variant="outline" className="text-[8px] px-1 py-0">+{b.used_in.length - 3}</Badge>}
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {b.liveValue !== undefined && (
-            <SmartTagBadge tag={`${b.liveValue}`} className="border-emerald-500/30 text-emerald-500 bg-emerald-500/5" />
-          )}
           {expanded ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
         </div>
       </button>
 
       {expanded && (
         <div className="border-t border-border/20 px-4 pb-4 pt-3 space-y-3">
-          {/* Pages + Smart Tags */}
           <div className="flex flex-wrap gap-1.5 items-center">
             <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">Used in:</span>
-            {b.usedIn.map(page => (
+            {b.used_in.map(page => (
               <button key={page} onClick={(e) => { e.stopPropagation(); window.open(`${window.location.origin}${page}`, "_blank"); }}
                 className="text-[9px] bg-primary/5 text-primary border border-primary/20 px-1.5 py-0.5 rounded-md hover:bg-primary/10 transition-colors flex items-center gap-0.5">
                 {page} <ExternalLink className="w-2.5 h-2.5" />
@@ -118,13 +126,10 @@ function BlockListItem({
             ))}
           </div>
 
-          {/* Smart tags row */}
           <div className="flex flex-wrap gap-1.5" onClick={e => e.stopPropagation()}>
             <SmartTagBadge tag={b.category} />
-            {b.liveValue !== undefined && <SmartTagBadge tag={`${b.liveValue}`} />}
           </div>
 
-          {/* Copy Editor */}
           <div className="bg-secondary/20 rounded-lg p-3 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">Descripción / Copy</span>
@@ -138,10 +143,10 @@ function BlockListItem({
               <div className="space-y-2">
                 <Textarea value={copyText} onChange={e => setCopyText(e.target.value)} className="text-xs min-h-[60px]" />
                 <div className="flex gap-1.5">
-                  <Button size="sm" className="h-6 text-[10px] gap-1" onClick={() => { setEditingCopy(false); toast.success("Descripción actualizada"); }}>
+                  <Button size="sm" className="h-6 text-[10px] gap-1" onClick={() => { setEditingCopy(false); onUpdateDesc(b.id, copyText); }}>
                     <Save className="w-3 h-3" /> Guardar
                   </Button>
-                  <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => { setEditingCopy(false); setCopyText(b.desc); }}>
+                  <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => { setEditingCopy(false); setCopyText(b.description); }}>
                     <X className="w-3 h-3" />
                   </Button>
                 </div>
@@ -151,7 +156,6 @@ function BlockListItem({
             )}
           </div>
 
-          {/* Actions */}
           <div className="flex items-center gap-2 pt-1">
             <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1" onClick={(e) => { e.stopPropagation(); onDuplicate(b); }}>
               <Copy className="w-3 h-3" /> Duplicar
@@ -166,7 +170,7 @@ function BlockListItem({
                 <AlertDialogHeader>
                   <AlertDialogTitle>¿Remover "{b.name}"?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Este bloque se usa en {b.usedIn.length} página(s): {b.usedIn.join(", ")}.
+                    Este bloque se usa en {b.used_in.length} página(s): {b.used_in.join(", ")}.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -177,7 +181,6 @@ function BlockListItem({
             </AlertDialog>
           </div>
 
-          {/* Full preview — only loads iframe when expanded */}
           {hasPreview && (
             <div className="rounded-xl border border-border/30 overflow-hidden bg-background">
               <div className="flex items-center justify-between px-3 py-2 bg-secondary/30 border-b border-border/20">
@@ -196,7 +199,7 @@ function BlockListItem({
 
           {!hasPreview && (
             <div className="rounded-lg border border-border/20 bg-secondary/10 px-4 py-6 text-center">
-              <b.icon className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+              <IconComp className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
               <p className="text-[11px] text-muted-foreground">Inline component — no se puede previsualizar de forma aislada</p>
             </div>
           )}
@@ -207,83 +210,44 @@ function BlockListItem({
 }
 
 export default function IntelligentBlocksTab() {
-  const admin = useClipperAdmin();
-  const budget = useBudgetControl();
+  const { blocks, isLoading, updateBlock, duplicateBlock, deleteBlock } = useIntelligentBlocks();
   const [filterCat, setFilterCat] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<"category" | "page">("category");
-  const [hiddenBlocks, setHiddenBlocks] = useState<Set<string>>(new Set());
-  const [duplicatedBlocks, setDuplicatedBlocks] = useState<BlockDef[]>([]);
 
-  const { data: activityCount } = useQuery({
-    queryKey: ["portal-activity-count"],
-    queryFn: async () => {
-      const { count } = await supabase.from("portal_activity").select("*", { count: "exact", head: true });
-      return count || 0;
-    },
-  });
-
-  const { data: orderCount } = useQuery({
-    queryKey: ["orders-count-blocks"],
-    queryFn: async () => {
-      const { count } = await supabase.from("orders").select("*", { count: "exact", head: true });
-      return count || 0;
-    },
-  });
-
-  const baseBlocks = getBlocks({
-    activatedClips: admin.clips.filter(c => c.status === "verified").length,
-    totalClips: admin.clips.length,
-    clippersCount: admin.clippers.length,
-    earnersCount: admin.clippers.filter(c => c.totalEarningsCents > 0).length,
-    throttledSegs: budget.segmentCycles.filter(sc => sc.status === "killed" || sc.status === "throttled").length,
-    totalSegs: budget.segments.length,
-    pendingClips: admin.clips.filter(c => c.status === "pending").length,
-    cycleStatus: budget.cycle?.status || "none",
-    segmentCyclesCount: budget.segmentCycles.length,
-    approvedSegCycles: budget.segmentCycles.filter(sc => sc.status === "approved").length,
-    activityCount: activityCount || 0,
-    orderCount: orderCount || 0,
-  });
-
-  const blocks = [...baseBlocks, ...duplicatedBlocks].filter(b => !hiddenBlocks.has(b.name));
-
-  const handleDuplicate = (block: BlockDef) => {
-    const dup = { ...block, name: `${block.name} (Copy)` };
-    setDuplicatedBlocks(prev => [...prev, dup]);
-    toast.success(`Bloque "${block.name}" duplicado`);
-  };
-
-  const handleRemove = (block: BlockDef) => {
-    setHiddenBlocks(prev => new Set([...prev, block.name]));
-    toast.success(`Bloque "${block.name}" removido`);
-  };
+  if (isLoading) {
+    return <div className="flex justify-center py-20"><RefreshCw className="w-6 h-6 animate-spin text-primary" /></div>;
+  }
 
   const categories = ["all", ...Array.from(new Set(blocks.map(b => b.category)))];
   const filtered = blocks.filter(b => {
     if (filterCat !== "all" && b.category !== filterCat) return false;
-    if (search && !b.name.toLowerCase().includes(search.toLowerCase()) && !b.desc.toLowerCase().includes(search.toLowerCase())) return false;
+    if (search && !b.name.toLowerCase().includes(search.toLowerCase()) && !b.description.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
-  const pageMap = new Map<string, BlockDef[]>();
+  const pageMap = new Map<string, IntelligentBlock[]>();
   filtered.forEach(b => {
-    b.usedIn.forEach(page => {
+    b.used_in.forEach(page => {
       if (!pageMap.has(page)) pageMap.set(page, []);
       pageMap.get(page)!.push(b);
     });
   });
   const pageGroups = Array.from(pageMap.entries()).sort((a, b) => b[1].length - a[1].length);
 
+  const handleDuplicate = (block: IntelligentBlock) => duplicateBlock.mutate(block);
+  const handleRemove = (block: IntelligentBlock) => deleteBlock.mutate(block.id);
+  const handleUpdateDesc = (id: string, desc: string) => updateBlock.mutate({ id, description: desc });
+
   return (
     <div className="space-y-6">
       <AdminSectionDashboard
         title="Intelligent Blocks Registry"
-        description={`${blocks.length} reusable components across the funnel`}
+        description={`${blocks.length} reusable components across the funnel — live from database`}
         kpis={[
           { label: "Total Blocks", value: blocks.length },
           { label: "Categories", value: categories.length - 1 },
-          { label: "Pages", value: Array.from(new Set(blocks.flatMap(b => b.usedIn))).length },
+          { label: "Pages", value: Array.from(new Set(blocks.flatMap(b => b.used_in))).length },
           { label: "With Preview", value: blocks.filter(b => resolvePreviewComponent(b.component).length > 0).length },
         ]}
         charts={[
@@ -291,7 +255,6 @@ export default function IntelligentBlocksTab() {
         ]}
       />
 
-      {/* Controls */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center bg-secondary/50 rounded-lg p-0.5 mr-2">
           <button onClick={() => setViewMode("category")}
@@ -318,19 +281,18 @@ export default function IntelligentBlocksTab() {
         </div>
       </div>
 
-      {/* Block List */}
       {viewMode === "category" ? (
         <div className="space-y-2">
           {filtered.map(b => (
-            <BlockListItem key={b.name} block={b} catColors={BLOCK_CATEGORY_COLORS}
-              onDuplicate={handleDuplicate} onRemove={handleRemove} />
+            <BlockListItem key={b.id} block={b}
+              onDuplicate={handleDuplicate} onRemove={handleRemove} onUpdateDesc={handleUpdateDesc} />
           ))}
         </div>
       ) : (
         <div className="space-y-4">
           {pageGroups.map(([page, pageBlocks]) => (
-            <PageBlockGroup key={page} page={page} blocks={pageBlocks} catColors={BLOCK_CATEGORY_COLORS}
-              onDuplicate={handleDuplicate} onRemove={handleRemove} />
+            <PageBlockGroup key={page} page={page} blocks={pageBlocks}
+              onDuplicate={handleDuplicate} onRemove={handleRemove} onUpdateDesc={handleUpdateDesc} />
           ))}
         </div>
       )}
@@ -341,10 +303,10 @@ export default function IntelligentBlocksTab() {
 }
 
 function PageBlockGroup({
-  page, blocks, catColors, onDuplicate, onRemove,
+  page, blocks, onDuplicate, onRemove, onUpdateDesc,
 }: {
-  page: string; blocks: BlockDef[]; catColors: Record<string, string>;
-  onDuplicate: (b: BlockDef) => void; onRemove: (b: BlockDef) => void;
+  page: string; blocks: IntelligentBlock[];
+  onDuplicate: (b: IntelligentBlock) => void; onRemove: (b: IntelligentBlock) => void; onUpdateDesc: (id: string, desc: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const isRoute = page.startsWith("/");
@@ -364,8 +326,8 @@ function PageBlockGroup({
       {expanded && (
         <div className="space-y-2 pl-4">
           {blocks.map(b => (
-            <BlockListItem key={b.name} block={b} catColors={catColors}
-              onDuplicate={onDuplicate} onRemove={onRemove} />
+            <BlockListItem key={b.id} block={b}
+              onDuplicate={onDuplicate} onRemove={onRemove} onUpdateDesc={onUpdateDesc} />
           ))}
         </div>
       )}

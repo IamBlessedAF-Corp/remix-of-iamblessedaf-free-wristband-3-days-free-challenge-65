@@ -1,13 +1,15 @@
 import { useState, useMemo } from "react";
 import { useBoard } from "@/hooks/useBoard";
 import { useRoadmapCompletions } from "@/hooks/useRoadmapCompletions";
+import { useRoadmapItems } from "@/hooks/useRoadmapItems";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
-import { PHASE_NEXT_STEPS, type NextStepItem } from "@/data/roadmapNextSteps";
 import RoadmapSearchBar, { type RoadmapFilters } from "@/components/roadmap/RoadmapSearchBar";
 import RoadmapItemActions from "@/components/roadmap/RoadmapItemActions";
 import BulkSendToBoard from "@/components/roadmap/BulkSendToBoard";
-import { ChevronDown, ChevronRight, CheckCircle2, Circle, Trophy, Flame, Target } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronRight, CheckCircle2, Circle, Trophy, RefreshCw, Database } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 
 const PHASE_LABELS: Record<string, string> = {
   foundation: "🏗️ Foundation & Security",
@@ -31,41 +33,37 @@ const PRIORITY_COLORS: Record<string, string> = {
 export default function RoadmapTab() {
   const board = useBoard();
   const { isCompleted, markDone, unmarkDone, completions } = useRoadmapCompletions();
+  const { items: roadmapItems, byPhase, isLoading, isFromDb, seedFromStatic } = useRoadmapItems();
   const [openPhases, setOpenPhases] = useState<Record<string, boolean>>({});
   const [filters, setFilters] = useState<RoadmapFilters>({ keyword: "", status: "", priority: "" });
 
-  const allItems = useMemo(() => {
-    return Object.entries(PHASE_NEXT_STEPS).flatMap(([phase, items]) =>
-      items.map(item => ({ ...item, phase }))
-    );
-  }, []);
-
-  const totalRoadmapItems = allItems.length;
+  const totalRoadmapItems = roadmapItems.length;
   const totalCompleted = completions.length;
   const overallPct = totalRoadmapItems > 0 ? Math.round((totalCompleted / totalRoadmapItems) * 100) : 0;
 
-  /** Per-phase completion stats */
   const phaseStats = useMemo(() => {
     const stats: Record<string, { total: number; done: number; pct: number }> = {};
-    for (const [phase, items] of Object.entries(PHASE_NEXT_STEPS)) {
+    for (const [phase, items] of Object.entries(byPhase)) {
       const done = items.filter(i => isCompleted(phase, i.title)).length;
       stats[phase] = { total: items.length, done, pct: items.length > 0 ? Math.round((done / items.length) * 100) : 0 };
     }
     return stats;
-  }, [isCompleted, completions]);
+  }, [byPhase, isCompleted, completions]);
+
+  const allItemsWithPhase = roadmapItems.map(item => ({ ...item, phase: item.phase }));
 
   const filtered = useMemo(() => {
-    return allItems.filter(item => {
+    return allItemsWithPhase.filter(item => {
       if (filters.keyword && !`${item.title} ${item.detail}`.toLowerCase().includes(filters.keyword.toLowerCase())) return false;
       if (filters.priority && item.priority !== filters.priority) return false;
       if (filters.status === "done" && !isCompleted(item.phase, item.title)) return false;
       if (filters.status === "pending" && isCompleted(item.phase, item.title)) return false;
       return true;
     });
-  }, [allItems, filters, isCompleted]);
+  }, [allItemsWithPhase, filters, isCompleted]);
 
-  const criticalRemaining = allItems.filter(i => i.priority === "critical" && !isCompleted(i.phase, i.title)).length;
-  const highRemaining = allItems.filter(i => i.priority === "high" && !isCompleted(i.phase, i.title)).length;
+  const criticalRemaining = allItemsWithPhase.filter(i => i.priority === "critical" && !isCompleted(i.phase, i.title)).length;
+  const highRemaining = allItemsWithPhase.filter(i => i.priority === "high" && !isCompleted(i.phase, i.title)).length;
 
   const togglePhase = (phase: string) => setOpenPhases(prev => ({ ...prev, [phase]: !prev[phase] }));
 
@@ -74,8 +72,33 @@ export default function RoadmapTab() {
     value: board.cards.filter(c => c.column_id === col.id).length,
   }));
 
+  if (isLoading) {
+    return <div className="flex justify-center py-20"><RefreshCw className="w-6 h-6 animate-spin text-primary" /></div>;
+  }
+
   return (
     <div className="space-y-6">
+      {/* Seed banner */}
+      {!isFromDb && (
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Database className="w-4 h-4 text-amber-500" />
+            <span className="text-xs text-amber-500 font-medium">Roadmap is using static file. Seed to database for full CRUD.</span>
+          </div>
+          <Button size="sm" variant="outline" className="h-7 text-xs border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
+            onClick={() => seedFromStatic.mutate()} disabled={seedFromStatic.isPending}>
+            {seedFromStatic.isPending ? <RefreshCw className="w-3 h-3 animate-spin mr-1" /> : null}
+            Seed to DB
+          </Button>
+        </div>
+      )}
+
+      {isFromDb && (
+        <Badge variant="outline" className="text-[9px] border-emerald-500/30 text-emerald-500">
+          ✅ Live from database
+        </Badge>
+      )}
+
       {/* Overall Progress Header */}
       <div className="bg-card border border-border/40 rounded-xl p-5">
         <div className="flex items-center justify-between mb-3">
@@ -100,7 +123,7 @@ export default function RoadmapTab() {
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">High Left</p>
           </div>
           <div className="bg-secondary/30 rounded-lg p-3 text-center">
-            <p className="text-lg font-bold text-foreground">{Object.keys(PHASE_NEXT_STEPS).length}</p>
+            <p className="text-lg font-bold text-foreground">{Object.keys(byPhase).length}</p>
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Phases</p>
           </div>
         </div>
@@ -108,13 +131,14 @@ export default function RoadmapTab() {
 
       {/* Phase Completion Overview Grid */}
       <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
-        {Object.entries(PHASE_NEXT_STEPS).map(([phase]) => {
+        {Object.entries(byPhase).map(([phase]) => {
           const s = phaseStats[phase];
+          if (!s) return null;
           const emoji = PHASE_LABELS[phase]?.split(" ")[0] || "📋";
           return (
             <button
               key={phase}
-              onClick={() => { setOpenPhases(prev => ({ ...prev, [phase]: true })); }}
+              onClick={() => setOpenPhases(prev => ({ ...prev, [phase]: true }))}
               className="bg-card border border-border/30 rounded-lg p-2.5 text-center hover:bg-secondary/30 transition-colors group"
             >
               <span className="text-lg">{emoji}</span>
@@ -141,14 +165,15 @@ export default function RoadmapTab() {
         charts={[{ type: "bar", title: "Items per Stage", data: colGroups }]}
       />
 
-      <RoadmapSearchBar filters={filters} onChange={setFilters} matchCount={filtered.length} totalCount={allItems.length} />
+      <RoadmapSearchBar filters={filters} onChange={setFilters} matchCount={filtered.length} totalCount={allItemsWithPhase.length} />
 
       <div className="space-y-2">
-        {Object.entries(PHASE_NEXT_STEPS).map(([phase, items]) => {
+        {Object.entries(byPhase).map(([phase, items]) => {
           const phaseItems = filtered.filter(i => i.phase === phase);
           if (phaseItems.length === 0) return null;
           const isOpen = openPhases[phase] ?? false;
           const s = phaseStats[phase];
+          if (!s) return null;
           return (
             <div key={phase} className="border border-border/40 rounded-lg overflow-hidden">
               <button onClick={() => togglePhase(phase)} className="w-full flex items-center justify-between px-4 py-3 bg-card hover:bg-secondary/30 transition-colors">
@@ -171,7 +196,7 @@ export default function RoadmapTab() {
                   {phaseItems.map((item, idx) => {
                     const done = isCompleted(item.phase, item.title);
                     return (
-                      <div key={idx} className={`px-4 py-2.5 flex items-start gap-3 hover:bg-secondary/20 transition-colors ${done ? "opacity-50" : ""}`}>
+                      <div key={item.id || idx} className={`px-4 py-2.5 flex items-start gap-3 hover:bg-secondary/20 transition-colors ${done ? "opacity-50" : ""}`}>
                         <button
                           onClick={() => done ? unmarkDone.mutate({ title: item.title, phase: item.phase }) : markDone.mutate({ title: item.title, phase: item.phase })}
                           className="mt-0.5 shrink-0"
