@@ -3,6 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -39,7 +44,7 @@ function getTagInfo(tag: string): TagInfo {
   if (t === "value stack") return { explanation: "Value Stack: lista visual de beneficios con precio tachado. Ancla el valor percibido vs precio real.", editable: [] };
   if (t === "system") return { explanation: "Bloque de sistema: componente conectado a datos en tiempo real (clips, payouts, actividad). Se actualiza automáticamente.", editable: [] };
 
-  // ─── Live value patterns (e.g. "3 quotes × 3 variants", "0 orders", "27× multiplier") ───
+  // ─── Live value patterns ───
   if (t.includes("orders")) {
     const num = t.match(/(\d+)/)?.[1] || "0";
     return { explanation: `${num} órdenes registradas en la base de datos. Este bloque se usa en páginas de producto.`, editable: [] };
@@ -162,10 +167,64 @@ export default function SmartTagBadge({ tag, className, onEdit }: SmartTagBadgeP
   const [isEditing, setIsEditing] = useState(false);
   const info = getTagInfo(tag);
   const Icon = getTagIcon(tag);
+  const hasEditableFields = info.editable && info.editable.length > 0 && onEdit;
 
+  // If editable, use Popover (click-based) so user can interact with edit fields
+  if (hasEditableFields) {
+    return (
+      <Popover>
+        <PopoverTrigger asChild>
+          <Badge
+            variant="outline"
+            className={cn(
+              "text-[9px] gap-1 cursor-pointer hover:bg-primary/10 hover:border-primary/30 transition-colors",
+              className
+            )}
+          >
+            <Icon className="w-2.5 h-2.5" />
+            {tag}
+          </Badge>
+        </PopoverTrigger>
+        <PopoverContent className="w-72 p-0 z-50" align="start" side="top">
+          <div className="p-3 space-y-2.5">
+            <div className="flex items-start gap-2">
+              <Icon className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <p className="text-[11px] text-foreground/90 leading-relaxed">{info.explanation}</p>
+            </div>
+            <div className="border-t border-border/20 pt-2 space-y-2">
+              {!isEditing ? (
+                <Button size="sm" variant="ghost" className="h-6 text-[10px] gap-1 w-full justify-start text-muted-foreground hover:text-foreground" onClick={() => setIsEditing(true)}>
+                  <Pencil className="w-3 h-3" /> Editar configuración
+                </Button>
+              ) : (
+                <div className="space-y-2">
+                  {info.editable!.map(ed => (
+                    <div key={ed.field} className="space-y-1">
+                      <label className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">{ed.label}</label>
+                      <Input className="h-7 text-[11px]" placeholder={tag} value={editValues[ed.field] || ""} onChange={(e) => setEditValues(prev => ({ ...prev, [ed.field]: e.target.value }))} />
+                    </div>
+                  ))}
+                  <div className="flex gap-1.5">
+                    <Button size="sm" className="h-6 text-[10px] gap-1 flex-1" onClick={() => { Object.entries(editValues).forEach(([field, value]) => { if (value) onEdit!(field, value); }); setIsEditing(false); setEditValues({}); }}>
+                      <Save className="w-3 h-3" /> Guardar
+                    </Button>
+                    <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => { setIsEditing(false); setEditValues({}); }}>
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
+    );
+  }
+
+  // Non-editable: use HoverCard (hover-based) for instant tooltip
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <HoverCard openDelay={100} closeDelay={50}>
+      <HoverCardTrigger asChild>
         <Badge
           variant="outline"
           className={cn(
@@ -176,42 +235,13 @@ export default function SmartTagBadge({ tag, className, onEdit }: SmartTagBadgeP
           <Icon className="w-2.5 h-2.5" />
           {tag}
         </Badge>
-      </PopoverTrigger>
-      <PopoverContent className="w-72 p-0 z-50" align="start" side="top">
-        <div className="p-3 space-y-2.5">
-          <div className="flex items-start gap-2">
-            <Icon className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-            <p className="text-[11px] text-foreground/90 leading-relaxed">{info.explanation}</p>
-          </div>
-
-          {info.editable && info.editable.length > 0 && onEdit && (
-            <div className="border-t border-border/20 pt-2 space-y-2">
-              {!isEditing ? (
-                <Button size="sm" variant="ghost" className="h-6 text-[10px] gap-1 w-full justify-start text-muted-foreground hover:text-foreground" onClick={() => setIsEditing(true)}>
-                  <Pencil className="w-3 h-3" /> Editar configuración
-                </Button>
-              ) : (
-                <div className="space-y-2">
-                  {info.editable.map(ed => (
-                    <div key={ed.field} className="space-y-1">
-                      <label className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">{ed.label}</label>
-                      <Input className="h-7 text-[11px]" placeholder={tag} value={editValues[ed.field] || ""} onChange={(e) => setEditValues(prev => ({ ...prev, [ed.field]: e.target.value }))} />
-                    </div>
-                  ))}
-                  <div className="flex gap-1.5">
-                    <Button size="sm" className="h-6 text-[10px] gap-1 flex-1" onClick={() => { Object.entries(editValues).forEach(([field, value]) => { if (value) onEdit(field, value); }); setIsEditing(false); setEditValues({}); }}>
-                      <Save className="w-3 h-3" /> Guardar
-                    </Button>
-                    <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={() => { setIsEditing(false); setEditValues({}); }}>
-                      <X className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+      </HoverCardTrigger>
+      <HoverCardContent className="w-72 z-50" align="start" side="top">
+        <div className="flex items-start gap-2">
+          <Icon className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+          <p className="text-[11px] text-foreground/90 leading-relaxed">{info.explanation}</p>
         </div>
-      </PopoverContent>
-    </Popover>
+      </HoverCardContent>
+    </HoverCard>
   );
 }

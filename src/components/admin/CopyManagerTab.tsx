@@ -371,7 +371,7 @@ export default function CopyManagerTab() {
   }, []);
 
   const handleConfirmSave = async () => {
-    const { item, newValue } = confirmDialog;
+    const { item, newValue, oldValue } = confirmDialog;
     if (!item) return;
     const configKey = `copy_${item.key}`;
     const existing = savedCopy.find((c: any) => c.key === configKey);
@@ -384,6 +384,22 @@ export default function CopyManagerTab() {
         description: item.description, affected_areas: item.affectedPages,
       });
     }
+
+    // Auto-log to changelog
+    (supabase.from("changelog_entries" as any) as any).insert({
+      prompt_summary: `Copy actualizado: ${item.label}`,
+      affected_areas: item.affectedPages,
+      change_details: `Campo: ${item.key}\nAntes: ${oldValue}\nDespués: ${newValue}`,
+      tags: ["copy-manager", item.section, item.channel || "web"],
+      code_changes: [{
+        file: `campaign_config.${configKey}`,
+        action: existing ? "edited" : "created",
+        summary: `${item.label} — ${item.category}`,
+        diff: `- ${oldValue}\n+ ${newValue}`,
+      }],
+    }).then(() => {
+      qc.invalidateQueries({ queryKey: ["changelog-entries"] });
+    });
 
     qc.invalidateQueries({ queryKey: ["admin-copy-config"] });
     toast.success(`✅ "${item.label}" guardado`, { description: `Afecta: ${item.affectedPages.join(", ")}` });
