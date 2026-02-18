@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AdminSectionDashboard from "./AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw } from "lucide-react";
+import ExportCsvButton from "./ExportCsvButton";
 
 export default function WaitlistTab() {
   const { data: waitlist = [], isLoading } = useQuery({
@@ -37,8 +38,9 @@ export default function WaitlistTab() {
 
       {/* Waitlist */}
       <div className="bg-card border border-border/40 rounded-xl overflow-x-auto">
-        <div className="px-4 py-3 border-b border-border/20 bg-secondary/20">
+        <div className="px-4 py-3 border-b border-border/20 bg-secondary/20 flex items-center justify-between">
           <h3 className="text-xs font-bold text-foreground uppercase">Smart Wristband Waitlist</h3>
+          <ExportCsvButton data={waitlist} filename="waitlist.csv" columns={["first_name", "email", "phone", "created_at"]} />
         </div>
         <table className="w-full text-xs">
           <thead><tr className="text-[10px] text-muted-foreground uppercase tracking-wider border-b border-border/20">

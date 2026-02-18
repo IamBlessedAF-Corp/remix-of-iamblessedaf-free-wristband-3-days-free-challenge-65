@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { RefreshCw, Pencil, CheckCircle, X } from "lucide-react";
+import ExportCsvButton from "./ExportCsvButton";
 
 export default function AffiliatesTab() {
   const qc = useQueryClient();
@@ -55,6 +56,10 @@ export default function AffiliatesTab() {
       />
 
       <div className="bg-card border border-border/40 rounded-xl overflow-x-auto">
+        <div className="px-4 py-3 border-b border-border/20 bg-secondary/20 flex items-center justify-between">
+          <span className="text-xs font-bold text-foreground uppercase">Affiliate Tiers</span>
+          <ExportCsvButton data={tiers} filename="affiliates.csv" columns={["user_id", "current_tier", "credit_amount", "wristbands_distributed", "tier_unlocked_at"]} />
+        </div>
         <table className="w-full text-xs">
           <thead><tr className="text-[10px] text-muted-foreground uppercase tracking-wider border-b border-border/20 bg-secondary/30">
             <th className="text-left py-2 px-3">User ID</th><th className="text-left py-2 px-3">Tier</th><th className="text-right py-2 px-3">Credit ($)</th>

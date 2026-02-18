@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AdminSectionDashboard from "./AdminSectionDashboard";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw } from "lucide-react";
+import ExportCsvButton from "./ExportCsvButton";
 
 export default function BlessingsTab() {
   const { data: blessings = [], isLoading } = useQuery({
@@ -47,8 +48,9 @@ export default function BlessingsTab() {
 
       {/* Creator Profiles Table */}
       <div className="bg-card border border-border/40 rounded-xl overflow-x-auto">
-        <div className="px-4 py-3 border-b border-border/20 bg-secondary/20">
+        <div className="px-4 py-3 border-b border-border/20 bg-secondary/20 flex items-center justify-between">
           <h3 className="text-xs font-bold text-foreground uppercase">Creator Profiles</h3>
+          <ExportCsvButton data={creators} filename="creators.csv" columns={["display_name", "email", "referral_code", "blessings_confirmed"]} />
         </div>
         <table className="w-full text-xs">
           <thead><tr className="text-[10px] text-muted-foreground uppercase tracking-wider border-b border-border/20">

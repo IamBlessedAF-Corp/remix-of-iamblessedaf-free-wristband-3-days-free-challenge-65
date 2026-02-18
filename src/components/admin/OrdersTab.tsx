@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { RefreshCw, Pencil, CheckCircle, X, Search } from "lucide-react";
+import ExportCsvButton from "./ExportCsvButton";
 
 export default function OrdersTab() {
   const qc = useQueryClient();
@@ -62,6 +63,7 @@ export default function OrdersTab() {
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input placeholder="Search email, tier, session..." value={search} onChange={e => setSearch(e.target.value)} className="pl-8 h-8 text-xs" />
         </div>
+        <ExportCsvButton data={filtered} filename="orders.csv" columns={["customer_email", "tier", "amount_cents", "referral_code", "status", "currency", "created_at"]} />
       </div>
       <div className="bg-card border border-border/40 rounded-xl overflow-x-auto">
         <table className="w-full text-xs">
