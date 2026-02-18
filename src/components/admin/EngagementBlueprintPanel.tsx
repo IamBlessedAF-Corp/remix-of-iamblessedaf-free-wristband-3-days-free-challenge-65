@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -18,6 +18,7 @@ import {
 import { useCampaignConfig } from "@/hooks/useCampaignConfig";
 import { toast } from "sonner";
 import { useCopyValue, COPY_DEFAULTS } from "@/hooks/useCopyValue";
+import InlineEditCell from "./blueprint/InlineEditCell";
 /* ─────────────────────── Types ─────────────────────── */
 
 interface MessageSpec {
@@ -494,12 +495,14 @@ function CopyEditDialog({
   message,
   groupCampaign,
   saveChanges,
+  initialCopy,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   message: MessageSpec | null;
   groupCampaign: string;
   saveChanges: (changes: { key: string; label: string; oldValue: string; newValue: string; affected_areas: string[]; category: string }[]) => Promise<void>;
+  initialCopy: string;
 }) {
   const [draft, setDraft] = useState("");
   const [saving, setSaving] = useState(false);
@@ -508,13 +511,15 @@ function CopyEditDialog({
   const [passwordError, setPasswordError] = useState(false);
   const originalRef = useRef("");
 
-  const openWith = (msg: MessageSpec) => {
-    originalRef.current = msg.content_preview;
-    setDraft(msg.content_preview);
-    setPassword("");
-    setPasswordError(false);
-    setNeedsPassword(false);
-  };
+  useEffect(() => {
+    if (message && open) {
+      originalRef.current = initialCopy;
+      setDraft(initialCopy);
+      setPassword("");
+      setPasswordError(false);
+      setNeedsPassword(false);
+    }
+  }, [message?.id, open, initialCopy]);
 
   if (!message) return null;
 
@@ -532,7 +537,7 @@ function CopyEditDialog({
 
     setSaving(true);
     try {
-      const configKey = mapping?.copyKey || `copy_blueprint_${message.id}`;
+      const configKey = `msg_${message.id.replace(/-/g, '_')}_copy`;
       await saveChanges([{
         key: configKey,
         label: `${groupCampaign} — ${message.name}`,
@@ -779,7 +784,7 @@ export default function EngagementBlueprintPanel() {
                   </div>
 
                   {/* Editable Meta row */}
-                  <div className="mt-3 grid grid-cols-2 lg:grid-cols-4 gap-2">
+                  <div className="mt-3 grid grid-cols-2 lg:grid-cols-3 gap-2">
                     <EditableMetaField
                       icon={<Clock className="w-3 h-3 shrink-0" />}
                       label="Frequency"
@@ -793,14 +798,6 @@ export default function EngagementBlueprintPanel() {
                       <span><strong className="text-foreground">Function:</strong> <code className="text-[9px] bg-secondary/50 px-1 rounded">{group.edge_function}</code></span>
                     </div>
                     <EditableMetaField
-                      icon={<Users className="w-3 h-3 shrink-0" />}
-                      label="Per User"
-                      configKey={`${group.config_key}_per_user`}
-                      fallback={group.total_per_user}
-                      getValue={getValue}
-                      saveChanges={saveChanges}
-                    />
-                    <EditableMetaField
                       icon={<Timer className="w-3 h-3 shrink-0" />}
                       label="Timeline"
                       configKey={`${group.config_key}_timeline`}
@@ -808,6 +805,22 @@ export default function EngagementBlueprintPanel() {
                       getValue={getValue}
                       saveChanges={saveChanges}
                     />
+                  </div>
+                  {/* Per User — split into individual editable chips */}
+                  <div className="mt-2 flex items-center gap-1.5 text-[10px] flex-wrap">
+                    <Users className="w-3 h-3 shrink-0 text-muted-foreground" />
+                    <strong className="text-foreground shrink-0">Per User:</strong>
+                    {group.total_per_user.split(' + ').map((part, i) => (
+                      <InlineEditCell
+                        key={i}
+                        configKey={`${group.config_key}_pu_${i}`}
+                        fallback={part.trim()}
+                        label={`${group.campaign} — Per User ${i + 1}`}
+                        getValue={getValue}
+                        saveChanges={saveChanges}
+                        className="bg-secondary/40 px-2 py-0.5 rounded-md border border-border/20 text-muted-foreground hover:border-primary/30"
+                      />
+                    ))}
                   </div>
                 </div>
 
@@ -825,42 +838,46 @@ export default function EngagementBlueprintPanel() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border/5">
-                      {group.messages.map(msg => (
-                        <tr key={msg.id} className="hover:bg-secondary/10 transition-colors">
-                          <td className="py-2.5 px-3 font-medium text-foreground">{msg.name}</td>
-                          <td className="py-2.5 px-3">
-                            <Badge variant="outline" className={`text-[9px] ${channelColors[msg.channel]}`}>
-                              {msg.channel.toUpperCase()}
-                            </Badge>
-                          </td>
-                          <td className="py-2.5 px-3 text-muted-foreground max-w-[250px]">
-                            <button
-                              type="button"
-                              className="truncate block text-left w-full cursor-pointer hover:text-foreground group/preview transition-colors"
-                              onClick={() => { setEditingMsg(msg); setEditingCampaign(group.campaign); }}
-                            >
-                              <span className="flex items-center gap-1">
-                                <Eye className="w-3 h-3 opacity-0 group-hover/preview:opacity-60 shrink-0 transition-opacity" />
-                                <span className="truncate">{msg.content_preview}</span>
-                                <Pencil className="w-2.5 h-2.5 opacity-0 group-hover/preview:opacity-60 shrink-0 transition-opacity" />
+                      {group.messages.map(msg => {
+                        const msgKey = msg.id.replace(/-/g, '_');
+                        return (
+                          <tr key={msg.id} className="hover:bg-secondary/10 transition-colors">
+                            <td className="py-2.5 px-3 font-medium text-foreground">
+                              <InlineEditCell configKey={`msg_${msgKey}_name`} fallback={msg.name} label={`${msg.name} Name`} getValue={getValue} saveChanges={saveChanges} />
+                            </td>
+                            <td className="py-2.5 px-3">
+                              <Badge variant="outline" className={`text-[9px] ${channelColors[msg.channel]}`}>
+                                {msg.channel.toUpperCase()}
+                              </Badge>
+                            </td>
+                            <td className="py-2.5 px-3 text-muted-foreground max-w-[250px]">
+                              <button
+                                type="button"
+                                className="truncate block text-left w-full cursor-pointer hover:text-foreground group/preview transition-colors"
+                                onClick={() => { setEditingMsg(msg); setEditingCampaign(group.campaign); }}
+                              >
+                                <span className="flex items-center gap-1">
+                                  <Eye className="w-3 h-3 opacity-0 group-hover/preview:opacity-60 shrink-0 transition-opacity" />
+                                  <span className="truncate">{getValue(`msg_${msgKey}_copy`, msg.content_preview)}</span>
+                                  <Pencil className="w-2.5 h-2.5 opacity-0 group-hover/preview:opacity-60 shrink-0 transition-opacity" />
+                                </span>
+                              </button>
+                            </td>
+                            <td className="py-2.5 px-3 text-muted-foreground">
+                              <InlineEditCell configKey={`msg_${msgKey}_timing`} fallback={msg.timing} label={`${msg.name} Timing`} getValue={getValue} saveChanges={saveChanges} />
+                            </td>
+                            <td className="py-2.5 px-3 text-muted-foreground">
+                              <InlineEditCell configKey={`msg_${msgKey}_per_user`} fallback={msg.per_user} label={`${msg.name} Per User`} getValue={getValue} saveChanges={saveChanges} mono />
+                            </td>
+                            <td className="py-2.5 px-3 text-center">
+                              <span className={`inline-flex items-center gap-1 ${isActive ? "text-emerald-400" : "text-amber-400"}`}>
+                                {isActive ? <CheckCircle2 className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
+                                <span className="text-[9px]">{isActive ? "Active" : "Paused"}</span>
                               </span>
-                            </button>
-                          </td>
-                          <td className="py-2.5 px-3 text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <ArrowRight className="w-3 h-3 shrink-0 text-primary/50" />
-                              {msg.timing}
-                            </span>
-                          </td>
-                          <td className="py-2.5 px-3 text-muted-foreground font-mono text-[10px]">{msg.per_user}</td>
-                          <td className="py-2.5 px-3 text-center">
-                            <span className={`inline-flex items-center gap-1 ${isActive ? "text-emerald-400" : "text-amber-400"}`}>
-                              {isActive ? <CheckCircle2 className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
-                              <span className="text-[9px]">{isActive ? "Active" : "Paused"}</span>
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -876,6 +893,7 @@ export default function EngagementBlueprintPanel() {
           message={editingMsg}
           groupCampaign={editingCampaign}
           saveChanges={saveChanges}
+          initialCopy={editingMsg ? getValue(`msg_${editingMsg.id.replace(/-/g, '_')}_copy`, editingMsg.content_preview) : ""}
         />
       </div>
     </TooltipProvider>
