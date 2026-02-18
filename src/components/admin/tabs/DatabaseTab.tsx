@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import SmartHover from "@/components/admin/SmartHover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
@@ -159,7 +160,9 @@ function TableRow_({ table }: { table: typeof DB_TABLES[number] }) {
               <p className="text-[10px] font-semibold text-muted-foreground mb-1.5 uppercase tracking-wider">Columns ({columns.length})</p>
               <div className="flex flex-wrap gap-1">
                 {columns.map(col => (
-                  <Badge key={col} variant="outline" className="text-[10px] font-mono bg-card">{col}</Badge>
+                  <SmartHover key={col} label={col} side="bottom">
+                    <Badge variant="outline" className="text-[10px] font-mono bg-card">{col}</Badge>
+                  </SmartHover>
                 ))}
               </div>
             </div>
@@ -187,7 +190,9 @@ function TableRow_({ table }: { table: typeof DB_TABLES[number] }) {
                   <TableHeader>
                     <TableRow>
                       {columns.slice(0, 8).map(col => (
-                        <TableHead key={col} className="text-[10px] font-mono whitespace-nowrap">{col}</TableHead>
+                        <TableHead key={col} className="text-[10px] font-mono whitespace-nowrap">
+                          <SmartHover label={col}>{col}</SmartHover>
+                        </TableHead>
                       ))}
                       {columns.length > 8 && <TableHead className="text-[10px]">+{columns.length - 8}</TableHead>}
                     </TableRow>
