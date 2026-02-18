@@ -27,6 +27,7 @@ import ForecastTab from "@/components/admin/tabs/ForecastTab";
 import FraudMonitorTab from "@/components/admin/tabs/FraudMonitorTab";
 import LeaderboardTab from "@/components/admin/tabs/LeaderboardTab";
 import AlertsTab from "@/components/admin/tabs/AlertsTab";
+import UserManagementTab from "@/components/admin/tabs/UserManagementTab";
 
 import EditableCampaignSettings from "@/components/admin/EditableCampaignSettings";
 import OrdersTab from "@/components/admin/OrdersTab";
@@ -46,7 +47,7 @@ const ALL_TAB_IDS = [
   "campaign", "blocks", "risk", "payments", "board",
   "roadmap", "logs", "forecast", "fraud", "leaderboard",
   "alerts", "budget", "orders", "blessings", "challenge",
-  "sms", "gamification", "affiliates", "waitlist", "roles",
+  "sms", "gamification", "affiliates", "waitlist", "roles", "users",
 ] as const;
 
 type TabId = typeof ALL_TAB_IDS[number];
@@ -115,6 +116,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
       { id: "board", label: "Board", icon: Kanban },
       { id: "logs", label: "Logs", icon: ScrollText },
       { id: "roles", label: "Roles", icon: Shield },
+      { id: "users", label: "Users", icon: Users },
     ],
   },
 ];
@@ -147,6 +149,7 @@ function TabContent({ tab }: { tab: TabId }) {
     case "affiliates": return <AffiliatesTab />;
     case "waitlist": return <WaitlistTab />;
     case "roles": return <RolesTab />;
+    case "users": return <UserManagementTab />;
     default: return null;
   }
 }
