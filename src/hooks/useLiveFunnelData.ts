@@ -141,6 +141,19 @@ export function useLiveFunnelData() {
     staleTime: 60_000,
   });
 
+  // Shares (repost_logs + blessings confirmed)
+  const { data: shareCount } = useQuery({
+    queryKey: ["funnel-shares-live"],
+    queryFn: async () => {
+      const [reposts, blessings] = await Promise.all([
+        supabase.from("repost_logs").select("*", { count: "exact", head: true }),
+        supabase.from("blessings").select("*", { count: "exact", head: true }).not("confirmed_at", "is", null),
+      ]);
+      return (reposts.count || 0) + (blessings.count || 0);
+    },
+    staleTime: 60_000,
+  });
+
   // Conversion funnel stages
   const conversionFunnel: FunnelStageData[] = [
     { stage: "Link Clicks", count: trafficData?.totalClicks || 0 },
@@ -156,6 +169,7 @@ export function useLiveFunnelData() {
     orderData,
     clipperData,
     challengeCount: challengeCount || 0,
+    shareCount: shareCount || 0,
     conversionFunnel,
     isLoading: !trafficData || !orderData || !clipperData,
   };
