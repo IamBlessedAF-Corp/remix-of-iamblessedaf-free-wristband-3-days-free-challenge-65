@@ -37,14 +37,42 @@ interface FunnelProgressState {
 
 function loadState(): FunnelProgressState {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    // Try sessionStorage first, fall back to localStorage for migration
+    const raw = sessionStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Migrate to sessionStorage if only in localStorage
+      if (!sessionStorage.getItem(STORAGE_KEY) && localStorage.getItem(STORAGE_KEY)) {
+        sessionStorage.setItem(STORAGE_KEY, raw);
+      }
+      return parsed;
+    }
   } catch {}
   return { completedSteps: [], totalXp: 0, currentStepId: null, lastAwardedStep: null };
 }
 
 function saveState(state: FunnelProgressState) {
+  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  // Also keep localStorage as backup for cross-tab
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+/**
+ * Returns the path of the furthest funnel step the user has reached.
+ * Useful for redirecting users back to where they left off.
+ */
+export function getFunnelResumeRoute(): string | null {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const state: FunnelProgressState = JSON.parse(raw);
+    if (!state.currentStepId) return null;
+    const step = FUNNEL_STEPS.find((s) => s.id === state.currentStepId);
+    if (!step) return null;
+    return Array.isArray(step.path) ? step.path[0] : step.path;
+  } catch {
+    return null;
+  }
 }
 
 export function useFunnelProgress() {
