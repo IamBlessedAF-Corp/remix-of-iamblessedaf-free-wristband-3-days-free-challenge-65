@@ -1,0 +1,293 @@
+Section,Page/Funnel,Message ID,Message Name,Channel,Type,Trigger,Frequency,Per User Volume,Function,Timeline,Pause Key (campaign_config),SMS Template Key,Subject Line / Preview Text,Full Copy / Body,Variables Used,MMS/Media,Compliance Flags,STOP Language,Notes
+ONBOARDING,Challenge Signup (/challenge),welcome-sms,Challenge Welcome SMS,SMS,Transactional,User completes GratitudeSetupFlow,1× per user (on signup),1 SMS,schedule-challenge-messages → sms-router,Immediately on signup,engagement_daily_reminders,challenge-welcome,"","🙏 Welcome to the I am Blessed AF 3-Day Gratitude Challenge!
+
+Your challenge starts tomorrow at 11:11 AM.
+Day 1 message goes to {{friendName}}.
+
+We'll text you at 3PM today to help you prepare.
+
+Reply STOP to opt out.
+— I am Blessed AF",friendName,No,"engagement, onboarding",Yes — Reply STOP to opt out,First touchpoint after signup
+ONBOARDING,Challenge Signup (/challenge),welcome-email,Challenge Welcome Email,Email,Transactional,User completes GratitudeSetupFlow,1× per user (on signup),1 Email,send-welcome-email,Immediately on signup,—,—,You're early.,"{greeting}
+
+You just did something most people won't.
+
+You didn't scroll past. You didn't bookmark it for later. You decided.
+
+That says more about you than any email we could write.
+
+Here's what we'll tell you right now: IamBlessedAF isn't a reminder to be grateful. It's what happens when gratitude stops being something you do — and becomes something you are.
+
+We're building this for a specific kind of person. You already know if that's you.
+
+More is coming. Not today. Not because we're holding back — because it's not ready to be rushed. When it lands, you'll understand why you were early.
+
+Until then — you're in.
+
+— IamBlessedAF","email, name",No,—,No,Preview text: Most people wait. You didn't.
+CHALLENGE DAY 0,Challenge Automation,reminder-3pm,3PM Reminder SMS,SMS,Transactional,pg_cron every minute (send-scheduled-messages checks reminder_send_at),1× per friend per day,Up to 3 SMS (1 per friend),send-scheduled-messages → sms-router,Day 0 at 3:00 PM → Day 2 at 3:00 PM,engagement_daily_reminders,challenge-reminder-3pm,"","🙏 Hey! Tomorrow is Day {{dayNumber}} of your Gratitude Challenge.
+
+Your 11:11 message goes to {{friendName}}.
+
+What moment are you grateful for? Reply with your memory and we'll format your message!
+
+— I am Blessed AF","dayNumber, friendName",No,"engagement, reminder",No,Prompts user to reply with gratitude memory
+CHALLENGE DAY 1–3,Challenge Automation,1111-send,11:11 Message SMS,SMS,Transactional,pg_cron every minute (send-scheduled-messages checks scheduled_send_at),1× per friend,Up to 3 SMS (1 per friend),send-scheduled-messages → sms-router,Day 1 at 11:11 AM → Day 3 at 11:11 AM,engagement_daily_reminders,challenge-1111-send,"","It's 11:11! 🙏 Time to send your gratitude to {{friendName}}.
+
+Here's your message:
+
+""{{messageBody}}""
+
+Copy and send it now! Reply DONE when sent. 🧠
+
+— I am Blessed AF","friendName, messageBody",No,"engagement, action-prompt",No,Only sends if message_body is not empty & status=scheduled
+CHALLENGE FOLLOWUP,Challenge Automation,followup-day2,Friend 2 Collection SMS,SMS,Transactional,pg_cron every 30 min (send-followup-sequences),1× per user (if friend_2 missing),1 SMS,send-followup-sequences → sms-router,Day 2 at 10:00 AM,engagement_followup_friends,custom-transactional,"","Hey {name}! 🙏
+
+Your gratitude to {friend_1_name} was powerful.
+
+Day 2 question: Who's someone who helped you when they didn't have to?
+
+Reply with their name and we'll set up your next 11:11 message! 💛
+
+— Blessed AF","name, friend_1_name",No,custom,No,Skips if friend_2 already provided or phone PAUSED
+CHALLENGE FOLLOWUP,Challenge Automation,followup-day3,Friend 3 Collection SMS,SMS,Transactional,pg_cron every 30 min (send-followup-sequences),1× per user (if friend_3 missing),1 SMS,send-followup-sequences → sms-router,Day 3 at 10:00 AM,engagement_followup_friends,custom-transactional,"","Hey {name}! 🙏
+
+You're on a roll! Two friends, two gratitude texts.
+
+Day 3 question: Who's someone unexpected you're grateful for? A teacher, coworker, or someone who surprised you.
+
+Reply with their name! 💛
+
+— Blessed AF","name",No,custom,No,Skips if friend_3 already provided
+WEEKLY ENGAGEMENT,TGF Friday,tgf-friday-sms,TGF Gratitude Friday SMS,SMS + MMS,Transactional,pg_cron every Friday at 7:00 AM UTC,1× per user per week,1 SMS/MMS per week,tgf-friday → sms-router,Every Friday 7:00 AM UTC (ongoing),engagement_tgf_friday,tgf-friday,"","🙏 TGF — Thank God it's Friday!
+
+Hey {{senderName}}, it's Gratitude Friday!
+
+This week's mission: Send a quick ""Thank You"" to {{friendName}}.
+
+Here's a message you can forward:
+
+""Hey {{friendName}} Thank You! 🙏
+Got you this wristband, get it shipped with your address here:
+{{referralLink}}""
+
+Spread the gratitude! 💛
+— I am Blessed AF","senderName, friendName, referralLink",Yes — wristband image via MMS,"engagement, weekly-mission",No,Rotates between friend_1/2/3 based on lowest send_count in tgf_friday_contacts
+STREAK MILESTONE,Challenge Automation,streak-update,Streak Update SMS,SMS,Transactional,Triggered by streak milestone,On streak days 3/7/14/30,1 SMS per milestone,sms-router (template registered),When streak milestone hit,—,challenge-streak-update,"","🔥 {{streakCount}}-day streak! You're on fire, {{name}}. Keep the gratitude flowing tomorrow at 11:11.
+
+— I am Blessed AF","streakCount, name",No,"engagement, progress",No,Template registered in sms-router but not yet auto-triggered
+CHALLENGE COMPLETE,Challenge Automation,challenge-complete,Challenge Completion SMS,SMS,Transactional,Triggered on 3-day completion,1× per user,1 SMS,sms-router (template registered),After Day 3 message sent,—,challenge-completion,"","🎉 You completed the 3-Day Gratitude Challenge! {{name}}, you've sent love to {{friendCount}} friends.
+
+Your gratitude ripple is real. 🌊
+
+— I am Blessed AF","name, friendCount",No,"engagement, milestone",No,Template registered in sms-router but not yet auto-triggered
+AUTHENTICATION,All auth-gated pages,otp-sms,OTP Login SMS,SMS,OTP,User requests phone verification,On demand,1 SMS per request (rate limited: 1/min; 10/hr per IP),send-otp → sms-router,Immediate,—,otp-login,"",Your I am Blessed AF verification code is: {{code}}. Do not share this code. Expires in 10 minutes.,code,No,"no-marketing, security-only",No,E.164 phone format required
+AUTHENTICATION,All auth-gated pages,otp-password-reset,OTP Password Reset SMS,SMS,OTP,User requests password reset,On demand,1 SMS per request,send-otp → sms-router,Immediate,—,otp-password-reset,"",Your I am Blessed AF password reset code is: {{code}}. If you didn't request this — ignore this message.,code,No,"no-marketing, security-only",No,Same rate limits as login OTP
+AUTHENTICATION,Email verification,email-otp,Email Verification OTP,Email,OTP,User requests email verification,On demand,1 Email per request (rate limited: 1/min; 10/hr per IP),send-email-otp,Immediate,—,—,"Your verification code: {otpCode}","Enter this code to verify your email:
+
+[CODE BLOCK: {otpCode}]
+
+This code expires in 10 minutes.
+
+If you didn't request this code, you can safely ignore this email.",otpCode,No,—,No,Uses otp_codes table (phone column stores email)
+B2B ONBOARDING,Expert Leads (/3300us-Credit-*),expert-welcome,Expert Welcome Email,Email,Transactional,Expert lead form submission,1× per expert signup,1 Email,send-expert-welcome,Immediately on lead submission,—,—,"You're about to 2.7x your leads 🚀","Welcome to the Neuro-Hackers Movement.
+
+You just enrolled in something that's going to change how you capture leads forever.
+
+[If niche provided]: We see you're in {niche}. Perfect — the wristband funnel works incredibly well in your space.
+
+[STAT BOX: 2.7x Average Lead Capture Increase]
+
+The science: when someone receives a real, physical gift — a gratitude wristband backed by Dr. Huberman's neuroscience research — the reciprocity effect kicks in.
+
+What happens next:
+1. We build your custom funnel (within 48 hours)
+2. You drive traffic (they claim FREE wristband)
+3. Watch the magic (higher show-up rates, referral loop)
+
+We'll reach out within 24 hours. Welcome to the movement. 🙏
+
+— The IamBlessedAF Team
+Backed by Dr. Huberman · Dr. Dispenza · Harvard Grant Study","email, name, niche",No,—,No,Preview: Your custom wristband funnel is coming.
+B2B ONBOARDING,Network Marketers (/network-marketers),nm-welcome,Network Marketer Welcome Email (5 DM Scripts),Email,Transactional,Network marketer lead form submission,1× per signup,1 Email,send-network-marketer-welcome,Immediately on lead submission,—,—,"{greeting}, your 5 DM scripts + clip library are ready 🎬🔥","Welcome to the Gratitude Gifting Engine 🔥
+
+You're one of the first network marketers to get access. Below are your 5 copy-paste DM ice-breaker scripts:
+
+SCRIPT #1 — Instagram DM:
+""Hey [NAME]! 👋 I saw your post about [TOPIC] — love your energy! Random question: have you heard about gratitude neuroscience? There's this wild study showing it rewires your brain for happiness 27x faster than meditation. I'm part of a movement that gifts FREE ""I Am Blessed AF"" wristbands to people who inspire me. Want me to send you one? No catch — they also donate 11 meals to Feeding America when you claim it 🙏 Just thought of you! 💛""
+TIP: Comment on their recent story FIRST, then DM 30 min later. Warm touch = 4x more replies.
+
+SCRIPT #2 — TikTok Comment → DM:
+Step 1 Comment: ""This is so good 🔥 You'd love the neuroscience behind this — DM me BLESSED and I'll send you a free gratitude wristband 🙏""
+Step 2 DM: ""Hey!! So glad you reached out 🙌 Dr. Huberman proved that RECEIVING gratitude triggers a dopamine + serotonin cascade... Here's the link: [YOUR LINK] Let me know when you claim it! 🎁""
+TIP: Pin a ""DM me BLESSED"" comment on your viral reposts.
+
+SCRIPT #3 — Facebook Messenger:
+""Hey [NAME]! Hope you're having an amazing week 🌟 I've been diving into gratitude neuroscience... I joined this movement that gifts free wristbands. I thought of you because [PERSONAL REASON]. Would you want one? Shipping is $9.95 and it donates 11 meals 🙏 [YOUR LINK]""
+TIP: Use voice messages for 2x more engagement.
+
+SCRIPT #4 — LinkedIn (Professional):
+""Hi [NAME], I came across your profile and really admire [SPECIFIC THING]. I'm part of a neuroscience-backed gratitude initiative (Dr. Andrew Huberman at Stanford). We gift free wristbands as a daily reminder. Each triggers 11 meals through Feeding America. [YOUR LINK]""
+TIP: Stanford research angle builds instant credibility.
+
+SCRIPT #5 — WhatsApp/Text (Re-engage Old Contacts):
+""Hey [NAME]! It's [YOUR NAME] 👋 I know it's been a minute... I recently joined this gratitude movement — ""I Am Blessed AF"" wristbands backed by neuroscience. I wanted to send you one because honestly, you're one of the people I'm most grateful for. [YOUR LINK]""
+TIP: THE list reactivator. 30-40% will reply.
+
+[CTA: Access Your Clip Library]
+[CTA: Claim YOUR Free Wristband]
+
+Quick start plan:
+1. Claim your own wristband
+2. Repost 1 clip today
+3. Send Script #5 to 20 old contacts
+4. Reply to every ""BLESSED"" DM
+5. Watch warm leads flood your inbox 🔥","email, name, niche",No,—,No,"Preview: Your 5 copy-paste DM scripts + clip library are inside 🎁. LONGEST email — contains all 5 platform scripts."
+SMART WRISTBAND WAITLIST,Smart Wristband (/Reserve-a-SMART-wristband),wristband-welcome-email,Smart Wristband Waitlist Email,Email,Transactional,Waitlist form submission,1× per signup,1 Email,send-wristband-welcome,Immediately on waitlist signup,—,—,"{name}, you're on the mPFC SMART Wristband waitlist 🧠🚀","Hey {name},
+
+You just secured your spot on the mPFC Neuro-Hacker Wristband SMART early access list.
+
+What happens next:
+📬 Early-bird updates before anyone else
+🚀 First access to the Kickstarter launch (77% OFF)
+🧪 Behind-the-scenes neuroscience drops
+🎁 Exclusive waitlist-only bonuses
+
+While you wait — we want to send you a FREE prototype wristband (without the NFC)!
+
+[CTA: 🎁 Claim Your FREE Wristband NOW]
+[CTA: 🚀 Or Reserve SMART with $11 — Lock 77% OFF]
+
+Stay blessed 🙏
+— The IamBlessedAF Team","email, firstName",No,—,No,Also sends SMS if phone provided
+SMART WRISTBAND WAITLIST,Smart Wristband (/Reserve-a-SMART-wristband),wristband-welcome-sms,Smart Wristband Waitlist SMS,SMS,Transactional,Waitlist form submission (if phone provided),1× per signup,1 SMS (conditional on phone),send-wristband-welcome (direct Twilio),Immediately on waitlist signup,—,—(direct Twilio send),"","🧠 Hey {name}! You're on the mPFC SMART Wristband waitlist!
+
+🎁 While you wait — claim your FREE prototype wristband (no NFC) here:
+https://iamblessedaf.com/FREE-neuro-hacker-wristband
+
+We'll text you the moment our Kickstarter goes LIVE so you can lock 77% OFF!
+
+— IamBlessedAF","firstName",No,—,No,Uses direct Twilio API (not sms-router). Only sends if phone provided.
+PORTAL WEEKLY,Ambassador Portal,weekly-digest,Weekly Digest Email,Email,Recurring,pg_cron every Monday at 9:00 AM UTC,1× per user per week,1 Email per week,send-weekly-digest,Every Monday 9:00 AM UTC (ongoing),—,—,"📊 Your Weekly Digest — {repostCount} reposts, {bcBalance} BC","WEEKLY DIGEST
+Hey {greeting} 👋
+Here's your activity summary for the past 7 days.
+
+[STAT GRID:]
+- Reposts This Week: {repostCount}
+- Total Referrals: {blessings_confirmed}
+- BC Balance: {bcBalance}
+- Day Streak 🔥: {streak}
+
+[TIER PROGRESS BOX:]
+{currentTierName} — ${credit} credit
+{wristbandCount} wristbands distributed
+[Progress bar → next tier]
+{wristbandsToNext} wristbands to {nextTierName}
+
+[CTA: Open My Portal →]
+
+— The IamBlessedAF Team
+Sent every Monday. You're receiving this as a Gratitude Affiliate.
+[Unsubscribe link]","display_name, email, referral_code, blessings_confirmed, repostCount, bcBalance, streak, wristbandCount, tierInfo",No,—,No,Excludes users with digest_opted_out=true. Unsubscribe via /unsubscribe-digest
+AFFILIATE TIER,Ambassador Portal,tier-milestone,Tier Milestone Email,Email,Transactional,Triggered when user crosses tier threshold (Silver/Gold/Diamond),1× per tier unlock,1 Email per tier,send-tier-milestone-email,When wristband count crosses tier threshold,—,—,"{emoji} You've unlocked {TierName} Ambassador!","Congratulations, {greeting}!
+
+You've just reached {TierName} Ambassador status.
+
+[CREDIT BOX: ${credit} Marketing Credit Unlocked]
+
+Your New Perks:
+Silver: Increased credit $8,250 / Priority support / Silver badge
+Gold: Massive credit $33,000 / Higher commissions / Gold badge / Advanced analytics
+Diamond: Maximum credit $330,000 / 50% commission / Diamond portal / White-label funnels / AI assistant / Private mastermind / Priority lead routing
+
+Your upgraded tools and credit are already active.
+
+[CTA: Open My Portal →]
+
+— The IamBlessedAF Team","email, name, tier, credit, wristbands",No,—,No,Tier thresholds: Silver=25 wristbands; Gold=100; Diamond=1000
+CLIPPER PROGRAM,Clipper Dashboard,clip-approved,Clip Approved Notification Email,Email,Transactional,Admin approves a clip submission,1× per approved clip,1 Email per approval,clip-approved-notification,When admin sets clip status to approved,—,—,🎬 Your clip was approved! +100 BC,"Hey {name} 🎉
+
+Your clip just got approved! Keep going — every clip brings you closer to the next bonus tier.
+
+[REWARD BOX: +100 🪙 Blessed Coins]
+
+Use your BC in the Rewards Store to unlock exclusive perks.
+
+[CTA: View Dashboard →]
+
+— IamBlessedAF","clip_id, user_id",No,—,No,Awards 100 BC to wallet + logs portal activity
+CLIPPER PROGRAM,Clipper Dashboard,clip-milestone,Clip Milestone Notification Email,Email,Transactional,Clipper reaches view milestone,1× per milestone,1 Email per milestone,clip-approved-notification (action=bonus_milestone),When milestone threshold crossed,—,—,"🏆 Milestone unlocked: {milestone_name}!","Hey {name} 🏆
+
+You just unlocked {milestone_name}!
+
+[REWARD BOX: +{bonus_bc} 🪙 Blessed Coins]
+
+Keep clipping to unlock the next tier and bigger rewards.
+
+[CTA: View Dashboard →]
+
+— IamBlessedAF","clip_id, user_id, milestone_name, bonus_bc",No,—,No,Awards bonus_bc to wallet if specified
+CART RECOVERY,All offer pages,abandoned-cart,Abandoned Cart Recovery Email,Email,Transactional,pg_cron (carts pending > 1 hour),1× per abandoned cart,1 Email per cart,recover-abandoned-cart,1 hour after cart abandonment,—,—,You left something behind 🙏 Your blessings are waiting,"Hey there 🙏
+
+We noticed you started checking out but didn't finish. No worries — your cart is still waiting for you.
+
+Every purchase feeds families in need. Your blessings ripple further than you think.
+
+[CTA: Complete Your Order →]
+
+Questions? Just reply to this email. We're real people 💜","customer_email, tier (routes to correct offer page)",No,—,No,"Route map: free-wristband→/FREE-neuro-hacker-wristband, wristband-22→/offer/22, pack-111→/offer/111/grok, etc. Marks cart as recovery_sent."
+VIRAL SHARING,Portal / Congrats Page,whatsapp-invite,WhatsApp Friend Invite,WhatsApp,Transactional,User sends from InviteFriendsModal,On demand (max 3 friends),Up to 3 WhatsApp messages,send-whatsapp-invite,User-initiated from portal,—,—(WhatsApp),"","{friend.message}
+
+🎁 Free Neuro-Hacker Wristband for you:
+{referralLink}
+
+— Sent with love via I am Blessed AF","friends[].message, referralLink",No,—,No,Requires auth. Marks congrats_completed on creator_profiles. Max 3 friends per request.
+MARKETING DROPS,Admin-initiated,drop-live,Product Drop SMS,SMS,Marketing,Admin manual trigger,On demand (rare),1 SMS per drop,sms-router,Admin-initiated,—,drop-live,"","🚨 NEW DROP — I am Blessed AF
+
+{{productName}} just went live. Limited inventory.
+
+{{dropLink}}
+
+Reply STOP to unsubscribe.
+— I am Blessed AF","productName, dropLink",No,"drop-only, limited-inventory, brand-name",Yes — Reply STOP,Marketing lane — requires A2P 10DLC registration
+MARKETING DROPS,Admin-initiated,drop-early-access,Early Access Drop SMS,SMS,Marketing,Admin manual trigger,On demand (rare),1 SMS per drop,sms-router,Admin-initiated,—,drop-early-access,"","✨ Early Access — I am Blessed AF
+
+You're getting first look at {{productName}} before anyone else.
+
+Available now: {{dropLink}}
+
+Reply STOP to unsubscribe.
+— I am Blessed AF","productName, dropLink",No,"drop-only, early-access, brand-name",Yes — Reply STOP,Marketing lane
+MARKETING DROPS,Admin-initiated,drop-sold-out,Sold Out Warning SMS,SMS,Marketing,Admin manual trigger,On demand (rare),1 SMS per drop,sms-router,Admin-initiated,—,drop-sold-out-warning,"","⚡ Almost Gone — I am Blessed AF
+
+{{productName}} is almost sold out. {{remainingCount}} left.
+
+{{dropLink}}
+
+Reply STOP to unsubscribe.
+— I am Blessed AF","productName, remainingCount, dropLink",No,"drop-only, scarcity, brand-name",Yes — Reply STOP,Marketing lane
+FRONTEND COPY,Landing Page (/),copy_hero_headline,Hero Headline,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"",Feel Up to 27× Happier in 3 Days,—,No,—,No,Editable via Admin > Copy Manager
+FRONTEND COPY,Landing Page (/),copy_hero_subheadline,Hero Subheadline,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"","Neuroscience-backed gratitude hack. 100% FREE.",—,No,—,No,Editable via Admin > Copy Manager
+FRONTEND COPY,Landing Page (/),copy_claim_cta,Claim CTA Button,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"",🎁 Claim My FREE Wristband,—,No,—,No,Editable via Admin > Copy Manager
+FRONTEND COPY,Offer $111,copy_offer111_hero,Offer 111 Hero,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"","$111 ÷ 365 = Just $0.30 a Day to Reprogram Your Brain",—,No,—,No,Editable via Admin > Copy Manager
+FRONTEND COPY,Offer $111,copy_offer111_sub,Offer 111 Subheadline,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"",Your custom shirt for your best friend + 3 Neuro-Hacker Wristbands,—,No,—,No,
+FRONTEND COPY,Offer $444,copy_offer444_hero,Offer 444 Hero,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"","$444 ÷ 365 = $1.22/day. The Habit Lock.",—,No,—,No,
+FRONTEND COPY,Offer $1111,copy_offer1111_hero,Offer 1111 Hero,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"",The Kingdom Ambassador,—,No,—,No,
+FRONTEND COPY,Offer $4444,copy_offer4444_hero,Offer 4444 Hero,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"",Custom Leather Jacket + Artist Patronage + NFT,—,No,—,No,
+FRONTEND COPY,All Offers,copy_discount_banner,Discount Banner,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"",77% OFF TODAY,—,No,—,No,
+FRONTEND COPY,All Offers,copy_gratitude_guarantee,Gratitude Guarantee,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"","Our Gratitude Guarantee: 11 meals donated in your honor",—,No,—,No,
+FRONTEND COPY,All Offers,copy_risk_reversal,Risk Reversal Line,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"",SSL Secured • 11 Meals Donated • FREE US Shipping,—,No,—,No,
+FRONTEND COPY,Clipper Page,copy_clipper_hero,Clipper Hero,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"",Turn 60-Second Clips Into Real Cash,—,No,—,No,
+FRONTEND COPY,Clipper Page,copy_clipper_sub,Clipper Subheadline,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"","Earn $2.22+ per 1,000 views. Weekly payouts every Friday.",—,No,—,No,
+FRONTEND COPY,Clipper Page,copy_clipper_cta,Clipper CTA,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"",Start Clipping & Earning →,—,No,—,No,
+FRONTEND COPY,Clipper Page,copy_clipper_how_step1,Clipper Step 1,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"",Pick a clip from our curated library,—,No,—,No,
+FRONTEND COPY,Clipper Page,copy_clipper_how_step2,Clipper Step 2,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"",Add your CTA overlay in CapCut (60 sec tutorial),—,No,—,No,
+FRONTEND COPY,Clipper Page,copy_clipper_how_step3,Clipper Step 3,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"","Post & earn $2.22 per 1K views",—,No,—,No,
+FRONTEND COPY,Clipper Page,copy_clipper_bonus_100k,Clipper 100K Bonus,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"","$111 Bonus — You're a Gratitude Amplifier!",—,No,—,No,
+FRONTEND COPY,Clipper Page,copy_clipper_bonus_500k,Clipper 500K Bonus,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"","$444 Bonus — You're a Gratitude Leader!",—,No,—,No,
+FRONTEND COPY,Clipper Page,copy_clipper_bonus_1m,Clipper 1M Bonus,UI Copy,—,Page load,Always visible,—,useCopyValue hook,—,—,—,"","$1,111 Bonus — You're a Gratitude Legend!",—,No,—,No,
+FRONTEND COPY,Viral Sharing,copy_repost_share_text,Repost Share Text,UI Copy,—,User shares clip,Per share action,—,useCopyValue hook,—,—,—,"",This changed my perspective on gratitude 🙏 #IamBlessedAF,—,No,—,No,
+FRONTEND COPY,Viral Sharing,copy_share_milestone_1,Share Milestone 1,UI Copy,—,First share,1× per user,—,useCopyValue hook,—,—,—,"",🎉 First share! You just planted a seed of gratitude.,—,No,—,No,
+FRONTEND COPY,Viral Sharing,copy_share_milestone_5,Share Milestone 5,UI Copy,—,5th share,1× per user,—,useCopyValue hook,—,—,—,"",🔥 5 shares! You're officially a Gratitude Ambassador.,—,No,—,No,
+FRONTEND COPY,Post Purchase,copy_post_purchase_share,Post Purchase Share Prompt,UI Copy,—,After purchase,1× per purchase,—,useCopyValue hook,—,—,—,"","You just donated {meals} meals! Share the movement with friends 🙏",meals,No,—,No,
+FRONTEND COPY,Viral Nudge,copy_viral_nudge_text,Viral Nudge Text,UI Copy,—,Exit intent / scroll trigger,Per session,—,useCopyValue hook,—,—,—,"",Know someone who needs more gratitude? Gift them a FREE wristband 🎁,—,No,—,No,
