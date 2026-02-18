@@ -73,11 +73,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 1. Create the user via admin API
+    // 1. Create the user via admin API (or find existing)
+    let userId: string;
     const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
       email,
       password,
-      email_confirm: true, // Auto-confirm so they can log in immediately
+      email_confirm: true,
       user_metadata: {
         first_name: display_name || email.split("@")[0],
         phone: phone || null,
@@ -85,13 +86,26 @@ Deno.serve(async (req) => {
     });
 
     if (createError) {
-      return new Response(JSON.stringify({ error: createError.message }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      // If user already exists, look them up and proceed
+      if (createError.message.includes("already been registered")) {
+        const { data: { users } } = await adminClient.auth.admin.listUsers();
+        const existing = users?.find((u: any) => u.email === email);
+        if (!existing) {
+          return new Response(JSON.stringify({ error: "User exists but could not be found" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        userId = existing.id;
+      } else {
+        return new Response(JSON.stringify({ error: createError.message }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    } else {
+      userId = newUser.user.id;
     }
-
-    const userId = newUser.user.id;
 
     // 2. Assign the role
     const { error: roleError } = await adminClient
