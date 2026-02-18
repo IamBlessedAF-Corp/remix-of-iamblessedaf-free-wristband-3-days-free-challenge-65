@@ -31,15 +31,26 @@ const Offer22 = () => {
     }
   }, [searchParams]);
 
-  // Authenticated users who already completed the funnel go to portal
+  // Authenticated users: write referral attribution + redirect if funnel completed
   useEffect(() => {
     if (!authLoading && user) {
       const checkFunnelStatus = async () => {
         const { data } = await supabase
           .from("creator_profiles")
-          .select("congrats_completed")
+          .select("congrats_completed, referred_by_code")
           .eq("user_id", user.id)
           .maybeSingle();
+
+        // Write referral attribution if not yet set
+        const storedRef = sessionStorage.getItem("referral_code");
+        if (storedRef && data && !data.referred_by_code) {
+          await supabase
+            .from("creator_profiles")
+            .update({ referred_by_code: storedRef })
+            .eq("user_id", user.id);
+          sessionStorage.removeItem("referral_code");
+        }
+
         // Only redirect if they already completed the full funnel + invite flow
         if (data?.congrats_completed) {
           navigate("/affiliate-portal", { replace: true });
