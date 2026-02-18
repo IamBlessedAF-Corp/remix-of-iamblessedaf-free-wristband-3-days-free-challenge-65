@@ -45,6 +45,7 @@ const TAB_ENTRIES = [
   { id: "sms", label: "SMS Intelligence", icon: Bell },
   { id: "gamification", label: "Gamification (BC)", icon: Award },
   { id: "affiliates", label: "Affiliate Tiers", icon: Target },
+  { id: "referrals", label: "Referral Attribution Funnel", icon: Target },
   { id: "waitlist", label: "Waitlist & Reposts", icon: ScrollText },
   { id: "roles", label: "Roles", icon: Shield },
   { id: "users", label: "Users", icon: Users },
