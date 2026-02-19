@@ -11,21 +11,21 @@ const SHARE_TEXTS = [
     emoji: "💙",
     relation: "best friend",
     text: (url: string) =>
-      `Hey! Someone who cares about you just sent you a FREE 'I Am Blessed AF' Neuro-Hacker Wristband (valued at $11) 🎁 They're grateful for YOU. Claim yours here → ${url} 💙 #IamBlessedAF`,
+      `Hey! Someone who cares about you just sent you a FREE 'I Am Blessed AF' Neuro-Hacker Wristband (valued at $11) 🎁 They're grateful for YOU. Claim yours here → ${url} 💙 #3DayNeuroHackerChallenge #IamBlessedAF`,
   },
   {
     label: "Family",
     emoji: "❤️",
     relation: "parent or sibling",
     text: (url: string) =>
-      `Someone who loves you just sent you a FREE 'I Am Blessed AF' Neuro-Hacker Wristband (valued at $11) as a gratitude gift ❤️ They wanted you to know you're appreciated. Claim it here → ${url}`,
+      `Someone who loves you just sent you a FREE 'I Am Blessed AF' Neuro-Hacker Wristband (valued at $11) as a gratitude gift ❤️ They wanted you to know you're appreciated. Claim it here → ${url} #3DayNeuroHackerChallenge #IamBlessedAF`,
   },
   {
     label: "Mentor",
     emoji: "🙏",
     relation: "mentor or partner",
     text: (url: string) =>
-      `You just received a FREE 'I Am Blessed AF' Neuro-Hacker Wristband (valued at $11) from someone who's genuinely grateful for your impact 🙏 Claim yours → ${url}. You deserve this.`,
+      `You just received a FREE 'I Am Blessed AF' Neuro-Hacker Wristband (valued at $11) from someone who's genuinely grateful for your impact 🙏 Claim yours → ${url}. You deserve this. #3DayNeuroHackerChallenge #IamBlessedAF`,
   },
 ];
 

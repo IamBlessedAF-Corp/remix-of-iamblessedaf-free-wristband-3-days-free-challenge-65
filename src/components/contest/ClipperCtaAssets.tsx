@@ -40,32 +40,35 @@ const overlayAssets = [
 ];
 
 /* ── Copy-paste captions per platform ── */
-const getCaptionTemplates = (link: string) => [
+const getCaptionTemplates = (link: string, code?: string | null) => {
+  const ownershipTag = code ? `#IABAF_${code}` : "#IABAF_YOURCODE";
+  return [
   {
     label: "🎵 TikTok — Science Hook",
-    text: `Gratitude literally rewires your brain. Not motivation — neuroscience. 🧠\n\nClaim your FREE Neuro-Hacker wristband → ${link}\n\n#3DayNeuroHackerChallenge #IamBlessedAF #GratitudeChallenge #BrainHack #Neuroscience #fyp #foryoupage #mindset #mentalhealthmatters`,
+    text: `Gratitude literally rewires your brain. Not motivation — neuroscience. 🧠\n\nClaim your FREE Neuro-Hacker wristband → ${link}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF #GratitudeChallenge #BrainHack #Neuroscience #fyp #foryoupage #mindset #mentalhealthmatters`,
   },
   {
     label: "🎵 TikTok — Hustle Hook",
-    text: `I'm getting paid to spread gratitude. Not kidding.\n\n$2.22 per clip. $1,111 bonus at 1M views.\n\nGet your FREE wristband → ${link}\n\n#3DayNeuroHackerChallenge #IamBlessedAF #SideHustle #CreatorEconomy #MoneyTok #GratitudeChallenge #fyp`,
+    text: `I'm getting paid to spread gratitude. Not kidding.\n\n$2.22 per clip. $1,111 bonus at 1M views.\n\nGet your FREE wristband → ${link}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF #SideHustle #CreatorEconomy #MoneyTok #GratitudeChallenge #fyp`,
   },
   {
     label: "📸 IG Reels — Emotional Hook",
-    text: `3 days of gratitude texts = 27× more serotonin. Science says so. 🔥\n\nJoin the FREE 3-Day Neuro-Hacker Challenge & claim your wristband 🧠\n\n→ Link in bio or ${link}\n\n#3DayNeuroHackerChallenge #IamBlessedAF #GratitudeChallenge #ReelsViral #Neuroscience #MentalHealth #SelfImprovement #Mindfulness #Gratitude`,
+    text: `3 days of gratitude texts = 27× more serotonin. Science says so. 🔥\n\nJoin the FREE 3-Day Neuro-Hacker Challenge & claim your wristband 🧠\n\n→ Link in bio or ${link}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF #GratitudeChallenge #ReelsViral #Neuroscience #MentalHealth #SelfImprovement #Mindfulness #Gratitude`,
   },
   {
     label: "📸 IG Reels — Gift Hook",
-    text: `Tag someone who deserves a FREE gratitude wristband 🎁🙏\n\nEvery wristband honors Huberman's Neuroscience of Gratitude & donates 11 meals 🍽️\n\n→ ${link}\n\n#3DayNeuroHackerChallenge #IamBlessedAF #GratitudeChallenge #FreeGift #TagSomeone #Blessed #GiveBack #Reels`,
+    text: `Tag someone who deserves a FREE gratitude wristband 🎁🙏\n\nEvery wristband honors Huberman's Neuroscience of Gratitude & donates 11 meals 🍽️\n\n→ ${link}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF #GratitudeChallenge #FreeGift #TagSomeone #Blessed #GiveBack #Reels`,
   },
   {
     label: "▶️ YouTube Shorts — Challenge Hook",
-    text: `The 3-Day Neuro-Hacker Challenge is changing lives 🧠🔥\n\n3 days. 3 gratitude texts. Science-backed brain rewiring.\n\nJoin FREE + get your wristband → ${link}\n\n#3DayNeuroHackerChallenge #IamBlessedAF #GratitudeChallenge #Shorts #Neuroscience #BrainHack #MentalHealth`,
+    text: `The 3-Day Neuro-Hacker Challenge is changing lives 🧠🔥\n\n3 days. 3 gratitude texts. Science-backed brain rewiring.\n\nJoin FREE + get your wristband → ${link}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF #GratitudeChallenge #Shorts #Neuroscience #BrainHack #MentalHealth`,
   },
   {
     label: "▶️ YouTube Shorts — Creator Earnings",
-    text: `How I'm earning $2.22+ per clip just spreading gratitude 🙏💰\n\nThe Gratitude Clips Challenge pays you per verified view.\n\nGet your FREE wristband → ${link}\n\n#3DayNeuroHackerChallenge #IamBlessedAF #SideHustle #CreatorEconomy #Shorts #MakeMoneyOnline #GratitudeChallenge`,
+    text: `How I'm earning $2.22+ per clip just spreading gratitude 🙏💰\n\nThe Gratitude Clips Challenge pays you per verified view.\n\nGet your FREE wristband → ${link}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF #SideHustle #CreatorEconomy #Shorts #MakeMoneyOnline #GratitudeChallenge`,
   },
 ];
+};
 
 /* ── Overlay Preview Modal ── */
 const OverlayPreview = ({ asset, onClose }: { asset: typeof overlayAssets[0]; onClose: () => void }) => (
@@ -98,7 +101,7 @@ const handleDownload = (file: string, label: string) => {
   toast.success(`"${label}" downloaded! Drag it into CapCut or your editor.`);
 };
 
-const ClipperCtaAssets = ({ referralLink }: { referralLink?: string | null }) => {
+const ClipperCtaAssets = ({ referralLink, referralCode }: { referralLink?: string | null; referralCode?: string | null }) => {
   const [previewAsset, setPreviewAsset] = useState<typeof overlayAssets[0] | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -244,7 +247,7 @@ const ClipperCtaAssets = ({ referralLink }: { referralLink?: string | null }) =>
             Your referral link is already included. Just copy, paste & post!
           </p>
           <div className="space-y-3">
-            {getCaptionTemplates(referralLink || "https://iamblessedaf.com/challenge").map((tmpl) => (
+            {getCaptionTemplates(referralLink || "https://iamblessedaf.com/challenge", referralCode).map((tmpl) => (
               <div key={tmpl.label} className="bg-card border border-border/50 rounded-xl p-4 space-y-2">
                 <p className="text-sm font-semibold text-foreground">{tmpl.label}</p>
                 <p className="text-xs text-muted-foreground whitespace-pre-line leading-relaxed font-mono bg-secondary/30 rounded-lg p-3">

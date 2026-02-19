@@ -17,6 +17,7 @@ interface TopClip {
 interface Props {
   userId: string;
   referralLink?: string | null;
+  referralCode?: string | null;
 }
 
 const platformIcons: Record<string, string> = {
@@ -26,7 +27,7 @@ const platformIcons: Record<string, string> = {
   other: "🎬",
 };
 
-const ClipperRepostGallery = ({ userId, referralLink }: Props) => {
+const ClipperRepostGallery = ({ userId, referralLink, referralCode }: Props) => {
   const [clips, setClips] = useState<TopClip[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -61,7 +62,8 @@ const ClipperRepostGallery = ({ userId, referralLink }: Props) => {
 
   const handleCopyCaption = (clip: TopClip) => {
     const link = referralLink || "https://iamblessedaf.com/challenge";
-    const caption = `🧠 Gratitude rewires your brain. Science says so.\n\nJoin the FREE 3-Day Neuro-Hacker Challenge → ${link}\n\n#3DayNeuroHackerChallenge #IamBlessedAF #GratitudeChallenge #${clip.platform === "tiktok" ? "fyp" : clip.platform === "youtube" ? "Shorts" : "Reels"}`;
+    const ownershipTag = referralCode ? `#IABAF_${referralCode}` : "#IABAF_YOURCODE";
+    const caption = `🧠 Gratitude rewires your brain. Science says so.\n\nJoin the FREE 3-Day Neuro-Hacker Challenge → ${link}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF #GratitudeChallenge #${clip.platform === "tiktok" ? "fyp" : clip.platform === "youtube" ? "Shorts" : "Reels"}`;
     navigator.clipboard.writeText(caption);
     setCopiedId(clip.id);
     toast.success("Caption copied with your referral link! 🔗");

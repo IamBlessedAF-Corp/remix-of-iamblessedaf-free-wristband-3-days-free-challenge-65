@@ -42,7 +42,7 @@ export default function CrossFunnelShareNudge({ referralUrl }: Props) {
 
   const handleShare = async () => {
     const url = referralUrl || "https://iamblessedaf.com/challenge";
-    const text = `🎁 I'm gifting FREE "I Am Blessed AF" wristbands!\n\nClaim yours: ${url}`;
+    const text = `🎁 I'm gifting FREE "I Am Blessed AF" wristbands!\n\nClaim yours: ${url}\n\n#3DayNeuroHackerChallenge #IamBlessedAF`;
 
     if (navigator.share) {
       try {

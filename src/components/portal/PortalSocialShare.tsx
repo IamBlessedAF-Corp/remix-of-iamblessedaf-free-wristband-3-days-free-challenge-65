@@ -40,6 +40,8 @@ export default function PortalSocialShare({ referralCode, displayName, open, onC
 
   const url = shortUrl || rawUrl;
 
+  const ownershipTag = `#IABAF_${referralCode}`;
+
   const PLATFORMS: PlatformConfig[] = [
     {
       id: "whatsapp",
@@ -47,8 +49,8 @@ export default function PortalSocialShare({ referralCode, displayName, open, onC
       emoji: "💬",
       color: "bg-[hsl(120_100%_50%)] text-[hsl(0_0%_100%)]",
       reward: 40,
-      caption: `🎁 I just blessed someone with a FREE Neuro-Hacker Wristband! 🙏\n\nEvery wristband worn honors Andrew Huberman's Gratitude Research & donates 11 meals to Tony Robbins' "1 Billion Meals Challenge" 🍽️\n\nGet yours FREE: ${url}`,
-      hashtags: "#IamBlessedAF #BlessedAF #Gratitude",
+      caption: `🎁 I just blessed someone with a FREE Neuro-Hacker Wristband! 🙏\n\nEvery wristband worn honors Andrew Huberman's Gratitude Research & donates 11 meals to Tony Robbins' "1 Billion Meals Challenge" 🍽️\n\nGet yours FREE: ${url}\n\n#3DayNeuroHackerChallenge ${ownershipTag}`,
+      hashtags: `#IamBlessedAF #BlessedAF #Gratitude ${ownershipTag}`,
       shareUrl: (u, t) => `https://wa.me/?text=${encodeURIComponent(t)}`,
     },
     {
@@ -58,7 +60,7 @@ export default function PortalSocialShare({ referralCode, displayName, open, onC
       color: "bg-[hsl(0_0%_0%)] text-[hsl(0_0%_100%)]",
       reward: 30,
       caption: `I just blessed someone with a FREE gratitude Neuro-Hacker Wristband 🙏🎁\n\nEvery wristband honors Huberman's Neuroscience of Gratitude & donates 11 meals to Tony Robbins' "1 Billion Meals Challenge" 🍽️\n\nLink in bio to get yours FREE 👇\n\n${url}`,
-      hashtags: "#IamBlessedAF #GratitudeChallenge #FreeGift #BlessedAF #Gratitude",
+      hashtags: `#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF #GratitudeChallenge #FreeGift #BlessedAF #Gratitude`,
       shareUrl: (u, t) => `https://www.tiktok.com/`,
     },
     {
@@ -68,7 +70,7 @@ export default function PortalSocialShare({ referralCode, displayName, open, onC
       color: "bg-[hsl(330_60%_50%)] text-[hsl(0_0%_100%)]",
       reward: 30,
       caption: `I'm on a mission to honor Andrew Huberman's Gratitude Research 🙏🧠\n\nI got my FREE "I Am Blessed AF" Neuro-Hacker Wristband and YOU can get one too — link in my bio!\n\nEvery wristband = 11 meals donated to Tony Robbins' "1 Billion Meals Challenge" 🍽️🎁\n\n${url}`,
-      hashtags: "#IamBlessedAF #Blessed #GratitudeChallenge #FreeWristband #GiveBack",
+      hashtags: `#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF #Blessed #GratitudeChallenge #FreeWristband #GiveBack`,
       shareUrl: (u, t) => `https://www.instagram.com/`,
     },
     {
@@ -77,8 +79,8 @@ export default function PortalSocialShare({ referralCode, displayName, open, onC
       emoji: "𝕏",
       color: "bg-foreground text-background",
       reward: 30,
-      caption: `I'm gifting FREE "I Am Blessed AF" Neuro-Hacker Wristbands 🎁\n\nEach one honors Huberman's Gratitude Research & donates 11 meals to Tony Robbins' "1 Billion Meals Challenge" 🍽️\n\nClaim yours: ${url}\n\n#IamBlessedAF`,
-      hashtags: "#IamBlessedAF #Gratitude",
+      caption: `I'm gifting FREE "I Am Blessed AF" Neuro-Hacker Wristbands 🎁\n\nEach one honors Huberman's Gratitude Research & donates 11 meals to Tony Robbins' "1 Billion Meals Challenge" 🍽️\n\nClaim yours: ${url}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF`,
+      hashtags: `#IamBlessedAF #Gratitude ${ownershipTag}`,
       shareUrl: (u, t) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(t)}&url=${encodeURIComponent(u)}`,
     },
     {
@@ -87,8 +89,8 @@ export default function PortalSocialShare({ referralCode, displayName, open, onC
       emoji: "👤",
       color: "bg-[hsl(220_60%_50%)] text-[hsl(0_0%_100%)]",
       reward: 30,
-      caption: `🎁 I'm gifting FREE "I Am Blessed AF" Neuro-Hacker Wristbands!\n\nEvery wristband honors Andrew Huberman's Gratitude Research & donates 11 meals to Tony Robbins' "1 Billion Meals Challenge" 🍽️\n\nClaim yours here:\n${url}\n\nSpread the gratitude 🙏 #IamBlessedAF`,
-      hashtags: "#IamBlessedAF #Blessed #Gratitude",
+      caption: `🎁 I'm gifting FREE "I Am Blessed AF" Neuro-Hacker Wristbands!\n\nEvery wristband honors Andrew Huberman's Gratitude Research & donates 11 meals to Tony Robbins' "1 Billion Meals Challenge" 🍽️\n\nClaim yours here:\n${url}\n\nSpread the gratitude 🙏 #3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF`,
+      hashtags: `#IamBlessedAF #Blessed #Gratitude ${ownershipTag}`,
       shareUrl: (u, t) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(u)}&quote=${encodeURIComponent(t)}`,
     },
     {
@@ -97,8 +99,8 @@ export default function PortalSocialShare({ referralCode, displayName, open, onC
       emoji: "👻",
       color: "bg-[hsl(50_100%_50%)] text-[hsl(0_0%_0%)]",
       reward: 20,
-      caption: `🎁 FREE wristband alert! Claim your "I Am Blessed AF" wristband — each one donates 11 meals to Tony Robbins' "1 Billion Meals Challenge" 🍽️🙏\n\n${url}`,
-      hashtags: "#IamBlessedAF",
+      caption: `🎁 FREE wristband alert! Claim your "I Am Blessed AF" wristband — each one donates 11 meals to Tony Robbins' "1 Billion Meals Challenge" 🍽️🙏\n\n${url}\n\n#3DayNeuroHackerChallenge ${ownershipTag}`,
+      hashtags: `#IamBlessedAF ${ownershipTag}`,
       shareUrl: (u, t) => `https://www.snapchat.com/`,
     },
     {
@@ -107,8 +109,8 @@ export default function PortalSocialShare({ referralCode, displayName, open, onC
       emoji: "🧵",
       color: "bg-foreground text-background",
       reward: 20,
-      caption: `Wearing my "I Am Blessed AF" wristband 🙏\n\nEvery wristband honors Huberman's Gratitude Research & donates 11 meals to Tony Robbins' "1 Billion Meals Challenge" 🍽️\n\nGet yours FREE: ${url}\n\n#IamBlessedAF`,
-      hashtags: "#IamBlessedAF #Gratitude",
+      caption: `Wearing my "I Am Blessed AF" wristband 🙏\n\nEvery wristband honors Huberman's Gratitude Research & donates 11 meals to Tony Robbins' "1 Billion Meals Challenge" 🍽️\n\nGet yours FREE: ${url}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF`,
+      hashtags: `#IamBlessedAF #Gratitude ${ownershipTag}`,
       shareUrl: (u, t) => `https://www.threads.net/intent/post?text=${encodeURIComponent(t + " " + u)}`,
     },
   ];

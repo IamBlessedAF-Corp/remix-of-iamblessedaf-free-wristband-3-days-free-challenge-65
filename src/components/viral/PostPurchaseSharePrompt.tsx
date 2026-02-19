@@ -25,7 +25,7 @@ export default function PostPurchaseSharePrompt({ referralUrl, tierName, onDismi
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
 
-  const shareText = `🙏 I just joined the gratitude movement and donated meals to families in need!\n\nGet your FREE "I Am Blessed AF" wristband too 👇\n${referralUrl}`;
+  const shareText = `🙏 I just joined the gratitude movement and donated meals to families in need!\n\nGet your FREE "I Am Blessed AF" wristband too 👇\n${referralUrl}\n\n#3DayNeuroHackerChallenge #IamBlessedAF`;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(referralUrl);

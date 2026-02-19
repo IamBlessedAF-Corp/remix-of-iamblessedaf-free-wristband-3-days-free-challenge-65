@@ -167,12 +167,13 @@ const ChallengeThanks = () => {
   };
 
   // Short, punchy share texts optimized for each platform
-  const tiktokText = `🎁 Someone is GRATEFUL for you!\nThey just sent you a FREE wristband ($11 value)\n\n✅ Waterproof nylon — wear it everywhere\n✅ Or grab all 3 colors for $22\n\n💰 PLUS: Join the FREE 3-Day Gratitude Challenge & win $1,111!\n\nClaim yours 👇\n${shareUrl}`;
-  const instagramText = `🎁 Someone just sent you a FREE "I Am Blessed AF" Wristband!\n\nThey're grateful for YOU 🙏\n\n✅ FREE wristband ($11 value)\n✅ Waterproof nylon — daily gratitude trigger\n💰 PLUS: Join the 3-Day Challenge & win $1,111!\n\nClaim yours → ${shareUrl}\n\n#grateful #blessed #iamblessedaf #gratitudechallenge`;
-  const youtubeText = `🎁 Gift a FREE Wristband to Someone You're Grateful For!\n\nSend a FREE "I Am Blessed AF" wristband ($11 value) to someone you care about.\n\n✅ Waterproof nylon — wear it daily as a gratitude trigger\n💰 PLUS they can join the 3-Day Gratitude Challenge & win $1,111!\n\nSend the gift: ${shareUrl}`;
-  const twitterText = `🎁 Just sent someone a FREE wristband because I'm grateful for them!\n\n✅ $11 value — waterproof nylon gratitude trigger\n💰 + FREE 3-Day Challenge to win $1,111\n\nSend one to someone you love 👇`;
-  const facebookText = `🎁 I just sent someone a FREE "I Am Blessed AF" wristband ($11 value) because I'm grateful for them! Waterproof nylon you wear daily as a gratitude trigger. PLUS they can join the FREE 3-Day Gratitude Challenge and win $1,111! Send one to someone you love 🙏`;
-  const whatsappText = `🎁 I just blessed someone with a FREE wristband! 🙏\n\nEach one helps feed 11 people when you wear it.\n\nGet yours FREE here: ${shareUrl}`;
+  const ownershipTag = referralCode ? `#IABAF_${referralCode}` : "";
+  const tiktokText = `🎁 Someone is GRATEFUL for you!\nThey just sent you a FREE wristband ($11 value)\n\n✅ Waterproof nylon — wear it everywhere\n✅ Or grab all 3 colors for $22\n\n💰 PLUS: Join the FREE 3-Day Gratitude Challenge & win $1,111!\n\nClaim yours 👇\n${shareUrl}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF`;
+  const instagramText = `🎁 Someone just sent you a FREE "I Am Blessed AF" Wristband!\n\nThey're grateful for YOU 🙏\n\n✅ FREE wristband ($11 value)\n✅ Waterproof nylon — daily gratitude trigger\n💰 PLUS: Join the 3-Day Challenge & win $1,111!\n\nClaim yours → ${shareUrl}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #grateful #blessed #iamblessedaf #gratitudechallenge`;
+  const youtubeText = `🎁 Gift a FREE Wristband to Someone You're Grateful For!\n\nSend a FREE "I Am Blessed AF" wristband ($11 value) to someone you care about.\n\n✅ Waterproof nylon — wear it daily as a gratitude trigger\n💰 PLUS they can join the 3-Day Gratitude Challenge & win $1,111!\n\nSend the gift: ${shareUrl}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF`;
+  const twitterText = `🎁 Just sent someone a FREE wristband because I'm grateful for them!\n\n✅ $11 value — waterproof nylon gratitude trigger\n💰 + FREE 3-Day Challenge to win $1,111\n\nSend one to someone you love 👇 #3DayNeuroHackerChallenge ${ownershipTag}`;
+  const facebookText = `🎁 I just sent someone a FREE "I Am Blessed AF" wristband ($11 value) because I'm grateful for them! Waterproof nylon you wear daily as a gratitude trigger. PLUS they can join the FREE 3-Day Gratitude Challenge and win $1,111! Send one to someone you love 🙏 #3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF`;
+  const whatsappText = `🎁 I just blessed someone with a FREE wristband! 🙏\n\nEach one helps feed 11 people when you wear it.\n\nGet yours FREE here: ${shareUrl}\n\n#3DayNeuroHackerChallenge ${ownershipTag}`;
 
   const shareToWhatsApp = () => {
     const waUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
