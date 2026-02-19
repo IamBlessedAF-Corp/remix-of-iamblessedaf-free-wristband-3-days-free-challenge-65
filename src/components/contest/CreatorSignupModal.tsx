@@ -13,7 +13,7 @@ const signupSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required").max(50),
   email: z.string().trim().email("Please enter a valid email").max(255),
   password: z.string().min(6, "Password must be at least 6 characters").max(100),
-  referralCode: z.string().trim().max(20).optional(),
+  referralCode: z.string().trim().min(1, "Referral code is required").max(20),
 });
 
 interface CreatorSignupModalProps {
@@ -48,7 +48,7 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
   );
   const [otpCode, setOtpCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ firstName?: string; email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ firstName?: string; email?: string; password?: string; referralCode?: string }>({});
 
   const { signInWithGoogle, signInWithApple, signUpWithEmail, signInWithEmail } = useAuth();
   const { toast } = useToast();
@@ -106,7 +106,7 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
 
   const handleSendOtp = async () => {
     setErrors({});
-    const validateObj = { firstName, email, password, referralCode: referralCodeInput || undefined };
+    const validateObj = { firstName, email, password, referralCode: referralCodeInput || "" };
     const result = signupSchema.safeParse(validateObj);
     if (!result.success) {
       const fieldErrors: typeof errors = {};
@@ -114,6 +114,7 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
         if (err.path[0] === "firstName") fieldErrors.firstName = err.message;
         if (err.path[0] === "email") fieldErrors.email = err.message;
         if (err.path[0] === "password") fieldErrors.password = err.message;
+        if (err.path[0] === "referralCode") fieldErrors.referralCode = err.message;
       });
       setErrors(fieldErrors);
       return;
@@ -315,7 +316,7 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
                     <div className="relative">
                       <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                       <Input
-                        placeholder="Referral code (optional)"
+                        placeholder="Referral code (required)"
                         value={referralCodeInput}
                         onChange={(e) => setReferralCodeInput(e.target.value.toUpperCase())}
                         className="pl-10 h-12 uppercase"
@@ -323,6 +324,7 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
                         maxLength={20}
                       />
                     </div>
+                    {errors.referralCode && <p className="text-sm text-destructive mt-1">{errors.referralCode}</p>}
                   </div>
                 )}
                   {errors.password && <p className="text-sm text-destructive mt-1">{errors.password}</p>}
