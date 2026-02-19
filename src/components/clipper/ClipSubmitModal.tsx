@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,12 +42,28 @@ interface VerificationResult {
   view_count?: number;
 }
 
-const ClipSubmitModal = ({ open, onOpenChange, userId, onSubmitted, referralCode }: Props) => {
+const ClipSubmitModal = ({ open, onOpenChange, userId, onSubmitted, referralCode: referralCodeProp }: Props) => {
   const [clipUrl, setClipUrl] = useState("");
   const [platform, setPlatform] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<VerificationResult | null>(null);
+  const [fetchedCode, setFetchedCode] = useState<string | null>(null);
   const { toast } = useToast();
+
+  // Fallback: fetch referral code if prop not provided
+  useEffect(() => {
+    if (referralCodeProp || !userId || !open) return;
+    supabase
+      .from("creator_profiles")
+      .select("referral_code")
+      .eq("user_id", userId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.referral_code) setFetchedCode(data.referral_code);
+      });
+  }, [referralCodeProp, userId, open]);
+
+  const referralCode = referralCodeProp || fetchedCode;
 
   const isValidUrl = (url: string) => {
     try { new URL(url); return true; } catch { return false; }
@@ -104,6 +120,7 @@ const ClipSubmitModal = ({ open, onOpenChange, userId, onSubmitted, referralCode
       setClipUrl("");
       setPlatform("");
       setResult(null);
+      setFetchedCode(null);
       onOpenChange(val);
     }
   };
