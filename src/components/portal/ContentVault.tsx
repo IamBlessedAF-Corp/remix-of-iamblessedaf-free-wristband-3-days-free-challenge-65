@@ -85,7 +85,8 @@ const ContentVault = ({ referralCode, userId }: ContentVaultProps) => {
     : "https://iamblessedaf.com/offer/111";
 
   const handleCopyLink = async (clip: VaultClip) => {
-    const text = `Check this out 🙏 ${referralLink}`;
+    const ownershipTag = referralCode ? `#IABAF_${referralCode}` : "";
+    const text = `Check this out 🙏 ${referralLink}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF`;
     navigator.clipboard.writeText(text);
     setCopiedId(clip.id);
     toast.success("Caption + referral link copied!");

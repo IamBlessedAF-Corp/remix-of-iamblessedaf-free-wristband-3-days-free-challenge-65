@@ -163,7 +163,7 @@ const ClipperDashboard = () => {
             >
               <GratitudeDegenBlock referralLink={referralLink} />
               <EarningsSliderCalculator referralLink={referralLink} />
-              <ClipperCtaAssets referralLink={referralLink} />
+              <ClipperCtaAssets referralLink={referralLink} referralCode={referralCode} />
               <InspirationGallery referralLink={referralLink} />
             </motion.div>
           </TabsContent>
@@ -176,7 +176,7 @@ const ClipperDashboard = () => {
               className="space-y-4"
             >
               <MonthlyBonusTracker userId={user.id} totalLifetimeViews={dashboard.totalViews} />
-              <ClipperRepostGallery userId={user.id} referralLink={referralLink} />
+              <ClipperRepostGallery userId={user.id} referralLink={referralLink} referralCode={referralCode} />
             </motion.div>
           </TabsContent>
 
