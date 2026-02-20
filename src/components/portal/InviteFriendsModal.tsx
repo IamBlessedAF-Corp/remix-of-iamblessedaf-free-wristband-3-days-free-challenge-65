@@ -58,7 +58,7 @@ export default function InviteFriendsModal({
   };
 
   const addFriend = () => {
-    if (friends.length < 3) {
+    if (friends.length < 10) {
       setFriends((prev) => [...prev, { name: "", phone: "", message: "" }]);
     }
   };
@@ -140,7 +140,7 @@ export default function InviteFriendsModal({
               </div>
               <div>
                 <h2 className="text-lg font-black text-foreground">
-                  {sent ? "¡Invitaciones Enviadas!" : "Invita a 3 Amigos"}
+                  {sent ? "¡Invitaciones Enviadas!" : "Nomina Amigos para el Challenge"}
                 </h2>
                 <p className="text-xs text-muted-foreground">
                   {sent
@@ -293,14 +293,14 @@ export default function InviteFriendsModal({
                 ))}
 
                 {/* Add friend button */}
-                {friends.length < 3 && (
+                {friends.length < 10 && (
                   <Button
                     variant="outline"
                     onClick={addFriend}
                     className="w-full h-10 rounded-xl text-sm gap-2 border-dashed"
                   >
                     <Plus className="w-4 h-4" />
-                    Agregar amigo ({friends.length}/3)
+                    Agregar amigo ({friends.length}/10)
                   </Button>
                 )}
 

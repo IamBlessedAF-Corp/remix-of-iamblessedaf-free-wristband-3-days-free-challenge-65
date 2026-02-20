@@ -92,6 +92,42 @@ export type Database = {
         }
         Relationships: []
       }
+      ambassador_levels: {
+        Row: {
+          commission_rate: number | null
+          created_at: string
+          id: string
+          level: string
+          level_upgraded_at: string | null
+          total_earned_cents: number | null
+          total_referrals: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          level?: string
+          level_upgraded_at?: string | null
+          total_earned_cents?: number | null
+          total_referrals?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          level?: string
+          level_upgraded_at?: string | null
+          total_earned_cents?: number | null
+          total_referrals?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           changed_fields: string[] | null
@@ -692,6 +728,48 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           value?: string
+        }
+        Relationships: []
+      }
+      challenge_events: {
+        Row: {
+          created_at: string
+          description: string | null
+          ends_at: string
+          hero_image_url: string | null
+          id: string
+          name: string
+          prize_description: string | null
+          starts_at: string
+          status: string
+          theme: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          ends_at: string
+          hero_image_url?: string | null
+          id?: string
+          name: string
+          prize_description?: string | null
+          starts_at: string
+          status?: string
+          theme?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          ends_at?: string
+          hero_image_url?: string | null
+          id?: string
+          name?: string
+          prize_description?: string | null
+          starts_at?: string
+          status?: string
+          theme?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1358,6 +1436,105 @@ export type Database = {
           },
         ]
       }
+      nomination_chains: {
+        Row: {
+          created_at: string
+          id: string
+          max_depth: number | null
+          root_user_id: string
+          root_user_name: string | null
+          total_acceptances: number | null
+          total_nominations: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          max_depth?: number | null
+          root_user_id: string
+          root_user_name?: string | null
+          total_acceptances?: number | null
+          total_nominations?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          max_depth?: number | null
+          root_user_id?: string
+          root_user_name?: string | null
+          total_acceptances?: number | null
+          total_nominations?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      nominations: {
+        Row: {
+          accepted_at: string | null
+          chain_depth: number | null
+          chain_id: string | null
+          created_at: string
+          expires_at: string
+          gratitude_message: string
+          id: string
+          nomination_message: string
+          recipient_email: string | null
+          recipient_name: string
+          recipient_phone: string | null
+          referral_code: string | null
+          reminder_1_sent_at: string | null
+          reminder_2_sent_at: string | null
+          reminder_3_sent_at: string | null
+          sender_id: string
+          sender_name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          chain_depth?: number | null
+          chain_id?: string | null
+          created_at?: string
+          expires_at?: string
+          gratitude_message: string
+          id?: string
+          nomination_message?: string
+          recipient_email?: string | null
+          recipient_name: string
+          recipient_phone?: string | null
+          referral_code?: string | null
+          reminder_1_sent_at?: string | null
+          reminder_2_sent_at?: string | null
+          reminder_3_sent_at?: string | null
+          sender_id: string
+          sender_name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          chain_depth?: number | null
+          chain_id?: string | null
+          created_at?: string
+          expires_at?: string
+          gratitude_message?: string
+          id?: string
+          nomination_message?: string
+          recipient_email?: string | null
+          recipient_name?: string
+          recipient_phone?: string | null
+          referral_code?: string | null
+          reminder_1_sent_at?: string | null
+          reminder_2_sent_at?: string | null
+          reminder_3_sent_at?: string | null
+          sender_id?: string
+          sender_name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           amount_cents: number
@@ -1460,6 +1637,36 @@ export type Database = {
         }
         Relationships: []
       }
+      qr_scans: {
+        Row: {
+          converted_to_signup: boolean | null
+          created_at: string
+          id: string
+          scanner_ip_hash: string | null
+          scanner_user_agent: string | null
+          wearer_referral_code: string | null
+          wearer_user_id: string | null
+        }
+        Insert: {
+          converted_to_signup?: boolean | null
+          created_at?: string
+          id?: string
+          scanner_ip_hash?: string | null
+          scanner_user_agent?: string | null
+          wearer_referral_code?: string | null
+          wearer_user_id?: string | null
+        }
+        Update: {
+          converted_to_signup?: boolean | null
+          created_at?: string
+          id?: string
+          scanner_ip_hash?: string | null
+          scanner_user_agent?: string | null
+          wearer_referral_code?: string | null
+          wearer_user_id?: string | null
+        }
+        Relationships: []
+      }
       query_performance_logs: {
         Row: {
           connection_info: Json | null
@@ -1496,6 +1703,39 @@ export type Database = {
           row_count?: number | null
           severity?: string
           source?: string
+        }
+        Relationships: []
+      }
+      referral_sprints: {
+        Row: {
+          created_at: string
+          ends_at: string
+          id: string
+          name: string
+          prize_description: string | null
+          starts_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ends_at: string
+          id?: string
+          name: string
+          prize_description?: string | null
+          starts_at: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string
+          id?: string
+          name?: string
+          prize_description?: string | null
+          starts_at?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1821,6 +2061,44 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      sprint_entries: {
+        Row: {
+          acceptances_count: number | null
+          created_at: string
+          id: string
+          nominations_count: number | null
+          sprint_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          acceptances_count?: number | null
+          created_at?: string
+          id?: string
+          nominations_count?: number | null
+          sprint_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          acceptances_count?: number | null
+          created_at?: string
+          id?: string
+          nominations_count?: number | null
+          sprint_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sprint_entries_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "referral_sprints"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tgf_friday_contacts: {
         Row: {
