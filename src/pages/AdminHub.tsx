@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Film, Award, Users, Link2, Settings, Blocks,
   ShieldAlert, CreditCard, Kanban, Map, ScrollText, Brain, Database,
   Trophy, Bell, LogOut, RefreshCw, Menu, ChevronLeft, Shield,
-  DollarSign, Zap, Target, ChevronDown, ChevronRight, Search, Globe, Type, MessageSquare, BarChart3, TrendingUp,
+  DollarSign, Zap, Target, ChevronDown, ChevronRight, Search, Globe, Type, MessageSquare, BarChart3, TrendingUp, ShoppingCart,
   Bug, Video, FileText, Play, Edit3, Scissors, Star,
 } from "lucide-react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
@@ -51,6 +51,7 @@ import ChangelogTab from "@/components/admin/ChangelogTab";
 import BudgetControlTab from "@/components/admin/BudgetControlTab";
 import AuditLogTab from "@/components/admin/tabs/AuditLogTab";
 import ErrorMonitorTab from "@/components/admin/tabs/ErrorMonitorTab";
+import AbandonedCartsTab from "@/components/admin/tabs/AbandonedCartsTab";
 import GlobalSearchModal from "@/components/admin/GlobalSearchModal";
 
 export type { BlockSubFilter } from "@/types/adminBlocks";
@@ -60,7 +61,7 @@ const ALL_TAB_IDS = [
   "dashboard", "clippers", "congrats", "experts", "links", "traffic",
   "campaign", "blocks", "risk", "payments", "board",
   "roadmap", "logs", "forecast", "fraud", "leaderboard",
-  "alerts", "budget", "orders", "blessings", "challenge",
+  "alerts", "budget", "orders", "abandonedcarts", "blessings", "challenge",
   "messaging", "copymanager", "sms", "gamification", "affiliates", "referrals", "waitlist", "roles", "users",
   "integrations", "database", "auditlog", "backups", "errors",
 ] as const;
@@ -135,6 +136,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
     group: "Finance & Orders", icon: DollarSign,
     items: [
       { id: "orders", label: "Orders", icon: CreditCard },
+      { id: "abandonedcarts", label: "Abandoned Carts", icon: ShoppingCart },
       { id: "payments", label: "Payments", icon: CreditCard },
       { id: "budget", label: "Budget Control", icon: DollarSign },
     ],
@@ -196,6 +198,7 @@ function TabContent({ tab, blockSubFilter }: { tab: TabId; blockSubFilter: Block
     case "alerts": return <AlertsTab />;
     case "budget": return <BudgetControlTab />;
     case "orders": return <OrdersTab />;
+    case "abandonedcarts": return <AbandonedCartsTab />;
     case "blessings": return <BlessingsTab />;
     case "challenge": return <ChallengeTab />;
     case "messaging": return <MessagingTab />;
