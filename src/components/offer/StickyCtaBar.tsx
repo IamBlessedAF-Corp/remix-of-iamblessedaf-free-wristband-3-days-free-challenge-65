@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { useUtmCta } from "@/hooks/useUtmCta";
 
 interface StickyCtaBarProps {
   onCheckout: () => void;
@@ -19,10 +20,12 @@ const StickyCtaBar = ({
   loading = false,
   price,
   discount,
-  label = "Add to My Order",
+  label,
   trackingSource = "sticky_bar",
   triggerSelector,
 }: StickyCtaBarProps) => {
+  const utmCta = useUtmCta(label);
+  const resolvedLabel = label ?? utmCta.primary;
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -74,7 +77,7 @@ const StickyCtaBar = ({
           className="flex-1 min-h-[48px] h-auto py-2 px-3 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl btn-glow animate-pulse-glow disabled:opacity-70 disabled:animate-none text-center leading-tight"
         >
           {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-          {loading ? "Processing…" : label}
+          {loading ? "Processing…" : resolvedLabel}
           {!loading && <ArrowRight className="w-4 h-4 ml-2" />}
         </Button>
       </div>

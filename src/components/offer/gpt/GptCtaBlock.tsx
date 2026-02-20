@@ -3,6 +3,7 @@ import { Heart, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OfferTimer from "@/components/offer/OfferTimer";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
+import { useUtmCta } from "@/hooks/useUtmCta";
 
 interface GptCtaBlockProps {
   onCheckout: () => void;
@@ -19,6 +20,10 @@ const GptCtaBlock = ({
   loading = false,
   hidePricing = false,
 }: GptCtaBlockProps) => {
+  const utmCta = useUtmCta(
+    hidePricing ? "🎁 Claim My FREE Custom Shirt Now!" : undefined
+  );
+
   return (
     <motion.div
       className="mb-8"
@@ -62,12 +67,12 @@ const GptCtaBlock = ({
         className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight"
       >
         {loading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Heart className="w-5 h-5 mr-2" />}
-        {loading ? "Creating checkout…" : hidePricing ? "🎁 Claim My FREE Custom Shirt Now!" : "YES! Claim My FREE Custom Shirt NOW! 💌"}
+        {loading ? "Creating checkout…" : utmCta.primary}
         {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
       </Button>
 
       <p className="text-center text-xs text-muted-foreground mt-3">
-        One beautiful act of gratitude · Secure payment · Instant access
+        {utmCta.sub}
       </p>
 
       <div className="mt-4">

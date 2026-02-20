@@ -3,6 +3,7 @@ import { Crown, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OfferTimer from "@/components/offer/OfferTimer";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
+import { useUtmCta } from "@/hooks/useUtmCta";
 
 interface GrokCtaBlockProps {
   onCheckout: () => void;
@@ -17,6 +18,8 @@ const GrokCtaBlock = ({
   showScarcity = false,
   loading = false,
 }: GrokCtaBlockProps) => {
+  const utmCta = useUtmCta();
+
   return (
     <motion.div
       className="mb-8"
@@ -56,12 +59,12 @@ const GrokCtaBlock = ({
         className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight"
       >
         {loading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
-        {loading ? "Creating checkout…" : "ACTIVATE: Deploy 11 Meals + Lock In My Protocol"}
+        {loading ? "Creating checkout…" : utmCta.primary}
         {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
       </Button>
 
       <p className="text-center text-xs text-muted-foreground mt-3 font-mono">
-        One-time secure deployment · Instant protocol access
+        {utmCta.sub}
       </p>
 
       <div className="mt-4">
