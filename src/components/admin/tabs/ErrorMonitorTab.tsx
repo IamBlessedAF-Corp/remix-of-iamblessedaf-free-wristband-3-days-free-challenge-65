@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertTriangle, Bug, CheckCircle, RefreshCw, XCircle } from "lucide-react";
+import { AlertTriangle, Bug, CheckCircle, RefreshCw, XCircle, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import ExportCsvButton from "@/components/admin/ExportCsvButton";
@@ -61,20 +61,22 @@ export default function ErrorMonitorTab() {
     refetchInterval: 30_000,
   });
 
+  const getAuthHeaders = async () => {
+    const token = (await supabase.auth.getSession()).data.session?.access_token
+      || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    return {
+      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    } as Record<string, string>;
+  };
+
   const resolveMutation = useMutation({
     mutationFn: async (errorId: string) => {
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/error_events?id=eq.${errorId}`,
-        {
-          method: "PATCH",
-          headers: {
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-            "Content-Type": "application/json",
-            Prefer: "return=minimal",
-          },
-          body: JSON.stringify({ resolved_at: new Date().toISOString() }),
-        }
+        { method: "PATCH", headers: await getAuthHeaders(), body: JSON.stringify({ resolved_at: new Date().toISOString() }) }
       );
       if (!res.ok) throw new Error("Failed to resolve error");
     },
@@ -82,6 +84,29 @@ export default function ErrorMonitorTab() {
       queryClient.invalidateQueries({ queryKey: ["error-events"] });
       toast.success("Error marked as resolved");
     },
+  });
+
+  // Bulk-resolve all open RUNTIME_ERROR events (false-positive dismissal)
+  const clearRuntimeErrorsMutation = useMutation({
+    mutationFn: async () => {
+      const headers = await getAuthHeaders();
+      // Mark all unresolved RUNTIME_ERROR messages as resolved
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/error_events?resolved_at=is.null&message=ilike.*RUNTIME_ERROR*`,
+        { method: "PATCH", headers, body: JSON.stringify({ resolved_at: new Date().toISOString() }) }
+      );
+      // Also catch errors where the message contains "Script error" or typical test artefacts
+      const res2 = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/error_events?resolved_at=is.null&message=ilike.*Script error*`,
+        { method: "PATCH", headers, body: JSON.stringify({ resolved_at: new Date().toISOString() }) }
+      );
+      if (!res.ok && !res2.ok) throw new Error("Failed to clear errors");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["error-events"] });
+      toast.success("✅ False-positive RUNTIME_ERRORs dismissed");
+    },
+    onError: () => toast.error("Failed to clear errors"),
   });
 
   const stats = {
@@ -112,7 +137,17 @@ export default function ErrorMonitorTab() {
           <h2 className="text-2xl font-bold text-foreground">Error Monitoring</h2>
           <p className="text-sm text-muted-foreground">Sentry-style error tracking across frontend and backend functions</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => clearRuntimeErrorsMutation.mutate()}
+            disabled={clearRuntimeErrorsMutation.isPending}
+            className="gap-2 border-destructive/40 text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 className="w-4 h-4" />
+            {clearRuntimeErrorsMutation.isPending ? "Clearing…" : "Clear RUNTIME_ERRORs"}
+          </Button>
           <ExportCsvButton data={errors} filename="error-events.csv" columns={["created_at", "level", "source", "message", "component", "page_url", "fingerprint", "resolved_at"]} />
           <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2">
             <RefreshCw className="w-4 h-4" /> Refresh
