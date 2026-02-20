@@ -149,7 +149,7 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
       const targetCol = columns.find((c) => c.id === nextColumnId);
       toast.success(`Card advanced to ${targetCol?.name || "next column"}`);
     },
-    [wipColumnId, doneColumnId, cardsByColumn, cards, columns, moveCard, promptForProof]
+    [doneColumnId, cardsByColumn, cards, columns, moveCard, promptForProof]
   );
 
   const handleDragEnd = (result: DropResult) => {
@@ -218,7 +218,7 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
               onCardClick={setSelectedCard}
               onAddCard={(colId) => setCreateColumnId(colId)}
               canEdit={canEditInColumn(column.id)}
-              wipLimit={undefined}
+              
               blockingCardIds={blockingCardIds}
               warningCardIds={warningCardIds}
               allColumns={columns}
