@@ -61,7 +61,12 @@ serve(async (req) => {
       return json({ error: "Invalid token" }, 401);
     }
     const authUserId = claimsData.claims.sub;
-    const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", authUserId).eq("role", "admin").maybeSingle();
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", authUserId)
+      .in("role", ["admin", "super_admin", "developer"])
+      .maybeSingle();
     if (!roleData) {
       return json({ error: "Admin access required" }, 403);
     }
