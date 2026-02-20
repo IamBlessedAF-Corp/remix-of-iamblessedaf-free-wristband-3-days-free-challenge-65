@@ -12,7 +12,6 @@ interface KanbanColumnProps {
   onCardClick: (card: BoardCard) => void;
   onAddCard?: (columnId: string) => void;
   canEdit: boolean;
-  wipLimit?: number;
   blockingCardIds?: Set<string>;
   warningCardIds?: Set<string>;
   allColumns?: BoardColumn[];
@@ -20,8 +19,7 @@ interface KanbanColumnProps {
   onScreenshotAdded?: (cardId: string, screenshots: string[]) => void;
 }
 
-const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit, wipLimit, blockingCardIds, warningCardIds, allColumns, onAdvanceCard, onScreenshotAdded }: KanbanColumnProps) => {
-  const isAtLimit = wipLimit !== undefined && cards.length >= wipLimit;
+const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit, blockingCardIds, warningCardIds, allColumns, onAdvanceCard, onScreenshotAdded }: KanbanColumnProps) => {
   const isManualOnly = column.name.includes("3 Outcomes") || column.name.includes("Ideas") || column.name.includes("👀 Review");
 
   return (
@@ -35,10 +33,8 @@ const KanbanColumn = ({ column, cards, onCardClick, onAddCard, canEdit, wipLimit
           <h3 className="text-sm font-bold text-foreground truncate max-w-[180px]">
             {column.name}
           </h3>
-          <span className={`text-xs rounded-full px-2 py-0.5 ${
-            isAtLimit ? "bg-destructive/20 text-destructive font-bold" : "text-muted-foreground bg-muted"
-          }`}>
-            {cards.length}{wipLimit !== undefined ? `/${wipLimit}` : ""}
+          <span className="text-xs rounded-full px-2 py-0.5 text-muted-foreground bg-muted">
+            {cards.length}
           </span>
           {isManualOnly && (
             <TooltipProvider delayDuration={200}>

@@ -224,12 +224,6 @@ export function useAutoExecute(onRefetch: () => void) {
             break;
           }
 
-          if (data?.wip_blocked) {
-            toast.warning(`⏸ WIP limit reached — waiting for current card to finish`);
-            cardFailed = true;
-            break;
-          }
-
           if (data?.skipped) {
             toast.info(`${icon} Skipped ${label}: ${cardTitle}`);
           } else if (phase === "validate" && data?.validation_status === "fail") {
