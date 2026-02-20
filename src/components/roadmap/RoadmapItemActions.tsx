@@ -85,7 +85,7 @@ const LIVE_DB_TABLES = [
 const ADMIN_TABS = [
   "Dashboard", "Clippers", "Links", "Traffic", "Payments", "Budget Control",
   "Affiliates", "Leaderboard", "Messaging", "Challenge", "Blessings",
-  "Gamification", "Orders", "Experts", "Congrats", "Copy Manager", "Board",
+  "Gamification", "Orders", "Abandoned Carts", "Experts", "Congrats", "Copy Manager", "Board",
   "Roadmap", "Roles", "Database", "Integrations", "Intelligent Blocks",
   "Alerts", "Error Monitor", "Risk Engine", "Fraud Monitor", "Forecast",
   "Changelog", "User Management", "Waitlist", "SMS",
