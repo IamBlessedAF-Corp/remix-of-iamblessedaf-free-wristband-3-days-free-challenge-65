@@ -25,9 +25,8 @@ const REVIEW_POSITION_THRESHOLD = 10;
 /** Columns that trigger the upload-proof prompt (Errors + Review) */
 const PROOF_REQUIRED_COLUMN_NAMES = ["🚨 Errors", "👀 Review"];
 
-/** WIP column only allows 1 active card at a time */
+/** WIP column name */
 const WIP_COLUMN_NAME = "6)  🔨 Work in Progress";
-const WIP_LIMIT = 1;
 
 /** Done column name for publish gate */
 const DONE_COLUMN_NAME = "12)  ✅ Done";
@@ -130,15 +129,6 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
   /** Handle the next-action button advancing a card to the next column */
   const handleAdvanceCard = useCallback(
     (cardId: string, nextColumnId: string) => {
-      // WIP limit check
-      if (wipColumnId && nextColumnId === wipColumnId) {
-        const wipCards = cardsByColumn[wipColumnId] || [];
-        if (wipCards.length >= WIP_LIMIT) {
-          toast.error(`WIP limit reached (${WIP_LIMIT}). Finish the current card first.`);
-          return;
-        }
-      }
-
       // Publish gate check for Done column
       if (doneColumnId && nextColumnId === doneColumnId) {
         const card = cards.find((c) => c.id === cardId);
@@ -172,18 +162,7 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
       return;
     }
 
-    // WIP limit: only 1 card allowed at a time (except when moving within WIP)
-    if (
-      wipColumnId &&
-      destination.droppableId === wipColumnId &&
-      source.droppableId !== wipColumnId
-    ) {
-      const wipCards = cardsByColumn[wipColumnId] || [];
-      if (wipCards.length >= WIP_LIMIT) {
-        toast.error(`WIP limit reached (${WIP_LIMIT}). Finish the current card first.`);
-        return;
-      }
-    }
+
 
     // Publish Gate: intercept moves TO Done column
     if (doneColumnId && destination.droppableId === doneColumnId && source.droppableId !== doneColumnId) {
@@ -239,7 +218,7 @@ const KanbanBoard = ({ isAdmin, columns, cards, loading, moveCard, updateCard, c
               onCardClick={setSelectedCard}
               onAddCard={(colId) => setCreateColumnId(colId)}
               canEdit={canEditInColumn(column.id)}
-              wipLimit={column.id === wipColumnId ? WIP_LIMIT : undefined}
+              wipLimit={undefined}
               blockingCardIds={blockingCardIds}
               warningCardIds={warningCardIds}
               allColumns={columns}
