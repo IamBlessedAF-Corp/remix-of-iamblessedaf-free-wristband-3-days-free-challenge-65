@@ -1,4 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+
 import { useBoard } from "@/hooks/useBoard";
 import { useRoadmapCompletions } from "@/hooks/useRoadmapCompletions";
 import { useRoadmapItems } from "@/hooks/useRoadmapItems";
@@ -82,6 +84,7 @@ function fuzzyMatchTitle(roadmapTitle: string, changelogText: string): boolean {
 type VerifyState = "idle" | "verifying" | "verified" | "failed";
 
 export default function RoadmapTab() {
+  const qc = useQueryClient();
   const board = useBoard();
   const { isCompleted, markDone, unmarkDone, completions } = useRoadmapCompletions();
   const { items: roadmapItems, byPhase, isLoading, isFromDb, seedFromStatic } = useRoadmapItems();
@@ -270,10 +273,9 @@ export default function RoadmapTab() {
       setLastSynced(now);
 
       if (autoMarked > 0) {
-        toast.success(`✅ Roadmap updated! Auto-marked ${autoMarked} item(s) as done. Recalculating gaps...`);
-        // Invalidate completions query
-        window.location.hash = ""; // trigger re-render
-        window.dispatchEvent(new Event("roadmap-synced"));
+        toast.success(`✅ Roadmap updated! Auto-marked ${autoMarked} item(s) as done.`);
+        // Properly invalidate the React Query cache so UI re-renders
+        await qc.invalidateQueries({ queryKey: ["roadmap-completions"] });
       } else {
         toast.info(`✅ Sync complete — no new completions detected. Last synced: ${now}`);
       }
@@ -283,7 +285,7 @@ export default function RoadmapTab() {
     } finally {
       setIsSyncing(false);
     }
-  }, [allItemsWithPhase, isCompleted]);
+  }, [allItemsWithPhase, isCompleted, qc]);
 
   if (isLoading) {
     return <div className="flex justify-center py-20"><RefreshCw className="w-6 h-6 animate-spin text-primary" /></div>;
