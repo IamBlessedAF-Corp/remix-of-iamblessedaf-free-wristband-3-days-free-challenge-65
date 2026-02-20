@@ -11,6 +11,10 @@ interface ShortLinkOptions {
   source_page?: string;
   custom_code?: string;
   metadata?: Record<string, string>;
+  /** UTM params to inject into the destination URL (for CTA attribution) */
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
 }
 
 interface ShortLinkResult {
@@ -66,14 +70,29 @@ export function useShortLinks() {
     [referralCode]
   );
 
-  /** Create a single short link */
+  /** Create a single short link — auto-injects current page UTM params unless overridden */
   const createShortLink = useCallback(
     async (options: ShortLinkOptions): Promise<ShortLinkResult | null> => {
       setLoading(true);
       try {
         const destWithRef = appendReferralCode(options.destination_url);
+
+        // Read current page UTMs to forward into the short link destination
+        const pageParams = new URLSearchParams(window.location.search);
+        const utm_source = options.utm_source ?? pageParams.get("utm_source") ?? undefined;
+        const utm_medium = options.utm_medium ?? pageParams.get("utm_medium") ?? undefined;
+        const utm_campaign = options.utm_campaign ?? pageParams.get("utm_campaign") ?? undefined;
+
         const { data, error } = await supabase.functions.invoke("short-link", {
-          body: { action: "create", ...options, destination_url: destWithRef, created_by: user?.id || undefined },
+          body: {
+            action: "create",
+            ...options,
+            destination_url: destWithRef,
+            created_by: user?.id || undefined,
+            ...(utm_source && { utm_source }),
+            ...(utm_medium && { utm_medium }),
+            ...(utm_campaign && { utm_campaign }),
+          },
         });
 
         if (error) throw error;

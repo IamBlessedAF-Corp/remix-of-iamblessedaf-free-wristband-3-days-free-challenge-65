@@ -19,6 +19,10 @@ const CreateSchema = z.object({
   created_by: z.string().uuid().nullable().optional(),
   custom_code: z.string().regex(/^[a-zA-Z0-9_-]+$/).min(3).max(50).optional(),
   metadata: z.record(z.any()).optional(),
+  /** UTM params to auto-inject into the destination URL for CTA attribution */
+  utm_source: z.string().max(100).optional(),
+  utm_medium: z.string().max(100).optional(),
+  utm_campaign: z.string().max(100).optional(),
 });
 
 const ResolveSchema = z.object({
@@ -163,9 +167,29 @@ Deno.serve(async (req: Request) => {
         attempts++;
       }
 
+      // Inject UTM params into destination URL for CTA attribution
+      let destinationUrl = input.destination_url;
+      if (input.utm_source || input.utm_medium || input.utm_campaign) {
+        try {
+          const parsed = new URL(destinationUrl);
+          if (input.utm_source && !parsed.searchParams.has("utm_source")) {
+            parsed.searchParams.set("utm_source", input.utm_source);
+          }
+          if (input.utm_medium && !parsed.searchParams.has("utm_medium")) {
+            parsed.searchParams.set("utm_medium", input.utm_medium);
+          }
+          if (input.utm_campaign && !parsed.searchParams.has("utm_campaign")) {
+            parsed.searchParams.set("utm_campaign", input.utm_campaign);
+          }
+          destinationUrl = parsed.toString();
+        } catch {
+          // If URL parsing fails, keep original
+        }
+      }
+
       const { data, error } = await supabase.from("short_links").insert({
         short_code: shortCode,
-        destination_url: input.destination_url,
+        destination_url: destinationUrl,
         title: input.title || null,
         campaign: input.campaign || null,
         source_page: input.source_page || null,
