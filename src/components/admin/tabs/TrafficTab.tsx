@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useTrafficAnalytics } from "@/hooks/useTrafficAnalytics";
+import { useLiveFunnelData } from "@/hooks/useLiveFunnelData";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
 import LinkPieCharts from "@/components/admin/LinkPieCharts";
+import SankeyFunnelDiagram from "@/components/admin/SankeyFunnelDiagram";
 import { Button } from "@/components/ui/button";
 import {
   RefreshCw, Eye, Users, MousePointerClick, TrendingDown, Globe, MapPin,
@@ -140,6 +142,14 @@ function DeliverabilityPanel({ d }: { d: NonNullable<ReturnType<typeof useTraffi
 export default function TrafficTab() {
   const [days, setDays] = useState(30);
   const { stats, loading, refetch } = useTrafficAnalytics(days);
+  const {
+    trafficData,
+    signupCount,
+    challengeCount,
+    orderData,
+    shareCount,
+    isLoading: funnelLoading,
+  } = useLiveFunnelData();
 
   if (loading && !stats)
     return <div className="flex justify-center py-20"><RefreshCw className="w-6 h-6 animate-spin text-primary" /></div>;
@@ -158,6 +168,21 @@ export default function TrafficTab() {
           { label: "Delivery Rate", value: `${stats.deliverability.deliveryRate}%` },
         ]}
       />
+
+      {/* ── Real-time Conversion Funnel Sankey ── */}
+      {funnelLoading ? (
+        <div className="flex justify-center py-8"><RefreshCw className="w-5 h-5 animate-spin text-primary" /></div>
+      ) : (
+        <SankeyFunnelDiagram
+          clicks={trafficData?.totalClicks ?? 0}
+          visitors={trafficData?.uniqueVisitors ?? 0}
+          challengeJoined={challengeCount}
+          signups={signupCount}
+          orders={orderData?.totalOrders ?? 0}
+          shares={shareCount}
+          totalRevenueCents={orderData?.totalRevenueCents ?? 0}
+        />
+      )}
 
       {/* Period selector */}
       <div className="flex items-center gap-2">
