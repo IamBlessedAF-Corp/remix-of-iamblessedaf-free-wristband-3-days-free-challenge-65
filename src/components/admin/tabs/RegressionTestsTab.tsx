@@ -31,33 +31,47 @@ const CATEGORY_META: Record<TestCase["category"], { label: string; icon: React.E
   "core-logic":     { label: "Core Logic",       icon: BarChart3,    color: "text-chart-5" },
 };
 
-// Helper to invoke an edge function and expect a non-5xx response
+// Helper to invoke an edge function using raw fetch so errors never escape
+// as unhandled rejections (which would be captured by the global error monitor).
+// 4xx = expected guard rejection → pass; 5xx = server crash → fail.
 async function invokeEdgeFn(
   name: string,
   body: Record<string, unknown> = {},
 ): Promise<{ passed: boolean; details?: string }> {
   try {
-    const { data, error } = await supabase.functions.invoke(name, { body });
-    if (error) {
-      // FunctionsHttpError exposes the HTTP status via context.status
-      const status: number =
-        (error as { context?: { status?: number } }).context?.status ?? 0;
-      const msg = error.message ?? String(error);
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData?.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+    const url = `https://${projectId}.supabase.co/functions/v1/${name}`;
 
-      if (status >= 500) {
-        return { passed: false, details: `${status}: ${msg}` };
-      }
-      // 4xx = expected rejection (validation guard, auth check, etc.) → pass
-      return { passed: true, details: `Expected ${status || "4xx"} rejection: ${msg}` };
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+        "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      },
+      body: JSON.stringify(body),
+    });
+
+    const text = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(text); } catch { parsed = text; }
+
+    if (res.status >= 500) {
+      return { passed: false, details: `${res.status}: ${text.slice(0, 120)}` };
     }
-    return { passed: true, details: JSON.stringify(data).slice(0, 120) };
+    // 4xx = guard working correctly → pass
+    if (res.status >= 400) {
+      const msg = typeof parsed === "object" && parsed !== null
+        ? JSON.stringify(parsed).slice(0, 120)
+        : text.slice(0, 120);
+      return { passed: true, details: `Expected ${res.status} rejection: ${msg}` };
+    }
+    return { passed: true, details: JSON.stringify(parsed).slice(0, 120) };
   } catch (err) {
-    // Network-level or unexpected throw — check if it's a 5xx string
-    const msg = String(err);
-    const is5xx = /5\d\d/.test(msg);
-    if (is5xx) return { passed: false, details: msg };
-    // Any other thrown error from a guarded function is an expected rejection
-    return { passed: true, details: `Expected rejection: ${msg}` };
+    // Network-level failure only (DNS, timeout, etc.)
+    return { passed: false, details: `Network error: ${String(err)}` };
   }
 }
 
