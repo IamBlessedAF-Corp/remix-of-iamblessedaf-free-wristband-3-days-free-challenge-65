@@ -107,10 +107,15 @@ const CardDetailModal = ({
             setUploading(false);
             return;
           }
-          const { data: urlData } = supabase.storage
+          const { data: signedData, error: signError } = await supabase.storage
             .from("board-screenshots")
-            .getPublicUrl(data.path);
-          setScreenshots((prev) => [...prev, urlData.publicUrl]);
+            .createSignedUrl(data.path, 86400 * 7);
+          if (signError || !signedData?.signedUrl) {
+            console.error("Signed URL error:", signError);
+            setUploading(false);
+            return;
+          }
+          setScreenshots((prev) => [...prev, signedData.signedUrl]);
           setUploading(false);
           return;
         }
@@ -165,10 +170,19 @@ const CardDetailModal = ({
       setUploading(false);
       return;
     }
-    const { data: urlData } = supabase.storage
+    const { data: signedData, error: signError } = await supabase.storage
       .from("board-screenshots")
-      .getPublicUrl(data.path);
-    setScreenshots([...screenshots, urlData.publicUrl]);
+      .createSignedUrl(data.path, 86400 * 7);
+    if (signError || !signedData?.signedUrl) {
+      console.error("Signed URL error:", signError);
+      setUploading(false);
+      return;
+    }
+    setScreenshots([...screenshots, signedData.signedUrl]);
+    // Persist immediately to DB so screenshots array is saved
+    await (supabase.from("board_cards" as any) as any)
+      .update({ screenshots: [...screenshots, signedData.signedUrl] })
+      .eq("id", card.id);
     setUploading(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
