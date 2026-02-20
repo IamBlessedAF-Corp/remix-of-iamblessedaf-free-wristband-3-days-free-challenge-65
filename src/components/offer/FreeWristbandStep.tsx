@@ -8,6 +8,7 @@ import RiskReversalGuarantee from "./RiskReversalGuarantee";
 import UrgencyBanner from "./UrgencyBanner";
 import GratitudeEngineLoop from "./GratitudeEngineLoop";
 import { useMovementCount } from "@/hooks/useMovementCount";
+import { useUtmCta } from "@/hooks/useUtmCta";
 
 interface FreeWristbandStepProps {
   onCheckout: () => void;
@@ -18,6 +19,7 @@ interface FreeWristbandStepProps {
 const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStepProps) => {
   const [zoomed, setZoomed] = useState(false);
   const { displayCount } = useMovementCount();
+  const utmCta = useUtmCta();
 
   return (
     <>
@@ -138,9 +140,16 @@ const FreeWristbandStep = ({ onCheckout, onSkip, senderName }: FreeWristbandStep
           className="w-full min-h-[64px] h-auto py-3 px-4 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl text-center leading-tight"
         >
           <Gift className="w-5 h-5 mr-2 flex-shrink-0" />
-          <span>Claim My FREE Neuro-Hacker Wristband</span>
+          <span>
+            {utmCta.source === "referral"
+              ? "Accept My Blessing & Claim FREE Wristband"
+              : "Claim My FREE Neuro-Hacker Wristband"}
+          </span>
           <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />
         </Button>
+        {utmCta.sub && (
+          <p className="text-center text-xs text-muted-foreground mt-2">{utmCta.sub}</p>
+        )}
         <RiskReversalGuarantee />
       </motion.div>
 

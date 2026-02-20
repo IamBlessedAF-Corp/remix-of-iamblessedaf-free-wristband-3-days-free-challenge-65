@@ -1,6 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+export interface CtaVariantStat {
+  variant: string;
+  conversions: number;
+  pct: number;
+}
+
 export interface TrafficStats {
   totalPageViews: number;
   uniqueVisitors: number;
@@ -26,6 +32,8 @@ export interface TrafficStats {
   };
   hourlyHeatmap: { hour: number; clicks: number }[];
   newVsReturning: { new: number; returning: number };
+  /** CTA variant conversion breakdown from UTM-aware CTA clicks */
+  ctaConversions: CtaVariantStat[];
 }
 
 function pctTop(arr: { key: string; count: number }[], total: number) {
@@ -80,13 +88,29 @@ export function useTrafficAnalytics(days = 30) {
     },
   });
 
-  const loading = clicksQ.isLoading || linksQ.isLoading || smsQ.isLoading;
+  /** CTA conversion events — event_type starts with "cta_conversion_" */
+  const ctaQ = useQuery({
+    queryKey: ["traffic-cta-conversions", days],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("exit_intent_events")
+        .select("event_type, created_at")
+        .like("event_type", "cta_conversion_%")
+        .gte("created_at", sinceISO)
+        .limit(2000);
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const loading = clicksQ.isLoading || linksQ.isLoading || smsQ.isLoading || ctaQ.isLoading;
 
   const stats: TrafficStats | null = (() => {
     const clicks = clicksQ.data;
     const links = linksQ.data;
     const smsLogs = smsQ.data;
-    if (!clicks || !links || !smsLogs) return null;
+    const ctaEvents = ctaQ.data;
+    if (!clicks || !links || !smsLogs || !ctaEvents) return null;
 
     const totalPageViews = clicks.length;
     const uniqueIPs = new Set(clicks.map((c) => c.ip_hash || c.link_id).filter(Boolean));
@@ -216,6 +240,22 @@ export function useTrafficAnalytics(days = 30) {
       if (s.status === "failed" || s.status === "undelivered") channelMap[ch].failed++;
     }
 
+    // CTA conversion breakdown by variant
+    const ctaVariantMap: Record<string, number> = {};
+    for (const e of ctaEvents) {
+      // event_type format: "cta_conversion_paid" | "cta_conversion_organic" etc.
+      const variant = e.event_type.replace("cta_conversion_", "");
+      ctaVariantMap[variant] = (ctaVariantMap[variant] || 0) + 1;
+    }
+    const totalCtaConversions = ctaEvents.length;
+    const ctaConversions: CtaVariantStat[] = Object.entries(ctaVariantMap)
+      .sort(([, a], [, b]) => b - a)
+      .map(([variant, conversions]) => ({
+        variant,
+        conversions,
+        pct: totalCtaConversions > 0 ? Math.round((conversions / totalCtaConversions) * 100) : 0,
+      }));
+
     return {
       totalPageViews,
       uniqueVisitors,
@@ -245,17 +285,20 @@ export function useTrafficAnalytics(days = 30) {
       },
       hourlyHeatmap,
       newVsReturning: { new: singleVisitIPs, returning: returningIPs },
+      ctaConversions,
     };
   })();
 
   return {
     stats,
     loading,
-    error: clicksQ.error || linksQ.error || smsQ.error,
+    error: clicksQ.error || linksQ.error || smsQ.error || ctaQ.error,
     refetch: () => {
       clicksQ.refetch();
       linksQ.refetch();
       smsQ.refetch();
+      ctaQ.refetch();
     },
   };
 }
+

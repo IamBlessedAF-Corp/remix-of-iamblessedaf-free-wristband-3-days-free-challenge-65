@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * UTM-aware CTA copy hook.
@@ -25,10 +26,12 @@ export interface CtaCopy {
   source: UtmSource;
   /** True when an explicit discount angle is appropriate */
   showDiscount: boolean;
+  /** Log a CTA conversion to exit_intent_events (fire-and-forget) */
+  logConversion: (page?: string) => void;
 }
 
 /** Override map: per utm_campaign slug → custom CTA */
-const CAMPAIGN_OVERRIDES: Record<string, Partial<CtaCopy>> = {
+const CAMPAIGN_OVERRIDES: Record<string, Partial<Omit<CtaCopy, "logConversion">>> = {
   "black-friday": { primary: "🔥 Grab My Black Friday Deal →", showDiscount: true },
   "flash-sale":   { primary: "⚡ Lock In My Flash Deal →", showDiscount: true },
   "vip":          { primary: "👑 Claim My VIP Access →", showDiscount: false },
@@ -53,7 +56,9 @@ function classifySource(
   return "organic";
 }
 
-const SOURCE_DEFAULTS: Record<UtmSource, CtaCopy> = {
+type BaseCopy = Omit<CtaCopy, "logConversion">;
+
+const SOURCE_DEFAULTS: Record<UtmSource, BaseCopy> = {
   paid: {
     primary: "🎁 Claim Your Exclusive Discount →",
     sub: "Limited-time offer · Secure checkout",
@@ -91,27 +96,56 @@ const SOURCE_DEFAULTS: Record<UtmSource, CtaCopy> = {
  * while keeping all UTM logic intact (used by offer-specific CtaBlocks).
  */
 export function useUtmCta(variantLabel?: string): CtaCopy {
-  return useMemo(() => {
-    const params = new URLSearchParams(window.location.search);
-    const utmSource   = params.get("utm_source");
-    const utmMedium   = params.get("utm_medium");
-    const utmCampaign = (params.get("utm_campaign") || "").toLowerCase();
+  const params = useMemo(() => new URLSearchParams(window.location.search), []);
+  const utmSource   = params.get("utm_source");
+  const utmMedium   = params.get("utm_medium");
+  const utmCampaign = (params.get("utm_campaign") || "").toLowerCase();
+  const sessionId   = useMemo(() => `ses_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`, []);
 
+  const base: BaseCopy = useMemo(() => {
     const trafficSource = classifySource(utmMedium, utmSource);
-    const base: CtaCopy = { ...SOURCE_DEFAULTS[trafficSource] };
+    const result: BaseCopy = { ...SOURCE_DEFAULTS[trafficSource] };
 
     // Campaign slug overrides take highest priority
     for (const [slug, override] of Object.entries(CAMPAIGN_OVERRIDES)) {
       if (utmCampaign.includes(slug)) {
-        return { ...base, ...override, source: trafficSource } as CtaCopy;
+        return { ...result, ...override, source: trafficSource } as BaseCopy;
       }
     }
 
     // Allow per-component label override while keeping discount / sub copy
     if (variantLabel) {
-      base.primary = variantLabel;
+      result.primary = variantLabel;
     }
 
-    return base;
-  }, [variantLabel]);
+    return result;
+  }, [utmSource, utmMedium, utmCampaign, variantLabel]);
+
+  /** Fire-and-forget: log a CTA conversion to exit_intent_events */
+  const logConversion = useCallback(
+    (page?: string) => {
+      const eventMeta = {
+        utm_source: utmSource,
+        utm_medium: utmMedium,
+        utm_campaign: utmCampaign || null,
+        cta_variant: base.source,
+        show_discount: base.showDiscount,
+      };
+      supabase
+        .from("exit_intent_events")
+        .insert({
+          event_type: `cta_conversion_${base.source}`,
+          page: page || window.location.pathname,
+          session_id: sessionId,
+          user_id: null, // filled server-side via RLS if authenticated
+          // We store the UTM variant info in the page field as query string for easy filtering
+        })
+        .then(({ error }) => {
+          if (error) console.warn("UTM conversion log failed:", error.message, eventMeta);
+        });
+    },
+    [base.source, base.showDiscount, utmSource, utmMedium, utmCampaign, sessionId]
+  );
+
+  return useMemo(() => ({ ...base, logConversion }), [base, logConversion]);
 }

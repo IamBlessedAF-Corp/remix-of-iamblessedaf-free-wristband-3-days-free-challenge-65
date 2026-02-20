@@ -5,7 +5,7 @@ import LinkPieCharts from "@/components/admin/LinkPieCharts";
 import { Button } from "@/components/ui/button";
 import {
   RefreshCw, Eye, Users, MousePointerClick, TrendingDown, Globe, MapPin,
-  BarChart3, Mail, Activity, Clock, ArrowUpRight, ArrowDownRight, Percent,
+  BarChart3, Mail, Activity, Clock, ArrowUpRight, ArrowDownRight, Percent, MousePointer2,
 } from "lucide-react";
 import ExportCsvButton from "@/components/admin/ExportCsvButton";
 import {
@@ -254,6 +254,28 @@ export default function TrafficTab() {
         browserBreakdown={stats.browserBreakdown}
         osBreakdown={stats.osBreakdown}
       />
+
+      {/* CTA Variant Conversions */}
+      {stats.ctaConversions.length > 0 && (
+        <div className="bg-card border border-border/50 rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <MousePointer2 className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-bold text-foreground">CTA Variant Conversions</h3>
+            <span className="ml-auto text-xs text-muted-foreground">{stats.ctaConversions.reduce((s, r) => s + r.conversions, 0)} total</span>
+          </div>
+          <div className="space-y-2">
+            {stats.ctaConversions.map((r) => (
+              <div key={r.variant} className="flex items-center gap-2 text-xs">
+                <span className="w-20 capitalize text-foreground font-medium">{r.variant}</span>
+                <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
+                  <div className="h-full bg-primary rounded-full" style={{ width: `${r.pct}%` }} />
+                </div>
+                <span className="text-muted-foreground w-20 text-right">{r.pct}% ({r.conversions})</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Deliverability */}
       <DeliverabilityPanel d={stats.deliverability} />

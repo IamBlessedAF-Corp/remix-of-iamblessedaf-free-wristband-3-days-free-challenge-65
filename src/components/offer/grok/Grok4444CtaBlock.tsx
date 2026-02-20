@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import OfferTimer from "@/components/offer/OfferTimer";
 import RiskReversalGuarantee from "@/components/offer/RiskReversalGuarantee";
 import UrgencyBanner from "@/components/offer/UrgencyBanner";
+import { useUtmCta } from "@/hooks/useUtmCta";
 
 interface Grok4444CtaBlockProps {
   onCheckout: () => void;
@@ -18,6 +19,8 @@ const Grok4444CtaBlock = ({
   showScarcity = false,
   loading = false,
 }: Grok4444CtaBlockProps) => {
+  const utmCta = useUtmCta();
+
   return (
     <motion.div
       className="mb-8"
@@ -56,11 +59,17 @@ const Grok4444CtaBlock = ({
         className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight"
       >
         {loading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
-        {loading ? "Creating checkout…" : "YES! Fund an Artist & Own My Legacy Pieces!"}
+        {loading ? "Creating checkout…" : utmCta.showDiscount
+          ? "YES! Claim My Patron Pack & Fund an Artist →"
+          : "YES! Fund an Artist & Own My Legacy Pieces!"}
         {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
       </Button>
 
-      <p className="text-center text-xs text-muted-foreground mt-3">
+      {utmCta.sub && (
+        <p className="text-center text-xs text-muted-foreground mt-2">{utmCta.sub}</p>
+      )}
+
+      <p className="text-center text-xs text-muted-foreground mt-2">
         One-time secure payment · Artist receives 77% within 48hrs · NFTs minted within 14 days
       </p>
 
