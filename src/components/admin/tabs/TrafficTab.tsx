@@ -4,6 +4,7 @@ import { useLiveFunnelData } from "@/hooks/useLiveFunnelData";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
 import LinkPieCharts from "@/components/admin/LinkPieCharts";
 import SankeyFunnelDiagram from "@/components/admin/SankeyFunnelDiagram";
+import CtaVariantReport from "@/components/admin/CtaVariantReport";
 import { Button } from "@/components/ui/button";
 import {
   RefreshCw, Eye, Users, MousePointerClick, TrendingDown, Globe, MapPin,
@@ -183,6 +184,9 @@ export default function TrafficTab() {
           totalRevenueCents={orderData?.totalRevenueCents ?? 0}
         />
       )}
+
+      {/* ── CTA Variant Conversion Breakdown ── */}
+      <CtaVariantReport />
 
       {/* Period selector */}
       <div className="flex items-center gap-2">

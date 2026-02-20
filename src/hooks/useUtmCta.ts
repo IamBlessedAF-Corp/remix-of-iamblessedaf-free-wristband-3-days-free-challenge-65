@@ -32,9 +32,17 @@ export interface CtaCopy {
 
 /** Override map: per utm_campaign slug → custom CTA */
 const CAMPAIGN_OVERRIDES: Record<string, Partial<Omit<CtaCopy, "logConversion">>> = {
-  "black-friday": { primary: "🔥 Grab My Black Friday Deal →", showDiscount: true },
-  "flash-sale":   { primary: "⚡ Lock In My Flash Deal →", showDiscount: true },
-  "vip":          { primary: "👑 Claim My VIP Access →", showDiscount: false },
+  // Evergreen deal overrides
+  "black-friday":  { primary: "🔥 Grab My Black Friday Deal →",    showDiscount: true  },
+  "cyber-monday":  { primary: "💻 Lock In My Cyber Monday Deal →",  showDiscount: true  },
+  "flash-sale":    { primary: "⚡ Lock In My Flash Deal →",          showDiscount: true  },
+  "vip":           { primary: "👑 Claim My VIP Access →",            showDiscount: false },
+  // Seasonal campaigns
+  "easter":        { primary: "🐣 Claim My Easter Gift →",           showDiscount: true  },
+  "summer":        { primary: "☀️ Grab My Summer Deal →",            showDiscount: true  },
+  "new-year":      { primary: "🎆 Start the Year Free →",            showDiscount: false },
+  "holiday":       { primary: "🎁 Claim My Holiday Gift →",          showDiscount: true  },
+  "back-to-school":{ primary: "📚 Get My Student Deal →",            showDiscount: true  },
 };
 
 const PAID_MEDIUMS = new Set(["cpc", "paid", "ppc", "ads", "meta", "google", "tiktok", "youtube_ads"]);
