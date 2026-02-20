@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js";
 
 /**
@@ -6,24 +6,26 @@ import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js";
  * - Listens for TOKEN_REFRESHED events (Supabase rotates tokens automatically)
  * - Detects stale/expired sessions and forces re-auth
  * - Handles SIGNED_OUT from other tabs via broadcast
+ * - Uses a ref for the handler to prevent the useEffect from re-running on
+ *   every render (which would reset session state and log out the admin)
  */
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  /** Centralized session update — single source of truth */
-  const handleSessionChange = useCallback((event: AuthChangeEvent, newSession: Session | null) => {
+  /** Stable ref so the subscription never re-subscribes on re-render */
+  const handleSessionChangeRef = useRef<(event: AuthChangeEvent, newSession: Session | null) => void>();
+
+  handleSessionChangeRef.current = useCallback((event: AuthChangeEvent, newSession: Session | null) => {
     setSession(newSession);
     setUser(newSession?.user ?? null);
     setLoading(false);
 
-    // Log rotation events in dev for debugging
     if (import.meta.env.DEV && event === "TOKEN_REFRESHED") {
       console.log("[Auth] Refresh token rotated successfully");
     }
 
-    // If signed out from another tab, clear local state
     if (event === "SIGNED_OUT") {
       setSession(null);
       setUser(null);
@@ -38,19 +40,19 @@ export function useAuth() {
         const { supabase } = await import("@/integrations/supabase/client");
 
         // 1. Set up listener BEFORE getSession (per Supabase best practice)
+        //    Use the ref so the subscription is only created ONCE (empty dep array)
         const { data: { subscription: sub } } = supabase.auth.onAuthStateChange(
-          (event, session) => handleSessionChange(event, session)
+          (event, sess) => handleSessionChangeRef.current?.(event, sess)
         );
         subscription = sub;
 
         // 2. Get current session
         const { data: { session: currentSession } } = await supabase.auth.getSession();
-        
-        // 3. Validate session isn't expired
+
+        // 3. Validate session isn't expired — attempt refresh if needed
         if (currentSession?.expires_at) {
-          const expiresAt = currentSession.expires_at * 1000; // convert to ms
+          const expiresAt = currentSession.expires_at * 1000;
           if (Date.now() >= expiresAt) {
-            // Session expired — attempt refresh (Supabase will rotate the token)
             const { data: { session: refreshed } } = await supabase.auth.refreshSession();
             setSession(refreshed);
             setUser(refreshed?.user ?? null);
@@ -75,7 +77,8 @@ export function useAuth() {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [handleSessionChange]);
+  }, []); // ← empty: run once, never re-subscribe on re-render
+
 
   const signInWithGoogle = async () => {
     try {
