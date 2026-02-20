@@ -53,13 +53,14 @@ import AuditLogTab from "@/components/admin/tabs/AuditLogTab";
 import ErrorMonitorTab from "@/components/admin/tabs/ErrorMonitorTab";
 import AbandonedCartsTab from "@/components/admin/tabs/AbandonedCartsTab";
 import RegressionTestsTab from "@/components/admin/tabs/RegressionTestsTab";
+import KFactorDashboard from "@/components/admin/KFactorDashboard";
 import GlobalSearchModal from "@/components/admin/GlobalSearchModal";
 
 export type { BlockSubFilter } from "@/types/adminBlocks";
 
 // ─── Tab definitions ───
 const ALL_TAB_IDS = [
-  "dashboard", "clippers", "congrats", "experts", "links", "traffic",
+  "dashboard", "clippers", "congrats", "experts", "links", "traffic", "virality",
   "campaign", "blocks", "risk", "payments", "board",
   "roadmap", "logs", "forecast", "fraud", "leaderboard",
   "alerts", "budget", "orders", "abandonedcarts", "blessings", "challenge",
@@ -128,6 +129,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
       { id: "blocks", label: "Intelligent Blocks", icon: Blocks },
       { id: "campaign", label: "Campaign Settings", icon: Settings },
       { id: "links", label: "Links", icon: Link2 },
+      { id: "virality", label: "K-Factor / Virality", icon: TrendingUp },
       { id: "traffic", label: "Traffic", icon: BarChart3 },
       { id: "roadmap", label: "Roadmap", icon: Map },
       { id: "waitlist", label: "Waitlist & Reposts", icon: ScrollText },
@@ -217,6 +219,7 @@ function TabContent({ tab, blockSubFilter }: { tab: TabId; blockSubFilter: Block
     case "auditlog": return <AuditLogTab />;
     case "backups": return <BackupVerificationPanel />;
     case "errors": return <ErrorMonitorTab />;
+    case "virality": return <KFactorDashboard />;
     case "regression": return <RegressionTestsTab />;
     default: return null;
   }
