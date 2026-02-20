@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { setErrorCaptureSuppressed } from "@/lib/errorCapture";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -263,6 +264,7 @@ export default function RegressionTestsTab() {
 
   const runAll = async () => {
     setRunning(true);
+    setErrorCaptureSuppressed(true);
     // Reset all to running
     setStates(Object.fromEntries(TEST_SUITE.map(t => [t.id, { status: "running" }])));
 
@@ -287,6 +289,7 @@ export default function RegressionTestsTab() {
     const passed = results.filter(r => r.status === "fulfilled" && r.value === true).length;
     const total = TEST_SUITE.length;
     setRunning(false);
+    setErrorCaptureSuppressed(false);
     if (passed === total) {
       toast.success(`✅ All ${total} tests passed`);
     } else {
@@ -295,6 +298,7 @@ export default function RegressionTestsTab() {
   };
 
   const runSingle = async (test: TestCase) => {
+    setErrorCaptureSuppressed(true);
     setTest(test.id, { status: "running" });
     const start = Date.now();
     try {
@@ -306,6 +310,8 @@ export default function RegressionTestsTab() {
       });
     } catch (err) {
       setTest(test.id, { status: "fail", details: String(err), durationMs: Date.now() - start });
+    } finally {
+      setErrorCaptureSuppressed(false);
     }
   };
 
