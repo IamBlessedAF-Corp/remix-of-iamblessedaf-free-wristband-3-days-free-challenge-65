@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
     }
 
     // Get admin emails
-    const { data: adminRoles } = await supabase.from("user_roles").select("user_id").eq("role", "admin");
+    const { data: adminRoles } = await supabase.from("user_roles").select("user_id").in("role", ["admin", "super_admin"]);
     const adminEmails: string[] = [];
     if (adminRoles) {
       for (const role of adminRoles) {
