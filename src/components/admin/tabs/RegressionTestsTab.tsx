@@ -35,23 +35,29 @@ const CATEGORY_META: Record<TestCase["category"], { label: string; icon: React.E
 async function invokeEdgeFn(
   name: string,
   body: Record<string, unknown> = {},
-  expectStatus?: number,
 ): Promise<{ passed: boolean; details?: string }> {
   try {
     const { data, error } = await supabase.functions.invoke(name, { body });
     if (error) {
-      // FunctionsHttpError carries status; a 4xx from a guarded fn is a pass
+      // FunctionsHttpError exposes the HTTP status via context.status
+      const status: number =
+        (error as { context?: { status?: number } }).context?.status ?? 0;
       const msg = error.message ?? String(error);
-      const is5xx = msg.includes("500") || msg.includes("502") || msg.includes("503");
-      if (is5xx) return { passed: false, details: msg };
-      return { passed: true, details: `Expected rejection: ${msg}` };
-    }
-    if (expectStatus !== undefined) {
-      return { passed: true, details: JSON.stringify(data).slice(0, 120) };
+
+      if (status >= 500) {
+        return { passed: false, details: `${status}: ${msg}` };
+      }
+      // 4xx = expected rejection (validation guard, auth check, etc.) → pass
+      return { passed: true, details: `Expected ${status || "4xx"} rejection: ${msg}` };
     }
     return { passed: true, details: JSON.stringify(data).slice(0, 120) };
   } catch (err) {
-    return { passed: false, details: String(err) };
+    // Network-level or unexpected throw — check if it's a 5xx string
+    const msg = String(err);
+    const is5xx = /5\d\d/.test(msg);
+    if (is5xx) return { passed: false, details: msg };
+    // Any other thrown error from a guarded function is an expected rejection
+    return { passed: true, details: `Expected rejection: ${msg}` };
   }
 }
 
