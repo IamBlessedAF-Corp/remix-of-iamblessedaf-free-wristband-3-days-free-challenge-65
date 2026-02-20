@@ -34,7 +34,6 @@ import UserManagementTab from "@/components/admin/tabs/UserManagementTab";
 import IntegrationsTab from "@/components/admin/tabs/IntegrationsTab";
 import DatabaseTab from "@/components/admin/tabs/DatabaseTab";
 import TrafficTab from "@/components/admin/tabs/TrafficTab";
-
 import EditableCampaignSettings from "@/components/admin/EditableCampaignSettings";
 import OrdersTab from "@/components/admin/OrdersTab";
 import BlessingsTab from "@/components/admin/BlessingsTab";
@@ -54,6 +53,8 @@ import AuditLogTab from "@/components/admin/tabs/AuditLogTab";
 import ErrorMonitorTab from "@/components/admin/tabs/ErrorMonitorTab";
 import GlobalSearchModal from "@/components/admin/GlobalSearchModal";
 
+export type { BlockSubFilter } from "@/types/adminBlocks";
+
 // ─── Tab definitions ───
 const ALL_TAB_IDS = [
   "dashboard", "clippers", "congrats", "experts", "links", "traffic",
@@ -66,25 +67,49 @@ const ALL_TAB_IDS = [
 
 type TabId = typeof ALL_TAB_IDS[number];
 
-export type { BlockSubFilter } from "@/types/adminBlocks";
+// ─── Types ───
+type SidebarSubItem = { id: TabId; label: string; icon: any };
+type SidebarGroupDef = { group: string; icon: any; items: SidebarSubItem[] };
+type SidebarSingleItem = { id: TabId; label: string; icon: any };
+type SidebarEntry = SidebarSingleItem | SidebarGroupDef;
 
-type SidebarItem = { id: TabId; label: string; icon: any };
-type SidebarGroup = {
-  group: string; icon: any;
-  items: SidebarItem[];
-  subItems?: { id: BlockSubFilter; label: string; icon: any }[];
-};
-type SidebarEntry = SidebarItem | SidebarGroup;
-
+// ─── Block sub-filter constants ───
 const BLOCK_CAT_COUNTS: Record<string, number> = {
   Content: 6, Product: 5, CTA: 6, Hero: 6, Trust: 5, Urgency: 4, Viral: 4, "Value Stack": 5, System: 6,
 };
 
+const BLOCK_SUB_CATEGORIES: { id: BlockSubFilter; label: string; icon: any }[] = [
+  { id: "all", label: `All (${Object.values(BLOCK_CAT_COUNTS).reduce((a, b) => a + b, 0)})`, icon: Blocks },
+  { id: "Content", label: `Content (${BLOCK_CAT_COUNTS.Content})`, icon: ScrollText },
+  { id: "Product", label: `Product (${BLOCK_CAT_COUNTS.Product})`, icon: Star },
+  { id: "CTA", label: `CTA (${BLOCK_CAT_COUNTS.CTA})`, icon: Target },
+  { id: "Hero", label: `Hero (${BLOCK_CAT_COUNTS.Hero})`, icon: BarChart3 },
+  { id: "Trust", label: `Trust (${BLOCK_CAT_COUNTS.Trust})`, icon: ShieldAlert },
+  { id: "Urgency", label: `Urgency (${BLOCK_CAT_COUNTS.Urgency})`, icon: Bell },
+  { id: "Viral", label: `Viral (${BLOCK_CAT_COUNTS.Viral})`, icon: TrendingUp },
+  { id: "Value Stack", label: `Value Stack (${BLOCK_CAT_COUNTS["Value Stack"]})`, icon: Zap },
+  { id: "System", label: `System (${BLOCK_CAT_COUNTS.System})`, icon: Database },
+];
+
+const VIDEO_BLOCK_SUBS: { id: BlockSubFilter; label: string; icon: any }[] = [
+  { id: "video-testimonial-ig", label: "IG Profile Testimonial", icon: Video },
+  { id: "video-testimonial-video", label: "Video Testimonial", icon: Play },
+  { id: "written-testimonial", label: "Written Testimonial", icon: Edit3 },
+  { id: "screenshot-testimonial", label: "Screenshot Testimonial", icon: FileText },
+];
+
+const VAULT_SUBS: { id: BlockSubFilter; label: string; icon: any }[] = [
+  { id: "vault-editing", label: "Editing Style", icon: Scissors },
+  { id: "vault-repost", label: "Ready to Repost", icon: Film },
+  { id: "vault-edit", label: "Ready to Edit", icon: Edit3 },
+  { id: "vault-clip", label: "Ready to Clip", icon: Scissors },
+];
+
+// ─── Sidebar menu structure ───
 const SIDEBAR_MENU: SidebarEntry[] = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "dashboard", label: "Growth Intelligence Command Center", icon: LayoutDashboard },
   {
-    group: "Creators & Community",
-    icon: Users,
+    group: "Creators & Community", icon: Users,
     items: [
       { id: "clippers", label: "Clippers", icon: Film },
       { id: "congrats", label: "Congrats", icon: Award },
@@ -96,8 +121,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
     ],
   },
   {
-    group: "Funnel & Content",
-    icon: Blocks,
+    group: "Funnel & Content", icon: Blocks,
     items: [
       { id: "blocks", label: "Intelligent Blocks", icon: Blocks },
       { id: "campaign", label: "Campaign Settings", icon: Settings },
@@ -106,30 +130,9 @@ const SIDEBAR_MENU: SidebarEntry[] = [
       { id: "roadmap", label: "Roadmap", icon: Map },
       { id: "waitlist", label: "Waitlist & Reposts", icon: ScrollText },
     ],
-    subItems: [
-      { id: "all", label: `All (${Object.values(BLOCK_CAT_COUNTS).reduce((a, b) => a + b, 0)})`, icon: Blocks },
-      { id: "Content", label: `Content (${BLOCK_CAT_COUNTS.Content})`, icon: ScrollText },
-      { id: "Product", label: `Product (${BLOCK_CAT_COUNTS.Product})`, icon: Star },
-      { id: "CTA", label: `CTA (${BLOCK_CAT_COUNTS.CTA})`, icon: Target },
-      { id: "Hero", label: `Hero (${BLOCK_CAT_COUNTS.Hero})`, icon: BarChart3 },
-      { id: "Trust", label: `Trust (${BLOCK_CAT_COUNTS.Trust})`, icon: ShieldAlert },
-      { id: "Urgency", label: `Urgency (${BLOCK_CAT_COUNTS.Urgency})`, icon: Bell },
-      { id: "Viral", label: `Viral (${BLOCK_CAT_COUNTS.Viral})`, icon: TrendingUp },
-      { id: "Value Stack", label: `Value Stack (${BLOCK_CAT_COUNTS["Value Stack"]})`, icon: Zap },
-      { id: "System", label: `System (${BLOCK_CAT_COUNTS.System})`, icon: Database },
-      { id: "video-testimonial-ig", label: "IG Profile Testimonial", icon: Video },
-      { id: "video-testimonial-video", label: "Video Testimonial", icon: Play },
-      { id: "written-testimonial", label: "Written Testimonial", icon: Edit3 },
-      { id: "screenshot-testimonial", label: "Screenshot Testimonial", icon: FileText },
-      { id: "vault-editing", label: "Vault: Editing Style", icon: Scissors },
-      { id: "vault-repost", label: "Vault: Ready to Repost", icon: Film },
-      { id: "vault-edit", label: "Vault: Ready to Edit", icon: Edit3 },
-      { id: "vault-clip", label: "Vault: Ready to Clip", icon: Scissors },
-    ],
   },
   {
-    group: "Finance & Orders",
-    icon: DollarSign,
+    group: "Finance & Orders", icon: DollarSign,
     items: [
       { id: "orders", label: "Orders", icon: CreditCard },
       { id: "payments", label: "Payments", icon: CreditCard },
@@ -137,8 +140,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
     ],
   },
   {
-    group: "Engagement",
-    icon: Zap,
+    group: "Engagement", icon: Zap,
     items: [
       { id: "challenge", label: "Challenge", icon: Target },
       { id: "messaging", label: "Messaging", icon: MessageSquare },
@@ -148,8 +150,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
     ],
   },
   {
-    group: "Risk & Intelligence",
-    icon: ShieldAlert,
+    group: "Risk & Intelligence", icon: ShieldAlert,
     items: [
       { id: "risk", label: "Risk Engine", icon: ShieldAlert },
       { id: "fraud", label: "Fraud Monitor", icon: Brain },
@@ -158,8 +159,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
     ],
   },
   {
-    group: "Operations",
-    icon: Kanban,
+    group: "Operations", icon: Kanban,
     items: [
       { id: "board", label: "Board", icon: Kanban },
       { id: "logs", label: "Logs", icon: ScrollText },
@@ -216,9 +216,6 @@ function TabContent({ tab, blockSubFilter }: { tab: TabId; blockSubFilter: Block
   }
 }
 
-const VIDEO_BLOCK_IDS: BlockSubFilter[] = ["video-testimonial-ig", "video-testimonial-video", "written-testimonial", "screenshot-testimonial"];
-const VAULT_IDS: BlockSubFilter[] = ["vault-editing", "vault-repost", "vault-edit", "vault-clip"];
-
 // ═══════════════════════════════════════════════
 // MAIN ADMIN HUB
 // ═══════════════════════════════════════════════
@@ -227,20 +224,20 @@ export default function AdminHub() {
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
   const [blockSubFilter, setBlockSubFilter] = useState<BlockSubFilter>("all");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // All groups pre-expanded by default
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
     SIDEBAR_MENU.forEach(entry => { if ("group" in entry) initial[entry.group] = true; });
     return initial;
   });
-  // Track whether Intelligent Blocks sub-items are expanded
-  const [openBlocksSub, setOpenBlocksSub] = useState(false);
-  const [openVideoBlocksSub, setOpenVideoBlocksSub] = useState(false);
-  const [openVaultSub, setOpenVaultSub] = useState(false);
 
-  // ─── Realtime sync: auto-invalidate React Query when hot tables change ───
+  // Intelligent Blocks 3rd-level — pre-expanded
+  const [openBlocksSub, setOpenBlocksSub] = useState(true);
+  const [openVideoBlocksSub, setOpenVideoBlocksSub] = useState(true);
+  const [openVaultSub, setOpenVaultSub] = useState(true);
+
   useRealtimeSync();
-
-  // Preload role permissions from DB
   useQuery({ queryKey: ["role-permissions"], queryFn: fetchRolePermissions });
 
   useEffect(() => {
@@ -259,18 +256,32 @@ export default function AdminHub() {
     return () => window.removeEventListener("admin-navigate-tab", handler);
   }, []);
 
-  if (authLoading) return <div className="min-h-screen bg-background flex items-center justify-center"><RefreshCw className="w-6 h-6 animate-spin text-primary" /></div>;
+  if (authLoading) return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <RefreshCw className="w-6 h-6 animate-spin text-primary" />
+    </div>
+  );
+
   if (!user) return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="max-w-sm w-full">
-        <div className="flex items-center justify-center gap-2 mb-6"><Shield className="w-5 h-5 text-primary" /><h1 className="text-lg font-bold text-foreground">Admin Access</h1></div>
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <Shield className="w-5 h-5 text-primary" />
+          <h1 className="text-lg font-bold text-foreground">Admin Access</h1>
+        </div>
         <BoardLoginForm signInWithEmail={signInWithEmail} />
       </div>
     </div>
   );
+
   if (!isAdmin) return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 text-center">
-      <div><Shield className="w-10 h-10 text-destructive mx-auto mb-3" /><h2 className="text-lg font-bold text-foreground mb-1">Access Denied</h2><p className="text-sm text-muted-foreground mb-4">Admin role required.</p><Button variant="outline" onClick={signOut}>Sign Out</Button></div>
+      <div>
+        <Shield className="w-10 h-10 text-destructive mx-auto mb-3" />
+        <h2 className="text-lg font-bold text-foreground mb-1">Access Denied</h2>
+        <p className="text-sm text-muted-foreground mb-4">Admin role required.</p>
+        <Button variant="outline" onClick={signOut}>Sign Out</Button>
+      </div>
     </div>
   );
 
@@ -278,149 +289,220 @@ export default function AdminHub() {
     setBlockSubFilter(sub);
     setActiveTab("blocks");
     setOpenGroups(prev => ({ ...prev, "Funnel & Content": true }));
+    setOpenBlocksSub(true);
   };
+
+  const allowedTabs = userRole === "super_admin" ? null : getRolePermissions(userRole || "user");
+  const isAllowed = (id: string) => !allowedTabs || allowedTabs.includes(id);
 
   return (
     <div className="min-h-screen bg-background flex w-full">
       <GlobalSearchModal />
-      {/* Sidebar */}
-      <aside className={cn("bg-card border-r border-border/50 flex flex-col transition-all duration-200 shrink-0 sticky top-0 h-screen overflow-y-auto", sidebarOpen ? "w-60" : "w-14")}>
+
+      {/* ── Sidebar ── */}
+      <aside className={cn(
+        "bg-card border-r border-border/50 flex flex-col transition-all duration-200 shrink-0 sticky top-0 h-screen overflow-y-auto",
+        sidebarOpen ? "w-64" : "w-14"
+      )}>
+        {/* Header */}
         <div className="flex items-center gap-2 px-3 py-4 border-b border-border/30">
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-muted-foreground hover:text-foreground transition-colors">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
             {sidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
-          {sidebarOpen && <span className="text-sm font-bold text-foreground truncate flex-1">Growth Intelligence OS</span>}
-          <button onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))} className="text-muted-foreground hover:text-foreground transition-colors" title="Search (⌘K)">
+          {sidebarOpen && (
+            <span className="text-sm font-bold text-foreground truncate flex-1">Growth Intelligence OS</span>
+          )}
+          <button
+            onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+            title="Search (⌘K)"
+          >
             <Search className="w-4 h-4" />
           </button>
         </div>
-        <nav className="flex-1 py-2 space-y-0.5 px-2">
-          {(() => {
-            const allowedTabs = userRole === "super_admin" ? null : getRolePermissions(userRole || "user");
-            const isAllowed = (id: string) => !allowedTabs || allowedTabs.includes(id);
 
-            return SIDEBAR_MENU.map((entry) => {
-              if ("group" in entry) {
-                const visibleItems = entry.items.filter(i => isAllowed(i.id));
-                if (visibleItems.length === 0) return null;
-                const isGroupOpen = openGroups[entry.group] ?? visibleItems.some(i => i.id === activeTab);
-                const groupActive = visibleItems.some(i => i.id === activeTab);
-                const toggleGroup = () => setOpenGroups(prev => ({ ...prev, [entry.group]: !isGroupOpen }));
-                const isFunnelGroup = entry.group === "Funnel & Content";
-
-                return (
-                  <div key={entry.group} className="mt-1">
-                    <button onClick={toggleGroup} title={entry.group}
-                      className={cn("w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors",
-                        groupActive ? "text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                      )}>
-                      <entry.icon className="w-4 h-4 shrink-0" />
-                      {sidebarOpen && <>
-                        <span className="truncate flex-1 text-left">{entry.group}</span>
-                        {isGroupOpen ? <ChevronDown className="w-3 h-3 shrink-0" /> : <ChevronRight className="w-3 h-3 shrink-0" />}
-                      </>}
-                    </button>
-                    {(isGroupOpen || !sidebarOpen) && (
-                      <div className={cn("space-y-0.5", sidebarOpen ? "ml-4 mt-0.5 border-l border-border/30 pl-2" : "")}>
-                        {visibleItems.map(item => (
-                          <div key={item.id}>
-                            <button onClick={() => {
-                              setActiveTab(item.id);
-                              if (item.id === "blocks") setOpenBlocksSub(prev => !prev);
-                            }} title={item.label}
-                              className={cn("w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors",
-                                activeTab === item.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                              )}>
-                              <item.icon className="w-3.5 h-3.5 shrink-0" />
-                              {sidebarOpen && <span className="truncate flex-1">{item.label}</span>}
-                              {sidebarOpen && item.id === "blocks" && isFunnelGroup && (
-                                openBlocksSub ? <ChevronDown className="w-3 h-3 shrink-0" /> : <ChevronRight className="w-3 h-3 shrink-0" />
-                              )}
-                            </button>
-
-                            {/* 3rd level: Blocks sub-categories */}
-                            {sidebarOpen && item.id === "blocks" && isFunnelGroup && openBlocksSub && (
-                              <div className="ml-4 mt-0.5 border-l border-border/20 pl-2 space-y-0.5">
-                                {/* Standard categories */}
-                                {entry.subItems?.filter(si => !VIDEO_BLOCK_IDS.includes(si.id) && !VAULT_IDS.includes(si.id)).map(sub => (
-                                  <button key={sub.id} onClick={() => goToBlock(sub.id)}
-                                    className={cn("w-full flex items-center gap-2 px-2 py-1 rounded-md text-[10px] font-medium transition-colors",
-                                      blockSubFilter === sub.id && activeTab === "blocks"
-                                        ? "bg-primary/15 text-primary"
-                                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
-                                    )}>
-                                    <sub.icon className="w-3 h-3 shrink-0" />
-                                    <span className="truncate">{sub.label}</span>
-                                  </button>
-                                ))}
-
-                                {/* Video Blocks sub-group */}
-                                <button onClick={() => setOpenVideoBlocksSub(p => !p)}
-                                  className="w-full flex items-center gap-2 px-2 py-1 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors mt-1">
-                                  <Video className="w-3 h-3 shrink-0 text-purple-400" />
-                                  <span className="flex-1 text-left">Video Blocks</span>
-                                  {openVideoBlocksSub ? <ChevronDown className="w-2.5 h-2.5" /> : <ChevronRight className="w-2.5 h-2.5" />}
-                                </button>
-                                {openVideoBlocksSub && (
-                                  <div className="ml-3 border-l border-purple-500/20 pl-2 space-y-0.5">
-                                    {entry.subItems?.filter(si => VIDEO_BLOCK_IDS.includes(si.id)).map(sub => (
-                                      <button key={sub.id} onClick={() => goToBlock(sub.id)}
-                                        className={cn("w-full flex items-center gap-2 px-2 py-1 rounded-md text-[10px] font-medium transition-colors",
-                                          blockSubFilter === sub.id && activeTab === "blocks"
-                                            ? "bg-purple-500/15 text-purple-400"
-                                            : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
-                                        )}>
-                                        <sub.icon className="w-2.5 h-2.5 shrink-0" />
-                                        <span className="truncate">{sub.label}</span>
-                                      </button>
-                                    ))}
-                                  </div>
-                                )}
-
-                                {/* Vault Videos sub-group */}
-                                <button onClick={() => setOpenVaultSub(p => !p)}
-                                  className="w-full flex items-center gap-2 px-2 py-1 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors mt-1">
-                                  <Film className="w-3 h-3 shrink-0 text-amber-400" />
-                                  <span className="flex-1 text-left">Vault Videos</span>
-                                  {openVaultSub ? <ChevronDown className="w-2.5 h-2.5" /> : <ChevronRight className="w-2.5 h-2.5" />}
-                                </button>
-                                {openVaultSub && (
-                                  <div className="ml-3 border-l border-amber-500/20 pl-2 space-y-0.5">
-                                    {entry.subItems?.filter(si => VAULT_IDS.includes(si.id)).map(sub => (
-                                      <button key={sub.id} onClick={() => goToBlock(sub.id)}
-                                        className={cn("w-full flex items-center gap-2 px-2 py-1 rounded-md text-[10px] font-medium transition-colors",
-                                          blockSubFilter === sub.id && activeTab === "blocks"
-                                            ? "bg-amber-500/15 text-amber-400"
-                                            : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
-                                        )}>
-                                        <sub.icon className="w-2.5 h-2.5 shrink-0" />
-                                        <span className="truncate">{sub.label}</span>
-                                      </button>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              }
+        {/* Nav */}
+        <nav className="flex-1 py-2 px-1.5 space-y-0.5">
+          {SIDEBAR_MENU.map((entry) => {
+            // ── Single top-level item ──
+            if (!("group" in entry)) {
               if (!isAllowed(entry.id)) return null;
               return (
-                <button key={entry.id} onClick={() => setActiveTab(entry.id)} title={entry.label}
-                  className={cn("w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-colors",
-                    activeTab === entry.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  )}>
+                <button
+                  key={entry.id}
+                  onClick={() => setActiveTab(entry.id)}
+                  title={entry.label}
+                  className={cn(
+                    "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors text-left",
+                    activeTab === entry.id
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  )}
+                >
                   <entry.icon className="w-4 h-4 shrink-0" />
                   {sidebarOpen && <span className="truncate">{entry.label}</span>}
                 </button>
               );
-            });
-          })()}
+            }
+
+            // ── Group ──
+            const visibleItems = entry.items.filter(i => isAllowed(i.id));
+            if (visibleItems.length === 0) return null;
+
+            const isGroupOpen = openGroups[entry.group] ?? true;
+            const groupActive = visibleItems.some(i => i.id === activeTab);
+            const isFunnelGroup = entry.group === "Funnel & Content";
+
+            return (
+              <div key={entry.group} className="mt-1">
+                {/* Group header */}
+                <button
+                  onClick={() => setOpenGroups(prev => ({ ...prev, [entry.group]: !isGroupOpen }))}
+                  title={entry.group}
+                  className={cn(
+                    "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors text-left",
+                    groupActive ? "text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  )}
+                >
+                  <entry.icon className="w-4 h-4 shrink-0" />
+                  {sidebarOpen && (
+                    <>
+                      <span className="truncate flex-1">{entry.group}</span>
+                      {isGroupOpen
+                        ? <ChevronDown className="w-3 h-3 shrink-0" />
+                        : <ChevronRight className="w-3 h-3 shrink-0" />}
+                    </>
+                  )}
+                </button>
+
+                {/* Group items */}
+                {isGroupOpen && (
+                  <div className={cn("space-y-0.5", sidebarOpen ? "ml-3 mt-0.5 border-l border-border/30 pl-2" : "")}>
+                    {visibleItems.map(item => {
+                      const isBlocksItem = item.id === "blocks" && isFunnelGroup;
+                      return (
+                        <div key={item.id}>
+                          {/* Level-2 item */}
+                          <button
+                            onClick={() => {
+                              setActiveTab(item.id);
+                              if (isBlocksItem) setOpenBlocksSub(prev => !prev);
+                            }}
+                            title={item.label}
+                            className={cn(
+                              "w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-left",
+                              activeTab === item.id
+                                ? "bg-primary/10 text-primary"
+                                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                            )}
+                          >
+                            <item.icon className="w-3.5 h-3.5 shrink-0" />
+                            {sidebarOpen && <span className="truncate flex-1">{item.label}</span>}
+                            {sidebarOpen && isBlocksItem && (
+                              openBlocksSub
+                                ? <ChevronDown className="w-3 h-3 shrink-0" />
+                                : <ChevronRight className="w-3 h-3 shrink-0" />
+                            )}
+                          </button>
+
+                          {/* ── Level-3: Intelligent Blocks sub-categories ── */}
+                          {sidebarOpen && isBlocksItem && openBlocksSub && (
+                            <div className="ml-3 mt-0.5 border-l border-border/20 pl-2 space-y-0.5">
+
+                              {/* Standard block categories */}
+                              {BLOCK_SUB_CATEGORIES.map(sub => (
+                                <button
+                                  key={sub.id}
+                                  onClick={() => goToBlock(sub.id)}
+                                  className={cn(
+                                    "w-full flex items-center gap-2 px-2 py-1 rounded-md text-[10px] font-medium transition-colors text-left",
+                                    blockSubFilter === sub.id && activeTab === "blocks"
+                                      ? "bg-primary/15 text-primary"
+                                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+                                  )}
+                                >
+                                  <sub.icon className="w-3 h-3 shrink-0" />
+                                  <span className="truncate">{sub.label}</span>
+                                </button>
+                              ))}
+
+                              {/* Video Blocks sub-group */}
+                              <button
+                                onClick={() => setOpenVideoBlocksSub(p => !p)}
+                                className="w-full flex items-center gap-2 px-2 py-1 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors mt-1 text-left"
+                              >
+                                <Video className="w-3 h-3 shrink-0 text-purple-400" />
+                                <span className="flex-1">Video Blocks</span>
+                                {openVideoBlocksSub
+                                  ? <ChevronDown className="w-2.5 h-2.5" />
+                                  : <ChevronRight className="w-2.5 h-2.5" />}
+                              </button>
+                              {openVideoBlocksSub && (
+                                <div className="ml-3 border-l border-border/20 pl-2 space-y-0.5">
+                                  {VIDEO_BLOCK_SUBS.map(sub => (
+                                    <button
+                                      key={sub.id}
+                                      onClick={() => goToBlock(sub.id)}
+                                      className={cn(
+                                        "w-full flex items-center gap-2 px-2 py-1 rounded-md text-[10px] font-medium transition-colors text-left",
+                                        blockSubFilter === sub.id && activeTab === "blocks"
+                                          ? "bg-primary/15 text-primary"
+                                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+                                      )}
+                                    >
+                                      <sub.icon className="w-2.5 h-2.5 shrink-0" />
+                                      <span className="truncate">{sub.label}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+
+                              {/* Vault Videos sub-group */}
+                              <button
+                                onClick={() => setOpenVaultSub(p => !p)}
+                                className="w-full flex items-center gap-2 px-2 py-1 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors mt-1 text-left"
+                              >
+                                <Film className="w-3 h-3 shrink-0 text-amber-500" />
+                                <span className="flex-1">Vault Videos</span>
+                                {openVaultSub
+                                  ? <ChevronDown className="w-2.5 h-2.5" />
+                                  : <ChevronRight className="w-2.5 h-2.5" />}
+                              </button>
+                              {openVaultSub && (
+                                <div className="ml-3 border-l border-border/20 pl-2 space-y-0.5">
+                                  {VAULT_SUBS.map(sub => (
+                                    <button
+                                      key={sub.id}
+                                      onClick={() => goToBlock(sub.id)}
+                                      className={cn(
+                                        "w-full flex items-center gap-2 px-2 py-1 rounded-md text-[10px] font-medium transition-colors text-left",
+                                        blockSubFilter === sub.id && activeTab === "blocks"
+                                          ? "bg-primary/15 text-primary"
+                                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+                                      )}
+                                    >
+                                      <sub.icon className="w-2.5 h-2.5 shrink-0" />
+                                      <span className="truncate">{sub.label}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </nav>
+
+        {/* Footer */}
         <div className="border-t border-border/30 p-3">
           {sidebarOpen && <p className="text-[10px] text-muted-foreground truncate mb-2">{user.email}</p>}
           <Button variant="ghost" size="sm" onClick={signOut} className="w-full justify-start gap-2 text-xs text-muted-foreground">
@@ -429,7 +511,7 @@ export default function AdminHub() {
         </div>
       </aside>
 
-      {/* Main */}
+      {/* ── Main content ── */}
       <main className="flex-1 min-w-0 overflow-y-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           <TabContent tab={activeTab} blockSubFilter={blockSubFilter} />
@@ -438,4 +520,3 @@ export default function AdminHub() {
     </div>
   );
 }
-
