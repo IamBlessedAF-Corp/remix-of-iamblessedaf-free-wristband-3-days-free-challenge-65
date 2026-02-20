@@ -64,8 +64,8 @@ Deno.serve(async (req: Request) => {
       referralLink: string;
     };
 
-    if (!friends || !Array.isArray(friends) || friends.length === 0 || friends.length > 3) {
-      return new Response(JSON.stringify({ error: "Provide 1-3 friends" }), {
+    if (!friends || !Array.isArray(friends) || friends.length === 0 || friends.length > 10) {
+      return new Response(JSON.stringify({ error: "Provide 1-10 friends" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
