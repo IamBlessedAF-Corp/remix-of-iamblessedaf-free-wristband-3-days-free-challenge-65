@@ -59,23 +59,51 @@ const DONE_KEYWORDS: Record<string, string[]> = {
   "realtime sync": ["realtime", "useRealtimeSync"],
   "expert scripts": ["expert-scripts", "expert_scripts"],
   "backup verification": ["verify-backup", "backup_verifications"],
-  "referral": ["referral", "referral_code", "blessings"],
+  "referral": ["referral", "referral_code", "blessings", "referred_by"],
   "challenge": ["challenge", "gratitude", "challenge_participants"],
+  // Virality & analytics
+  "k-factor": ["k-factor", "kfactor", "kfactordashboard", "viral coefficient", "virality"],
+  "viral coefficient": ["k-factor", "kfactor", "kfactordashboard", "viral coefficient", "virality"],
+  "virality": ["k-factor", "kfactor", "virality", "viral", "kfactordashboard"],
+  "sankey": ["sankey", "funnel visualization", "conversion funnel", "sankeydiagram"],
+  "funnel": ["funnel", "sankey", "conversion", "funnelmap"],
+  "dashboard": ["dashboard", "adminhub", "admin tab", "kpi"],
+  "referral attribution": ["referral", "referral_code", "referred_by_code", "attribution"],
+  "tiered referral": ["tiered", "referral reward", "bc coin", "blessedcoins"],
+  "utm": ["utm", "utmtag", "utm_source", "utm_medium", "utm_campaign"],
+  "qr code": ["qr", "qrcode", "qr-code", "printable"],
+  "wristband": ["wristband", "smart_wristband", "neuro", "wristband_waitlist"],
+  "leaderboard": ["leaderboard", "ranking", "top clipper", "top referr"],
+  "waitlist": ["waitlist", "smart_wristband_waitlist"],
+  "affiliate": ["affiliate", "affiliate_tiers", "affiliate-dashboard"],
+  "onboarding": ["onboarding", "creator_profiles", "profile creation"],
+  "cart abandon": ["abandoned_cart", "cart", "recover", "abandoned"],
 };
 
+// Stopwords to ignore in word-overlap matching
+const STOPWORDS = new Set(["add", "build", "create", "implement", "with", "and", "the", "for", "real", "time", "live", "new", "all", "via"]);
+
 function fuzzyMatchTitle(roadmapTitle: string, changelogText: string): boolean {
-  const lower = roadmapTitle.toLowerCase();
+  const lower = roadmapTitle.toLowerCase().replace(/[^a-z0-9 ]/g, " ");
   const cl = changelogText.toLowerCase();
 
-  // Direct substring match
-  if (cl.includes(lower.slice(0, Math.min(15, lower.length)))) return true;
+  // 1. Direct full-title substring match (truncated to avoid noise)
+  if (cl.includes(lower.slice(0, Math.min(20, lower.length)))) return true;
 
-  // Keyword map match
+  // 2. Keyword synonym map match
   for (const [key, synonyms] of Object.entries(DONE_KEYWORDS)) {
     if (lower.includes(key)) {
       if (synonyms.some(s => cl.includes(s))) return true;
     }
   }
+
+  // 3. Word-overlap scoring: extract meaningful words from the title,
+  //    count how many appear in the changelog text. ≥2 matches = likely done.
+  const titleWords = lower.split(/\s+/).filter(w => w.length > 3 && !STOPWORDS.has(w));
+  if (titleWords.length === 0) return false;
+  const matchCount = titleWords.filter(w => cl.includes(w)).length;
+  const needed = titleWords.length >= 4 ? 2 : 1; // need 2 matches for longer titles
+  if (matchCount >= needed) return true;
 
   return false;
 }
