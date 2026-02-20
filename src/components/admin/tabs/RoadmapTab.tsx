@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useBoard } from "@/hooks/useBoard";
 import { useRoadmapCompletions } from "@/hooks/useRoadmapCompletions";
 import { useRoadmapItems } from "@/hooks/useRoadmapItems";
@@ -7,7 +7,12 @@ import RoadmapSearchBar, { type RoadmapFilters } from "@/components/roadmap/Road
 import RoadmapItemActions from "@/components/roadmap/RoadmapItemActions";
 import BulkSendToBoard from "@/components/roadmap/BulkSendToBoard";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight, CheckCircle2, Circle, Trophy, RefreshCw, Database } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import {
+  ChevronDown, ChevronRight, CheckCircle2, Circle, Trophy,
+  RefreshCw, Database, Zap, AlertTriangle
+} from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 
@@ -23,12 +28,54 @@ const PHASE_LABELS: Record<string, string> = {
   impact: "🌍 Impact & Community",
 };
 
+const PRIORITY_ORDER: Record<string, number> = {
+  critical: 0,
+  high: 1,
+  medium: 2,
+  low: 3,
+};
+
 const PRIORITY_COLORS: Record<string, string> = {
-  critical: "text-red-400 bg-red-500/10",
+  critical: "text-red-400 bg-red-500/10 border border-red-500/30",
   high: "text-orange-400 bg-orange-500/10",
   medium: "text-yellow-400 bg-yellow-500/10",
   low: "text-emerald-400 bg-emerald-500/10",
 };
+
+// Keywords in changelog/board titles that map to roadmap titles (fuzzy match)
+const DONE_KEYWORDS: Record<string, string[]> = {
+  "error monitor": ["error", "monitor", "ingest-error", "error_events"],
+  "rls": ["rls", "row level security", "policy"],
+  "audit log": ["audit", "audit_log"],
+  "stripe webhook": ["stripe", "webhook"],
+  "sms router": ["sms-router", "sms router", "twilio"],
+  "short link": ["short-link", "short link", "go redirect"],
+  "budget control": ["budget", "budget_cycles", "budget_segments"],
+  "clipper": ["clipper", "clip_submissions", "clip-approved"],
+  "gamification": ["gamification", "bc_wallet", "bc_coins"],
+  "realtime sync": ["realtime", "useRealtimeSync"],
+  "expert scripts": ["expert-scripts", "expert_scripts"],
+  "backup verification": ["verify-backup", "backup_verifications"],
+  "referral": ["referral", "referral_code", "blessings"],
+  "challenge": ["challenge", "gratitude", "challenge_participants"],
+};
+
+function fuzzyMatchTitle(roadmapTitle: string, changelogText: string): boolean {
+  const lower = roadmapTitle.toLowerCase();
+  const cl = changelogText.toLowerCase();
+
+  // Direct substring match
+  if (cl.includes(lower.slice(0, Math.min(15, lower.length)))) return true;
+
+  // Keyword map match
+  for (const [key, synonyms] of Object.entries(DONE_KEYWORDS)) {
+    if (lower.includes(key)) {
+      if (synonyms.some(s => cl.includes(s))) return true;
+    }
+  }
+
+  return false;
+}
 
 export default function RoadmapTab() {
   const board = useBoard();
@@ -36,19 +83,34 @@ export default function RoadmapTab() {
   const { items: roadmapItems, byPhase, isLoading, isFromDb, seedFromStatic } = useRoadmapItems();
   const [openPhases, setOpenPhases] = useState<Record<string, boolean>>({});
   const [filters, setFilters] = useState<RoadmapFilters>({ keyword: "", status: "", priority: "" });
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSynced, setLastSynced] = useState<string | null>(null);
 
   const totalRoadmapItems = roadmapItems.length;
   const totalCompleted = completions.length;
   const overallPct = totalRoadmapItems > 0 ? Math.round((totalCompleted / totalRoadmapItems) * 100) : 0;
 
+  // Sort items within each phase by priority
+  const sortedByPhase = useMemo(() => {
+    const sorted: Record<string, typeof roadmapItems> = {};
+    for (const [phase, items] of Object.entries(byPhase)) {
+      sorted[phase] = [...items].sort((a, b) => {
+        const pa = PRIORITY_ORDER[a.priority] ?? 99;
+        const pb = PRIORITY_ORDER[b.priority] ?? 99;
+        return pa - pb;
+      });
+    }
+    return sorted;
+  }, [byPhase]);
+
   const phaseStats = useMemo(() => {
     const stats: Record<string, { total: number; done: number; pct: number }> = {};
-    for (const [phase, items] of Object.entries(byPhase)) {
+    for (const [phase, items] of Object.entries(sortedByPhase)) {
       const done = items.filter(i => isCompleted(phase, i.title)).length;
       stats[phase] = { total: items.length, done, pct: items.length > 0 ? Math.round((done / items.length) * 100) : 0 };
     }
     return stats;
-  }, [byPhase, isCompleted, completions]);
+  }, [sortedByPhase, isCompleted, completions]);
 
   const allItemsWithPhase = roadmapItems.map(item => ({ ...item, phase: item.phase }));
 
@@ -72,12 +134,124 @@ export default function RoadmapTab() {
     value: board.cards.filter(c => c.column_id === col.id).length,
   }));
 
+  // ── Smart Roadmap Update ──
+  const handleSmartUpdate = useCallback(async () => {
+    setIsSyncing(true);
+    toast.info("🔍 Scanning all project changes...", { duration: 3000 });
+
+    try {
+      // 1. Pull all changelog entries
+      const { data: changelog } = await supabase
+        .from("changelog_entries")
+        .select("prompt_summary, change_details, affected_areas, created_at")
+        .order("created_at", { ascending: false })
+        .limit(200);
+
+      // 2. Pull completed board cards
+      const { data: doneCards } = await supabase
+        .from("board_cards")
+        .select("title, description, completed_at")
+        .not("completed_at", "is", null)
+        .order("completed_at", { ascending: false });
+
+      // 3. Pull recent error_events to flag critical issues
+      const { data: criticalErrors } = await supabase
+        .from("error_events")
+        .select("message, level, component")
+        .eq("level", "fatal")
+        .is("resolved_at", null)
+        .limit(20);
+
+      // Build a corpus of all "done" signals
+      const doneSignals: string[] = [
+        ...(changelog || []).map(c => `${c.prompt_summary} ${c.change_details || ""} ${(c.affected_areas || []).join(" ")}`),
+        ...(doneCards || []).map(c => `${c.title} ${c.description || ""}`),
+      ];
+
+      // 4. For each roadmap item not yet completed, check if it appears in done signals
+      let autoMarked = 0;
+      const pendingItems = allItemsWithPhase.filter(i => !isCompleted(i.phase, i.title));
+
+      for (const item of pendingItems) {
+        const matchFound = doneSignals.some(signal => fuzzyMatchTitle(item.title, signal));
+        if (matchFound) {
+          await supabase
+            .from("roadmap_completions")
+            .insert({ item_title: item.title, phase: item.phase })
+            .then(({ error }) => {
+              if (!error) autoMarked++;
+            });
+        }
+      }
+
+      // 5. Warn about unresolved critical errors blocking roadmap items
+      if (criticalErrors && criticalErrors.length > 0) {
+        toast.warning(
+          `⚠️ ${criticalErrors.length} unresolved fatal error(s) detected — check Error Monitor tab`,
+          { duration: 6000 }
+        );
+      }
+
+      const now = new Date().toLocaleTimeString();
+      setLastSynced(now);
+
+      if (autoMarked > 0) {
+        toast.success(`✅ Roadmap updated! Auto-marked ${autoMarked} item(s) as done. Recalculating gaps...`);
+        // Invalidate completions query
+        window.location.hash = ""; // trigger re-render
+        window.dispatchEvent(new Event("roadmap-synced"));
+      } else {
+        toast.info(`✅ Sync complete — no new completions detected. Last synced: ${now}`);
+      }
+    } catch (err) {
+      console.error("Roadmap sync error:", err);
+      toast.error("Sync failed — check console for details");
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [allItemsWithPhase, isCompleted]);
+
   if (isLoading) {
     return <div className="flex justify-center py-20"><RefreshCw className="w-6 h-6 animate-spin text-primary" /></div>;
   }
 
   return (
     <div className="space-y-6">
+
+      {/* ── Top Action Bar ── */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2">
+          <Trophy className="w-5 h-5 text-primary" />
+          <h2 className="text-base font-bold text-foreground">Project Roadmap</h2>
+          {lastSynced && (
+            <span className="text-[10px] text-muted-foreground">Last synced: {lastSynced}</span>
+          )}
+        </div>
+
+        <Button
+          onClick={handleSmartUpdate}
+          disabled={isSyncing}
+          className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+          size="sm"
+        >
+          {isSyncing ? (
+            <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Scanning Changes...</>
+          ) : (
+            <><Zap className="w-3.5 h-3.5" /> Update Roadmap</>
+          )}
+        </Button>
+      </div>
+
+      {/* Critical alert banner */}
+      {criticalRemaining > 0 && (
+        <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-xl p-3 animate-pulse">
+          <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+          <p className="text-xs text-red-400 font-semibold">
+            🚨 {criticalRemaining} CRITICAL item{criticalRemaining > 1 ? "s" : ""} need immediate attention — click "Update Roadmap" to auto-detect what's done
+          </p>
+        </div>
+      )}
+
       {/* Seed banner */}
       {!isFromDb && (
         <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-center justify-between">
@@ -101,21 +275,14 @@ export default function RoadmapTab() {
 
       {/* Overall Progress Header */}
       <div className="bg-card border border-border/40 rounded-xl p-5">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-primary" />
-            <h2 className="text-base font-bold text-foreground">Project Roadmap</h2>
-          </div>
-          <span className="text-2xl font-black text-primary">{overallPct}%</span>
-        </div>
         <Progress value={overallPct} className="h-3 mb-4" />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-secondary/30 rounded-lg p-3 text-center">
             <p className="text-lg font-bold text-foreground">{totalCompleted}/{totalRoadmapItems}</p>
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Completed</p>
           </div>
-          <div className="bg-secondary/30 rounded-lg p-3 text-center">
-            <p className="text-lg font-bold text-red-400">{criticalRemaining}</p>
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-center">
+            <p className={`text-lg font-bold text-red-400 ${criticalRemaining > 0 ? "animate-pulse" : ""}`}>{criticalRemaining}</p>
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Critical Left</p>
           </div>
           <div className="bg-secondary/30 rounded-lg p-3 text-center">
@@ -123,15 +290,15 @@ export default function RoadmapTab() {
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">High Left</p>
           </div>
           <div className="bg-secondary/30 rounded-lg p-3 text-center">
-            <p className="text-lg font-bold text-foreground">{Object.keys(byPhase).length}</p>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Phases</p>
+            <p className="text-lg font-bold text-foreground">{overallPct}%</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Overall</p>
           </div>
         </div>
       </div>
 
       {/* Phase Completion Overview Grid */}
       <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
-        {Object.entries(byPhase).map(([phase]) => {
+        {Object.entries(sortedByPhase).map(([phase]) => {
           const s = phaseStats[phase];
           if (!s) return null;
           const emoji = PHASE_LABELS[phase]?.split(" ")[0] || "📋";
@@ -139,7 +306,7 @@ export default function RoadmapTab() {
             <button
               key={phase}
               onClick={() => setOpenPhases(prev => ({ ...prev, [phase]: true }))}
-              className="bg-card border border-border/30 rounded-lg p-2.5 text-center hover:bg-secondary/30 transition-colors group"
+              className="bg-card border border-border/30 rounded-lg p-2.5 text-center hover:bg-secondary/30 transition-colors"
             >
               <span className="text-lg">{emoji}</span>
               <div className="mt-1">
@@ -168,14 +335,18 @@ export default function RoadmapTab() {
       <RoadmapSearchBar filters={filters} onChange={setFilters} matchCount={filtered.length} totalCount={allItemsWithPhase.length} />
 
       <div className="space-y-2">
-        {Object.entries(byPhase).map(([phase, items]) => {
-          const phaseItems = filtered.filter(i => i.phase === phase);
+        {Object.entries(sortedByPhase).map(([phase, phaseItemsSorted]) => {
+          const phaseItems = phaseItemsSorted.filter(i => filtered.some(f => f.id === i.id || f.title === i.title));
           if (phaseItems.length === 0) return null;
           const isOpen = openPhases[phase] ?? false;
           const s = phaseStats[phase];
           if (!s) return null;
+
+          // Count criticals in this phase
+          const phaseCriticals = phaseItems.filter(i => i.priority === "critical" && !isCompleted(phase, i.title)).length;
+
           return (
-            <div key={phase} className="border border-border/40 rounded-lg overflow-hidden">
+            <div key={phase} className={`border rounded-lg overflow-hidden ${phaseCriticals > 0 ? "border-red-500/30" : "border-border/40"}`}>
               <button onClick={() => togglePhase(phase)} className="w-full flex items-center justify-between px-4 py-3 bg-card hover:bg-secondary/30 transition-colors">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <span className="text-sm font-semibold text-foreground">{PHASE_LABELS[phase] || phase}</span>
@@ -183,6 +354,11 @@ export default function RoadmapTab() {
                     <Progress value={s.pct} className="h-1.5 flex-1" />
                     <span className="text-[10px] font-bold text-muted-foreground whitespace-nowrap">{s.done}/{s.total}</span>
                   </div>
+                  {phaseCriticals > 0 && (
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 border border-red-500/30 animate-pulse shrink-0">
+                      🚨 {phaseCriticals} CRITICAL
+                    </span>
+                  )}
                   <span className="text-muted-foreground text-xs font-normal">({phaseItems.length})</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -191,24 +367,42 @@ export default function RoadmapTab() {
                   {isOpen ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
                 </div>
               </button>
+
               {isOpen && (
                 <div className="divide-y divide-border/30">
                   {phaseItems.map((item, idx) => {
                     const done = isCompleted(item.phase, item.title);
+                    const isCritical = item.priority === "critical" && !done;
                     return (
-                      <div key={item.id || idx} className={`px-4 py-2.5 flex items-start gap-3 hover:bg-secondary/20 transition-colors ${done ? "opacity-50" : ""}`}>
+                      <div
+                        key={item.id || idx}
+                        className={`px-4 py-2.5 flex items-start gap-3 transition-colors
+                          ${done ? "opacity-50 bg-transparent" : "hover:bg-secondary/20"}
+                          ${isCritical ? "bg-red-500/5 border-l-2 border-red-500/50" : ""}
+                        `}
+                      >
                         <button
                           onClick={() => done ? unmarkDone.mutate({ title: item.title, phase: item.phase }) : markDone.mutate({ title: item.title, phase: item.phase })}
                           className="mt-0.5 shrink-0"
                           title={done ? "Mark as not done" : "Mark as done"}
                         >
-                          {done ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Circle className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />}
+                          {done
+                            ? <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                            : <Circle className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
+                          }
                         </button>
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${PRIORITY_COLORS[item.priority]}`}>{item.priority}</span>
+
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${PRIORITY_COLORS[item.priority]} ${isCritical ? "animate-pulse" : ""}`}>
+                          {isCritical && "🔴 "}{item.priority.toUpperCase()}
+                        </span>
+
                         <div className="flex-1 min-w-0">
-                          <p className={`text-xs font-medium ${done ? "line-through text-muted-foreground" : "text-foreground"}`}>{item.title}</p>
+                          <p className={`text-xs font-medium ${done ? "line-through text-muted-foreground" : isCritical ? "text-red-300" : "text-foreground"}`}>
+                            {item.title}
+                          </p>
                           <p className="text-[11px] text-muted-foreground mt-0.5">{item.detail}</p>
                         </div>
+
                         <RoadmapItemActions title={item.title} detail={item.detail} phaseName={phase} />
                       </div>
                     );
