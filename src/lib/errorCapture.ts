@@ -28,7 +28,17 @@ function quickFingerprint(msg: string): string {
   return Math.abs(hash).toString(36);
 }
 
+/** Set to true during regression test runs to suppress intentional error payloads */
+export function setErrorCaptureSuppressed(suppressed: boolean): void {
+  (window as unknown as Record<string, unknown>).__errorCaptureSuppressed = suppressed;
+}
+
+function isErrorCaptureSuppressed(): boolean {
+  return !!(window as unknown as Record<string, unknown>).__errorCaptureSuppressed;
+}
+
 function shouldReport(message: string): boolean {
+  if (isErrorCaptureSuppressed()) return false;
   const fp = quickFingerprint(message);
   const now = Date.now();
   const last = recentFingerprints.get(fp);
