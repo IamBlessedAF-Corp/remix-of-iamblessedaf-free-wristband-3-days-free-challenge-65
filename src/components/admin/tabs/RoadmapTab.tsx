@@ -13,11 +13,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   ChevronDown, ChevronRight, CheckCircle2, Circle, Trophy,
-  RefreshCw, Database, Zap, AlertTriangle, Loader2, XCircle
+  RefreshCw, Database, Zap, AlertTriangle, Loader2, XCircle,
+  FileText, KanbanSquare, Clock, ExternalLink
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+// ── Proof of Work types ──
+interface ProofEntry {
+  source: "changelog" | "board";
+  title: string;
+  detail: string;
+  timestamp: string | null;
+}
+
+interface ProofData {
+  entries: ProofEntry[];
+  loading: boolean;
+}
+
 
 const PHASE_LABELS: Record<string, string> = {
   foundation: "🏗️ Foundation & Security",
@@ -126,6 +141,71 @@ export default function RoadmapTab() {
   const totalRoadmapItems = roadmapItems.length;
   const totalCompleted = completions.length;
   const overallPct = totalRoadmapItems > 0 ? Math.round((totalCompleted / totalRoadmapItems) * 100) : 0;
+
+  // ── Proof of Work: which item is expanded + cached proof data ──
+  const [expandedProofId, setExpandedProofId] = useState<string | null>(null);
+  const [proofCache, setProofCache] = useState<Record<string, ProofData>>({});
+
+  const loadProof = useCallback(async (itemId: string, title: string) => {
+    // Toggle off if already open
+    if (expandedProofId === itemId) {
+      setExpandedProofId(null);
+      return;
+    }
+    setExpandedProofId(itemId);
+
+    // Return cached data if already loaded
+    if (proofCache[itemId] && !proofCache[itemId].loading) return;
+
+    setProofCache(prev => ({ ...prev, [itemId]: { entries: [], loading: true } }));
+
+    try {
+      const [{ data: changelog }, { data: boardCards }] = await Promise.all([
+        supabase
+          .from("changelog_entries")
+          .select("prompt_summary, change_details, affected_areas, created_at")
+          .order("created_at", { ascending: false })
+          .limit(300),
+        supabase
+          .from("board_cards")
+          .select("title, description, completed_at, stage")
+          .not("completed_at", "is", null)
+          .order("completed_at", { ascending: false }),
+      ]);
+
+      const entries: ProofEntry[] = [];
+
+      // Match changelog entries
+      for (const c of changelog ?? []) {
+        const signal = `${c.prompt_summary} ${c.change_details ?? ""} ${(c.affected_areas ?? []).join(" ")}`;
+        if (fuzzyMatchTitle(title, signal)) {
+          entries.push({
+            source: "changelog",
+            title: c.prompt_summary ?? "Changelog entry",
+            detail: c.change_details ?? (c.affected_areas ?? []).join(", "),
+            timestamp: c.created_at ?? null,
+          });
+        }
+      }
+
+      // Match board cards
+      for (const card of boardCards ?? []) {
+        const signal = `${card.title} ${card.description ?? ""}`;
+        if (fuzzyMatchTitle(title, signal)) {
+          entries.push({
+            source: "board",
+            title: card.title,
+            detail: card.description ?? `Stage: ${card.stage ?? "completed"}`,
+            timestamp: card.completed_at ?? null,
+          });
+        }
+      }
+
+      setProofCache(prev => ({ ...prev, [itemId]: { entries, loading: false } }));
+    } catch {
+      setProofCache(prev => ({ ...prev, [itemId]: { entries: [], loading: false } }));
+    }
+  }, [expandedProofId, proofCache]);
 
   // Sort items within each phase by priority
   const sortedByPhase = useMemo(() => {
@@ -494,44 +574,109 @@ export default function RoadmapTab() {
                         ? "Verifying…"
                         : "Mark as Completed";
 
+                    const isProofOpen = expandedProofId === itemId;
+                    const proof = proofCache[itemId];
+
                     return (
-                      <div
-                        key={itemId}
-                        className={`px-4 py-2.5 flex items-start gap-3 transition-colors
-                          ${done ? "opacity-50 bg-transparent" : "hover:bg-secondary/20"}
-                          ${isCritical ? "bg-red-500/5 border-l-2 border-red-500/50" : ""}
-                        `}
-                      >
-                        <TooltipProvider delayDuration={200}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                onClick={() => verifyAndMark(itemId, item.title, item.phase, done)}
-                                disabled={vState === "verifying"}
-                                className="mt-0.5 shrink-0 disabled:cursor-wait"
-                                aria-label={tooltipLabel}
-                              >
-                                {circleIcon}
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent side="right" className="text-xs">
-                              {tooltipLabel}
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                      <div key={itemId} className="border-b border-border/20 last:border-0">
+                        {/* ── Main Item Row ── */}
+                        <div
+                          className={`px-4 py-2.5 flex items-start gap-3 transition-colors
+                            ${done ? "bg-emerald-500/3 hover:bg-emerald-500/8 cursor-pointer" : "hover:bg-secondary/20"}
+                            ${isCritical ? "bg-red-500/5 border-l-2 border-red-500/50" : ""}
+                          `}
+                          onClick={done ? () => loadProof(itemId, item.title) : undefined}
+                        >
+                          <TooltipProvider delayDuration={200}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); verifyAndMark(itemId, item.title, item.phase, done); }}
+                                  disabled={vState === "verifying"}
+                                  className="mt-0.5 shrink-0 disabled:cursor-wait"
+                                  aria-label={tooltipLabel}
+                                >
+                                  {circleIcon}
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent side="right" className="text-xs">
+                                {tooltipLabel}
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
 
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${PRIORITY_COLORS[item.priority]} ${isCritical ? "animate-pulse" : ""}`}>
-                          {isCritical && "🔴 "}{item.priority.toUpperCase()}
-                        </span>
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${PRIORITY_COLORS[item.priority]} ${isCritical ? "animate-pulse" : ""}`}>
+                            {isCritical && "🔴 "}{item.priority.toUpperCase()}
+                          </span>
 
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-xs font-medium ${done ? "line-through text-muted-foreground" : isCritical ? "text-red-300" : "text-foreground"}`}>
-                            {item.title}
-                          </p>
-                          <p className="text-[11px] text-muted-foreground mt-0.5">{item.detail}</p>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <p className={`text-xs font-medium ${done ? "line-through text-muted-foreground" : isCritical ? "text-red-300" : "text-foreground"}`}>
+                                {item.title}
+                              </p>
+                              {done && (
+                                <span className="text-[9px] text-emerald-500 font-semibold flex items-center gap-0.5">
+                                  {isProofOpen ? <ChevronDown className="w-2.5 h-2.5" /> : <ChevronRight className="w-2.5 h-2.5" />}
+                                  proof
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">{item.detail}</p>
+                          </div>
+
+                          <RoadmapItemActions title={item.title} detail={item.detail} phaseName={phase} />
                         </div>
 
-                        <RoadmapItemActions title={item.title} detail={item.detail} phaseName={phase} />
+                        {/* ── Proof of Work Panel ── */}
+                        {done && isProofOpen && (
+                          <div className="mx-4 mb-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 overflow-hidden">
+                            <div className="flex items-center gap-2 px-3 py-2 border-b border-emerald-500/15 bg-emerald-500/10">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                              <span className="text-[11px] font-semibold text-emerald-400">Proof of Work</span>
+                              <span className="text-[10px] text-muted-foreground ml-auto">Evidence found in changelog & board</span>
+                            </div>
+
+                            {proof?.loading ? (
+                              <div className="flex items-center gap-2 px-3 py-4 text-muted-foreground">
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span className="text-[11px]">Scanning project history…</span>
+                              </div>
+                            ) : proof?.entries.length === 0 ? (
+                              <div className="px-3 py-4 text-center">
+                                <p className="text-[11px] text-muted-foreground">No matching changelog or board entries found.</p>
+                                <p className="text-[10px] text-muted-foreground/60 mt-1">Manually verified — no automated proof available.</p>
+                              </div>
+                            ) : (
+                              <div className="divide-y divide-border/20">
+                                {proof.entries.map((entry, ei) => (
+                                  <div key={ei} className="px-3 py-2.5 flex items-start gap-2.5">
+                                    <div className="mt-0.5 shrink-0">
+                                      {entry.source === "changelog"
+                                        ? <FileText className="w-3 h-3 text-primary/70" />
+                                        : <KanbanSquare className="w-3 h-3 text-violet-400/70" />
+                                      }
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-[11px] font-medium text-foreground truncate">{entry.title}</p>
+                                      {entry.detail && (
+                                        <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{entry.detail}</p>
+                                      )}
+                                      {entry.timestamp && (
+                                        <p className="text-[9px] text-muted-foreground/50 mt-1 flex items-center gap-1">
+                                          <Clock className="w-2.5 h-2.5" />
+                                          {new Date(entry.timestamp).toLocaleString()}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <Badge variant="outline" className={`text-[8px] shrink-0 ${entry.source === "changelog" ? "border-primary/30 text-primary" : "border-violet-400/30 text-violet-400"}`}>
+                                      {entry.source === "changelog" ? "changelog" : "board card"}
+                                    </Badge>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
