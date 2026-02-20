@@ -19,9 +19,12 @@ export type Database = {
           completed_at: string | null
           created_at: string
           customer_email: string | null
+          customer_phone: string | null
           id: string
           recovery_channel: string | null
           recovery_sent_at: string | null
+          sms_15min_sent_at: string | null
+          sms_15min_status: string | null
           status: string
           stripe_session_id: string
           tier: string
@@ -30,9 +33,12 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           customer_email?: string | null
+          customer_phone?: string | null
           id?: string
           recovery_channel?: string | null
           recovery_sent_at?: string | null
+          sms_15min_sent_at?: string | null
+          sms_15min_status?: string | null
           status?: string
           stripe_session_id: string
           tier: string
@@ -41,9 +47,12 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           customer_email?: string | null
+          customer_phone?: string | null
           id?: string
           recovery_channel?: string | null
           recovery_sent_at?: string | null
+          sms_15min_sent_at?: string | null
+          sms_15min_status?: string | null
           status?: string
           stripe_session_id?: string
           tier?: string
