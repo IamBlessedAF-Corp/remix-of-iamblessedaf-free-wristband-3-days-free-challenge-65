@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import {
   ChevronDown, ChevronRight, CheckCircle2, Circle, Trophy,
   RefreshCw, Database, Zap, AlertTriangle, Loader2, XCircle,
-  FileText, KanbanSquare, Clock, ExternalLink
+  FileText, KanbanSquare, Clock, ExternalLink, Sparkles
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -165,17 +165,27 @@ export default function RoadmapTab() {
   const qc = useQueryClient();
   const board = useBoard();
   const { isCompleted, markDone, unmarkDone, completions } = useRoadmapCompletions();
-  const { items: roadmapItems, byPhase, isLoading, isFromDb, seedFromStatic } = useRoadmapItems();
+  const { items: roadmapItems, byPhase, isLoading, isFromDb, seedFromStatic, addItem } = useRoadmapItems();
   const [openPhases, setOpenPhases] = useState<Record<string, boolean>>({});
   const [filters, setFilters] = useState<RoadmapFilters>({ keyword: "", status: "", priority: "" });
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [lastSynced, setLastSynced] = useState<string | null>(null);
   // Track per-item verify state: itemId → VerifyState
   const [verifyStates, setVerifyStates] = useState<Record<string, VerifyState>>({});
 
   const totalRoadmapItems = roadmapItems.length;
   const totalCompleted = completions.length;
-  const overallPct = totalRoadmapItems > 0 ? Math.round((totalCompleted / totalRoadmapItems) * 100) : 0;
+  const overallPct = totalRoadmapItems > 0 ? Math.min(100, Math.round((totalCompleted / totalRoadmapItems) * 100)) : 0;
+
+  // ── Priority-specific stats ──
+  const criticalTotal = roadmapItems.filter(i => i.priority === "critical").length;
+  const criticalDone = roadmapItems.filter(i => i.priority === "critical" && isCompleted(i.phase, i.title)).length;
+  const criticalPct = criticalTotal > 0 ? Math.min(100, Math.round((criticalDone / criticalTotal) * 100)) : 100;
+
+  const highTotal = roadmapItems.filter(i => i.priority === "high").length;
+  const highDone = roadmapItems.filter(i => i.priority === "high" && isCompleted(i.phase, i.title)).length;
+  const highPct = highTotal > 0 ? Math.min(100, Math.round((highDone / highTotal) * 100)) : 100;
 
   // ── Proof of Work: which item is expanded + cached proof data ──
   const [expandedProofId, setExpandedProofId] = useState<string | null>(null);
@@ -430,9 +440,80 @@ export default function RoadmapTab() {
     }
   }, [allItemsWithPhase, isCompleted, qc]);
 
+  // ── Generate 11 Smart Suggestions ──
+  const handleGenerateSuggestions = useCallback(async () => {
+    if (!isFromDb) {
+      toast.warning("Seed to DB first before generating suggestions");
+      return;
+    }
+    setIsGenerating(true);
+    toast.info("🧠 Analysing gaps and generating 11 smart suggestions...", { duration: 4000 });
+
+    try {
+      const phaseStats = Object.entries(byPhase).map(([phase, items]) => {
+        const done = items.filter(i => isCompleted(i.phase, i.title)).length;
+        const pct = items.length > 0 ? Math.round((done / items.length) * 100) : 100;
+        return { phase, pct };
+      }).sort((a, b) => a.pct - b.pct);
+      const weakPhases = phaseStats.slice(0, 3).map(p => p.phase);
+
+      const POOL: Array<{ phase: string; title: string; detail: string; priority: string; prompt: string }> = [
+        { phase: "funnel", title: "Add OTO upsell modal after free wristband checkout", detail: "Trigger a one-time-offer modal immediately post-checkout to capture impulse buyers at peak engagement.", priority: "critical", prompt: "Implement a post-checkout OTO modal after free wristband confirmation, offering the $22 3-pack with a 10-minute countdown timer." },
+        { phase: "funnel", title: "Implement checkout abandonment SMS within 15 min", detail: "Fire a Twilio SMS to users who start checkout but don't complete within 15 minutes using the abandoned_carts table.", priority: "critical", prompt: "Use abandoned_carts table and a scheduled edge function to detect incomplete checkouts, then trigger a personalised SMS via Twilio within 15 minutes." },
+        { phase: "funnel", title: "Add exit-intent downsell to $11/mo subscription", detail: "Show a modal when user exits any offer page, presenting the $11/mo subscription as a fallback.", priority: "high", prompt: "Create an exit-intent modal on /offer/* routes that presents the monthly subscription as a downsell, tracked in exit_intent_events." },
+        { phase: "funnel", title: "Add live social proof counter to all offer pages", detail: "Show real-time 'X people viewing this now' using portal_activity data and simulated stats for FOMO.", priority: "high", prompt: "Integrate useSimulatedStats and portal_activity to display a live viewer counter on each /offer/* page." },
+        { phase: "retention", title: "Build 7-day onboarding email sequence post-purchase", detail: "Use Resend to fire a daily educational email sequence for the first 7 days after wristband purchase.", priority: "critical", prompt: "Create a 7-step Resend email sequence triggered on order completion, teaching the 21-day gratitude habit loop." },
+        { phase: "retention", title: "Add gratitude streak countdown banner to portal", detail: "Show a daily banner in /portal counting down to the next TGF Friday SMS and celebrating streaks.", priority: "medium", prompt: "Add a portal banner component that reads from scheduled_gratitude_messages and bc_wallets streak_days to display personalised encouragement." },
+        { phase: "retention", title: "Implement re-engagement SMS for 7-day inactive users", detail: "Detect users with no portal_activity in 7+ days and trigger a personalised win-back SMS.", priority: "high", prompt: "Write an edge function that queries portal_activity for inactive users then fires a win-back SMS via Twilio." },
+        { phase: "virality", title: "Add friend-tagging mechanic on streak milestones", detail: "When a user hits 7, 14, or 30-day streak, prompt them to tag 3 friends in a shareable canvas image.", priority: "high", prompt: "Create a ShareMilestoneModal that triggers on streak milestones, generates a branded canvas image, and provides WhatsApp/Instagram share links." },
+        { phase: "virality", title: "Launch referral leaderboard on /portal home", detail: "Display a live top-10 referral leaderboard using affiliate_tiers and creator_profiles to drive competition.", priority: "medium", prompt: "Add a live leaderboard widget to /portal querying affiliate_tiers ordered by wristbands_distributed, showing top 10 with rank badges." },
+        { phase: "operations", title: "Add automated daily DB backup alert email", detail: "Run verify-backup edge function daily and send an email alert if anomalies exceed threshold.", priority: "critical", prompt: "Schedule the verify-backup edge function via pg_cron at 3 AM UTC daily and send a Resend email to admin if status is not 'success'." },
+        { phase: "operations", title: "Build A/B test framework for offer page headlines", detail: "Use useABTest hook to test 2 headline variants on /offer/22 and measure conversion via orders table.", priority: "medium", prompt: "Integrate useABTest into /offer/22 to A/B test 2 headline variants, tracking conversions in orders table with variant metadata." },
+      ];
+
+      const sorted = [
+        ...POOL.filter(s => weakPhases.includes(s.phase)),
+        ...POOL.filter(s => !weakPhases.includes(s.phase)),
+      ];
+
+      const existingTitles = new Set(roadmapItems.map(i => i.title.toLowerCase().trim()));
+      const fresh = sorted.filter(s => !existingTitles.has(s.title.toLowerCase().trim()));
+      const toInsert = fresh.slice(0, 11);
+
+      if (toInsert.length === 0) {
+        toast.info("✅ All known improvements are already in your roadmap!");
+        return;
+      }
+
+      const maxOrder = roadmapItems.reduce((max, i) => Math.max(max, i.sort_order ?? 0), 0);
+      let inserted = 0;
+      for (let idx = 0; idx < toInsert.length; idx++) {
+        const s = toInsert[idx];
+        await addItem.mutateAsync({
+          phase: s.phase,
+          title: s.title,
+          detail: s.detail,
+          priority: s.priority,
+          prompt: s.prompt,
+          sort_order: maxOrder + idx + 1,
+          is_active: true,
+        });
+        inserted++;
+      }
+
+      toast.success(`🚀 ${inserted} smart suggestions added to your roadmap!`);
+    } catch (err) {
+      console.error("[GenerateSuggestions]", err);
+      toast.error("Failed to generate suggestions — try again");
+    } finally {
+      setIsGenerating(false);
+    }
+  }, [isFromDb, byPhase, isCompleted, roadmapItems, addItem]);
+
   if (isLoading) {
     return <div className="flex justify-center py-20"><RefreshCw className="w-6 h-6 animate-spin text-primary" /></div>;
   }
+
 
   return (
     <div className="space-y-6">
@@ -447,18 +528,33 @@ export default function RoadmapTab() {
           )}
         </div>
 
-        <Button
-          onClick={handleSmartUpdate}
-          disabled={isSyncing}
-          className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-          size="sm"
-        >
-          {isSyncing ? (
-            <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Scanning Changes...</>
-          ) : (
-            <><Zap className="w-3.5 h-3.5" /> Update Roadmap</>
-          )}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={handleGenerateSuggestions}
+            disabled={isGenerating || isSyncing}
+            variant="outline"
+            className="gap-2 font-semibold"
+            size="sm"
+          >
+            {isGenerating ? (
+              <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Generating…</>
+            ) : (
+              <><Sparkles className="w-3.5 h-3.5" /> Generate 11</>
+            )}
+          </Button>
+          <Button
+            onClick={handleSmartUpdate}
+            disabled={isSyncing || isGenerating}
+            className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+            size="sm"
+          >
+            {isSyncing ? (
+              <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Scanning Changes...</>
+            ) : (
+              <><Zap className="w-3.5 h-3.5" /> Update Roadmap</>
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Critical alert banner */}
@@ -518,9 +614,60 @@ export default function RoadmapTab() {
       )}
 
       {/* Overall Progress Header */}
-      <div className="bg-card border border-border/40 rounded-xl p-5">
-        <Progress value={overallPct} className="h-3 mb-4" />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="bg-card border border-border/40 rounded-xl p-5 space-y-4">
+        {/* Overall bar */}
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Overall Progress</span>
+            <span className="text-[10px] font-bold text-foreground">{overallPct}%</span>
+          </div>
+          <Progress value={overallPct} className="h-2.5" />
+        </div>
+
+        {/* Critical bar */}
+        {criticalTotal > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 text-red-400">
+                <AlertTriangle className="w-3 h-3" /> Critical Tasks
+                <span className="text-muted-foreground font-normal">({criticalDone}/{criticalTotal})</span>
+              </span>
+              <span className={`text-[10px] font-bold ${criticalPct === 100 ? "text-emerald-400" : "text-red-400"} ${criticalRemaining > 0 ? "animate-pulse" : ""}`}>
+                {criticalPct}%
+              </span>
+            </div>
+            <div className="h-2.5 rounded-full bg-secondary overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-700 ${criticalPct === 100 ? "bg-emerald-500" : "bg-red-500"}`}
+                style={{ width: `${criticalPct}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* High bar */}
+        {highTotal > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 text-orange-400">
+                ⚡ High Priority
+                <span className="text-muted-foreground font-normal">({highDone}/{highTotal})</span>
+              </span>
+              <span className={`text-[10px] font-bold ${highPct === 100 ? "text-emerald-400" : "text-orange-400"}`}>
+                {highPct}%
+              </span>
+            </div>
+            <div className="h-2.5 rounded-full bg-secondary overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-700 ${highPct === 100 ? "bg-emerald-500" : "bg-orange-500"}`}
+                style={{ width: `${highPct}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Stat pills */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
           <div className="bg-secondary/30 rounded-lg p-3 text-center">
             <p className="text-lg font-bold text-foreground">{totalCompleted}/{totalRoadmapItems}</p>
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Completed</p>
