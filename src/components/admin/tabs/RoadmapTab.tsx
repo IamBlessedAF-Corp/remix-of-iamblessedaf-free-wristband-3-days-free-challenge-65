@@ -473,15 +473,40 @@ export default function RoadmapTab() {
 
       {/* Seed banner */}
       {!isFromDb && (
-        <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Database className="w-4 h-4 text-amber-500" />
-            <span className="text-xs text-amber-500 font-medium">Roadmap is using static file. Seed to database for full CRUD.</span>
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 min-w-0">
+            <Database className="w-4 h-4 text-amber-500 shrink-0" />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-xs text-amber-500 font-medium cursor-help underline decoration-dotted decoration-amber-500/50">
+                    Roadmap is using static file. Seed to database for full CRUD.
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs text-xs" sideOffset={6}>
+                  <p className="font-semibold mb-1">Why seed to database?</p>
+                  <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                    <li>Enable <strong className="text-foreground">edit / delete / reorder</strong> of roadmap items</li>
+                    <li>Persist <strong className="text-foreground">completions</strong> across sessions</li>
+                    <li>Allow <strong className="text-foreground">adding new tasks</strong> from the admin panel</li>
+                    <li>Enable <strong className="text-foreground">Smart Update</strong> auto-verification against changelog</li>
+                  </ul>
+                  <p className="mt-2 text-amber-400">One-time action — safe to run anytime.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
-          <Button size="sm" variant="outline" className="h-7 text-xs border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
-            onClick={() => seedFromStatic.mutate()} disabled={seedFromStatic.isPending}>
-            {seedFromStatic.isPending ? <RefreshCw className="w-3 h-3 animate-spin mr-1" /> : null}
-            Seed to DB
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs border-amber-500/30 text-amber-500 hover:bg-amber-500/10 shrink-0"
+            onClick={() => seedFromStatic.mutate()}
+            disabled={seedFromStatic.isPending}
+          >
+            {seedFromStatic.isPending
+              ? <><RefreshCw className="w-3 h-3 animate-spin mr-1" /> Seeding…</>
+              : <><Database className="w-3 h-3 mr-1" /> Seed to DB</>
+            }
           </Button>
         </div>
       )}
