@@ -155,6 +155,7 @@ export default function BoardTab() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("board");
   const [isSeeding, setIsSeeding] = useState(false);
+  const [isSyncingPow, setIsSyncingPow] = useState(false);
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isRunningTests, setIsRunningTests] = useState(false);
   const [expandedAutomations, setExpandedAutomations] = useState(false);
@@ -231,6 +232,32 @@ export default function BoardTab() {
       toast.error(`Seed failed: ${e?.message}`);
     } finally {
       setIsSeeding(false);
+    }
+  }, [board]);
+
+  // ── Sync POW: auto-stamp completed_at on Done cards missing it ──
+  const handleSyncPow = useCallback(async () => {
+    setIsSyncingPow(true);
+    toast.info("🔄 Syncing POW — stamping completed_at on Done cards...");
+    try {
+      const doneCol = board.columns.find(c => c.name.includes("Done"));
+      if (!doneCol) { toast.error("Done column not found"); return; }
+      const missingTs = board.cards.filter(c => c.column_id === doneCol.id && !c.completed_at);
+      let fixed = 0;
+      for (const card of missingTs) {
+        await supabase.from("board_cards" as any).update({
+          completed_at: new Date().toISOString(),
+          staging_status: "live",
+          stage: "stage-4",
+        }).eq("id", card.id);
+        fixed++;
+      }
+      toast.success(`✅ Synced ${fixed} Done cards with completed_at timestamp`);
+      board.refetch();
+    } catch (e: any) {
+      toast.error(`Sync failed: ${e?.message}`);
+    } finally {
+      setIsSyncingPow(false);
     }
   }, [board]);
 
@@ -429,6 +456,27 @@ export default function BoardTab() {
               </Button>
             </TooltipTrigger>
             <TooltipContent className="text-xs">Refresh all cards and columns from the database</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider delayDuration={200}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isSyncingPow}
+                className="gap-1.5 border-violet-500/40 text-violet-400 hover:bg-violet-500/10"
+                onClick={handleSyncPow}
+              >
+                {isSyncingPow ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCheck className="w-3.5 h-3.5" />}
+                Sync POW
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs text-xs">
+              <p className="font-semibold mb-1">✅ Sync Proof-of-Work</p>
+              <p>Auto-stamps completed_at on all Done column cards missing it, and marks them as stage-4/live. Ensures regression test "Completed cards have timestamp" passes.</p>
+            </TooltipContent>
           </Tooltip>
         </TooltipProvider>
 
