@@ -71,7 +71,8 @@ const ALL_TAB_IDS = [
 type TabId = typeof ALL_TAB_IDS[number];
 
 // ─── Types ───
-type SidebarSubItem = { id: TabId; label: string; icon: any };
+type SidebarSubTab = { label: string; value: string; icon: any };
+type SidebarSubItem = { id: TabId; label: string; icon: any; subTabs?: SidebarSubTab[] };
 type SidebarGroupDef = { group: string; icon: any; items: SidebarSubItem[] };
 type SidebarSingleItem = { id: TabId; label: string; icon: any };
 type SidebarEntry = SidebarSingleItem | SidebarGroupDef;
@@ -147,8 +148,23 @@ const SIDEBAR_MENU: SidebarEntry[] = [
   {
     group: "Engagement", icon: Zap,
     items: [
-      { id: "challenge", label: "Challenge", icon: Target },
-      { id: "messaging", label: "Messaging", icon: MessageSquare },
+      {
+        id: "challenge", label: "Challenge", icon: Target,
+        subTabs: [
+          { label: "Overview", value: "overview", icon: LayoutDashboard },
+          { label: "Participants", value: "participants", icon: Users },
+          { label: "Streaks", value: "streaks", icon: TrendingUp },
+        ],
+      },
+      {
+        id: "messaging", label: "Messaging", icon: MessageSquare,
+        subTabs: [
+          { label: "Engagement Blueprint", value: "blueprint", icon: LayoutDashboard },
+          { label: "Messages", value: "messages", icon: MessageSquare },
+          { label: "Follow-ups", value: "followups", icon: ChevronRight },
+          { label: "TGF Contacts", value: "tgf", icon: Award },
+        ],
+      },
       { id: "copymanager", label: "Copy Manager", icon: Type },
       { id: "sms", label: "SMS Intelligence", icon: Bell },
       { id: "gamification", label: "Gamification (BC)", icon: Award },
@@ -245,6 +261,11 @@ export default function AdminHub() {
   const [openBlocksSub, setOpenBlocksSub] = useState(true);
   const [openVideoBlocksSub, setOpenVideoBlocksSub] = useState(true);
   const [openVaultSub, setOpenVaultSub] = useState(true);
+
+  // Sub-tab expansion state per sidebar item id (e.g. "messaging" -> open/closed)
+  const [openSubTabs, setOpenSubTabs] = useState<Record<string, boolean>>({ messaging: true, challenge: true });
+  // Active sub-tab per item id
+  const [activeSubTabs, setActiveSubTabs] = useState<Record<string, string>>({});
 
   useRealtimeSync();
   useQuery({ queryKey: ["role-permissions"], queryFn: fetchRolePermissions });
@@ -392,6 +413,16 @@ export default function AdminHub() {
                   <div className={cn("space-y-0.5", sidebarOpen ? "ml-3 mt-0.5 border-l border-border/30 pl-2" : "")}>
                     {visibleItems.map(item => {
                       const isBlocksItem = item.id === "blocks" && isFunnelGroup;
+                      const hasSubTabs = !isBlocksItem && item.subTabs && item.subTabs.length > 0;
+                      const isSubTabsOpen = openSubTabs[item.id] ?? true;
+                      const activeSubTab = activeSubTabs[item.id];
+
+                      const handleSubTabClick = (subValue: string) => {
+                        setActiveTab(item.id);
+                        setActiveSubTabs(prev => ({ ...prev, [item.id]: subValue }));
+                        window.dispatchEvent(new CustomEvent("admin-set-subtab", { detail: { tabId: item.id, subTab: subValue } }));
+                      };
+
                       return (
                         <div key={item.id}>
                           {/* Level-2 item */}
@@ -399,6 +430,7 @@ export default function AdminHub() {
                             onClick={() => {
                               setActiveTab(item.id);
                               if (isBlocksItem) setOpenBlocksSub(prev => !prev);
+                              if (hasSubTabs) setOpenSubTabs(prev => ({ ...prev, [item.id]: !isSubTabsOpen }));
                             }}
                             title={item.label}
                             className={cn(
@@ -415,7 +447,33 @@ export default function AdminHub() {
                                 ? <ChevronDown className="w-3 h-3 shrink-0" />
                                 : <ChevronRight className="w-3 h-3 shrink-0" />
                             )}
+                            {sidebarOpen && hasSubTabs && (
+                              isSubTabsOpen
+                                ? <ChevronDown className="w-3 h-3 shrink-0" />
+                                : <ChevronRight className="w-3 h-3 shrink-0" />
+                            )}
                           </button>
+
+                          {/* ── Level-3: Generic sub-tabs (Messaging, Challenge, etc.) ── */}
+                          {sidebarOpen && hasSubTabs && isSubTabsOpen && activeTab === item.id && (
+                            <div className="ml-3 mt-0.5 border-l border-border/20 pl-2 space-y-0.5">
+                              {item.subTabs!.map(sub => (
+                                <button
+                                  key={sub.value}
+                                  onClick={() => handleSubTabClick(sub.value)}
+                                  className={cn(
+                                    "w-full flex items-center gap-2 px-2 py-1 rounded-md text-[10px] font-medium transition-colors text-left",
+                                    activeSubTab === sub.value
+                                      ? "bg-primary/15 text-primary"
+                                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+                                  )}
+                                >
+                                  <sub.icon className="w-3 h-3 shrink-0" />
+                                  <span className="truncate">{sub.label}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
 
                           {/* ── Level-3: Intelligent Blocks sub-categories ── */}
                           {sidebarOpen && isBlocksItem && openBlocksSub && (

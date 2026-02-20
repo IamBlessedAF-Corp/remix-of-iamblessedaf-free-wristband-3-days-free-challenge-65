@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import html2canvas from "html2canvas";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +14,16 @@ import { toast } from "sonner";
 export default function MessagingTab() {
   const [activeTab, setActiveTab] = useState("blueprint");
   const [capturing, setCapturing] = useState(false);
+
+  // Listen for sidebar sub-tab navigation events
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { tabId, subTab } = (e as CustomEvent).detail ?? {};
+      if (tabId === "messaging" && subTab) setActiveTab(subTab);
+    };
+    window.addEventListener("admin-set-subtab", handler);
+    return () => window.removeEventListener("admin-set-subtab", handler);
+  }, []);
 
   const handleDownloadPng = useCallback(async () => {
     const el = document.getElementById("engagement-blueprint-content");
