@@ -11,10 +11,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   ChevronDown, ChevronRight, CheckCircle2, Circle, Trophy,
-  RefreshCw, Database, Zap, AlertTriangle
+  RefreshCw, Database, Zap, AlertTriangle, Loader2, XCircle
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const PHASE_LABELS: Record<string, string> = {
   foundation: "🏗️ Foundation & Security",
@@ -77,6 +78,9 @@ function fuzzyMatchTitle(roadmapTitle: string, changelogText: string): boolean {
   return false;
 }
 
+// Per-item states for the smart verify flow
+type VerifyState = "idle" | "verifying" | "verified" | "failed";
+
 export default function RoadmapTab() {
   const board = useBoard();
   const { isCompleted, markDone, unmarkDone, completions } = useRoadmapCompletions();
@@ -85,6 +89,8 @@ export default function RoadmapTab() {
   const [filters, setFilters] = useState<RoadmapFilters>({ keyword: "", status: "", priority: "" });
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSynced, setLastSynced] = useState<string | null>(null);
+  // Track per-item verify state: itemId → VerifyState
+  const [verifyStates, setVerifyStates] = useState<Record<string, VerifyState>>({});
 
   const totalRoadmapItems = roadmapItems.length;
   const totalCompleted = completions.length;
@@ -128,6 +134,74 @@ export default function RoadmapTab() {
   const highRemaining = allItemsWithPhase.filter(i => i.priority === "high" && !isCompleted(i.phase, i.title)).length;
 
   const togglePhase = (phase: string) => setOpenPhases(prev => ({ ...prev, [phase]: !prev[phase] }));
+
+  // ── Smart Verify & Mark ──
+  // When the user clicks the completion circle manually on a pending item,
+  // we run a verification scan (same logic as Smart Update) to confirm the
+  // prompt was actually executed. If confirmed → mark done. If not found →
+  // ask user to confirm manually. If already done → unmark.
+  const verifyAndMark = useCallback(async (itemId: string, title: string, phase: string, done: boolean) => {
+    if (done) {
+      // Already done → just unmark
+      unmarkDone.mutate({ title, phase });
+      return;
+    }
+
+    // Start verifying
+    setVerifyStates(prev => ({ ...prev, [itemId]: "verifying" }));
+    toast.info(`🔍 Verifying "${title}"…`, { duration: 2500 });
+
+    try {
+      const [{ data: changelog }, { data: doneCards }] = await Promise.all([
+        supabase
+          .from("changelog_entries")
+          .select("prompt_summary, change_details, affected_areas")
+          .order("created_at", { ascending: false })
+          .limit(300),
+        supabase
+          .from("board_cards")
+          .select("title, description")
+          .not("completed_at", "is", null),
+      ]);
+
+      const doneSignals: string[] = [
+        ...(changelog || []).map(c => `${c.prompt_summary} ${c.change_details || ""} ${(c.affected_areas || []).join(" ")}`),
+        ...(doneCards || []).map(c => `${c.title} ${c.description || ""}`),
+      ];
+
+      const verified = doneSignals.some(signal => fuzzyMatchTitle(title, signal));
+
+      if (verified) {
+        // Verified via project data → mark as done
+        setVerifyStates(prev => ({ ...prev, [itemId]: "verified" }));
+        markDone.mutate({ title, phase });
+        toast.success(`✅ Verified! "${title}" confirmed complete via changelog/board.`);
+      } else {
+        // Not found in signals → prompt user for manual confirmation
+        setVerifyStates(prev => ({ ...prev, [itemId]: "failed" }));
+        toast.warning(
+          `⚠️ Could not auto-verify "${title}". Mark manually?`,
+          {
+            duration: 8000,
+            action: {
+              label: "Yes, mark done",
+              onClick: () => {
+                markDone.mutate({ title, phase });
+                setVerifyStates(prev => ({ ...prev, [itemId]: "verified" }));
+              },
+            },
+          }
+        );
+        // Reset failed state after a few seconds so icon doesn't stay red
+        setTimeout(() => setVerifyStates(prev => ({ ...prev, [itemId]: "idle" })), 8000);
+      }
+    } catch (err) {
+      console.error("Verify error:", err);
+      setVerifyStates(prev => ({ ...prev, [itemId]: "failed" }));
+      toast.error(`Verification failed for "${title}". Try again.`);
+      setTimeout(() => setVerifyStates(prev => ({ ...prev, [itemId]: "idle" })), 5000);
+    }
+  }, [markDone, unmarkDone]);
 
   const colGroups = board.columns.map(col => ({
     name: col.name.slice(0, 14),
@@ -373,24 +447,48 @@ export default function RoadmapTab() {
                   {phaseItems.map((item, idx) => {
                     const done = isCompleted(item.phase, item.title);
                     const isCritical = item.priority === "critical" && !done;
+                    const itemId = item.id || `${item.phase}-${idx}`;
+                    const vState = verifyStates[itemId] ?? "idle";
+
+                    const circleIcon = done
+                      ? <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      : vState === "verifying"
+                        ? <Loader2 className="w-4 h-4 text-primary animate-spin" />
+                        : vState === "failed"
+                          ? <XCircle className="w-4 h-4 text-destructive" />
+                          : <Circle className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />;
+
+                    const tooltipLabel = done
+                      ? "Unmark as done"
+                      : vState === "verifying"
+                        ? "Verifying…"
+                        : "Mark as Completed";
+
                     return (
                       <div
-                        key={item.id || idx}
+                        key={itemId}
                         className={`px-4 py-2.5 flex items-start gap-3 transition-colors
                           ${done ? "opacity-50 bg-transparent" : "hover:bg-secondary/20"}
                           ${isCritical ? "bg-red-500/5 border-l-2 border-red-500/50" : ""}
                         `}
                       >
-                        <button
-                          onClick={() => done ? unmarkDone.mutate({ title: item.title, phase: item.phase }) : markDone.mutate({ title: item.title, phase: item.phase })}
-                          className="mt-0.5 shrink-0"
-                          title={done ? "Mark as not done" : "Mark as done"}
-                        >
-                          {done
-                            ? <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                            : <Circle className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
-                          }
-                        </button>
+                        <TooltipProvider delayDuration={200}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => verifyAndMark(itemId, item.title, item.phase, done)}
+                                disabled={vState === "verifying"}
+                                className="mt-0.5 shrink-0 disabled:cursor-wait"
+                                aria-label={tooltipLabel}
+                              >
+                                {circleIcon}
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="right" className="text-xs">
+                              {tooltipLabel}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
 
                         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${PRIORITY_COLORS[item.priority]} ${isCritical ? "animate-pulse" : ""}`}>
                           {isCritical && "🔴 "}{item.priority.toUpperCase()}
@@ -407,6 +505,7 @@ export default function RoadmapTab() {
                       </div>
                     );
                   })}
+
                 </div>
               )}
             </div>
