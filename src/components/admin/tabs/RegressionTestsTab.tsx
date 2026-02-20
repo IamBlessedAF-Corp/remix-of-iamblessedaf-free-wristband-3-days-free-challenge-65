@@ -398,13 +398,13 @@ export default function RegressionTestsTab() {
         return (
           <Card key={cat}>
             <CardHeader className="pb-2 pt-4">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
+              <div className="flex items-center gap-2">
                 <CatIcon className={cn("w-4 h-4", meta.color)} />
-                {meta.label}
+                <span className="text-sm font-semibold text-foreground">{meta.label}</span>
                 <Badge variant="outline" className="ml-auto text-[10px]">
                   {tests.filter(t => states[t.id].status === "pass").length}/{tests.length}
                 </Badge>
-              </CardTitle>
+              </div>
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-border/40">
