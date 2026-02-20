@@ -6,7 +6,7 @@ import {
   ShieldAlert, CreditCard, Kanban, Map, ScrollText, Brain, Database,
   Trophy, Bell, LogOut, RefreshCw, Menu, ChevronLeft, Shield,
   DollarSign, Zap, Target, ChevronDown, ChevronRight, Search, Globe, Type, MessageSquare, BarChart3, TrendingUp, ShoppingCart,
-  Bug, Video, FileText, Play, Edit3, Scissors, Star,
+  Bug, Video, FileText, Play, Edit3, Scissors, Star, FlaskConical,
 } from "lucide-react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useQuery } from "@tanstack/react-query";
@@ -52,6 +52,7 @@ import BudgetControlTab from "@/components/admin/BudgetControlTab";
 import AuditLogTab from "@/components/admin/tabs/AuditLogTab";
 import ErrorMonitorTab from "@/components/admin/tabs/ErrorMonitorTab";
 import AbandonedCartsTab from "@/components/admin/tabs/AbandonedCartsTab";
+import RegressionTestsTab from "@/components/admin/tabs/RegressionTestsTab";
 import GlobalSearchModal from "@/components/admin/GlobalSearchModal";
 
 export type { BlockSubFilter } from "@/types/adminBlocks";
@@ -63,7 +64,7 @@ const ALL_TAB_IDS = [
   "roadmap", "logs", "forecast", "fraud", "leaderboard",
   "alerts", "budget", "orders", "abandonedcarts", "blessings", "challenge",
   "messaging", "copymanager", "sms", "gamification", "affiliates", "referrals", "waitlist", "roles", "users",
-  "integrations", "database", "auditlog", "backups", "errors",
+  "integrations", "database", "auditlog", "backups", "errors", "regression",
 ] as const;
 
 type TabId = typeof ALL_TAB_IDS[number];
@@ -169,6 +170,7 @@ const SIDEBAR_MENU: SidebarEntry[] = [
       { id: "backups", label: "Backup Verification", icon: ShieldAlert },
       { id: "errors", label: "Error Monitor", icon: Bug },
       { id: "auditlog", label: "Audit Log", icon: ScrollText },
+      { id: "regression", label: "Regression Tests", icon: FlaskConical },
       { id: "roles", label: "Roles", icon: Shield },
       { id: "users", label: "Users", icon: Users },
       { id: "integrations", label: "Integrations & API", icon: Globe },
@@ -215,6 +217,7 @@ function TabContent({ tab, blockSubFilter }: { tab: TabId; blockSubFilter: Block
     case "auditlog": return <AuditLogTab />;
     case "backups": return <BackupVerificationPanel />;
     case "errors": return <ErrorMonitorTab />;
+    case "regression": return <RegressionTestsTab />;
     default: return null;
   }
 }
