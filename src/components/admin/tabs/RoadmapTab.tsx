@@ -71,7 +71,7 @@ const DONE_KEYWORDS: Record<string, string[]> = {
   "budget control": ["budget", "budget_cycles", "budget_segments"],
   "clipper": ["clipper", "clip_submissions", "clip-approved"],
   "gamification": ["gamification", "bc_wallet", "bc_coins"],
-  "realtime sync": ["realtime", "useRealtimeSync"],
+  "realtime sync": ["realtime", "userealtimesync"],
   "expert scripts": ["expert-scripts", "expert_scripts"],
   "backup verification": ["verify-backup", "backup_verifications"],
   "referral": ["referral", "referral_code", "blessings", "referred_by"],
@@ -81,7 +81,7 @@ const DONE_KEYWORDS: Record<string, string[]> = {
   "viral coefficient": ["k-factor", "kfactor", "kfactordashboard", "viral coefficient", "virality"],
   "virality": ["k-factor", "kfactor", "virality", "viral", "kfactordashboard"],
   "sankey": ["sankey", "funnel visualization", "conversion funnel", "sankeydiagram"],
-  "funnel": ["funnel", "sankey", "conversion", "funnelmap"],
+  "funnel": ["funnel", "sankey", "conversion", "funnelmap", "abandoned_carts", "cart"],
   "dashboard": ["dashboard", "adminhub", "admin tab", "kpi"],
   "referral attribution": ["referral", "referral_code", "referred_by_code", "attribution"],
   "tiered referral": ["tiered", "referral reward", "bc coin", "blessedcoins"],
@@ -92,33 +92,68 @@ const DONE_KEYWORDS: Record<string, string[]> = {
   "waitlist": ["waitlist", "smart_wristband_waitlist"],
   "affiliate": ["affiliate", "affiliate_tiers", "affiliate-dashboard"],
   "onboarding": ["onboarding", "creator_profiles", "profile creation"],
-  "cart abandon": ["abandoned_cart", "cart", "recover", "abandoned"],
+  // Cart abandonment — multiple aliases to maximise match coverage
+  "cart": ["abandoned_cart", "abandoned_carts", "cart", "recover", "abandonment", "recover-abandoned"],
+  "abandonment": ["abandoned_cart", "abandoned_carts", "abandonment", "recover-abandoned", "cart recovery"],
+  "recover": ["recover-abandoned", "abandoned_carts", "recovery", "abandonment"],
+  // Checkout & payments
+  "checkout": ["checkout", "create-checkout", "stripe_session", "payment", "stripe"],
+  "order bump": ["order bump", "upsell", "add-on", "pre-checked"],
+  "upsell": ["upsell", "post-purchase", "order bump", "ascending offer"],
+  "payment plan": ["payment plan", "installment", "3x", "split pay"],
+  "scarcity": ["scarcity", "inventory", "stock", "urgency"],
+  "heatmap": ["heatmap", "click coordinates", "scroll depth", "session recording"],
+  "dynamic pricing": ["dynamic pricing", "engagement score", "time spent", "price adjust"],
+  // Conversion & CRO
+  "a/b test": ["ab test", "a/b", "variant", "split test", "useabtest"],
+  "exit intent": ["exit intent", "exit_intent", "useexitintent"],
+  "social proof": ["social proof", "testimonial", "live count", "proof"],
+  // Ops
+  "backup": ["backup", "verify-backup", "backup_verifications"],
+  "rate limit": ["rate limit", "throttle", "sliding window"],
+  "cron": ["cron", "scheduled", "pg_cron"],
+  // Comms
+  "digest": ["digest", "weekly digest", "send-weekly-digest"],
+  "sms": ["sms", "twilio", "sms-router", "send-sms"],
 };
 
 // Stopwords to ignore in word-overlap matching
-const STOPWORDS = new Set(["add", "build", "create", "implement", "with", "and", "the", "for", "real", "time", "live", "new", "all", "via"]);
+const STOPWORDS = new Set([
+  "add", "build", "create", "implement", "with", "and", "the", "for",
+  "real", "time", "live", "new", "all", "via", "use", "using", "based",
+  "page", "item", "list", "from", "into", "that", "this", "when", "then",
+]);
 
 function fuzzyMatchTitle(roadmapTitle: string, changelogText: string): boolean {
-  const lower = roadmapTitle.toLowerCase().replace(/[^a-z0-9 ]/g, " ");
+  const lower = roadmapTitle.toLowerCase().replace(/[^a-z0-9 ]/g, " ").trim();
   const cl = changelogText.toLowerCase();
 
-  // 1. Direct full-title substring match (truncated to avoid noise)
-  if (cl.includes(lower.slice(0, Math.min(20, lower.length)))) return true;
+  // 1. Direct full-title substring match
+  if (lower.length >= 10 && cl.includes(lower.slice(0, Math.min(25, lower.length)))) return true;
 
-  // 2. Keyword synonym map match
+  // 2. Keyword synonym map match — check every key that appears in the roadmap title
   for (const [key, synonyms] of Object.entries(DONE_KEYWORDS)) {
     if (lower.includes(key)) {
       if (synonyms.some(s => cl.includes(s))) return true;
     }
   }
 
-  // 3. Word-overlap scoring: extract meaningful words from the title,
-  //    count how many appear in the changelog text. ≥2 matches = likely done.
+  // 3. Word-overlap scoring: meaningful words from the title vs changelog text
   const titleWords = lower.split(/\s+/).filter(w => w.length > 3 && !STOPWORDS.has(w));
   if (titleWords.length === 0) return false;
+
   const matchCount = titleWords.filter(w => cl.includes(w)).length;
-  const needed = titleWords.length >= 4 ? 2 : 1; // need 2 matches for longer titles
+  // For long titles (4+ meaningful words) require 2 matches; shorter titles need 1
+  const needed = titleWords.length >= 4 ? 2 : 1;
   if (matchCount >= needed) return true;
+
+  // 4. Partial-word match: check if any title word is a prefix/suffix of a changelog word
+  // e.g. "abandon" matches "abandoned_carts" or "abandonment"
+  const clWords = cl.split(/[\s_\-./]+/);
+  const partialHits = titleWords.filter(tw =>
+    clWords.some(cw => cw.startsWith(tw) || tw.startsWith(cw))
+  ).length;
+  if (partialHits >= needed) return true;
 
   return false;
 }
