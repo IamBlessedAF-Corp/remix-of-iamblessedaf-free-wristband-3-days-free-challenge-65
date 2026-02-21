@@ -1,0 +1,63 @@
+name: Grok PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  grok_review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build PR diff
+        run: |
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          git diff "origin/${{ github.base_ref }}"...HEAD > diff.txt
+          head -c 120000 diff.txt > diff_trimmed.txt || true
+
+      - name: Call Grok API
+        id: grok
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          sudo apt-get update -y >/dev/null
+          sudo apt-get install -y jq >/dev/null
+
+          DIFF=$(cat diff_trimmed.txt | jq -Rs .)
+
+          PAYLOAD=$(jq -n --arg diff "$DIFF" '{
+            model: "grok-4-latest",
+            stream: false,
+            temperature: 0,
+            messages: [
+              {role:"system", content:"You are a principal engineer reviewing a PR diff. Provide: (1) Summary (2) Bugs (3) Security (4) Performance (5) Architecture risks (6) Test gaps. Be precise."},
+              {role:"user", content: ("PR diff:\n" + ($diff | fromjson))}
+            ]
+          }')
+
+          RESP=$(curl -sS https://api.x.ai/v1/chat/completions \
+            -H "Authorization: Bearer $XAI_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+
+          REVIEW=$(echo "$RESP" | jq -r '.choices[0].message.content // "No content returned."' )
+
+          {
+            echo "review<<EOF"
+            echo "$REVIEW"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Post sticky comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: |
+            🤖 **Grok CTO Review**
+            ${{ steps.grok.outputs.review }}
