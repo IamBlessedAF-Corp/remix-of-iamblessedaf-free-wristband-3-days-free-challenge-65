@@ -15,13 +15,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Build PR diff
         run: |
-          git fetch origin "${{ github.base_ref }}"
-          git diff origin/${{ github.base_ref }}...HEAD > diff.txt
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          echo "BASE_SHA=$BASE_SHA"
+          echo "HEAD_SHA=$HEAD_SHA"
+
+          git fetch --no-tags --prune --depth=1 origin "$BASE_SHA"
+          git fetch --no-tags --prune --depth=1 origin "$HEAD_SHA"
+
+          git diff "$BASE_SHA" "$HEAD_SHA" > diff.txt
           head -c 120000 diff.txt > diff_trimmed.txt || true
           echo "Diff size: $(wc -c < diff_trimmed.txt) bytes"
 
@@ -50,7 +56,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d "$PAYLOAD")
 
-          REVIEW=$(echo "$RESP" | jq -r '.choices[0].message.content // "No content returned."' )
+          REVIEW=$(echo "$RESP" | jq -r '.choices[0].message.content // "No content returned."')
 
           {
             echo "review<<EOF"
