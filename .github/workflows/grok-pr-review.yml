@@ -15,14 +15,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Build PR diff
         run: |
-          git fetch origin "${{ github.base_ref }}" --depth=1
-          git diff "origin/${{ github.base_ref }}"...HEAD > diff.txt
+          git fetch origin "${{ github.base_ref }}" --depth=0
+          git diff origin/${{ github.base_ref }}...HEAD > diff.txt
           head -c 120000 diff.txt > diff_trimmed.txt || true
 
-      - name: Call Grok API
+      - name: Call Grok (xAI)
         id: grok
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
