@@ -20,11 +20,12 @@ jobs:
 
       - name: Build PR diff
         run: |
-          git fetch origin "${{ github.base_ref }}" --depth=0
+          git fetch origin "${{ github.base_ref }}"
           git diff origin/${{ github.base_ref }}...HEAD > diff.txt
           head -c 120000 diff.txt > diff_trimmed.txt || true
+          echo "Diff size: $(wc -c < diff_trimmed.txt) bytes"
 
-      - name: Call Grok (xAI)
+      - name: Call Grok API
         id: grok
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
