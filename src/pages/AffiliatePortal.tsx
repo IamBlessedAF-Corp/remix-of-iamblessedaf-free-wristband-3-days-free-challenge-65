@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Trophy, Share2, ShoppingBag, Target, Scissors, Video,
-  LogOut, Loader2, Settings,
+  LogOut, Loader2, Settings, Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -23,13 +23,21 @@ import ContentVault from "@/components/portal/ContentVault";
 import AffiliateCreditTracker from "@/components/portal/AffiliateCreditTracker";
 import PortalAccountSettings from "@/components/portal/PortalAccountSettings";
 import PortalNotificationBell from "@/components/portal/PortalNotificationBell";
+import NominationFlow from "@/components/viral/NominationFlow";
+import NominationStatusTracker from "@/components/viral/NominationStatusTracker";
+import GratitudeTree from "@/components/viral/GratitudeTree";
+import WeeklyReferralSprint from "@/components/viral/WeeklyReferralSprint";
+import AmbassadorLevelCard from "@/components/viral/AmbassadorLevelCard";
+import ChallengeEventBanner from "@/components/viral/ChallengeEventBanner";
+import StoryShareTemplate from "@/components/viral/StoryShareTemplate";
 
 import logoImg from "@/assets/logo.png";
 
-type Tab = "dashboard" | "leaderboard" | "referrals" | "missions" | "store" | "clip" | "repost" | "account";
+type Tab = "dashboard" | "leaderboard" | "referrals" | "nominate" | "missions" | "store" | "clip" | "repost" | "account";
 
 const TABS: { id: Tab; label: string; icon: any }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "nominate", label: "Nominate", icon: Heart },
   { id: "leaderboard", label: "Leaderboard", icon: Trophy },
   { id: "referrals", label: "Referrals", icon: Share2 },
   { id: "missions", label: "Missions", icon: Target },
@@ -182,20 +190,42 @@ const AffiliatePortal = () => {
                   userId={user.id}
                   onClaimDaily={portalData.claimDailyBonus}
                 />
+                <ChallengeEventBanner />
+                <AmbassadorLevelCard />
+                <NominationStatusTracker />
+                <GratitudeTree />
+                <WeeklyReferralSprint />
                 <PortalActivityFeed />
                 <ShareMilestoneTracker />
+              </div>
+            )}
+            {activeTab === "nominate" && portalData.profile && (
+              <div className="space-y-6">
+                <NominationFlow
+                  referralCode={portalData.profile.referral_code}
+                  displayName={portalData.profile.display_name || ""}
+                  onComplete={() => setActiveTab("dashboard")}
+                />
+                <StoryShareTemplate
+                  referralCode={portalData.profile.referral_code}
+                  displayName={portalData.profile.display_name || ""}
+                />
+                <NominationStatusTracker />
               </div>
             )}
             {activeTab === "leaderboard" && (
               <PortalLeaderboard leaderboard={portalData.leaderboard} currentUserId={user.id} />
             )}
             {activeTab === "referrals" && portalData.profile && (
-              <PortalReferralHub
-                profile={portalData.profile}
-                blessings={portalData.blessings}
-                userId={user.id}
-                onBlessingCreated={portalData.refreshBlessings}
-              />
+              <div className="space-y-6">
+                <PortalReferralHub
+                  profile={portalData.profile}
+                  blessings={portalData.blessings}
+                  userId={user.id}
+                  onBlessingCreated={portalData.refreshBlessings}
+                />
+                <GratitudeTree />
+              </div>
             )}
             {activeTab === "missions" && <PortalMissions />}
             {activeTab === "clip" && <EmbeddedClipperDashboard userId={user.id} />}
