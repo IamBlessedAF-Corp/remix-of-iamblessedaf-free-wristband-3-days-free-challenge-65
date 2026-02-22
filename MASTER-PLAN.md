@@ -31,6 +31,7 @@ K = 3.75–4.5 (Week 1)
 PodMatch + 5-touch follow-ups + free wristband giveaway for listeners.
 
 ## 30-Day Roadmap
+
 Days 1-7: Build Day 1 hybrid + send 10 podcast pitches
 Days 8-15: Soft launch + experiments
 Days 16-30: Miami pop-up + revenue
