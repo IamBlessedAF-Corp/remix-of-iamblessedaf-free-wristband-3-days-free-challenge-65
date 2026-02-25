@@ -81,6 +81,7 @@ type SidebarEntry = SidebarSingleItem | SidebarGroupDef;
 // ─── Block sub-filter constants ───
 const BLOCK_CAT_COUNTS: Record<string, number> = {
   Content: 6, Product: 5, CTA: 6, Hero: 6, Trust: 5, Urgency: 4, Viral: 4, "Value Stack": 5, System: 6,
+  clippers: 4, affiliates: 4, retention: 4,
 };
 
 const BLOCK_SUB_CATEGORIES: { id: BlockSubFilter; label: string; icon: any }[] = [
@@ -94,6 +95,9 @@ const BLOCK_SUB_CATEGORIES: { id: BlockSubFilter; label: string; icon: any }[] =
   { id: "Viral", label: `Viral (${BLOCK_CAT_COUNTS.Viral})`, icon: TrendingUp },
   { id: "Value Stack", label: `Value Stack (${BLOCK_CAT_COUNTS["Value Stack"]})`, icon: Zap },
   { id: "System", label: `System (${BLOCK_CAT_COUNTS.System})`, icon: Database },
+  { id: "clippers", label: `Clippers (${BLOCK_CAT_COUNTS.clippers})`, icon: Film },
+  { id: "affiliates", label: `Affiliates (${BLOCK_CAT_COUNTS.affiliates})`, icon: Award },
+  { id: "retention", label: `Retention (${BLOCK_CAT_COUNTS.retention})`, icon: Trophy },
 ];
 
 const VIDEO_BLOCK_SUBS: { id: BlockSubFilter; label: string; icon: any }[] = [

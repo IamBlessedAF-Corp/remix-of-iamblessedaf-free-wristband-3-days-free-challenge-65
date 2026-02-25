@@ -624,6 +624,9 @@ const CAT_SECTION_LABELS: Record<string, { label: string; desc: string; color: s
   Viral: { label: "Viral & Gamification", desc: "Share nudges, impact counters, and gamification headers", color: "text-pink-500" },
   "Value Stack": { label: "Value Stack Blocks", desc: "Benefits lists and ROI-focused value communication", color: "text-orange-500" },
   System: { label: "System Blocks (Live DB)", desc: "Real-time clipper, payout, and portal data blocks", color: "text-cyan-500" },
+  clippers: { label: "Clipper Blocks", desc: "Payout queues, approval backlogs, earnings, and risk throttles", color: "text-indigo-500" },
+  affiliates: { label: "Affiliate Blocks", desc: "Ambassador upgrades, referrer revenue, and wristband distribution", color: "text-amber-600" },
+  retention: { label: "Retention Blocks", desc: "Login streaks, BlessedCoin circulation, redemptions, and churn risk", color: "text-teal-500" },
 };
 
 const VIDEO_SUB_FILTERS: BlockSubFilter[] = ["video-testimonial-ig", "video-testimonial-video", "written-testimonial", "screenshot-testimonial"];
