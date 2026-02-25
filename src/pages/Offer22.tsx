@@ -170,7 +170,7 @@ const Offer22 = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-muted-foreground bg-background/80 backdrop-blur-sm border border-border/50 rounded-full hover:text-foreground hover:border-border transition-colors"
           >
             <LogOut className="w-3.5 h-3.5" />
-            Cerrar sesión
+            Sign out
           </button>
         </div>
       )}

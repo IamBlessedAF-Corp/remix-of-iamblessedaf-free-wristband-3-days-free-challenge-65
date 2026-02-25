@@ -16,11 +16,11 @@ interface ScoreField {
 }
 
 const FIELDS: ScoreField[] = [
-  { key: "vs_score", label: "VS", emoji: "🎯", tip: "Valor Estratégico: impacto directo en tracción (0–5)" },
-  { key: "cc_score", label: "CC", emoji: "🧠", tip: "Costo Cognitivo: cuánto roba tu foco/dopamina (0–5)" },
-  { key: "hu_score", label: "HU", emoji: "🦄", tip: "Habilidad Única: requiere tu expertise insustituible (0–5, invertido)" },
-  { key: "r_score", label: "R", emoji: "🔄", tip: "Repetibilidad: cuán repetitivo/predecible (0–5)" },
-  { key: "ad_score", label: "AD", emoji: "🤖", tip: "Automatización/Delegabilidad: fácil de sistematizar (0–5)" },
+  { key: "vs_score", label: "VS", emoji: "🎯", tip: "Strategic Value: direct impact on traction (0–5)" },
+  { key: "cc_score", label: "CC", emoji: "🧠", tip: "Cognitive Cost: how much it drains your focus/dopamine (0–5)" },
+  { key: "hu_score", label: "HU", emoji: "🦄", tip: "Unique Skill: requires your irreplaceable expertise (0–5, inverted)" },
+  { key: "r_score", label: "R", emoji: "🔄", tip: "Repeatability: how repetitive/predictable (0–5)" },
+  { key: "ad_score", label: "AD", emoji: "🤖", tip: "Automation/Delegability: easy to systematize (0–5)" },
 ];
 
 interface DecisionMatrixInputProps {

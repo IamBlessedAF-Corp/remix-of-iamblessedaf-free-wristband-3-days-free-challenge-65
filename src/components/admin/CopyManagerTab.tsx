@@ -123,7 +123,7 @@ function ConfirmSaveDialog({
 
   const handleConfirm = () => {
     if (isStructural && adminPass !== "BlessedAdmin2025!") {
-      setPassError("Contraseña incorrecta");
+      setPassError("Incorrect password");
       return;
     }
     setAdminPass(""); setPassError(""); onConfirm();
@@ -138,16 +138,16 @@ function ConfirmSaveDialog({
             <AlertTriangle className="w-5 h-5 text-amber-400" /> Confirmar cambio de copy
           </DialogTitle>
           <DialogDescription>
-            Estás a punto de modificar <strong>{item.label}</strong>. Revisa el impacto antes de guardar.
+            You are about to modify <strong>{item.label}</strong>. Review the impact before saving.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3 text-sm">
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-            <p className="text-[10px] font-semibold text-red-400 mb-1">ANTES:</p>
+            <p className="text-[10px] font-semibold text-red-400 mb-1">BEFORE:</p>
             <p className="text-xs text-red-300 line-through">{oldValue}</p>
           </div>
           <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
-            <p className="text-[10px] font-semibold text-emerald-400 mb-1">DESPUÉS:</p>
+            <p className="text-[10px] font-semibold text-emerald-400 mb-1">AFTER:</p>
             <p className="text-xs text-emerald-300">{newValue}</p>
           </div>
           <div className="bg-secondary/30 rounded-lg p-3">
@@ -164,7 +164,7 @@ function ConfirmSaveDialog({
           {isStructural && (
             <div className="bg-red-500/5 border border-red-500/30 rounded-lg p-3 space-y-2">
               <p className="text-[10px] font-semibold text-red-400 flex items-center gap-1">
-                🔒 Cambio estructural — requiere re-autenticación admin
+                🔒 Structural change — requires admin re-authentication
               </p>
               <Input type="password" placeholder="Admin password" value={adminPass}
                 onChange={(e) => { setAdminPass(e.target.value); setPassError(""); }} className="h-8 text-xs" />
@@ -330,7 +330,7 @@ function PageGroup({ page, items, getSavedValue, onSave }: {
         {isRoute && (
           <button onClick={(e) => { e.stopPropagation(); window.open(`${window.location.origin}${page}`, "_blank"); }}
             className="text-[9px] text-primary hover:underline ml-auto">
-            Abrir página ↗
+            Open page ↗
           </button>
         )}
       </button>
@@ -387,9 +387,9 @@ export default function CopyManagerTab() {
 
     // Auto-log to changelog
     (supabase.from("changelog_entries" as any) as any).insert({
-      prompt_summary: `Copy actualizado: ${item.label}`,
+      prompt_summary: `Copy updated: ${item.label}`,
       affected_areas: item.affectedPages,
-      change_details: `Campo: ${item.key}\nAntes: ${oldValue}\nDespués: ${newValue}`,
+      change_details: `Field: ${item.key}\nBefore: ${oldValue}\nAfter: ${newValue}`,
       tags: ["copy-manager", item.section, item.channel || "web"],
       code_changes: [{
         file: `campaign_config.${configKey}`,
@@ -455,12 +455,12 @@ export default function CopyManagerTab() {
               <button onClick={() => setViewMode("section")}
                 className={cn("px-2.5 py-1 text-[10px] font-semibold rounded-md transition-colors flex items-center gap-1",
                   viewMode === "section" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
-                <Type className="w-3 h-3" /> Por Sección
+                <Type className="w-3 h-3" /> By Section
               </button>
               <button onClick={() => setViewMode("page")}
                 className={cn("px-2.5 py-1 text-[10px] font-semibold rounded-md transition-colors flex items-center gap-1",
                   viewMode === "page" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
-                <Layout className="w-3 h-3" /> Por Página
+                <Layout className="w-3 h-3" /> By Page
               </button>
             </div>
             <Badge className="bg-primary/10 text-primary border-primary/30">{COPY_REGISTRY.length} items</Badge>
@@ -472,7 +472,7 @@ export default function CopyManagerTab() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input value={search} onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por nombre, texto, categoría, página..." className="pl-9 h-9 text-sm" />
+            placeholder="Search by name, text, category, page..." className="pl-9 h-9 text-sm" />
         </div>
       </div>
 

@@ -52,18 +52,18 @@ export default function GratitudeTree() {
   }, [user]);
 
   const shareTree = async () => {
-    const text = `🌳 Mi Árbol de Gratitud tiene ${totalNominations} ramas!\n\nÚnete al 11:11 Gratitude Challenge:\nhttps://iamblessedaf.com/challenge\n\n#1111GratitudeChallenge #IamBlessedAF`;
+    const text = `🌳 My Gratitude Tree has ${totalNominations} branches!\n\nJoin the 11:11 Gratitude Challenge:\nhttps://iamblessedaf.com/challenge\n\n#1111GratitudeChallenge #IamBlessedAF`;
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Mi Árbol de Gratitud", text });
+        await navigator.share({ title: "My Gratitude Tree", text });
         recordShare();
-        toast.success("¡Compartido! +15 BC 🪙");
+        toast.success("Shared! +15 BC 🪙");
       } catch {}
     } else {
       await navigator.clipboard.writeText(text);
       recordShare();
-      toast.success("¡Link copiado! +15 BC 🪙");
+      toast.success("Link copied! +15 BC 🪙");
     }
   };
 
@@ -83,11 +83,11 @@ export default function GratitudeTree() {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
           <TreePine className="w-4 h-4 text-primary" />
-          Tu Árbol de Gratitud
+          Your Gratitude Tree
         </h3>
         <Button variant="ghost" size="sm" onClick={shareTree} className="h-7 text-xs gap-1">
           <Share2 className="w-3 h-3" />
-          Compartir
+          Share
         </Button>
       </div>
 
@@ -95,7 +95,7 @@ export default function GratitudeTree() {
       <div className="flex flex-col items-center py-4">
         {/* Root (you) */}
         <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-xs">
-          TÚ
+          YOU
         </div>
         
         {/* Branches */}
@@ -127,7 +127,7 @@ export default function GratitudeTree() {
 
         {branches === 0 && (
           <p className="text-xs text-muted-foreground mt-2">
-            Envía tu primera nominación para plantar tu árbol 🌱
+            Send your first nomination to plant your tree 🌱
           </p>
         )}
       </div>
@@ -136,15 +136,15 @@ export default function GratitudeTree() {
       <div className="grid grid-cols-3 gap-2 mt-2">
         <div className="text-center p-2 bg-muted/30 rounded-lg">
           <p className="text-lg font-black text-foreground">{branches}</p>
-          <p className="text-[10px] text-muted-foreground">Ramas</p>
+          <p className="text-[10px] text-muted-foreground">Branches</p>
         </div>
         <div className="text-center p-2 bg-muted/30 rounded-lg">
           <p className="text-lg font-black text-primary">{accepted}</p>
-          <p className="text-[10px] text-muted-foreground">Aceptadas</p>
+          <p className="text-[10px] text-muted-foreground">Accepted</p>
         </div>
         <div className="text-center p-2 bg-muted/30 rounded-lg">
           <p className="text-lg font-black text-foreground">{generations}</p>
-          <p className="text-[10px] text-muted-foreground">Generaciones</p>
+          <p className="text-[10px] text-muted-foreground">Generations</p>
         </div>
       </div>
 
@@ -152,8 +152,8 @@ export default function GratitudeTree() {
         <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
           <Zap className="w-3 h-3 text-primary" />
           <span>
-            Tu gratitud ha alcanzado <strong className="text-foreground">{branches}</strong> personas
-            {generations > 0 && <> en <strong className="text-foreground">{generations}</strong> generaciones</>}
+            Your gratitude has reached <strong className="text-foreground">{branches}</strong> people
+            {generations > 0 && <> across <strong className="text-foreground">{generations}</strong> generations</>}
           </span>
         </div>
       )}

@@ -33,7 +33,7 @@ export default function StoryShareTemplate({
     await navigator.clipboard.writeText(storyCaption);
     setCopied(true);
     recordShare();
-    toast.success("Caption copiado! +100 BC por postear 🪙");
+    toast.success("Caption copied! +100 BC for posting 🪙");
     setTimeout(() => setCopied(false), 2000);
 
     // Award BC
@@ -58,7 +58,7 @@ export default function StoryShareTemplate({
       <div className="flex items-center gap-2 mb-3">
         <Sparkles className="w-4 h-4 text-primary" />
         <h3 className="text-sm font-bold text-foreground">
-          Comparte tu momento +100 BC
+          Share your moment +100 BC
         </h3>
       </div>
 
@@ -87,19 +87,19 @@ export default function StoryShareTemplate({
           {copied ? (
             <>
               <Check className="w-3.5 h-3.5" />
-              ¡Copiado!
+              Copied!
             </>
           ) : (
             <>
               <Copy className="w-3.5 h-3.5" />
-              Copiar Caption
+              Copy Caption
             </>
           )}
         </Button>
       </div>
 
       <p className="text-[10px] text-muted-foreground text-center mt-2">
-        📸 Postea con tu wristband para ganar +100 BC
+        📸 Post with your wristband to earn +100 BC
       </p>
     </motion.div>
   );
