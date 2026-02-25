@@ -144,7 +144,7 @@ function ChangelogItem({ entry }: { entry: ChangelogEntry }) {
           {entry.affected_areas?.length > 0 && (
             <div className="bg-secondary/30 rounded-lg p-3">
               <p className="text-[11px] font-semibold text-muted-foreground mb-1.5 flex items-center gap-1">
-                <Layers className="w-3 h-3" /> Áreas afectadas
+                <Layers className="w-3 h-3" /> Affected Areas
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {entry.affected_areas.map(area => (
@@ -164,7 +164,7 @@ function ChangelogItem({ entry }: { entry: ChangelogEntry }) {
                 className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors"
               >
                 <FileText className="w-3.5 h-3.5" />
-                {showDetails ? "Ocultar detalles" : "Ver detalles del cambio"}
+                {showDetails ? "Hide details" : "View change details"}
                 {showDetails ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
               </button>
               {showDetails && (
@@ -181,7 +181,7 @@ function ChangelogItem({ entry }: { entry: ChangelogEntry }) {
           {entry.code_changes?.length > 0 && (
             <div className="space-y-2">
               <p className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
-                <Code2 className="w-3 h-3" /> Cambios en código
+                <Code2 className="w-3 h-3" /> Code Changes
               </p>
               {entry.code_changes.map((change, idx) => (
                 <div key={idx} className="border border-border/30 rounded-lg overflow-hidden">
@@ -314,7 +314,7 @@ export default function ChangelogTab() {
     <div className="space-y-4">
       <AdminSectionDashboard
         title="Changelog & Audit Trail"
-        description="Historial de cada prompt, cambio en código, y lo que afectó"
+        description="History of every prompt, code change, and what was affected"
         kpis={[
           { label: "Total Changes", value: entries.length },
           { label: "Today", value: todayCount },
