@@ -323,10 +323,10 @@ const ChallengeThanks = () => {
               className="w-full sm:w-auto px-8 h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all"
               onClick={() => setShowInviteModal(true)}
             >
-              💬 Invitar Amigos por WhatsApp
+              💬 Invite Friends via WhatsApp
             </Button>
             <p className="text-xs text-muted-foreground mt-2">
-              Envía tu gratitud a 3 amigos y activa tu cuenta
+              Send your gratitude to 3 friends and activate your account
             </p>
           </motion.div>
         )}

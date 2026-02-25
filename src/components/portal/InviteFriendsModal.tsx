@@ -9,6 +9,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import MpfcTooltip from "@/components/offer/MpfcTooltip";
 
 interface FriendInput {
   name: string;
@@ -20,7 +21,7 @@ const DEFAULT_MESSAGE = (friendName: string, senderName: string) =>
   `Hey ${friendName}! 🧠\n\nIt's ${senderName}. I just joined the Neuro-Hacker Gratitude Challenge and I wanted to start with YOU.\n\nDid you know that receiving genuine gratitude fires up your mPFC and makes you up to 27x happier?\n\nSo here it is: Thank you for being in my life. Genuinely. ❤️\n\n🎯 YOUR CHALLENGE: Forward this to 2 people YOU'RE grateful for!`;
 
 const getMessageForFriend = (friendName: string, senderName: string) =>
-  DEFAULT_MESSAGE(friendName || "amigo", senderName);
+  DEFAULT_MESSAGE(friendName || "friend", senderName);
 
 interface InviteFriendsModalProps {
   open: boolean;
@@ -75,7 +76,7 @@ export default function InviteFriendsModal({
     );
 
     if (validFriends.length === 0) {
-      toast.error("Agrega al menos 1 amigo con nombre y teléfono");
+      toast.error("Add at least 1 friend with name and phone number");
       return;
     }
 
@@ -100,14 +101,14 @@ export default function InviteFriendsModal({
 
       const successCount = (data.results || []).filter((r: any) => r.success).length;
       if (successCount > 0) {
-        toast.success(`🎉 ${successCount} invitación(es) enviada(s) por WhatsApp!`);
+        toast.success(`🎉 ${successCount} invite(s) sent via WhatsApp!`);
       }
 
       // Mark congrats as completed locally
       localStorage.setItem("congrats_neurohacker_completed", "completed");
     } catch (err) {
       console.error("WhatsApp invite error:", err);
-      toast.error("Error al enviar. Intenta de nuevo.");
+      toast.error("Failed to send. Please try again.");
     } finally {
       setSending(false);
     }
@@ -140,12 +141,12 @@ export default function InviteFriendsModal({
               </div>
               <div>
                 <h2 className="text-lg font-black text-foreground">
-                  {sent ? "¡Invitaciones Enviadas!" : "Nomina Amigos para el Challenge"}
+                  {sent ? "Invites Sent!" : "Nominate Friends for the Challenge"}
                 </h2>
                 <p className="text-xs text-muted-foreground">
                   {sent
-                    ? "Tus amigos recibirán tu mensaje por WhatsApp"
-                    : "Envía un mensaje de gratitud por WhatsApp"}
+                    ? "Your friends will receive your message via WhatsApp"
+                    : "Send a gratitude message via WhatsApp"}
                 </p>
               </div>
             </div>
@@ -180,8 +181,8 @@ export default function InviteFriendsModal({
                     🧠 Neuro-Hacker Activated!
                   </h3>
                   <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                    Tus amigos recibirán tu mensaje de gratitud + un wristband gratis.
-                    Cada invitación alimenta a 11 niños. 🌍
+                    Your friends will receive your gratitude message + a free wristband.
+                    Each invite feeds 11 children. 🌍
                   </p>
                 </div>
 
@@ -213,7 +214,7 @@ export default function InviteFriendsModal({
                   onClick={handleDone}
                   className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl"
                 >
-                  Entrar al Portal 🚀
+                  Enter the Portal 🚀
                 </Button>
               </motion.div>
             ) : (
@@ -227,11 +228,10 @@ export default function InviteFriendsModal({
                 {/* Science hook */}
                 <div className="bg-muted/30 rounded-xl p-3 border border-border/30">
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    🧠 <strong className="text-foreground">Neuro-Hack:</strong> Recibir
-                    gratitud genuina activa el <span className="text-primary font-bold">mPFC</span> de
-                    tu amigo, haciéndolo hasta{" "}
-                    <strong className="text-foreground">27× más feliz</strong>. Envía tu
-                    agradecimiento por WhatsApp ahora.
+                    🧠 <strong className="text-foreground">Neuro-Hack:</strong> Receiving
+                    genuine gratitude activates your friend's <MpfcTooltip />, making them up to{" "}
+                    <strong className="text-foreground">27× happier</strong>. Send your
+                    gratitude via WhatsApp now.
                   </p>
                 </div>
 
@@ -248,7 +248,7 @@ export default function InviteFriendsModal({
                       <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-primary" />
                         <span className="text-sm font-bold text-foreground">
-                          Amigo {idx + 1}
+                          Friend {idx + 1}
                         </span>
                       </div>
                       {friends.length > 1 && (
@@ -265,7 +265,7 @@ export default function InviteFriendsModal({
 
                     <div className="grid grid-cols-2 gap-2">
                       <Input
-                        placeholder="Nombre"
+                        placeholder="Name"
                         value={friend.name}
                         onChange={(e) => updateFriend(idx, "name", e.target.value)}
                         className="h-10 text-sm rounded-lg"
@@ -283,7 +283,7 @@ export default function InviteFriendsModal({
 
                     {friend.name && (
                       <div className="bg-muted/20 rounded-lg p-3 border border-border/20">
-                        <p className="text-[10px] text-muted-foreground mb-1 font-medium">Vista previa del mensaje:</p>
+                        <p className="text-[10px] text-muted-foreground mb-1 font-medium">Message preview:</p>
                         <p className="text-xs text-muted-foreground whitespace-pre-line leading-relaxed">
                           {getMessageForFriend(friend.name, senderName).substring(0, 150)}...
                         </p>
@@ -300,7 +300,7 @@ export default function InviteFriendsModal({
                     className="w-full h-10 rounded-xl text-sm gap-2 border-dashed"
                   >
                     <Plus className="w-4 h-4" />
-                    Agregar amigo ({friends.length}/10)
+                    Add friend ({friends.length}/10)
                   </Button>
                 )}
 
@@ -313,12 +313,12 @@ export default function InviteFriendsModal({
                   {sending ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Enviando por WhatsApp...
+                      Sending via WhatsApp...
                     </>
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      Enviar por WhatsApp ({friends.filter((f) => f.name.trim() && f.phone.trim()).length})
+                      Send via WhatsApp ({friends.filter((f) => f.name.trim() && f.phone.trim()).length})
                     </>
                   )}
                 </Button>
@@ -331,7 +331,7 @@ export default function InviteFriendsModal({
                   disabled={sending}
                   className="w-full text-xs text-muted-foreground/60 hover:text-muted-foreground"
                 >
-                  Saltar por ahora →
+                  Skip for now →
                 </Button>
               </motion.div>
             )}

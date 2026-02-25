@@ -20,7 +20,6 @@ interface Sprint {
 
 /**
  * WeeklyReferralSprint — Live leaderboard for weekly nomination competitions.
- * Phase 2: Competitive users push I from 8 → 12.
  */
 export default function WeeklyReferralSprint() {
   const { user } = useAuth();
@@ -30,7 +29,6 @@ export default function WeeklyReferralSprint() {
 
   useEffect(() => {
     const fetchSprint = async () => {
-      // Get active sprint
       const { data: sprints } = await supabase
         .from("referral_sprints")
         .select("*")
@@ -41,7 +39,6 @@ export default function WeeklyReferralSprint() {
       if (!sprints || sprints.length === 0) return;
       setSprint(sprints[0] as Sprint);
 
-      // Get leaderboard
       const { data: leaderboard } = await supabase
         .from("sprint_entries")
         .select("user_id, nominations_count, acceptances_count")
@@ -62,7 +59,7 @@ export default function WeeklyReferralSprint() {
     const update = () => {
       const diff = new Date(sprint.ends_at).getTime() - Date.now();
       if (diff <= 0) {
-        setTimeLeft("¡Terminado!");
+        setTimeLeft("Finished!");
         return;
       }
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -128,7 +125,7 @@ export default function WeeklyReferralSprint() {
                 </span>
               )}
               <span className="text-sm font-medium text-foreground">
-                {entry.user_id === user?.id ? "Tú" : `Nominador #${idx + 1}`}
+                {entry.user_id === user?.id ? "You" : `Nominator #${idx + 1}`}
               </span>
             </div>
             <span className="text-sm font-bold text-primary">
@@ -140,8 +137,8 @@ export default function WeeklyReferralSprint() {
 
       {myEntry && myRank >= 5 && (
         <div className="mt-2 p-2 bg-primary/5 rounded-lg flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Tu posición: #{myRank + 1}</span>
-          <span className="text-sm font-bold text-primary">{myEntry.nominations_count} nominaciones</span>
+          <span className="text-xs text-muted-foreground">Your rank: #{myRank + 1}</span>
+          <span className="text-sm font-bold text-primary">{myEntry.nominations_count} nominations</span>
         </div>
       )}
     </motion.div>
