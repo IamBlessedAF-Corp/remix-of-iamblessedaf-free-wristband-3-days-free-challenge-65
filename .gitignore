@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Raw book extracts (copyrighted content - not for repo)
+docs/hormozi-kb/raw/
