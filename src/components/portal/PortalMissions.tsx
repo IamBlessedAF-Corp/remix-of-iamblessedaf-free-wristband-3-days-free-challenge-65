@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Target, CheckCircle2, Clock, Coins, Flame, Share2, Users, Eye,
-  MessageCircle, Video, Heart, Trophy, Star, Zap
+  MessageCircle, Video, Heart, Trophy, Star, Zap, ExternalLink, Copy, ChevronRight
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
 
 interface Mission {
   id: string;
@@ -64,8 +65,15 @@ function completeStep(missionId: string, type: string) {
   localStorage.setItem(key, String(current + 1));
 }
 
-export default function PortalMissions() {
+interface PortalMissionsProps {
+  referralCode?: string;
+  displayName?: string | null;
+  onNavigateTab?: (tab: string) => void;
+}
+
+export default function PortalMissions({ referralCode, displayName, onNavigateTab }: PortalMissionsProps) {
   const [progresses, setProgresses] = useState<Record<string, number>>({});
+  const { toast } = useToast();
 
   useEffect(() => {
     const visitKey = getMissionKey("daily-visit", "daily");
@@ -79,6 +87,120 @@ export default function PortalMissions() {
     setProgresses(p);
   }, []);
 
+  const shareUrl = referralCode
+    ? `https://iamblessedaf.com/r/${referralCode}`
+    : "https://iamblessedaf.com";
+  
+  const shareText = `${displayName || "Someone"} just blessed you with a FREE Neuro-Hacker Wristband 🧠✨ Claim yours here:`;
+
+  const handleCopyLink = useCallback(() => {
+    navigator.clipboard.writeText(shareUrl);
+    toast({ title: "✅ Link copied!", description: "Now paste it anywhere to share!" });
+    completeStep("daily-share", "daily");
+    setProgresses(p => ({ ...p, "daily-share": (p["daily-share"] ?? 0) + 1 }));
+  }, [shareUrl, toast]);
+
+  const handleWhatsApp = useCallback(() => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`, "_blank");
+    completeStep("daily-bless", "daily");
+    setProgresses(p => ({ ...p, "daily-bless": (p["daily-bless"] ?? 0) + 1 }));
+  }, [shareUrl, shareText]);
+
+  const handleSMS = useCallback(() => {
+    window.open(`sms:?&body=${encodeURIComponent(`${shareText} ${shareUrl}`)}`, "_blank");
+    completeStep("daily-bless", "daily");
+    setProgresses(p => ({ ...p, "daily-bless": (p["daily-bless"] ?? 0) + 1 }));
+  }, [shareUrl, shareText]);
+
+  const handlePostSocial = useCallback((platform: string) => {
+    const urls: Record<string, string> = {
+      tiktok: `https://www.tiktok.com/upload`,
+      instagram: `https://www.instagram.com/`,
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+    };
+    window.open(urls[platform] || urls.twitter, "_blank");
+    completeStep("daily-social", "daily");
+    setProgresses(p => ({ ...p, "daily-social": (p["daily-social"] ?? 0) + 1 }));
+  }, [shareUrl, shareText]);
+
+  const handleBlessFriends = useCallback(() => {
+    if (onNavigateTab) {
+      onNavigateTab("nominate");
+    }
+  }, [onNavigateTab]);
+
+  const handleGoToClip = useCallback(() => {
+    if (onNavigateTab) {
+      onNavigateTab("clip");
+    }
+  }, [onNavigateTab]);
+
+  const handleGoToRepost = useCallback(() => {
+    if (onNavigateTab) {
+      onNavigateTab("repost");
+    }
+  }, [onNavigateTab]);
+
+  const handleGoToReferrals = useCallback(() => {
+    if (onNavigateTab) {
+      onNavigateTab("referrals");
+    }
+  }, [onNavigateTab]);
+
+  // Map mission IDs to click actions
+  const getMissionAction = (missionId: string): (() => void) | null => {
+    switch (missionId) {
+      case "daily-visit":
+        return null; // Auto-completed
+      case "daily-share":
+        return handleCopyLink;
+      case "daily-bless":
+        return handleWhatsApp;
+      case "daily-social":
+        return () => handlePostSocial("twitter");
+      case "daily-bless3":
+        return handleBlessFriends;
+      case "weekly-streak3":
+        return null; // Auto-tracked
+      case "weekly-bless5":
+        return handleBlessFriends;
+      case "weekly-social3":
+        return () => handlePostSocial("twitter");
+      case "weekly-story":
+        return handleGoToClip;
+      case "mile-10bless":
+        return handleBlessFriends;
+      case "mile-50bless":
+        return handleBlessFriends;
+      case "mile-100clicks":
+        return handleGoToReferrals;
+      default:
+        return null;
+    }
+  };
+
+  // Action labels for missions
+  const getMissionActionLabel = (missionId: string): string | null => {
+    switch (missionId) {
+      case "daily-share": return "Copy Link";
+      case "daily-bless": return "Send Now";
+      case "daily-social": return "Post Now";
+      case "daily-bless3": return "Nominate";
+      case "weekly-bless5": return "Nominate";
+      case "weekly-social3": return "Share Now";
+      case "weekly-story": return "Create Clip";
+      case "mile-10bless": return "Nominate";
+      case "mile-50bless": return "Nominate";
+      case "mile-100clicks": return "View Stats";
+      default: return null;
+    }
+  };
+
+  // Social platform quick-pick for social missions
+  const isSocialMission = (id: string) =>
+    id === "daily-social" || id === "weekly-social3";
+
   const dailyMissions = MISSIONS.filter((m) => m.type === "daily");
   const weeklyMissions = MISSIONS.filter((m) => m.type === "weekly");
   const milestoneMissions = MISSIONS.filter((m) => m.type === "milestone");
@@ -90,49 +212,118 @@ export default function PortalMissions() {
     const progress = progresses[m.id] ?? 0;
     const completed = progress >= m.target;
     const pct = Math.min((progress / m.target) * 100, 100);
+    const action = getMissionAction(m.id);
+    const actionLabel = getMissionActionLabel(m.id);
+    const isSocial = isSocialMission(m.id);
 
     return (
       <motion.div
         key={m.id}
-        className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+        className={`flex flex-col gap-2 p-3 rounded-xl border transition-all ${
           completed
             ? "bg-primary/5 border-primary/20"
-            : "bg-card border-border/40 hover:border-primary/20"
+            : action
+              ? "bg-card border-border/40 hover:border-primary/30 hover:bg-primary/[0.02] cursor-pointer"
+              : "bg-card border-border/40"
         }`}
         initial={{ x: -8, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ delay: i * 0.04 }}
+        onClick={!completed && action && !isSocial ? action : undefined}
       >
-        <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
-          completed ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"
-        }`}>
-          {completed ? <CheckCircle2 className="w-4.5 h-4.5" /> : <m.icon className="w-4 h-4" />}
-        </div>
+        <div className="flex items-center gap-3">
+          <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+            completed ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"
+          }`}>
+            {completed ? <CheckCircle2 className="w-4.5 h-4.5" /> : <m.icon className="w-4 h-4" />}
+          </div>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <p className={`text-sm font-semibold ${completed ? "text-primary" : "text-foreground"}`}>
-              {m.title}
-            </p>
-            {m.isFree && !completed && (
-              <span className="text-[9px] bg-primary/10 text-primary font-bold px-1.5 py-0.5 rounded-full uppercase shrink-0">
-                Free
-              </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <p className={`text-sm font-semibold ${completed ? "text-primary" : "text-foreground"}`}>
+                {m.title}
+              </p>
+              {m.isFree && !completed && (
+                <span className="text-[9px] bg-primary/10 text-primary font-bold px-1.5 py-0.5 rounded-full uppercase shrink-0">
+                  Free
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">{m.description}</p>
+            {!completed && m.target > 1 && (
+              <div className="mt-1.5 flex items-center gap-2">
+                <Progress value={pct} className="h-1.5 flex-1" />
+                <span className="text-[10px] text-muted-foreground">{progress}/{m.target}</span>
+              </div>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">{m.description}</p>
-          {!completed && m.target > 1 && (
-            <div className="mt-1.5 flex items-center gap-2">
-              <Progress value={pct} className="h-1.5 flex-1" />
-              <span className="text-[10px] text-muted-foreground">{progress}/{m.target}</span>
+
+          <div className="flex items-center gap-2 shrink-0 ml-2">
+            <div className="flex items-center gap-1 text-xs font-bold text-primary">
+              <Coins className="w-3 h-3" />
+              +{m.reward}
             </div>
-          )}
+            {!completed && action && !isSocial && (
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center gap-1 text-xs font-bold text-primary shrink-0 ml-2">
-          <Coins className="w-3 h-3" />
-          +{m.reward}
-        </div>
+        {/* Action buttons for social missions or specific quick-actions */}
+        {!completed && isSocial && (
+          <div className="flex gap-1.5 pl-12">
+            {[
+              { key: "twitter", label: "𝕏 / Twitter", emoji: "🐦" },
+              { key: "facebook", label: "Facebook", emoji: "📘" },
+              { key: "instagram", label: "Instagram", emoji: "📸" },
+              { key: "tiktok", label: "TikTok", emoji: "🎵" },
+            ].map(p => (
+              <button
+                key={p.key}
+                onClick={(e) => { e.stopPropagation(); handlePostSocial(p.key); }}
+                className="flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-lg bg-secondary hover:bg-primary/10 hover:text-primary text-muted-foreground transition-colors"
+              >
+                <span>{p.emoji}</span>
+                <span className="hidden sm:inline">{p.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {!completed && m.id === "daily-bless" && (
+          <div className="flex gap-1.5 pl-12">
+            <button
+              onClick={(e) => { e.stopPropagation(); handleWhatsApp(); }}
+              className="flex items-center gap-1 text-[10px] font-medium px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 transition-colors"
+            >
+              💬 WhatsApp
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); handleSMS(); }}
+              className="flex items-center gap-1 text-[10px] font-medium px-2.5 py-1 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 transition-colors"
+            >
+              📱 SMS
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); handleCopyLink(); }}
+              className="flex items-center gap-1 text-[10px] font-medium px-2.5 py-1 rounded-lg bg-secondary hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Copy className="w-3 h-3" /> Copy Link
+            </button>
+          </div>
+        )}
+
+        {!completed && actionLabel && !isSocial && m.id !== "daily-bless" && m.id !== "daily-visit" && m.id !== "weekly-streak3" && (
+          <div className="pl-12">
+            <button
+              onClick={(e) => { e.stopPropagation(); action?.(); }}
+              className="flex items-center gap-1 text-[10px] font-semibold px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
+            >
+              <ExternalLink className="w-3 h-3" />
+              {actionLabel}
+            </button>
+          </div>
+        )}
       </motion.div>
     );
   };
