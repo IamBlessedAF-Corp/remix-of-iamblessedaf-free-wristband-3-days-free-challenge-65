@@ -12,8 +12,8 @@ import { z } from "zod";
 const signupSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required").max(50),
   email: z.string().trim().email("Please enter a valid email").max(255),
-  password: z.string().min(6, "Password must be at least 6 characters").max(100),
-  referralCode: z.string().trim().min(1, "Referral code is required").max(20),
+  password: z.string().min(8, "Password must be at least 8 characters").max(100),
+  referralCode: z.string().trim().max(20).optional().or(z.literal("")),
 });
 
 interface CreatorSignupModalProps {
@@ -294,7 +294,7 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
                   <div>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                      <Input placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="pl-10 h-12" disabled={isLoading} />
+                      <Input placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="pl-10 h-12" disabled={isLoading} autoComplete="given-name" />
                     </div>
                     {errors.firstName && <p className="text-sm text-destructive mt-1">{errors.firstName}</p>}
                   </div>
@@ -302,21 +302,32 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
                 <div>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                    <Input type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10 h-12" disabled={isLoading} />
+                    <Input type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10 h-12" disabled={isLoading} autoComplete="email" />
                   </div>
                   {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
                 </div>
                 <div>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                    <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10 h-12" disabled={isLoading} />
+                    <Input
+                      type="password"
+                      placeholder="Password (8+ characters)"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pl-10 h-12"
+                      disabled={isLoading}
+                      autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                      minLength={8}
+                    />
+                  </div>
+                  {errors.password && <p className="text-sm text-destructive mt-1">{errors.password}</p>}
                 </div>
                 {mode === "signup" && (
                   <div>
                     <div className="relative">
                       <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                       <Input
-                        placeholder="Referral code (required)"
+                        placeholder="Referral code (optional)"
                         value={referralCodeInput}
                         onChange={(e) => setReferralCodeInput(e.target.value.toUpperCase())}
                         className="pl-10 h-12 uppercase"
@@ -324,11 +335,12 @@ export function CreatorSignupModal({ isOpen, onClose, onSuccess }: CreatorSignup
                         maxLength={20}
                       />
                     </div>
+                    <p className="text-xs text-muted-foreground mt-1.5">
+                      Got a code from a friend? Enter it here for bonus rewards. No code? No problem — you'll get your own to share after signing up!
+                    </p>
                     {errors.referralCode && <p className="text-sm text-destructive mt-1">{errors.referralCode}</p>}
                   </div>
                 )}
-                  {errors.password && <p className="text-sm text-destructive mt-1">{errors.password}</p>}
-                </div>
                 <Button type="submit" className="w-full h-12 bg-primary hover:bg-primary/90" disabled={isLoading}>
                   {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : mode === "signup" ? "Continue →" : "Sign In"}
                 </Button>
