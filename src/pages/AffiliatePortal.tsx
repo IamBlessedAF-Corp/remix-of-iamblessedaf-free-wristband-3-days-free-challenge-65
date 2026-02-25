@@ -227,7 +227,13 @@ const AffiliatePortal = () => {
                 <GratitudeTree />
               </div>
             )}
-            {activeTab === "missions" && <PortalMissions />}
+            {activeTab === "missions" && (
+              <PortalMissions
+                referralCode={portalData.profile?.referral_code}
+                displayName={portalData.profile?.display_name}
+                onNavigateTab={(tab) => setActiveTab(tab as Tab)}
+              />
+            )}
             {activeTab === "clip" && <EmbeddedClipperDashboard userId={user.id} />}
             {activeTab === "repost" && <ContentVault referralCode={portalData.profile?.referral_code} userId={user.id} />}
             {activeTab === "store" && (

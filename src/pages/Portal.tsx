@@ -232,7 +232,13 @@ const Portal = () => {
             {activeTab === "clipper" && (
               <EmbeddedClipperDashboard userId={user.id} />
             )}
-            {activeTab === "missions" && <PortalMissions />}
+            {activeTab === "missions" && (
+              <PortalMissions
+                referralCode={portalData.profile?.referral_code}
+                displayName={portalData.profile?.display_name}
+                onNavigateTab={(tab) => setActiveTab(tab as Tab)}
+              />
+            )}
             {activeTab === "store" && (
               <PortalRewardsStore
                 userId={user.id}
