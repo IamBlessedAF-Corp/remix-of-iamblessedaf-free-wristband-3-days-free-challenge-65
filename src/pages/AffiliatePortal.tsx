@@ -58,12 +58,28 @@ const AffiliatePortal = () => {
   const [activeTab, setActiveTab] = useState<Tab>(needsSetup ? "account" : "dashboard");
   const [showAuth, setShowAuth] = useState(false);
 
+  const congratsStatus = portalData.profile?.congrats_completed;
+
   // Redirect to account tab when profile is missing
   useEffect(() => {
     if (needsSetup) {
       setActiveTab("account");
     }
   }, [needsSetup]);
+
+  // Not logged in → redirect to home
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate("/", { replace: true });
+    }
+  }, [authLoading, user, navigate]);
+
+  // Onboarding not completed → redirect to home
+  useEffect(() => {
+    if (!portalData.loading && user && !congratsStatus) {
+      navigate("/", { replace: true });
+    }
+  }, [portalData.loading, user, congratsStatus, navigate]);
 
   if (authLoading || portalData.loading) {
     return (
@@ -74,6 +90,10 @@ const AffiliatePortal = () => {
         </div>
       </div>
     );
+  }
+
+  if (!user || (!portalData.loading && !congratsStatus)) {
+    return null;
   }
 
   if (portalData.error) {
@@ -89,19 +109,6 @@ const AffiliatePortal = () => {
         </div>
       </div>
     );
-  }
-
-  // Not logged in → redirect to home
-  if (!user) {
-    navigate("/", { replace: true });
-    return null;
-  }
-
-  // Onboarding not completed → redirect to home
-  const congratsStatus = portalData.profile?.congrats_completed;
-  if (!portalData.loading && !congratsStatus) {
-    navigate("/", { replace: true });
-    return null;
   }
 
 
