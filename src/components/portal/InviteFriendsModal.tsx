@@ -71,14 +71,32 @@ export default function InviteFriendsModal({
   };
 
   const handleSend = async () => {
-    const validFriends = friends.filter(
-      (f) => f.name.trim() && f.phone.trim()
-    );
-
-    if (validFriends.length === 0) {
+    // Check if any friend has a name but is missing a phone number
+    const friendsWithNames = friends.filter((f) => f.name.trim());
+    const missingPhones = friendsWithNames.filter((f) => !f.phone.trim());
+    
+    if (friendsWithNames.length === 0) {
       toast.error("Add at least 1 friend with name and phone number");
       return;
     }
+
+    if (missingPhones.length > 0) {
+      toast.error(`Enter phone number for: ${missingPhones.map(f => f.name.trim()).join(", ")}`);
+      return;
+    }
+
+    // Validate phone format (basic: at least 10 digits)
+    const invalidPhones = friendsWithNames.filter((f) => {
+      const digits = f.phone.replace(/[^\d]/g, "");
+      return digits.length < 10;
+    });
+
+    if (invalidPhones.length > 0) {
+      toast.error(`Invalid phone number for: ${invalidPhones.map(f => f.name.trim()).join(", ")}. Include country code (e.g. +1)`);
+      return;
+    }
+
+    const validFriends = friendsWithNames;
 
     setSending(true);
     try {
@@ -271,14 +289,20 @@ export default function InviteFriendsModal({
                         className="h-10 text-sm rounded-lg"
                         maxLength={50}
                       />
-                      <Input
-                        placeholder="+1 (555) 123-4567"
-                        value={friend.phone}
-                        onChange={(e) => updateFriend(idx, "phone", e.target.value)}
-                        className="h-10 text-sm rounded-lg"
-                        type="tel"
-                        maxLength={20}
-                      />
+                      <div className="space-y-1">
+                        <Input
+                          placeholder="+1 (555) 123-4567"
+                          value={friend.phone}
+                          onChange={(e) => updateFriend(idx, "phone", e.target.value)}
+                          className={`h-10 text-sm rounded-lg ${friend.name.trim() && !friend.phone.trim() ? "border-destructive ring-1 ring-destructive/30" : ""}`}
+                          type="tel"
+                          maxLength={20}
+                          required
+                        />
+                        {friend.name.trim() && !friend.phone.trim() && (
+                          <p className="text-[10px] text-destructive font-medium">Required — don't waste your invite!</p>
+                        )}
+                      </div>
                     </div>
 
                     {friend.name && (
