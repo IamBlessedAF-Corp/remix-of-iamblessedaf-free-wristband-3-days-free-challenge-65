@@ -41,7 +41,8 @@ const overlayAssets = [
 
 /* ── Copy-paste captions per platform ── */
 const getCaptionTemplates = (link: string, code?: string | null) => {
-  const ownershipTag = code ? `#IAMBLESSED_${code}` : "#IAMBLESSED_YOURCODE";
+  const codeSuffix = code && code.length > 10 ? code.slice(10) : code;
+  const ownershipTag = codeSuffix ? `#IAMBLESSED_${codeSuffix}` : "#IAMBLESSED_YOURCODE";
   return [
   {
     label: "🎵 TikTok — Science Hook",

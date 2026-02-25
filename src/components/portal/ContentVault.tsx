@@ -85,7 +85,8 @@ const ContentVault = ({ referralCode, userId }: ContentVaultProps) => {
     : "https://iamblessedaf.com/offer/111";
 
   const handleCopyLink = async (clip: VaultClip) => {
-    const ownershipTag = referralCode ? `#IAMBLESSED_${referralCode}` : "";
+    const codeSuffix = referralCode && referralCode.length > 10 ? referralCode.slice(10) : referralCode;
+    const ownershipTag = codeSuffix ? `#IAMBLESSED_${codeSuffix}` : "";
     const text = `Check this out 🙏 ${referralLink}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF`;
     navigator.clipboard.writeText(text);
     setCopiedId(clip.id);

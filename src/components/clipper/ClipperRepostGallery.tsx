@@ -62,7 +62,8 @@ const ClipperRepostGallery = ({ userId, referralLink, referralCode }: Props) => 
 
   const handleCopyCaption = (clip: TopClip) => {
     const link = referralLink || "https://iamblessedaf.com/challenge";
-    const ownershipTag = referralCode ? `#IAMBLESSED_${referralCode}` : "#IAMBLESSED_YOURCODE";
+    const codeSuffix = referralCode && referralCode.length > 10 ? referralCode.slice(10) : referralCode;
+    const ownershipTag = codeSuffix ? `#IAMBLESSED_${codeSuffix}` : "#IAMBLESSED_YOURCODE";
     const caption = `🧠 Gratitude rewires your brain. Science says so.\n\nJoin the FREE 3-Day Neuro-Hacker Challenge → ${link}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF #GratitudeChallenge #${clip.platform === "tiktok" ? "fyp" : clip.platform === "youtube" ? "Shorts" : "Reels"}`;
     navigator.clipboard.writeText(caption);
     setCopiedId(clip.id);
