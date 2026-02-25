@@ -3,8 +3,7 @@ import { Cpu, Send, Loader2, Check, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-const IDEAS_COL_ID = "a0000001-0001-0001-0001-000000000002";
-const BACKLOG_COL_ID = "a0000001-0001-0001-0001-000000000012";
+// Column IDs are fetched dynamically — no hardcoded UUIDs
 
 interface RoadmapItemActionsProps {
   title: string;
@@ -233,11 +232,20 @@ export default function RoadmapItemActions({ title, detail, phaseName }: Roadmap
     }
   };
 
-  const handleSendToBoard = async (columnId: string, columnName: string) => {
+  const handleSendToBoard = async (columnName: string, displayName: string) => {
     setSending(true);
     try {
+      // Look up column ID by name
+      const { data: col, error: colErr } = await supabase
+        .from("board_columns")
+        .select("id")
+        .eq("name", columnName)
+        .maybeSingle();
+      if (colErr) throw colErr;
+      if (!col) throw new Error(`Column "${columnName}" not found`);
+
       const { error } = await (from("board_cards") as ReturnType<typeof from>).insert({
-        column_id: columnId,
+        column_id: col.id,
         title: title.length > 100 ? title.slice(0, 97) + "..." : title,
         description: detail || null,
         master_prompt: editablePrompt,
@@ -246,8 +254,8 @@ export default function RoadmapItemActions({ title, detail, phaseName }: Roadmap
         labels: ["roadmap-generated"],
       } as never);
       if (error) throw error;
-      setSent(columnName);
-      toast.success(`✅ Sent to ${columnName}!`);
+      setSent(displayName);
+      toast.success(`✅ Sent to ${displayName}!`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Unknown error";
       toast.error(`Failed: ${message}`);
@@ -321,7 +329,7 @@ export default function RoadmapItemActions({ title, detail, phaseName }: Roadmap
                 ) : (
                   <>
                     <button
-                      onClick={() => handleSendToBoard(IDEAS_COL_ID, "💡 Ideas")}
+                      onClick={() => handleSendToBoard("To Do", "💡 Ideas")}
                       disabled={sending}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold rounded-md bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors disabled:opacity-50"
                     >
@@ -329,7 +337,7 @@ export default function RoadmapItemActions({ title, detail, phaseName }: Roadmap
                       💡 Send to Ideas
                     </button>
                     <button
-                      onClick={() => handleSendToBoard(BACKLOG_COL_ID, "📦 Backlog")}
+                      onClick={() => handleSendToBoard("Backlog", "📦 Backlog")}
                       disabled={sending}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold rounded-md bg-blue-500/15 text-blue-400 border border-blue-500/30 hover:bg-blue-500/25 transition-colors disabled:opacity-50"
                     >
