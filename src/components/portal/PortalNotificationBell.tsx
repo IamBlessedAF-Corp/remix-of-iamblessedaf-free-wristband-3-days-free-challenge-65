@@ -4,6 +4,7 @@ import { Bell, Trophy, Share2, Gift, TrendingUp, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Notification {
   id: string;
@@ -45,14 +46,26 @@ export default function PortalNotificationBell({ userId }: PortalNotificationBel
   }, []);
 
   const requestPushPermission = async () => {
-    if (!("Notification" in window)) return;
-    const perm = await Notification.requestPermission();
-    setPushEnabled(perm === "granted");
-    if (perm === "granted") {
-      new Notification("🙏 Notifications Enabled!", {
-        body: "You'll get alerts for BC earned, referrals, and tier milestones.",
-        icon: "/favicon.png",
-      });
+    if (!("Notification" in window)) {
+      toast.error("Push notifications are not supported in this browser.");
+      return;
+    }
+    try {
+      const perm = await Notification.requestPermission();
+      setPushEnabled(perm === "granted");
+      if (perm === "granted") {
+        toast.success("🔔 Push notifications enabled!");
+        new Notification("🙏 Notifications Enabled!", {
+          body: "You'll get alerts for BC earned, referrals, and tier milestones.",
+          icon: "/favicon.png",
+        });
+      } else if (perm === "denied") {
+        toast.error("Notifications blocked. Enable them in your browser settings.");
+      } else {
+        toast.info("Notification permission dismissed. Try again anytime.");
+      }
+    } catch (err) {
+      toast.error("Can't request notifications in this environment. Try on the published site.");
     }
   };
 
