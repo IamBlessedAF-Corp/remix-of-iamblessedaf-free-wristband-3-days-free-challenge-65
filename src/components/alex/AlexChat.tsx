@@ -158,7 +158,7 @@ export default function AlexChat() {
         className={`fixed z-50 bg-card border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden ${
           expanded
             ? "inset-4 sm:inset-8"
-            : "bottom-6 right-6 w-[380px] h-[520px] max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)]"
+            : "bottom-6 right-6 w-[92vw] sm:w-[440px] h-[70vh] max-h-[600px]"
         }`}
       >
         {/* Header */}
@@ -210,14 +210,14 @@ export default function AlexChat() {
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`max-w-[85%] rounded-xl px-3 py-2 text-sm ${
+                  className={`max-w-[90%] rounded-xl px-3.5 py-2.5 text-sm ${
                     msg.role === "user"
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-foreground"
                   }`}
                 >
                   {msg.role === "assistant" ? (
-                    <div className="prose prose-sm dark:prose-invert max-w-none [&_p]:my-1 [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0.5">
+                    <div className="prose prose-sm dark:prose-invert max-w-none break-words overflow-hidden [&_p]:my-1 [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0.5 [&_strong]:font-bold [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_pre]:overflow-x-auto [&_pre]:text-xs [&_code]:text-xs [&_code]:break-all">
                       <ReactMarkdown>{msg.content}</ReactMarkdown>
                     </div>
                   ) : (
