@@ -16,7 +16,6 @@ interface Nomination {
 
 /**
  * NominationStatusTracker — Real-time status of your nominations.
- * Phase 1: Retention loop — users come back to check if nominees accepted.
  */
 export default function NominationStatusTracker() {
   const { user } = useAuth();
@@ -40,7 +39,6 @@ export default function NominationStatusTracker() {
 
     fetchNominations();
 
-    // Subscribe to realtime updates
     const channel = supabase
       .channel("my-nominations")
       .on(
@@ -86,15 +84,15 @@ export default function NominationStatusTracker() {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "sent":
-        return "Enviado";
+        return "Sent";
       case "delivered":
-        return "Entregado";
+        return "Delivered";
       case "opened":
-        return "Abierto";
+        return "Opened";
       case "accepted":
-        return "¡Aceptado! ✅";
+        return "Accepted! ✅";
       case "expired":
-        return "Expirado";
+        return "Expired";
       default:
         return status;
     }
@@ -114,12 +112,12 @@ export default function NominationStatusTracker() {
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
           <Send className="w-4 h-4 text-primary" />
-          Mis Nominaciones
+          My Nominations
         </h3>
         <div className="flex items-center gap-2 text-xs">
-          <span className="text-primary font-bold">{accepted} aceptadas</span>
+          <span className="text-primary font-bold">{accepted} accepted</span>
           {pending > 0 && (
-            <span className="text-muted-foreground">· {pending} pendientes</span>
+            <span className="text-muted-foreground">· {pending} pending</span>
           )}
         </div>
       </div>
@@ -157,7 +155,7 @@ export default function NominationStatusTracker() {
       {accepted >= 3 && (
         <div className="mt-3 p-2 bg-primary/10 rounded-lg text-center">
           <p className="text-xs font-bold text-primary">
-            🎉 ¡Todos tus nominados aceptaron! +100 BC bonus
+            🎉 All your nominees accepted! +100 BC bonus
           </p>
         </div>
       )}

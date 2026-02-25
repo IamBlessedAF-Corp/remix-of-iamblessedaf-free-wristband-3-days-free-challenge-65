@@ -45,11 +45,11 @@ export default function NominationFlow({
   const validContacts = contacts.filter((c) => c.name.trim() && c.phone.trim());
 
   const getNominationMessage = (friendName: string, personalMsg: string) =>
-    `🙏 ${senderName} te nominó para el 11:11 Gratitude Challenge!\n\n"${personalMsg || `${friendName}, gracias por estar en mi vida. ❤️`}"\n\n— Ese es un mensaje real de ${senderName} para ti.\n\nTU TURNO: Nombra 3 personas por las que estés agradecido/a.\nTienes 11 horas y 11 minutos. ⏱️\n\nAcepta el challenge: ${referralLink}\n\n✅ También recibes un wristband "I Am Blessed AF" GRATIS\n✅ Cada challenge completado = 22 comidas donadas\n\n— I Am Blessed AF | #1111GratitudeChallenge`;
+    `🙏 ${senderName} nominated you for the 11:11 Gratitude Challenge!\n\n"${personalMsg || `${friendName}, thank you for being in my life. ❤️`}"\n\n— That's a real message from ${senderName} to you.\n\nYOUR TURN: Name 3 people you're grateful for.\nYou have 11 hours and 11 minutes. ⏱️\n\nAccept the challenge: ${referralLink}\n\n✅ You also get a FREE "I Am Blessed AF" wristband\n✅ Each completed challenge = 22 meals donated\n\n— I Am Blessed AF | #1111GratitudeChallenge`;
 
   const handleSend = async () => {
     if (validContacts.length < 1) {
-      toast.error("Nomina al menos 1 amigo");
+      toast.error("Nominate at least 1 friend");
       return;
     }
 
@@ -78,7 +78,7 @@ export default function NominationFlow({
           sender_name: senderName,
           recipient_name: c.name.trim(),
           recipient_phone: c.phone.trim(),
-          gratitude_message: messages[idx] || `${c.name}, gracias por estar en mi vida. ❤️`,
+          gratitude_message: messages[idx] || `${c.name}, thank you for being in my life. ❤️`,
           nomination_message: getNominationMessage(c.name, messages[idx] || ""),
           referral_code: referralCode,
           chain_id: chainId,
@@ -111,13 +111,13 @@ export default function NominationFlow({
 
       const successCount = sendResults.filter((r: any) => r.success).length;
       if (successCount > 0) {
-        toast.success(`🎉 ${successCount} nominación(es) enviada(s)!`);
+        toast.success(`🎉 ${successCount} nomination(s) sent!`);
       }
 
       setStep("done");
     } catch (err) {
       console.error("Nomination error:", err);
-      toast.error("Error al enviar. Intenta de nuevo.");
+      toast.error("Failed to send. Please try again.");
       setStep("pick");
     }
   };
@@ -139,10 +139,10 @@ export default function NominationFlow({
                 <Heart className="w-6 h-6 text-primary" />
               </div>
               <h3 className="text-lg font-black text-foreground">
-                ¿Por quién estás agradecido/a? 🙏
+                Who are you grateful for? 🙏
               </h3>
               <p className="text-sm text-muted-foreground">
-                Escribe un mensaje de gratitud para cada persona que nomines
+                Write a gratitude message for each person you nominate
               </p>
             </div>
 
@@ -150,7 +150,7 @@ export default function NominationFlow({
               {contacts.map((contact, idx) => (
                 <div key={idx} className="bg-card border border-border/40 rounded-xl p-4 space-y-2">
                   <Input
-                    placeholder={`Nombre del amigo ${idx + 1}`}
+                    placeholder={`Friend ${idx + 1} name`}
                     value={contact.name}
                     onChange={(e) => {
                       const updated = [...contacts];
@@ -162,7 +162,7 @@ export default function NominationFlow({
                   />
                   {contact.name && (
                     <Textarea
-                      placeholder={`¿Por qué estás agradecido/a por ${contact.name}?`}
+                      placeholder={`Why are you grateful for ${contact.name}?`}
                       value={messages[idx] || ""}
                       onChange={(e) => setMessages({ ...messages, [idx]: e.target.value })}
                       className="text-sm rounded-lg resize-none"
@@ -179,7 +179,7 @@ export default function NominationFlow({
                 onClick={() => setStep("pick")}
                 className="w-full h-12 font-bold rounded-xl gap-2"
               >
-                Continuar <ArrowRight className="w-4 h-4" />
+                Continue <ArrowRight className="w-4 h-4" />
               </Button>
             )}
 
@@ -188,7 +188,7 @@ export default function NominationFlow({
                 onClick={onSkip}
                 className="w-full text-xs text-muted-foreground/60 hover:text-muted-foreground text-center"
               >
-                Saltar por ahora →
+                Skip for now →
               </button>
             )}
           </motion.div>
@@ -208,10 +208,10 @@ export default function NominationFlow({
                 <Users className="w-6 h-6 text-primary" />
               </div>
               <h3 className="text-lg font-black text-foreground">
-                Agrega los teléfonos 📱
+                Add their phone numbers 📱
               </h3>
               <p className="text-sm text-muted-foreground">
-                Tus amigos recibirán tu mensaje de gratitud + nominación
+                Your friends will receive your gratitude message + nomination
               </p>
             </div>
 
@@ -227,7 +227,7 @@ export default function NominationFlow({
             {/* Message preview */}
             {validContacts.length > 0 && (
               <div className="bg-muted/30 rounded-xl p-3 border border-border/30">
-                <p className="text-[10px] text-muted-foreground mb-1 font-medium">Vista previa del mensaje:</p>
+                <p className="text-[10px] text-muted-foreground mb-1 font-medium">Message preview:</p>
                 <p className="text-xs text-muted-foreground whitespace-pre-line leading-relaxed">
                   {getNominationMessage(validContacts[0].name, messages[0] || "").substring(0, 200)}...
                 </p>
@@ -240,7 +240,7 @@ export default function NominationFlow({
               className="w-full h-12 font-bold rounded-xl gap-2 btn-glow"
             >
               <Send className="w-4 h-4" />
-              Enviar {validContacts.length} Nominación(es)
+              Send {validContacts.length} Nomination(s)
             </Button>
           </motion.div>
         )}
@@ -254,7 +254,7 @@ export default function NominationFlow({
             className="text-center py-8 space-y-4"
           >
             <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto" />
-            <p className="text-sm text-muted-foreground">Enviando nominaciones...</p>
+            <p className="text-sm text-muted-foreground">Sending nominations...</p>
           </motion.div>
         )}
 
@@ -270,10 +270,10 @@ export default function NominationFlow({
               <Sparkles className="w-8 h-8 text-primary" />
             </div>
             <h3 className="text-xl font-black text-foreground">
-              🎉 ¡Nominaciones Enviadas!
+              🎉 Nominations Sent!
             </h3>
             <p className="text-sm text-muted-foreground">
-              Tus amigos tienen 11 horas y 11 minutos para aceptar el challenge
+              Your friends have 11 hours and 11 minutes to accept the challenge
             </p>
 
             {/* Results */}
@@ -297,7 +297,7 @@ export default function NominationFlow({
               onClick={onComplete}
               className="w-full h-12 font-bold rounded-xl"
             >
-              Ver mi Portal 🚀
+              View My Portal 🚀
             </Button>
           </motion.div>
         )}

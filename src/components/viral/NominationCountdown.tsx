@@ -10,7 +10,6 @@ interface NominationCountdownProps {
 
 /**
  * NominationCountdown — Shows the 11h 11m countdown for nominees.
- * Creates urgency (Ice Bucket's 24h deadline adapted to 11:11 branding).
  */
 export default function NominationCountdown({
   expiresAt,
@@ -29,7 +28,7 @@ export default function NominationCountdown({
 
       if (diff <= 0) {
         setIsExpired(true);
-        setTimeLeft("¡Tiempo agotado!");
+        setTimeLeft("Time's up!");
         return;
       }
 
@@ -77,14 +76,14 @@ export default function NominationCountdown({
         <div>
           <p className="text-xs font-bold text-foreground">
             {isExpired
-              ? "Challenge expirado"
+              ? "Challenge expired"
               : recipientName
-              ? `${recipientName} tiene`
-              : "Tiempo restante"}
+              ? `${recipientName} has`
+              : "Time remaining"}
           </p>
           {!isExpired && (
             <p className="text-[10px] text-muted-foreground">
-              para aceptar el challenge
+              to accept the challenge
             </p>
           )}
         </div>

@@ -14,7 +14,6 @@ interface ChallengeEvent {
 
 /**
  * ChallengeEventBanner — Shows active seasonal challenge events.
- * Phase 3: Monthly themed challenges reset K-factor decay with novelty.
  */
 export default function ChallengeEventBanner() {
   const [event, setEvent] = useState<ChallengeEvent | null>(null);
@@ -43,12 +42,12 @@ export default function ChallengeEventBanner() {
     const update = () => {
       const diff = new Date(event.ends_at).getTime() - Date.now();
       if (diff <= 0) {
-        setTimeLeft("¡Terminado!");
+        setTimeLeft("Finished!");
         return;
       }
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      setTimeLeft(`${days}d ${hours}h restantes`);
+      setTimeLeft(`${days}d ${hours}h remaining`);
     };
 
     update();

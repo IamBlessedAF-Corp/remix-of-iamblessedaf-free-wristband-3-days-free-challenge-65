@@ -13,89 +13,89 @@ export function getTagInfo(tag: string): TagInfo {
   const t = tag.toLowerCase().trim();
 
   // ─── Channel tags ───
-  if (t === "sms") return { explanation: "Mensaje de texto vía Twilio. Límite: 160 chars por segmento.", editable: [{ label: "Canal", field: "channel" }] };
-  if (t === "sms + mms") return { explanation: "Mensaje multimedia (texto + imagen) vía Twilio. Mayor engagement (+3×) pero mayor costo.", editable: [{ label: "Canal", field: "channel" }] };
-  if (t === "email") return { explanation: "Email transaccional o de marketing vía Resend. Open rate promedio: 35-45%.", editable: [{ label: "Canal", field: "channel" }] };
-  if (t === "whatsapp") return { explanation: "Mensaje de WhatsApp vía Twilio. Requiere template aprobado por Meta.", editable: [{ label: "Canal", field: "channel" }] };
-  if (t === "web") return { explanation: "Texto mostrado directamente en la interfaz web. Se actualiza en tiempo real.", editable: [] };
-  if (t === "web + email") return { explanation: "Texto mostrado en web Y enviado por email. Los cambios afectan ambos canales.", editable: [] };
-  if (t === "social") return { explanation: "Texto para redes sociales (Twitter, IG, TikTok). Se copia al portapapeles.", editable: [] };
+  if (t === "sms") return { explanation: "Text message via Twilio. Limit: 160 chars per segment.", editable: [{ label: "Channel", field: "channel" }] };
+  if (t === "sms + mms") return { explanation: "Multimedia message (text + image) via Twilio. Higher engagement (+3×) but higher cost.", editable: [{ label: "Channel", field: "channel" }] };
+  if (t === "email") return { explanation: "Transactional or marketing email via Resend. Average open rate: 35-45%.", editable: [{ label: "Channel", field: "channel" }] };
+  if (t === "whatsapp") return { explanation: "WhatsApp message via Twilio. Requires Meta-approved template.", editable: [{ label: "Channel", field: "channel" }] };
+  if (t === "web") return { explanation: "Text displayed directly in the web interface. Updates in real time.", editable: [] };
+  if (t === "web + email") return { explanation: "Text shown on web AND sent via email. Changes affect both channels.", editable: [] };
+  if (t === "social") return { explanation: "Text for social media (Twitter, IG, TikTok). Copied to clipboard.", editable: [] };
 
   // ─── Block Categories ───
-  if (t === "content") return { explanation: "Bloque de contenido editorial: citas, investigación, storytelling.", editable: [] };
-  if (t === "product") return { explanation: "Bloque de producto: muestra wristbands, shirts, o bundles con galerías y pricing.", editable: [] };
-  if (t === "cta") return { explanation: "Call-to-Action: botón principal de conversión.", editable: [] };
-  if (t === "hero") return { explanation: "Sección hero: primera impresión del visitante. Alto impacto en bounce rate.", editable: [] };
-  if (t === "trust") return { explanation: "Bloque de confianza: testimonios, garantías, señales de credibilidad.", editable: [] };
-  if (t === "urgency") return { explanation: "Bloque de urgencia: timers, stock counters, exit-intent modals.", editable: [] };
-  if (t === "viral") return { explanation: "Bloque viral: share nudges, impact counters, gamification.", editable: [] };
-  if (t === "value stack") return { explanation: "Value Stack: lista visual de beneficios con precio tachado.", editable: [] };
-  if (t === "system") return { explanation: "Componente conectado a datos en tiempo real. Se actualiza automáticamente.", editable: [] };
+  if (t === "content") return { explanation: "Editorial content block: quotes, research, storytelling.", editable: [] };
+  if (t === "product") return { explanation: "Product block: shows wristbands, shirts, or bundles with galleries and pricing.", editable: [] };
+  if (t === "cta") return { explanation: "Call-to-Action: primary conversion button.", editable: [] };
+  if (t === "hero") return { explanation: "Hero section: visitor's first impression. High impact on bounce rate.", editable: [] };
+  if (t === "trust") return { explanation: "Trust block: testimonials, guarantees, credibility signals.", editable: [] };
+  if (t === "urgency") return { explanation: "Urgency block: timers, stock counters, exit-intent modals.", editable: [] };
+  if (t === "viral") return { explanation: "Viral block: share nudges, impact counters, gamification.", editable: [] };
+  if (t === "value stack") return { explanation: "Value Stack: visual list of benefits with crossed-out price.", editable: [] };
+  if (t === "system") return { explanation: "Component connected to real-time data. Updates automatically.", editable: [] };
 
   // ─── Live value patterns ───
-  if (t.includes("orders")) return { explanation: `Órdenes registradas en la base de datos.`, editable: [] };
-  if (t.includes("quotes") || t.includes("variants")) return { explanation: "Múltiples variantes de copy para A/B testing.", editable: [] };
-  if (t.includes("multiplier") || t.includes("×")) return { explanation: "Cifra de impacto basada en la escala de Hawkins.", editable: [] };
-  if (t.includes("clips")) return { explanation: "Clips en esta categoría. Se verifican automáticamente.", editable: [] };
-  if (t.includes("clippers")) return { explanation: "Creadores de contenido registrados en el programa.", editable: [] };
-  if (t.includes("segments")) return { explanation: "Segmentos de presupuesto activos.", editable: [] };
-  if (t.includes("cycle")) return { explanation: "Estado del ciclo de presupuesto actual.", editable: [] };
+  if (t.includes("orders")) return { explanation: "Orders registered in the database.", editable: [] };
+  if (t.includes("quotes") || t.includes("variants")) return { explanation: "Multiple copy variants for A/B testing.", editable: [] };
+  if (t.includes("multiplier") || t.includes("×")) return { explanation: "Impact figure based on the Hawkins scale.", editable: [] };
+  if (t.includes("clips")) return { explanation: "Clips in this category. Verified automatically.", editable: [] };
+  if (t.includes("clippers")) return { explanation: "Content creators registered in the program.", editable: [] };
+  if (t.includes("segments")) return { explanation: "Active budget segments.", editable: [] };
+  if (t.includes("cycle")) return { explanation: "Current budget cycle status.", editable: [] };
 
   // ─── Frequency patterns ───
   if (t.includes("sends/day") || t.includes("send/day")) {
     const num = t.match(/~?(\d+)/)?.[1] || "?";
-    return { explanation: `~${num} mensajes/día. Volumen promedio últimos 7 días.`, editable: [{ label: "Frecuencia diaria", field: "frequency" }] };
+    return { explanation: `~${num} messages/day. Average volume over last 7 days.`, editable: [{ label: "Daily frequency", field: "frequency" }] };
   }
   if (t.includes("sends/friday") || t.includes("send/friday")) {
     const num = t.match(/~?(\d+)/)?.[1] || "?";
-    return { explanation: `~${num} mensajes cada viernes (programa TGF).`, editable: [{ label: "Frecuencia semanal", field: "frequency" }] };
+    return { explanation: `~${num} messages every Friday (TGF program).`, editable: [{ label: "Weekly frequency", field: "frequency" }] };
   }
   if (t.includes("views/day") || t.includes("view/day")) {
     const num = t.match(/~?(\d+)/)?.[1] || "?";
-    return { explanation: `~${num} vistas/día. Cambios aquí impactan alto volumen.`, editable: [] };
+    return { explanation: `~${num} views/day. Changes here impact high volume.`, editable: [] };
   }
   if (t.includes("clicks/day") || t.includes("click/day")) {
     const num = t.match(/~?(\d+)/)?.[1] || "?";
-    return { explanation: `~${num} clics/día. Alto engagement indica copy efectivo.`, editable: [] };
+    return { explanation: `~${num} clicks/day. High engagement indicates effective copy.`, editable: [] };
   }
   if (t.includes("shares/day") || t.includes("share/day")) {
     const num = t.match(/~?(\d+)/)?.[1] || "?";
-    return { explanation: `~${num} compartidos/día. Cada share amplifica alcance orgánico.`, editable: [] };
+    return { explanation: `~${num} shares/day. Each share amplifies organic reach.`, editable: [] };
   }
   if (t.includes("impressions/day")) {
     const num = t.match(/~?(\d+)/)?.[1] || "?";
-    return { explanation: `~${num} impresiones/día. Scroll-depth triggered.`, editable: [] };
+    return { explanation: `~${num} impressions/day. Scroll-depth triggered.`, editable: [] };
   }
   if (t.includes("triggers/day") || t.includes("trigger/day")) {
     const num = t.match(/~?(\d+)/)?.[1] || "?";
-    return { explanation: `~${num} activaciones/día.`, editable: [] };
+    return { explanation: `~${num} activations/day.`, editable: [] };
   }
   if (t.includes("triggers/month") || t.includes("trigger/month")) {
     const num = t.match(/~?(\d+)/)?.[1] || "?";
-    return { explanation: `~${num} activaciones/mes. Evento raro — alto valor.`, editable: [] };
+    return { explanation: `~${num} activations/month. Rare event — high value.`, editable: [] };
   }
-  if (t === "weekly") return { explanation: "Se envía una vez por semana. Día y hora configurables.", editable: [{ label: "Día de envío", field: "day" }, { label: "Hora de envío", field: "time" }] };
+  if (t === "weekly") return { explanation: "Sent once per week. Day and time configurable.", editable: [{ label: "Send day", field: "day" }, { label: "Send time", field: "time" }] };
 
   // ─── Trigger patterns ───
   if (t.includes("cron")) {
     const timeMatch = t.match(/cron\s+(.*)/i)?.[1] || t;
-    return { explanation: `Tarea programada automática: ${timeMatch}.`, editable: [{ label: "Horario", field: "schedule" }] };
+    return { explanation: `Automated scheduled task: ${timeMatch}.`, editable: [{ label: "Schedule", field: "schedule" }] };
   }
-  if (t === "page load") return { explanation: "Se muestra al cargar la página. Optimizar para impacto inmediato.", editable: [] };
-  if (t === "user click") return { explanation: "Se activa por clic del usuario. Intent-driven.", editable: [] };
-  if (t === "user action") return { explanation: "Se activa por acción del usuario (compartir, invitar, etc.).", editable: [] };
-  if (t === "user signup") return { explanation: "Se dispara al registrarse un nuevo usuario. Open rate ~70%.", editable: [] };
-  if (t === "post-purchase") return { explanation: "Después de compra exitosa. Momento ideal para viralización.", editable: [] };
-  if (t === "scroll depth") return { explanation: "Aparece al ~60-70% de scroll. Indica interés real.", editable: [{ label: "Profundidad (%)", field: "scroll_depth" }] };
-  if (t === "exit-intent") return { explanation: "Se activa cuando el cursor sale del viewport o inactivo 30s.", editable: [{ label: "Delay (seg)", field: "exit_delay" }] };
-  if (t.includes("streak trigger")) return { explanation: "Se activa al alcanzar un hito de streak.", editable: [] };
-  if (t.includes("milestone")) return { explanation: "Activado por hito de views o engagement.", editable: [] };
-  if (t.includes("tier unlock")) return { explanation: "Se dispara al subir de tier de afiliado.", editable: [] };
-  if (t.includes("first share")) return { explanation: "Primera vez que el usuario comparte.", editable: [] };
-  if (t.includes("5th share")) return { explanation: "5to share — refuerzo de identidad 'Ambassador'.", editable: [] };
-  if (t.includes("expert signup")) return { explanation: "Registro de experto/influencer. Canal de alto valor.", editable: [] };
-  if (t.includes("nm signup")) return { explanation: "Registro de Network Marketer.", editable: [] };
-  if (t.includes("waitlist join")) return { explanation: "Unión a waitlist del Smart Wristband.", editable: [] };
+  if (t === "page load") return { explanation: "Shown on page load. Optimize for immediate impact.", editable: [] };
+  if (t === "user click") return { explanation: "Triggered by user click. Intent-driven.", editable: [] };
+  if (t === "user action") return { explanation: "Triggered by user action (share, invite, etc.).", editable: [] };
+  if (t === "user signup") return { explanation: "Fires on new user signup. Open rate ~70%.", editable: [] };
+  if (t === "post-purchase") return { explanation: "After successful purchase. Ideal moment for viralization.", editable: [] };
+  if (t === "scroll depth") return { explanation: "Appears at ~60-70% scroll depth. Indicates real interest.", editable: [{ label: "Depth (%)", field: "scroll_depth" }] };
+  if (t === "exit-intent") return { explanation: "Fires when cursor exits viewport or inactive for 30s.", editable: [{ label: "Delay (sec)", field: "exit_delay" }] };
+  if (t.includes("streak trigger")) return { explanation: "Fires when a streak milestone is reached.", editable: [] };
+  if (t.includes("milestone")) return { explanation: "Triggered by views or engagement milestone.", editable: [] };
+  if (t.includes("tier unlock")) return { explanation: "Fires on affiliate tier upgrade.", editable: [] };
+  if (t.includes("first share")) return { explanation: "User's first share ever.", editable: [] };
+  if (t.includes("5th share")) return { explanation: "5th share — reinforces 'Ambassador' identity.", editable: [] };
+  if (t.includes("expert signup")) return { explanation: "Expert/influencer signup. High-value channel.", editable: [] };
+  if (t.includes("nm signup")) return { explanation: "Network Marketer signup.", editable: [] };
+  if (t.includes("waitlist join")) return { explanation: "Smart Wristband waitlist join.", editable: [] };
 
   // ─── Char count patterns ───
   if (t.includes("/") && t.includes("chars")) {
@@ -104,15 +104,15 @@ export function getTagInfo(tag: string): TagInfo {
       const current = parseInt(parts[1]);
       const limit = parseInt(parts[2]);
       const pct = Math.round((current / limit) * 100);
-      return { explanation: `${current}/${limit} chars (${pct}%). ${pct > 90 ? "⚠️ Cerca del límite." : pct > 70 ? "Buen uso del espacio." : "Espacio disponible."}`, editable: [{ label: "Límite", field: "charLimit" }] };
+      return { explanation: `${current}/${limit} chars (${pct}%). ${pct > 90 ? "⚠️ Near limit." : pct > 70 ? "Good use of space." : "Space available."}`, editable: [{ label: "Limit", field: "charLimit" }] };
     }
   }
 
   // ─── Numeric-only values ───
-  if (/^\d+$/.test(t)) return { explanation: `Valor actual en tiempo real: ${t}.`, editable: [] };
+  if (/^\d+$/.test(t)) return { explanation: `Current real-time value: ${t}.`, editable: [] };
 
   // ─── Generic fallback ───
-  return { explanation: `"${tag}" — Metadata de clasificación.`, editable: [] };
+  return { explanation: `"${tag}" — Classification metadata.`, editable: [] };
 }
 
 // ─── Tag icon mapping ───

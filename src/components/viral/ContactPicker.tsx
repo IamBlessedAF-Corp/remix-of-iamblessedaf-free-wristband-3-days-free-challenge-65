@@ -19,7 +19,6 @@ interface ContactPickerProps {
 /**
  * ContactPicker — uses the Contact Picker API on supported browsers (Android Chrome)
  * with fallback to manual entry for iOS/desktop.
- * Phase 1: Reduces friction from manual phone entry → tap-to-select.
  */
 export default function ContactPicker({
   contacts,
@@ -46,10 +45,9 @@ export default function ContactPicker({
       if (newContacts.length > 0) {
         const merged = [...contacts, ...newContacts].slice(0, max);
         onChange(merged);
-        toast.success(`${newContacts.length} contacto(s) agregado(s)`);
+        toast.success(`${newContacts.length} contact(s) added`);
       }
     } catch (err) {
-      // User cancelled or API error
       console.log("Contact picker cancelled or failed:", err);
     }
   };
@@ -83,7 +81,7 @@ export default function ContactPicker({
           className="w-full h-12 rounded-xl text-sm gap-2 border-primary/30 text-primary hover:bg-primary/5"
         >
           <Smartphone className="w-4 h-4" />
-          Seleccionar de Contactos
+          Select from Contacts
         </Button>
       )}
 
@@ -97,7 +95,7 @@ export default function ContactPicker({
             <div className="flex items-center gap-2">
               <Users className="w-3.5 h-3.5 text-primary" />
               <span className="text-xs font-bold text-foreground">
-                Nominado {idx + 1}
+                Nominee {idx + 1}
               </span>
             </div>
             {contacts.length > 1 && (
@@ -113,7 +111,7 @@ export default function ContactPicker({
           </div>
           <div className="grid grid-cols-2 gap-2">
             <Input
-              placeholder="Nombre"
+              placeholder="Name"
               value={contact.name}
               onChange={(e) => updateContact(idx, "name", e.target.value)}
               className="h-9 text-sm rounded-lg"
@@ -139,13 +137,13 @@ export default function ContactPicker({
           className="w-full h-9 rounded-xl text-xs gap-2 border-dashed"
         >
           <Plus className="w-3.5 h-3.5" />
-          Agregar nominado ({contacts.length}/{max})
+          Add nominee ({contacts.length}/{max})
         </Button>
       )}
 
       {contacts.length < min && (
         <p className="text-[10px] text-muted-foreground text-center">
-          Nomina al menos {min} amigos para completar el challenge
+          Nominate at least {min} friends to complete the challenge
         </p>
       )}
     </div>

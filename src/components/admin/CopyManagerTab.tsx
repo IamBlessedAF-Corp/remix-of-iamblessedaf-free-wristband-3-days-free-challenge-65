@@ -253,12 +253,12 @@ function CopyRow({ item, savedValue, onSave }: {
               )}
               {overLimit && (
                 <p className="text-[10px] text-red-400 flex items-center gap-1">
-                  <AlertTriangle className="w-3 h-3" /> Excede el límite de {item.charLimit} caracteres
+                  <AlertTriangle className="w-3 h-3" /> Exceeds {item.charLimit} character limit
                 </p>
               )}
               <div className="flex gap-2">
-                <Button size="sm" className="h-7 text-[10px] gap-1" onClick={handleSave}><Save className="w-3 h-3" /> Guardar</Button>
-                <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1" onClick={() => setPreviewing(!previewing)}><Eye className="w-3 h-3" /> {previewing ? "Ocultar" : "Preview"}</Button>
+                <Button size="sm" className="h-7 text-[10px] gap-1" onClick={handleSave}><Save className="w-3 h-3" /> Save</Button>
+                <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1" onClick={() => setPreviewing(!previewing)}><Eye className="w-3 h-3" /> {previewing ? "Hide" : "Preview"}</Button>
                 <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => setValue(item.defaultValue)}>Reset</Button>
                 <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => { setEditing(false); setValue(currentValue); }}><X className="w-3 h-3" /></Button>
               </div>
@@ -446,7 +446,7 @@ export default function CopyManagerTab() {
               <Type className="w-5 h-5 text-primary" /> Copy Manager
             </h2>
             <p className="text-xs text-muted-foreground mt-1">
-              Edita headlines, mensajes, emails y copy social. Hover en tags para más info.
+              Edit headlines, messages, emails and social copy. Hover tags for more info.
             </p>
           </div>
           <div className="flex items-center gap-2">
