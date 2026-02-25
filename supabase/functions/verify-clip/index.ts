@@ -169,31 +169,33 @@ Deno.serve(async (req) => {
         );
       }
 
-      // ── Some checks failed → still insert as pending ──
+      // ── Some checks failed → insert as rejected ──
+      const failReasons: string[] = [];
+      if (!hasCampaignTag) failReasons.push("Missing #3DayNeuroHackerChallenge in title or description");
+      const failSuffix = referral_code ? (referral_code.length > 10 ? referral_code.slice(10) : referral_code) : "YOUR_CODE";
+      if (!ownershipVerified) failReasons.push(`Missing #IAMBLESSED_${failSuffix} in description`);
+
       const { error: insertError } = await supabase.from("clip_submissions").insert({
         user_id,
         clip_url,
         platform,
-        status: "pending",
+        status: "rejected",
         view_count: viewCount,
         baseline_view_count: viewCount,
         earnings_cents: 0,
+        is_activated: false,
       });
 
       if (insertError) {
         console.error("Insert error:", insertError);
       }
 
-      const failReasons: string[] = [];
-      if (!hasCampaignTag) failReasons.push("Missing #3DayNeuroHackerChallenge in title or description");
-      const failSuffix = referral_code ? (referral_code.length > 10 ? referral_code.slice(10) : referral_code) : "YOUR_CODE";
-      if (!ownershipVerified) failReasons.push(`Missing #IAMBLESSED_${failSuffix} in description`);
       return new Response(
         JSON.stringify({
           verified: false,
           reason: "checks_failed",
           checks,
-          message: `Clip saved as pending. Fix these to get verified:\n• ${failReasons.join("\n• ")}`,
+          message: `❌ Clip rejected. Fix these issues and re-submit:\n• ${failReasons.join("\n• ")}`,
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
