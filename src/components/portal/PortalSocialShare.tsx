@@ -40,7 +40,7 @@ export default function PortalSocialShare({ referralCode, displayName, open, onC
 
   const url = shortUrl || rawUrl;
 
-  const ownershipTag = `#IABAF_${referralCode}`;
+  const ownershipTag = `#IAMBLESSED_${referralCode}`;
 
   const PLATFORMS: PlatformConfig[] = [
     {
