@@ -246,7 +246,7 @@ function TabContent({ tab, blockSubFilter }: { tab: TabId; blockSubFilter: Block
 // MAIN ADMIN HUB
 // ═══════════════════════════════════════════════
 export default function AdminHub() {
-  const { user, isAdmin, userRole, loading: authLoading, signInWithEmail, signOut } = useAdminAuth();
+  const { user, isAdmin, userRole, loading: authLoading, signInWithEmail, signInWithGoogle, signInWithApple, signOut } = useAdminAuth();
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
   const [blockSubFilter, setBlockSubFilter] = useState<BlockSubFilter>("all");
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -300,7 +300,7 @@ export default function AdminHub() {
           <Shield className="w-5 h-5 text-primary" />
           <h1 className="text-lg font-bold text-foreground">Admin Access</h1>
         </div>
-        <BoardLoginForm signInWithEmail={signInWithEmail} />
+        <BoardLoginForm signInWithEmail={signInWithEmail} signInWithGoogle={signInWithGoogle} signInWithApple={signInWithApple} />
       </div>
     </div>
   );
