@@ -28,6 +28,7 @@ import NominationStatusTracker from "@/components/viral/NominationStatusTracker"
 import GratitudeTree from "@/components/viral/GratitudeTree";
 import WeeklyReferralSprint from "@/components/viral/WeeklyReferralSprint";
 import AmbassadorLevelCard from "@/components/viral/AmbassadorLevelCard";
+import AlexChat from "@/components/alex/AlexChat";
 import ChallengeEventBanner from "@/components/viral/ChallengeEventBanner";
 import StoryShareTemplate from "@/components/viral/StoryShareTemplate";
 
@@ -249,6 +250,7 @@ const AffiliatePortal = () => {
           </motion.div>
         </AnimatePresence>
       </main>
+      <AlexChat />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { useBoard } from "@/hooks/useBoard";
+import AlexChat from "@/components/alex/AlexChat";
 import { useAutoExecute } from "@/hooks/useAutoExecute";
 import AdminSectionDashboard from "@/components/admin/AdminSectionDashboard";
 import KanbanBoard from "@/components/board/KanbanBoard";
@@ -675,6 +676,7 @@ export default function BoardTab() {
           </div>
         </TabsContent>
       </Tabs>
+      <AlexChat />
     </div>
   );
 }
