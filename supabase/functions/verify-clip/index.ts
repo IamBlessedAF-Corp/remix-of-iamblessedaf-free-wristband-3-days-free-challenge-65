@@ -143,7 +143,9 @@ Deno.serve(async (req) => {
           status: "verified",
           view_count: viewCount,
           baseline_view_count: viewCount,
-          earnings_cents: 222, // minimum $2.22
+          net_views: 0,
+          earnings_cents: 0, // Earnings activate after 1,000 net views
+          is_activated: false,
           verified_at: new Date().toISOString(),
         });
 
@@ -160,7 +162,8 @@ Deno.serve(async (req) => {
             verified: true,
             checks,
             view_count: viewCount,
-            message: "✅ Clip verified! You earned $2.22 minimum. Views will be tracked automatically.",
+            baseline_view_count: viewCount,
+            message: "✅ Clip verified! Views are being tracked. You'll earn $2.22+ once your clip reaches 1,000 net views.",
           }),
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );

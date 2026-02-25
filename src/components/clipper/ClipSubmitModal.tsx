@@ -261,7 +261,12 @@ function VerificationResultView({
       <p className="text-sm text-muted-foreground text-center whitespace-pre-line">{result.message}</p>
 
       {result.verified && (
-        <p className="text-center text-sm font-bold text-emerald-500">💰 $2.22 minimum earned!</p>
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-center space-y-1">
+          <p className="text-sm font-bold text-emerald-500">📊 Views are being tracked!</p>
+          <p className="text-[11px] text-muted-foreground">
+            Submitted with {(result.view_count || 0).toLocaleString()} views. You'll earn <strong className="text-foreground">$2.22+</strong> once your clip gains 1,000 net views.
+          </p>
+        </div>
       )}
 
       <Button onClick={onClose} className="w-full rounded-xl">

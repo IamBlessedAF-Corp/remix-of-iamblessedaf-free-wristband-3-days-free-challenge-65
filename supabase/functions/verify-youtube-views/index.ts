@@ -154,9 +154,8 @@ Deno.serve(async (req) => {
         }
         
         // Also update earnings for already-verified clips based on current views
-        if (clip.status === "verified" && !hasCampaignTag) {
-          // Already verified, just update view-based earnings
-          const baseline = clip.baseline_view_count || 0;
+        if (clip.status === "verified") {
+          const baseline = updateData.baseline_view_count || clip.baseline_view_count || 0;
           const netViews = Math.max(0, liveViewCount - baseline);
           updateData.net_views = netViews;
           

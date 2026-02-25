@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Film, Eye, DollarSign, ExternalLink, Play, CheckCircle, Clock, AlertTriangle, Trophy, Flame } from "lucide-react";
+import { Film, Eye, DollarSign, ExternalLink, Play, CheckCircle, Clock, AlertTriangle, Trophy, Flame, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
@@ -10,7 +10,10 @@ interface Clip {
   platform: string;
   status: string;
   view_count: number;
+  baseline_view_count: number;
+  net_views: number | null;
   earnings_cents: number;
+  is_activated: boolean | null;
   submitted_at: string;
 }
 
@@ -36,6 +39,8 @@ const MILESTONES = [
   { clips: 50, label: "Legend", emoji: "👑" },
 ];
 
+const formatViews = (v: number) => v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v.toString();
+
 const ClipperMyClips = ({ userId }: Props) => {
   const [clips, setClips] = useState<Clip[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -45,7 +50,7 @@ const ClipperMyClips = ({ userId }: Props) => {
     const fetch = async () => {
       const { data } = await supabase
         .from("clip_submissions")
-        .select("id, clip_url, platform, status, view_count, earnings_cents, submitted_at")
+        .select("id, clip_url, platform, status, view_count, baseline_view_count, net_views, earnings_cents, is_activated, submitted_at")
         .eq("user_id", userId)
         .order("submitted_at", { ascending: false });
       setClips(data || []);
@@ -82,7 +87,7 @@ const ClipperMyClips = ({ userId }: Props) => {
           <p className="text-[10px] text-muted-foreground">Clips</p>
         </div>
         <div className="bg-secondary/50 rounded-lg p-2.5 text-center">
-          <p className="text-lg font-bold text-foreground">{totalViews >= 1000 ? `${(totalViews / 1000).toFixed(1)}k` : totalViews}</p>
+          <p className="text-lg font-bold text-foreground">{formatViews(totalViews)}</p>
           <p className="text-[10px] text-muted-foreground">Views</p>
         </div>
         <div className="bg-secondary/50 rounded-lg p-2.5 text-center">
@@ -120,6 +125,9 @@ const ClipperMyClips = ({ userId }: Props) => {
             const Icon = cfg.icon;
             const isExpanded = expandedId === clip.id;
             const ttId = getTikTokId(clip.clip_url);
+            const netViews = clip.net_views ?? Math.max(0, (clip.view_count || 0) - (clip.baseline_view_count || 0));
+            const isActivated = clip.is_activated || false;
+            const viewProgress = Math.min(100, (netViews / 1000) * 100);
 
             return (
               <div key={clip.id} className="border border-border/30 rounded-xl overflow-hidden">
@@ -132,21 +140,63 @@ const ClipperMyClips = ({ userId }: Props) => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold text-foreground capitalize">{clip.platform}</p>
-                    <p className="text-[10px] text-muted-foreground">{new Date(clip.submitted_at).toLocaleDateString()}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {new Date(clip.submitted_at).toLocaleDateString()} · {new Date(clip.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
                       <Eye className="w-3 h-3" /> {clip.view_count.toLocaleString()}
                     </span>
-                    <span className="text-[11px] font-bold text-foreground">${(clip.earnings_cents / 100).toFixed(2)}</span>
+                    <span className={`text-[11px] font-bold ${isActivated ? 'text-emerald-500' : 'text-muted-foreground'}`}>
+                      ${(clip.earnings_cents / 100).toFixed(2)}
+                    </span>
                     <Badge className={`text-[9px] px-1.5 ${cfg.color}`}>
                       <Icon className="w-2.5 h-2.5 mr-0.5" />
                       {clip.status}
                     </Badge>
                   </div>
                 </div>
+
                 {isExpanded && (
                   <div className="px-3 pb-3 border-t border-border/20 pt-2 space-y-2">
+                    {/* Submission details */}
+                    <div className="grid grid-cols-2 gap-2 text-[11px]">
+                      <div className="bg-secondary/40 rounded-lg p-2">
+                        <p className="text-muted-foreground">Views at submission</p>
+                        <p className="font-bold text-foreground">{(clip.baseline_view_count || 0).toLocaleString()}</p>
+                      </div>
+                      <div className="bg-secondary/40 rounded-lg p-2">
+                        <p className="text-muted-foreground">Net views (new)</p>
+                        <p className="font-bold text-foreground">{netViews.toLocaleString()}</p>
+                      </div>
+                    </div>
+
+                    {/* Progress toward 1,000 views activation */}
+                    {clip.status === "verified" && !isActivated && (
+                      <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2.5">
+                        <div className="flex items-center justify-between text-[11px] mb-1">
+                          <span className="text-amber-400 flex items-center gap-1">
+                            <TrendingUp className="w-3 h-3" /> Progress to $2.22+
+                          </span>
+                          <span className="font-bold text-foreground">{netViews.toLocaleString()} / 1,000</span>
+                        </div>
+                        <Progress value={viewProgress} className="h-1.5 bg-secondary" />
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          {1000 - netViews > 0
+                            ? `${(1000 - netViews).toLocaleString()} more net views to activate earnings`
+                            : "Almost there!"}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Activated earnings */}
+                    {isActivated && (
+                      <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2.5 text-center">
+                        <p className="text-[11px] text-emerald-400 font-bold">💰 Earning ${(clip.earnings_cents / 100).toFixed(2)} — keep growing views!</p>
+                      </div>
+                    )}
+
                     <a href={clip.clip_url} target="_blank" rel="noopener noreferrer" className="text-primary text-[11px] underline flex items-center gap-1">
                       <ExternalLink className="w-3 h-3" /> Open on {clip.platform}
                     </a>
