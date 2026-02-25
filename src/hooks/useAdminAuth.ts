@@ -3,7 +3,7 @@ import { useAuth } from "./useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
 export function useAdminAuth() {
-  const { user, session, loading: authLoading, signInWithEmail, signOut } = useAuth();
+  const { user, session, loading: authLoading, signInWithEmail, signInWithGoogle, signInWithApple, signOut } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [checking, setChecking] = useState(true);
@@ -48,6 +48,8 @@ export function useAdminAuth() {
     userRole,
     loading: authLoading || checking,
     signInWithEmail,
+    signInWithGoogle,
+    signInWithApple,
     signOut,
   };
 }
