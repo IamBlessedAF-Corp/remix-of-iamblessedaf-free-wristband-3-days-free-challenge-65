@@ -353,7 +353,7 @@ const Offer111 = () => {
               <DownsellModal
                 open={showDownsell}
                 onClose={() => setShowDownsell(false)}
-                onAccept={() => { setShowDownsell(false); navigate("/offer/11mo"); }}
+                onAccept={() => { setShowDownsell(false); startCheckout("pack-111"); }}
                 onDecline={() => { setShowDownsell(false); navigate("/Congrats-Neuro-Hacker?next=/offer/444"); }}
                 onTrack={track}
               />

@@ -150,7 +150,7 @@ const Offer22 = () => {
   };
 
   const handleSkipFree = () => {
-    window.location.href = "/challenge/thanks";
+    window.location.href = "/offer/111";
   };
 
   const handleSingleWristbandCheckout = () => {
@@ -158,7 +158,7 @@ const Offer22 = () => {
   };
 
   const handleSkipUpsell = () => {
-    window.location.href = "/challenge/thanks";
+    window.location.href = "/offer/111";
   };
 
   return (

@@ -54,6 +54,34 @@ const TESTIMONIALS = [
       </>
     ),
   },
+  {
+    name: "Diego R.",
+    meta: "Day 21 · Wristband wearer",
+    icon: TrendingUp,
+    quote: (
+      <>
+        "My wife asked why I've been so different lately.{" "}
+        <span className="font-bold text-primary">
+          I showed her the wristband and she cried. Now she wears one too.
+        </span>{" "}
+        This isn't a product — it's a relationship upgrade."
+      </>
+    ),
+  },
+  {
+    name: "Priya K.",
+    meta: "Day 33 · 5 Friends Blessed",
+    icon: Users,
+    quote: (
+      <>
+        "I bought the pack for my team at work. Within a week,{" "}
+        <span className="font-bold text-primary">
+          our Monday meetings went from complaints to celebrations.
+        </span>{" "}
+        Productivity went up 40%. Not kidding."
+      </>
+    ),
+  },
 ];
 
 function formatNumber(n: number): string {

@@ -44,7 +44,7 @@ const Offer444 = () => {
 
   const handleDownsellAccept = () => {
     setShowDownsell(false);
-    navigate("/offer/11mo");
+    startCheckout("pack-111");
   };
 
   const handleSkip = (e: React.MouseEvent<HTMLAnchorElement>) => {
