@@ -14,6 +14,7 @@ import BoardLoginForm from "@/components/board/BoardLoginForm";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getRolePermissions, fetchRolePermissions } from "@/components/admin/RolesTab";
+import AlexChat from "@/components/alex/AlexChat";
 
 // Tab imports
 import DashboardTab from "@/components/admin/tabs/DashboardTab";
@@ -584,6 +585,7 @@ export default function AdminHub() {
           <TabContent tab={activeTab} blockSubFilter={blockSubFilter} />
         </div>
       </main>
+      <AlexChat />
     </div>
   );
 }
