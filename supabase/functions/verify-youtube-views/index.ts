@@ -112,10 +112,10 @@ Deno.serve(async (req) => {
         const hasCampaignTag = description.includes("#3dayneurohackerchallenge") || 
                                description.includes("3dayneurohackerchallenge");
 
-        // Check ownership code: #IABAF_{referral_code}
+        // Check ownership code: #IAMBLESSED_{referral_code}
         const userRefCode = referralMap.get(clip.user_id);
         const hasOwnership = userRefCode
-          ? description.includes(`#iabaf_${userRefCode}`.toLowerCase())
+          ? description.includes(`#iamblessed_${userRefCode}`.toLowerCase())
           : false;
 
         // Update view count

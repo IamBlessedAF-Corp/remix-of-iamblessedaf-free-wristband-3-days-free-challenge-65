@@ -118,7 +118,7 @@ Deno.serve(async (req) => {
       // ── Ownership code check ──
       let ownershipVerified = false;
       if (referral_code) {
-        const ownershipTag = `#iabaf_${referral_code}`.toLowerCase();
+        const ownershipTag = `#iamblessed_${referral_code}`.toLowerCase();
         ownershipVerified =
           description.includes(ownershipTag) || title.includes(ownershipTag);
       }
@@ -182,7 +182,7 @@ Deno.serve(async (req) => {
 
       const failReasons: string[] = [];
       if (!hasCampaignTag) failReasons.push("Missing #3DayNeuroHackerChallenge in title or description");
-      if (!ownershipVerified) failReasons.push(`Missing #IABAF_${referral_code || "YOUR_CODE"} in description`);
+      if (!ownershipVerified) failReasons.push(`Missing #IAMBLESSED_${referral_code || "YOUR_CODE"} in description`);
 
       return new Response(
         JSON.stringify({
