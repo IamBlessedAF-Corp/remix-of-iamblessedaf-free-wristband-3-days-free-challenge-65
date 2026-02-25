@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Send, Copy, Check, Share2, Loader2, Plus } from "lucide-react";
+import { Heart, Send, Copy, Check, Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -67,19 +67,56 @@ export default function SendBlessingForm({ userId, onBlessingCreated }: Props) {
     setTimeout(() => setCopied(false), 2000);
   }, [created, toast]);
 
-  const shareLink = useCallback(async () => {
+  const handleOneClickShare = useCallback(() => {
     if (!created) return;
-    const text = `🙏 Hey ${created.recipientName}! I just sent you a blessing. Tap this link to confirm you received it:`;
-    if (navigator.share) {
+
+    const message = `🙏 Hey ${created.recipientName}! I just sent you a blessing. Tap this link to confirm you received it: ${created.confirmUrl}`;
+    const waWebUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    const waAppUrl = `whatsapp://send?text=${encodeURIComponent(message)}`;
+    const smsUrl = `sms:?&body=${encodeURIComponent(message)}`;
+
+    const isPreviewIframe = window.self !== window.top;
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isPreviewIframe) {
       try {
-        await navigator.share({ title: "You've been blessed!", text, url: created.confirmUrl });
+        if (window.top && window.top !== window) {
+          window.top.location.href = waWebUrl;
+          return;
+        }
       } catch {
-        copyLink();
+        // Cross-origin frame access can fail in some browsers.
       }
-    } else {
-      copyLink();
+
+      const popup = window.open(waWebUrl, "_blank", "noopener,noreferrer");
+      if (!popup) {
+        window.location.href = smsUrl;
+      }
+      return;
     }
-  }, [created, copyLink]);
+
+    if (!isMobile) {
+      const popup = window.open(waWebUrl, "_blank", "noopener,noreferrer");
+      if (!popup) {
+        window.location.href = waWebUrl;
+      }
+      return;
+    }
+
+    let appOpened = false;
+    const onVisibilityChange = () => {
+      if (document.hidden) appOpened = true;
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange, { once: true });
+    window.location.href = waAppUrl;
+
+    window.setTimeout(() => {
+      if (!appOpened) {
+        window.location.href = smsUrl;
+      }
+    }, 1400);
+  }, [created]);
 
   const resetForm = () => {
     setCreated(null);
@@ -147,22 +184,13 @@ export default function SendBlessingForm({ userId, onBlessingCreated }: Props) {
             </div>
 
             <div className="flex flex-col gap-2">
-              <a
-                href={created ? `https://wa.me/?text=${encodeURIComponent(`🙏 Hey ${created.recipientName}! I just sent you a blessing. Tap this link to confirm you received it: ${created.confirmUrl}`)}` : "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 w-full rounded-md text-sm font-medium h-10 px-4 py-2 bg-[hsl(142,70%,49%)] hover:bg-[hsl(142,70%,42%)] text-white transition-colors"
-              >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.613.613l4.458-1.495A11.932 11.932 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.336 0-4.512-.767-6.262-2.064l-.438-.334-2.655.89.89-2.655-.334-.438A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-                Send via WhatsApp
-              </a>
-              <a
-                href={created ? `sms:?&body=${encodeURIComponent(`🙏 Hey ${created.recipientName}! I just sent you a blessing. Tap this link to confirm you received it: ${created.confirmUrl}`)}` : "#"}
-                className="inline-flex items-center justify-center gap-2 w-full rounded-md text-sm font-medium h-10 px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
+              <Button onClick={handleOneClickShare} className="w-full gap-2">
                 <Send className="w-4 h-4" />
-                Send via Text Message
-              </a>
+                Send now (WhatsApp → SMS fallback)
+              </Button>
+              <p className="text-[11px] text-muted-foreground text-center">
+                If WhatsApp isn't available, your phone will open a regular text message with the same pre-filled message.
+              </p>
               <Button onClick={copyLink} variant="ghost" size="sm" className="w-full gap-2 text-muted-foreground">
                 {copied ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
                 {copied ? "Copied!" : "Copy Link"}
