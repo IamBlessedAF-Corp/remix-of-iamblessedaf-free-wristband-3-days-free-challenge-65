@@ -95,7 +95,7 @@ describe("generateShortCode", () => {
  */
 function generateReferralCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let result = "BLESSED";
+  let result = "IAMBLESSED";
   for (let i = 0; i < 4; i++) {
     result += chars[Math.floor(Math.random() * chars.length)];
   }
@@ -103,18 +103,18 @@ function generateReferralCode(): string {
 }
 
 describe("generateReferralCode", () => {
-  it("always starts with BLESSED", () => {
+  it("always starts with IAMBLESSED", () => {
     for (let i = 0; i < 20; i++) {
-      expect(generateReferralCode()).toMatch(/^BLESSED/);
+      expect(generateReferralCode()).toMatch(/^IAMBLESSED/);
     }
   });
 
-  it("has total length of 11 (BLESSED + 4 chars)", () => {
-    expect(generateReferralCode()).toHaveLength(11);
+  it("has total length of 14 (IAMBLESSED + 4 chars)", () => {
+    expect(generateReferralCode()).toHaveLength(14);
   });
 
   it("only uses uppercase chars and digits (no ambiguous chars)", () => {
-    const pattern = /^BLESSED[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}$/;
+    const pattern = /^IAMBLESSED[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}$/;
     for (let i = 0; i < 20; i++) {
       expect(generateReferralCode()).toMatch(pattern);
     }

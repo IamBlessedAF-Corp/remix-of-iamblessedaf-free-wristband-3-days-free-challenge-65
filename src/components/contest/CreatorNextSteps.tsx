@@ -130,7 +130,7 @@ export function CreatorNextSteps() {
 
   const generateReferralCode = () => {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let code = "BLESSED";
+    let code = "IAMBLESSED";
     for (let i = 0; i < 4; i++) {
       code += chars.charAt(Math.floor(Math.random() * chars.length));
     }

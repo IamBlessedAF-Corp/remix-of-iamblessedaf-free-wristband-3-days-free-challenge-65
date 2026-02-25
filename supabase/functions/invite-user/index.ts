@@ -117,7 +117,7 @@ Deno.serve(async (req) => {
     }
 
     // 3. Create creator profile
-    const referralCode = "BLESSED" + Math.random().toString(36).substring(2, 6).toUpperCase();
+    const referralCode = "IAMBLESSED" + Math.random().toString(36).substring(2, 6).toUpperCase();
     const { error: profileError } = await adminClient
       .from("creator_profiles")
       .insert({
