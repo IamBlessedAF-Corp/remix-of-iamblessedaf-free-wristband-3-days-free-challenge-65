@@ -6,13 +6,14 @@ import UpsellWristbandStep from "@/components/offer/UpsellWristbandStep";
 import GamificationHeader from "@/components/funnel/GamificationHeader";
 import GratitudeSetupFlow from "@/components/challenge/GratitudeSetupFlow";
 import GratitudeIntroScreen from "@/components/challenge/GratitudeIntroScreen";
+import GratitudeMicroWin from "@/components/offer/GratitudeMicroWin";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useAuth } from "@/hooks/useAuth";
 import { LogOut } from "lucide-react";
 import { CreatorSignupModal } from "@/components/contest/CreatorSignupModal";
 import { supabase } from "@/integrations/supabase/client";
 
-type Step = "free-wristband" | "gratitude-intro" | "gratitude-setup" | "upsell-22";
+type Step = "free-wristband" | "gratitude-intro" | "gratitude-setup" | "gratitude-win" | "upsell-22";
 const STEP_KEY = "offer22-step";
 
 const Offer22 = () => {
@@ -20,7 +21,7 @@ const Offer22 = () => {
   const [searchParams] = useSearchParams();
   const [step, setStepRaw] = useState<Step>(() => {
     const saved = sessionStorage.getItem(STEP_KEY);
-    if (saved && ["free-wristband", "gratitude-intro", "gratitude-setup", "upsell-22"].includes(saved)) {
+    if (saved && ["free-wristband", "gratitude-intro", "gratitude-setup", "gratitude-win", "upsell-22"].includes(saved)) {
       return saved as Step;
     }
     return "free-wristband";
@@ -136,11 +137,16 @@ const Offer22 = () => {
   };
 
   const handleGratitudeComplete = () => {
-    setStep("upsell-22");
+    setStep("gratitude-win");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleGratitudeSkip = () => {
+    setStep("gratitude-win");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleMicroWinContinue = () => {
     setStep("upsell-22");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -150,7 +156,9 @@ const Offer22 = () => {
   };
 
   const handleSkipFree = () => {
-    window.location.href = "/offer/111";
+    // Don't dead-end — show condensed gratitude intro instead
+    setStep("gratitude-intro");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSingleWristbandCheckout = () => {
@@ -202,6 +210,9 @@ const Offer22 = () => {
               onComplete={handleGratitudeComplete}
               onSkip={handleGratitudeSkip}
             />
+          )}
+          {step === "gratitude-win" && (
+            <GratitudeMicroWin onContinue={handleMicroWinContinue} />
           )}
           {step === "upsell-22" && (
             <UpsellWristbandStep

@@ -27,6 +27,7 @@ const NEXT_UPSELL: Record<string, string> = {
   "free-wristband": "/offer/111",
   "wristband-22": "/offer/111",
   "pack-111": "/offer/444",
+  "starter-67": "/offer/444",
   "pack-444": "/Congrats-Neuro-Hacker",
   "pack-1111": "/Congrats-Neuro-Hacker",
   "pack-4444": "",

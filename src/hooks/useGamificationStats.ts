@@ -9,6 +9,7 @@ export type OfferTier =
   | "free-wristband"
   | "wristband-22"
   | "pack-111"
+  | "starter-67"
   | "pack-444"
   | "pack-1111"
   | "pack-4444"
@@ -27,6 +28,7 @@ export const TIER_REWARDS: Record<OfferTier, TierReward> = {
   "free-wristband": { coins: 10, hearts: 5, meals: 0, wristbands: 1, friends: 0, streak: false },
   "wristband-22":   { coins: 50, hearts: 30, meals: 22, wristbands: 3, friends: 0, streak: false },
   "pack-111":       { coins: 111, hearts: 80, meals: 11, wristbands: 3, friends: 1, streak: true },
+  "starter-67":     { coins: 67, hearts: 50, meals: 11, wristbands: 1, friends: 1, streak: true },
   "pack-444":       { coins: 444, hearts: 250, meals: 1111, wristbands: 14, friends: 3, streak: true },
   "pack-1111":      { coins: 1111, hearts: 700, meals: 11111, wristbands: 111, friends: 11, streak: true },
   "pack-4444":      { coins: 4444, hearts: 3000, meals: 44444, wristbands: 444, friends: 44, streak: true },
