@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Repeat, ArrowRight, Check, Sparkles } from "lucide-react";
+import { X, ArrowRight, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
 
@@ -70,11 +70,11 @@ const DownsellModal = ({ open, onClose, onAccept, onDecline, onTrack }: Downsell
                 transition={{ delay: 0.2 }}
               >
                 <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-2">
-                  Wait — before you go...
+                  Wait — one last thing...
                 </p>
                 <h2 className="text-xl md:text-2xl font-bold text-foreground leading-tight">
-                  Not ready for the full pack?<br />
-                  Try <span className="text-primary">$11/mo</span> instead.
+                  What if you could start with{" "}
+                  <span className="text-primary">just 1 shirt + 1 wristband</span>?
                 </h2>
               </motion.div>
             </div>
@@ -82,27 +82,27 @@ const DownsellModal = ({ open, onClose, onAccept, onDecline, onTrack }: Downsell
             {/* Content */}
             <div className="px-6 pb-6 space-y-4">
               <p className="text-sm text-muted-foreground text-center">
-                Keep the brain rewire going for less than a coffee/day. Cancel anytime — no commitment.
+                One-time payment. No subscription. Get the core gratitude experience and see the results first.
               </p>
 
               {/* Price */}
               <div className="text-center">
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-bold text-foreground">$11</span>
-                  <span className="text-lg text-muted-foreground">/month</span>
+                <div className="flex items-baseline justify-center gap-2">
+                  <span className="text-lg text-muted-foreground line-through">$111</span>
+                  <span className="text-4xl font-bold text-foreground">$67</span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  That's $0.36/day — ROI: 27× happier, every single day.
+                  🔥 40% OFF — One-time payment. Zero risk. 30-day guarantee.
                 </p>
               </div>
 
               {/* Quick benefits */}
               <div className="space-y-2">
                 {[
-                  "Premium daily gratitude prompts",
-                  "Private community of blessing champions",
-                  "Early access to drops & challenges",
-                  "Monthly exclusive challenges with prizes",
+                  "1× Black IamBlessedAF Shirt",
+                  "1× Neuro-Hacker Wristband",
+                  "1× Custom Friend Shirt with your message",
+                  "11 meals donated in your honor",
                 ].map((benefit, i) => (
                   <motion.div
                     key={i}
@@ -122,8 +122,8 @@ const DownsellModal = ({ open, onClose, onAccept, onDecline, onTrack }: Downsell
                 onClick={handleAccept}
                 className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow transition-all duration-300 rounded-xl"
               >
-                <Repeat className="w-5 h-5 mr-2" />
-                Yes! Lock In $11/mo
+                <Sparkles className="w-5 h-5 mr-2" />
+                YES! Grab My Starter Pack — $67
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
 
@@ -131,11 +131,11 @@ const DownsellModal = ({ open, onClose, onAccept, onDecline, onTrack }: Downsell
               <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <Check className="w-3 h-3 text-primary" />
-                  Cancel anytime
+                  One-time payment
                 </span>
                 <span className="flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-primary" />
-                  Instant access
+                  <Check className="w-3 h-3 text-primary" />
+                  30-day guarantee
                 </span>
               </div>
 
