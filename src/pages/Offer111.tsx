@@ -3,7 +3,7 @@ import { useExitIntent } from "@/hooks/useExitIntent";
 import { useExitIntentTracking } from "@/hooks/useExitIntentTracking";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Crown, ArrowRight, Heart } from "lucide-react";
+import { Crown, ArrowRight, Heart, ShieldCheck, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ResearchList from "@/components/offer/ResearchList";
 import hawkinsScale from "@/assets/hawkins-scale.jpg";
@@ -26,7 +26,10 @@ import AchievementUnlockToast from "@/components/gamification/AchievementUnlockT
 import { useAchievements } from "@/hooks/useAchievements";
 import DownsellModal from "@/components/offer/DownsellModal";
 import ShopifyStyleCart from "@/components/offer/ShopifyStyleCart";
+import TestimonialsSection from "@/components/offer/TestimonialsSection";
 import { supabase } from "@/integrations/supabase/client";
+import { useUrgencyStock } from "@/hooks/useUrgencyStock";
+import { useMovementCount } from "@/hooks/useMovementCount";
 
 const Offer111 = () => {
   const [showDownsell, setShowDownsell] = useState(false);
@@ -36,9 +39,10 @@ const Offer111 = () => {
   const { startCheckout, loading } = useStripeCheckout();
   const { track } = useExitIntentTracking("offer-111");
   const { newlyUnlocked, dismissNewlyUnlocked } = useAchievements();
+  const { remaining } = useUrgencyStock(1111, 91);
+  const { displayCount } = useMovementCount();
 
   // Exit-intent: trigger downsell + show urgency banners when user tries to leave
-  // Show banners on exit intent OR after 3 minutes
   useExitIntent(() => {
     setShowDownsell(true);
     setShowExitBanners(true);
@@ -48,13 +52,13 @@ const Offer111 = () => {
     delayMs: 8000,
   });
 
-  // Also trigger banners after 3 minutes on page
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowExitBanners(true);
-    }, 180_000); // 3 minutes
+    }, 180_000);
     return () => clearTimeout(timer);
   }, []);
+
   const urlFriend = searchParams.get("friend") || "";
   const [friendName, setFriendName] = useState(() => {
     const stored = localStorage.getItem("friendShirtName") || "";
@@ -63,7 +67,6 @@ const Offer111 = () => {
     return name;
   });
 
-  // Also look up sender name from referral code (like Offer22 does)
   const [senderName, setSenderName] = useState("");
   useEffect(() => {
     const refCode = sessionStorage.getItem("referral_code") || searchParams.get("ref") || "";
@@ -78,7 +81,6 @@ const Offer111 = () => {
       });
   }, [searchParams]);
 
-  // Listen for localStorage changes from ProductSections/ShirtCustomizer
   useEffect(() => {
     const check = () => {
       const stored = localStorage.getItem("friendShirtName") || "";
@@ -94,6 +96,17 @@ const Offer111 = () => {
   const handleCheckout = () => {
     startCheckout("pack-111");
   };
+
+  // ═══ 3 CTA VARIANTS (Benefit → Social Proof → FOMO) ═══
+  const ctaBenefit = friendName
+    ? `YES! Claim My FREE Custom Shirt for ${friendName} NOW!`
+    : "YES! Claim My FREE Custom Shirt NOW!";
+
+  const ctaSocialProof = `🔥 Join ${displayCount.toLocaleString()}+ People — Only ${remaining} Packs Left!`;
+
+  const ctaFomo = friendName
+    ? `⏰ Last Chance — ${friendName}'s Shirt Won't Wait Forever!`
+    : "⏰ Don't Miss Out — This 77% OFF Ends Tonight!";
 
   return (
     <div className="min-h-screen bg-background">
@@ -162,19 +175,17 @@ const Offer111 = () => {
                 </p>
               </motion.div>
 
-              {/* Cart moved below 3rd CTA */}
-
-              {/* CTA before products */}
+              {/* ═══ CTA 1: BENEFIT ═══ */}
               <motion.div className="mb-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                 <p className="text-center text-3xl md:text-4xl font-black text-primary mb-2">77% OFF TODAY</p>
                 <OfferTimer />
                 {showExitBanners && <UrgencyBanner />}
                 <div className="h-3" />
-                  <Button onClick={handleCheckout} disabled={loading} className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight">
-                    {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
-                    {loading ? "Creating checkout…" : friendName ? `YES! Claim My FREE Custom Shirt for ${friendName} NOW!` : "YES! Claim My FREE Custom Shirt NOW!"}
-                    {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
-                  </Button>
+                <Button onClick={handleCheckout} disabled={loading} className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight">
+                  {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2 flex-shrink-0" />}
+                  {loading ? "Creating checkout…" : ctaBenefit}
+                  {!loading && <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />}
+                </Button>
                 <div className="flex flex-col items-center gap-1.5 mt-3 mb-1">
                   <div className="flex items-center gap-2">
                     <Heart className="w-4 h-4 text-primary fill-primary" />
@@ -182,11 +193,13 @@ const Offer111 = () => {
                   </div>
                   <p className="text-[11px] text-muted-foreground max-w-xs text-center">Honoring Huberman's Gratitude Research — donated to Tony Robbins' "1 Billion Meals Challenge"</p>
                 </div>
-                <p className="text-center text-xs text-muted-foreground mt-1">Instant Gratitude Access + Shipping within 24hrs</p>
                 <RiskReversalGuarantee />
               </motion.div>
 
               <SocialProofSection variant="story" delay={0.25} />
+
+              {/* ═══ TESTIMONIALS ═══ */}
+              <TestimonialsSection delay={0.3} />
 
               <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4">GRATITUDE PACK</p>
 
@@ -197,30 +210,7 @@ const Offer111 = () => {
                 <footer className="mt-3"><AuthorAvatar author="huberman" /></footer>
               </blockquote>
 
-              <ProductSections
-                afterWristband={
-                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
-                    <div className="text-center mb-6"><DiscountBanner /></div>
-                    <OfferTimer />
-                    {showExitBanners && <UrgencyBanner />}
-                    <div className="h-3" />
-                    <Button onClick={handleCheckout} disabled={loading} className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight">
-                      {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
-                      {loading ? "Creating checkout…" : friendName ? `YES! Claim My FREE Custom Shirt for ${friendName} NOW!` : "YES! Claim My FREE Custom Shirt NOW!"}
-                      {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
-                    </Button>
-                    <div className="flex flex-col items-center gap-1.5 mt-3 mb-1">
-                      <div className="flex items-center gap-2">
-                        <Heart className="w-4 h-4 text-primary fill-primary" />
-                        <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated in Honor of Neuroscience</p>
-                      </div>
-                      <p className="text-[11px] text-muted-foreground max-w-xs text-center">Honoring Huberman's Gratitude Research — donated to Tony Robbins' "1 Billion Meals Challenge"</p>
-                    </div>
-                    <p className="text-center text-xs text-muted-foreground mt-1">Instant Gratitude Access + Shipping within 24hrs</p>
-                    <RiskReversalGuarantee />
-                  </motion.div>
-                }
-              />
+              <ProductSections />
 
               {/* Science Section */}
               <motion.div className="text-center mt-12 mb-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 1.1 }}>
@@ -244,67 +234,38 @@ const Offer111 = () => {
                 </motion.div>
               </motion.div>
 
-              {/* Discount + Second CTA */}
+              {/* ═══ CTA 2: SOCIAL PROOF + SCARCITY ═══ */}
               <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4 }}>
-                <div className="text-center mb-6"><DiscountBanner /></div>
-              </motion.div>
-
-              <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.45 }}>
+                <div className="text-center mb-4"><DiscountBanner /></div>
                 <OfferTimer />
                 {showExitBanners && <UrgencyBanner />}
                 <div className="h-3" />
                 <Button onClick={handleCheckout} disabled={loading} className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight">
-                  {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
-                  {loading ? "Creating checkout…" : friendName ? `YES! Claim My FREE Custom Shirt for ${friendName} NOW!` : "YES! Claim My FREE Custom Shirt NOW!"}
-                  {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
+                  {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <ShieldCheck className="w-5 h-5 mr-2 flex-shrink-0" />}
+                  {loading ? "Creating checkout…" : ctaSocialProof}
+                  {!loading && <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />}
                 </Button>
-                <div className="flex flex-col items-center gap-1.5 mt-3 mb-1">
-                  <div className="flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-primary fill-primary" />
-                    <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated in Honor of Neuroscience</p>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground max-w-xs text-center">Honoring Huberman's Gratitude Research — donated to Tony Robbins' "1 Billion Meals Challenge"</p>
-                </div>
-                <p className="text-center text-xs text-muted-foreground mt-1">Instant Gratitude Access + Shipping within 24hrs</p>
+                <p className="text-center text-xs text-muted-foreground mt-3">
+                  🍽 11 meals donated · Free US Shipping · 30-day guarantee
+                </p>
                 <RiskReversalGuarantee />
               </motion.div>
 
               <p className="text-center text-3xl md:text-4xl font-black text-primary mb-4 mt-8">Backed by Science</p>
               <ResearchList delay={1.5} />
 
-              {/* CTA after research */}
-              <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.6 }}>
-                <OfferTimer />
-                {showExitBanners && <UrgencyBanner />}
-                <div className="h-3" />
-                <Button onClick={handleCheckout} disabled={loading} className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight">
-                  {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
-                  {loading ? "Creating checkout…" : friendName ? `YES! Claim My FREE Custom Shirt for ${friendName} NOW!` : "YES! Claim My FREE Custom Shirt NOW!"}
-                  {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
-                </Button>
-                <div className="flex flex-col items-center gap-1.5 mt-3 mb-1">
-                  <div className="flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-primary fill-primary" />
-                    <p className="text-sm font-semibold text-primary">🍽 11 Meals Donated in Honor of Neuroscience</p>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground max-w-xs text-center">Honoring Huberman's Gratitude Research — donated to Tony Robbins' "1 Billion Meals Challenge"</p>
-                </div>
-                <p className="text-center text-xs text-muted-foreground mt-1">Instant Gratitude Access + Shipping within 24hrs</p>
-                <RiskReversalGuarantee />
-              </motion.div>
-
-              {/* Shopify-style Cart — after 3rd CTA */}
+              {/* Shopify-style Cart */}
               <ShopifyStyleCart friendName={friendName} />
 
-              {/* 4th CTA — after cart breakdown */}
+              {/* ═══ CTA 3: FOMO / LOSS AVERSION ═══ */}
               <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.65 }}>
                 <OfferTimer />
                 {showExitBanners && <UrgencyBanner />}
                 <div className="h-3" />
                 <Button onClick={handleCheckout} disabled={loading} className="w-full min-h-[64px] h-auto py-3 px-4 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground btn-glow animate-pulse-glow transition-all duration-300 rounded-xl disabled:opacity-70 disabled:animate-none text-center leading-tight">
-                  {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
-                  {loading ? "Creating checkout…" : friendName ? `YES! Feed 11 People & Claim My Pack for ${friendName}!` : "YES! Feed 11 People & Claim My Pack!"}
-                  {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
+                  {loading ? <span className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Clock className="w-5 h-5 mr-2 flex-shrink-0" />}
+                  {loading ? "Creating checkout…" : ctaFomo}
+                  {!loading && <ArrowRight className="w-5 h-5 ml-2 flex-shrink-0" />}
                 </Button>
                 <div className="flex flex-col items-center gap-1.5 mt-3 mb-1">
                   <div className="flex items-center gap-2">
@@ -321,7 +282,7 @@ const Offer111 = () => {
               <ImpactCounter />
 
               {/* Trust Disclaimer */}
-              <motion.div className="mb-8 mt-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.65 }}>
+              <motion.div className="mb-8 mt-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.7 }}>
                 <div className="border border-border/50 rounded-xl p-5 space-y-3 bg-card">
                   <div className="flex items-center justify-center gap-2 text-sm font-semibold text-foreground">
                     <span>✅</span><span>30-Day Money-Back Guarantee — No questions asked</span>
@@ -340,7 +301,7 @@ const Offer111 = () => {
               <ViralShareNudge />
 
               {/* Skip Link */}
-              <motion.div className="text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.7 }}>
+              <motion.div className="text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.75 }}>
                 <a
                   href="/offer/444"
                   onClick={(e) => { e.preventDefault(); setShowDownsell(true); }}
@@ -353,15 +314,15 @@ const Offer111 = () => {
               <DownsellModal
                 open={showDownsell}
                 onClose={() => setShowDownsell(false)}
-                onAccept={() => { setShowDownsell(false); startCheckout("pack-111"); }}
+                onAccept={() => { setShowDownsell(false); startCheckout("starter-67"); }}
                 onDecline={() => { setShowDownsell(false); navigate("/Congrats-Neuro-Hacker?next=/offer/444"); }}
                 onTrack={track}
               />
             </>
 
-        {/* Achievement Unlock Toast */}
-        <AchievementUnlockToast achievement={newlyUnlocked} onDismiss={dismissNewlyUnlocked} />
-        <CrossFunnelShareNudge />
+          {/* Achievement Unlock Toast */}
+          <AchievementUnlockToast achievement={newlyUnlocked} onDismiss={dismissNewlyUnlocked} />
+          <CrossFunnelShareNudge />
         </div>
       </div>
     </div>

@@ -41,6 +41,7 @@ const PRICE_MAP: Record<string, string> = {
   "free-wristband": "price_1SyijPK7ifE56qrAXBoP2Fsk",
   "wristband-22": "price_1SyiicK7ifE56qrAQPNqivVe",
   "pack-111": "price_1SyiiiK7ifE56qrApLqTcZIc",
+  "starter-67": "price_1SyiiiK7ifE56qrApLqTcZIc", // Same product as pack-111, auto-coupon applied
   "pack-444": "price_1SyiijK7ifE56qrACsRIy82b",
   "pack-1111": "price_1SyiikK7ifE56qrAO0C5eQIT",
   "pack-4444": "price_1SyiilK7ifE56qrApkieQ2bM",
@@ -49,10 +50,15 @@ const PRICE_MAP: Record<string, string> = {
   "kickstarter-1": "price_1T0l4dK7ifE56qrAqSF3wQzh",
 };
 
+/** Tiers that auto-apply a coupon (downsell discounts) */
+const AUTO_COUPON_TIERS: Record<string, string> = {
+  "starter-67": "DOWNSELL40",
+};
+
 const SUBSCRIPTION_TIERS = new Set(["monthly-11"]);
 
 const SHIPPING_TIERS = new Set([
-  "free-wristband", "wristband-22", "pack-111", "pack-444", "pack-1111", "pack-4444",
+  "free-wristband", "wristband-22", "pack-111", "starter-67", "pack-444", "pack-1111", "pack-4444",
   "kickstarter-11", "kickstarter-1",
 ]);
 
@@ -167,9 +173,10 @@ serve(async (req) => {
       };
     }
 
-    // Validate coupon format if provided
-    if (coupon) {
-      if (typeof coupon !== "string" || coupon.length > 50) {
+    // Apply coupon: explicit coupon param OR auto-coupon for downsell tiers
+    const effectiveCoupon = coupon || AUTO_COUPON_TIERS[tier];
+    if (effectiveCoupon) {
+      if (typeof effectiveCoupon !== "string" || effectiveCoupon.length > 50) {
         return new Response(
           JSON.stringify({ error: "Invalid coupon format" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -177,9 +184,9 @@ serve(async (req) => {
       }
       delete sessionParams.allow_promotion_codes;
       if (isSubscription) {
-        sessionParams.subscription_data = { coupon };
+        sessionParams.subscription_data = { coupon: effectiveCoupon };
       } else {
-        sessionParams.discounts = [{ coupon }];
+        sessionParams.discounts = [{ coupon: effectiveCoupon }];
       }
     }
 
