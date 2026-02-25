@@ -23,5 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
+# Environment secrets
+.env
+.env.*
+!.env.example
+
 # Raw book extracts (copyrighted content - not for repo)
 docs/hormozi-kb/raw/
