@@ -125,7 +125,8 @@ const ClipSubmitModal = ({ open, onOpenChange, userId, onSubmitted, referralCode
     }
   };
 
-  const ownershipTag = referralCode ? `#IAMBLESSED_${referralCode}` : "#IAMBLESSED_YOURCODE";
+  const codeSuffix = referralCode && referralCode.length > 10 ? referralCode.slice(10) : referralCode;
+  const ownershipTag = codeSuffix ? `#IAMBLESSED_${codeSuffix}` : "#IAMBLESSED_YOURCODE";
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>

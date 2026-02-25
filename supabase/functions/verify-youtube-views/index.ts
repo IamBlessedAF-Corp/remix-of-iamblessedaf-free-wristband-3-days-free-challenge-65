@@ -112,10 +112,11 @@ Deno.serve(async (req) => {
         const hasCampaignTag = description.includes("#3dayneurohackerchallenge") || 
                                description.includes("3dayneurohackerchallenge");
 
-        // Check ownership code: #IAMBLESSED_{referral_code}
+        // Check ownership code: #IAMBLESSED_{4-char suffix}
         const userRefCode = referralMap.get(clip.user_id);
-        const hasOwnership = userRefCode
-          ? description.includes(`#iamblessed_${userRefCode}`.toLowerCase())
+        const codeSuffix = userRefCode && userRefCode.length > 10 ? userRefCode.slice(10) : userRefCode;
+        const hasOwnership = codeSuffix
+          ? description.includes(`#iamblessed_${codeSuffix}`.toLowerCase())
           : false;
 
         // Update view count

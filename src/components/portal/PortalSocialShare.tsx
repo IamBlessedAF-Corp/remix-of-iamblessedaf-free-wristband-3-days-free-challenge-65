@@ -40,7 +40,8 @@ export default function PortalSocialShare({ referralCode, displayName, open, onC
 
   const url = shortUrl || rawUrl;
 
-  const ownershipTag = `#IAMBLESSED_${referralCode}`;
+  const codeSuffix = referralCode && referralCode.length > 10 ? referralCode.slice(10) : referralCode;
+  const ownershipTag = `#IAMBLESSED_${codeSuffix}`;
 
   const PLATFORMS: PlatformConfig[] = [
     {

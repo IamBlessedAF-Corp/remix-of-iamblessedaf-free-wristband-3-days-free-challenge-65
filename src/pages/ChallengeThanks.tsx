@@ -167,7 +167,8 @@ const ChallengeThanks = () => {
   };
 
   // Short, punchy share texts optimized for each platform
-  const ownershipTag = referralCode ? `#IAMBLESSED_${referralCode}` : "";
+  const codeSuffix = referralCode && referralCode.length > 10 ? referralCode.slice(10) : referralCode;
+  const ownershipTag = codeSuffix ? `#IAMBLESSED_${codeSuffix}` : "";
   const tiktokText = `🎁 Someone is GRATEFUL for you!\nThey just sent you a FREE wristband ($11 value)\n\n✅ Waterproof nylon — wear it everywhere\n✅ Or grab all 3 colors for $22\n\n💰 PLUS: Join the FREE 3-Day Gratitude Challenge & win $1,111!\n\nClaim yours 👇\n${shareUrl}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF`;
   const instagramText = `🎁 Someone just sent you a FREE "I Am Blessed AF" Wristband!\n\nThey're grateful for YOU 🙏\n\n✅ FREE wristband ($11 value)\n✅ Waterproof nylon — daily gratitude trigger\n💰 PLUS: Join the 3-Day Challenge & win $1,111!\n\nClaim yours → ${shareUrl}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #grateful #blessed #iamblessedaf #gratitudechallenge`;
   const youtubeText = `🎁 Gift a FREE Wristband to Someone You're Grateful For!\n\nSend a FREE "I Am Blessed AF" wristband ($11 value) to someone you care about.\n\n✅ Waterproof nylon — wear it daily as a gratitude trigger\n💰 PLUS they can join the 3-Day Gratitude Challenge & win $1,111!\n\nSend the gift: ${shareUrl}\n\n#3DayNeuroHackerChallenge ${ownershipTag} #IamBlessedAF`;

@@ -27,7 +27,8 @@ export default function StoryShareTemplate({
 
   const shareUrl = `https://iamblessedaf.com/r/${referralCode}`;
 
-  const storyCaption = `🙏 Just nominated ${nominationsCount} friends for the 11:11 Gratitude Challenge!\n\n✅ ${mealsCount} meals donated\n✅ FREE wristband earned\n\nWho are YOU grateful for?\n\nJoin: ${shareUrl}\n\n#1111GratitudeChallenge #IAMBLESSED_${referralCode} #IamBlessedAF #grateful`;
+  const codeSuffix = referralCode && referralCode.length > 10 ? referralCode.slice(10) : referralCode;
+  const storyCaption = `🙏 Just nominated ${nominationsCount} friends for the 11:11 Gratitude Challenge!\n\n✅ ${mealsCount} meals donated\n✅ FREE wristband earned\n\nWho are YOU grateful for?\n\nJoin: ${shareUrl}\n\n#1111GratitudeChallenge #IAMBLESSED_${codeSuffix} #IamBlessedAF #grateful`;
 
   const handleCopyCaption = async () => {
     await navigator.clipboard.writeText(storyCaption);
