@@ -99,6 +99,20 @@ export default function AlexChat() {
     }
   }, [messages]);
 
+  // Listen for contextual "ask Alex" events from the dashboard
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.question) {
+        setOpen(true);
+        // Small delay so chat opens first
+        setTimeout(() => send(detail.question), 100);
+      }
+    };
+    window.addEventListener("alex-ask", handler);
+    return () => window.removeEventListener("alex-ask", handler);
+  }, []);
+
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
     const userMsg: Msg = { role: "user", content: text.trim() };
