@@ -1,238 +1,193 @@
-import { useState, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bot, Send, Loader2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import {
+  LayoutDashboard, Brain, Target, DollarSign, Users, Megaphone,
+  ChevronLeft, Menu, ChevronDown, ChevronRight, Zap, BookOpen,
+  BarChart3, Lightbulb, Layers, Settings,
+} from "lucide-react";
+import AlexChat from "@/components/alex/AlexChat";
 
-type Msg = { role: "user" | "assistant"; content: string };
+// ─── Tab IDs ───
+const ALL_TABS = [
+  "dashboard", "offers", "leads", "pricing", "hiring", "operations", "scaling",
+] as const;
+type TabId = typeof ALL_TABS[number];
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/alex-chat`;
+// ─── Sidebar structure ───
+const SIDEBAR_MENU = [
+  { id: "dashboard" as TabId, label: "Co-Founder Dashboard", icon: LayoutDashboard },
+  { id: "offers" as TabId, label: "Offers & Value", icon: Lightbulb },
+  { id: "leads" as TabId, label: "Lead Generation", icon: Megaphone },
+  { id: "pricing" as TabId, label: "Pricing & Revenue", icon: DollarSign },
+  { id: "hiring" as TabId, label: "Hiring & Team", icon: Users },
+  { id: "operations" as TabId, label: "Operations & EOS", icon: Settings },
+  { id: "scaling" as TabId, label: "Scaling Playbook", icon: Zap },
+];
 
-async function streamChat({
-  messages,
-  onDelta,
-  onDone,
-  onError,
-}: {
-  messages: Msg[];
-  onDelta: (text: string) => void;
-  onDone: () => void;
-  onError: (err: string) => void;
-}) {
-  const resp = await fetch(CHAT_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+// ─── Placeholder content per tab ───
+function TabContent({ tab }: { tab: TabId }) {
+  const content: Record<TabId, { title: string; subtitle: string; icon: any; items: string[] }> = {
+    dashboard: {
+      title: "Co-Founder Command Center",
+      subtitle: "Tu hub estratégico con Alex Hormozi AI",
+      icon: LayoutDashboard,
+      items: [
+        "📊 Value Equation Score — mide tu offer actual",
+        "🎯 Core Four Status — tu mix de lead generation",
+        "💰 Money Model Stack — attraction → core → upsell → continuity",
+        "👥 T-E-A-M Score — calidad de tu equipo",
+        "⚡ Abre el chat de Alex (botón abajo-derecha) para consejo en tiempo real",
+      ],
     },
-    body: JSON.stringify({ messages }),
-  });
+    offers: {
+      title: "Grand Slam Offer Framework",
+      subtitle: "Value = (Dream Outcome × Perceived Likelihood) / (Time Delay × Effort)",
+      icon: Lightbulb,
+      items: [
+        "1. Identifica el Dream Outcome de tu cliente ideal",
+        "2. Lista TODOS los problemas entre el cliente y el resultado",
+        "3. Crea soluciones para cada problema",
+        "4. Trim & Stack — elimina lo débil, apila lo fuerte",
+        "5. Enhancers: Scarcity + Urgency + Bonuses + Guarantees + Naming (MAGIC)",
+      ],
+    },
+    leads: {
+      title: "Core Four — Lead Generation",
+      subtitle: "Scale: More → Better → New",
+      icon: Megaphone,
+      items: [
+        "🤝 Warm Outreach (1-to-1, warm) — 'Lista de 100 personas'",
+        "📱 Free Content (1-to-many, warm) — 'Regala secretos, vende implementación'",
+        "📧 Cold Outreach (1-to-1, cold) — '100 cold outreach por día'",
+        "💸 Paid Ads (1-to-many, cold) — 'Creative > Targeting'",
+      ],
+    },
+    pricing: {
+      title: "Pricing & Money Model",
+      subtitle: "Never compete on price — compete on VALUE",
+      icon: DollarSign,
+      items: [
+        "Attraction Offer: FREE/Low → genera leads",
+        "Core Offer: $X,XXX → tu producto principal",
+        "Upsell: +$X,XXX → más valor, más revenue",
+        "Downsell: $XXX → captura los que no compran core",
+        "Continuity: $XX/mo → recurring revenue",
+        "Metrics: LTGP, CAC, LTV:CAC (mín 3:1)",
+      ],
+    },
+    hiring: {
+      title: "Hiring & Team (T-E-A-M)",
+      subtitle: "Train → Equip → Assess → Mentor",
+      icon: Users,
+      items: [
+        "Hiring Barbell: contrata junior barato O senior caro, nunca el medio",
+        "T — Train: SOPs claros para cada puesto",
+        "E — Equip: herramientas y recursos necesarios",
+        "A — Assess: scorecards semanales con KPIs",
+        "M — Mentor: 1-on-1s semanales de 15 min",
+      ],
+    },
+    operations: {
+      title: "Operations & EOS",
+      subtitle: "Entrepreneurial Operating System",
+      icon: Settings,
+      items: [
+        "📋 Scorecard — KPIs semanales por departamento",
+        "🪨 Rocks — 3 prioridades por trimestre",
+        "📞 L10 Meeting — Level 10 meetings semanales",
+        "📝 SOPs — documenta todo proceso repetible",
+        "🎯 Accountability Chart — quién owns qué",
+      ],
+    },
+    scaling: {
+      title: "Scaling Playbook",
+      subtitle: "¿Why not 10x?",
+      icon: Zap,
+      items: [
+        "3DS: Do it yourself → Do it with a team → Do it with systems",
+        "Lead Getters: Referrals → Employees → Agencies → Affiliates",
+        "K-Factor: cada cliente debe traer >1 cliente nuevo",
+        "Premium pricing = premium clients = premium results",
+        "Constraint Theory: encuentra el bottleneck y elimínalo",
+      ],
+    },
+  };
 
-  if (!resp.ok || !resp.body) {
-    if (resp.status === 429) { onError("Rate limit — espera un momento."); return; }
-    if (resp.status === 402) { onError("Créditos agotados."); return; }
-    onError("Error al conectar con Alex.");
-    return;
-  }
+  const c = content[tab];
+  const Icon = c.icon;
 
-  const reader = resp.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let done = false;
-
-  while (!done) {
-    const { done: readerDone, value } = await reader.read();
-    if (readerDone) break;
-    buffer += decoder.decode(value, { stream: true });
-
-    let idx: number;
-    while ((idx = buffer.indexOf("\n")) !== -1) {
-      let line = buffer.slice(0, idx);
-      buffer = buffer.slice(idx + 1);
-      if (line.endsWith("\r")) line = line.slice(0, -1);
-      if (line.startsWith(":") || line.trim() === "") continue;
-      if (!line.startsWith("data: ")) continue;
-      const json = line.slice(6).trim();
-      if (json === "[DONE]") { done = true; break; }
-      try {
-        const parsed = JSON.parse(json);
-        const content = parsed.choices?.[0]?.delta?.content;
-        if (content) onDelta(content);
-      } catch {
-        buffer = line + "\n" + buffer;
-        break;
-      }
-    }
-  }
-
-  if (buffer.trim()) {
-    for (let raw of buffer.split("\n")) {
-      if (!raw) continue;
-      if (raw.endsWith("\r")) raw = raw.slice(0, -1);
-      if (!raw.startsWith("data: ")) continue;
-      const json = raw.slice(6).trim();
-      if (json === "[DONE]") continue;
-      try {
-        const p = JSON.parse(json);
-        const c = p.choices?.[0]?.delta?.content;
-        if (c) onDelta(c);
-      } catch {}
-    }
-  }
-  onDone();
+  return (
+    <div className="max-w-4xl mx-auto p-6 space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+          <Icon className="w-5 h-5 text-primary" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold text-foreground">{c.title}</h1>
+          <p className="text-xs text-muted-foreground">{c.subtitle}</p>
+        </div>
+      </div>
+      <div className="grid gap-3">
+        {c.items.map((item, i) => (
+          <div key={i} className="bg-card border border-border/50 rounded-xl px-4 py-3 text-sm text-foreground">
+            {item}
+          </div>
+        ))}
+      </div>
+      {tab === "dashboard" && (
+        <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 text-sm text-muted-foreground">
+          💡 <strong className="text-foreground">Tip:</strong> Haz click en el botón de Alex (abajo a la derecha) para preguntarle cualquier cosa sobre tu negocio en tiempo real.
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function Alex() {
-  const [messages, setMessages] = useState<Msg[]>([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  const send = async (text: string) => {
-    if (!text.trim() || loading) return;
-    const userMsg: Msg = { role: "user", content: text.trim() };
-    const newMessages = [...messages, userMsg];
-    setMessages(newMessages);
-    setInput("");
-    setLoading(true);
-
-    let assistantSoFar = "";
-    const upsert = (chunk: string) => {
-      assistantSoFar += chunk;
-      setMessages((prev) => {
-        const last = prev[prev.length - 1];
-        if (last?.role === "assistant") {
-          return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantSoFar } : m));
-        }
-        return [...prev, { role: "assistant", content: assistantSoFar }];
-      });
-    };
-
-    try {
-      await streamChat({
-        messages: newMessages,
-        onDelta: upsert,
-        onDone: () => setLoading(false),
-        onError: (err) => {
-          setMessages((prev) => [...prev, { role: "assistant", content: `❌ ${err}` }]);
-          setLoading(false);
-        },
-      });
-    } catch {
-      setMessages((prev) => [...prev, { role: "assistant", content: "❌ Error de conexión." }]);
-      setLoading(false);
-    }
-  };
+  const [activeTab, setActiveTab] = useState<TabId>("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <div className="flex items-center gap-3 px-6 py-4 bg-primary text-primary-foreground border-b border-border">
-        <Bot className="w-7 h-7" />
-        <div>
-          <h1 className="text-lg font-bold">Alex Hormozi</h1>
-          <p className="text-xs opacity-80">Co-Founder AI — Offers, Leads, Pricing, Operations</p>
+    <div className="min-h-screen bg-background flex w-full">
+      {/* Sidebar */}
+      <aside className={cn(
+        "bg-card border-r border-border/50 flex flex-col transition-all duration-200 shrink-0 sticky top-0 h-screen overflow-y-auto",
+        sidebarOpen ? "w-64" : "w-14"
+      )}>
+        <div className="flex items-center gap-2 px-3 py-4 border-b border-border/30">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-muted-foreground hover:text-foreground transition-colors">
+            {sidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </button>
+          {sidebarOpen && <span className="text-sm font-bold text-foreground truncate flex-1">Alex Hormozi AI</span>}
         </div>
-      </div>
 
-      {/* Messages */}
-      <ScrollArea className="flex-1">
-        <div ref={scrollRef} className="max-w-3xl mx-auto p-6 space-y-4">
-          {messages.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center py-20 space-y-4"
+        <nav className="flex-1 py-2 px-1.5 space-y-0.5">
+          {SIDEBAR_MENU.map((entry) => (
+            <button
+              key={entry.id}
+              onClick={() => setActiveTab(entry.id)}
+              title={entry.label}
+              className={cn(
+                "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors text-left",
+                activeTab === entry.id
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+              )}
             >
-              <Bot className="w-16 h-16 mx-auto text-primary/30" />
-              <h2 className="text-xl font-bold text-foreground">Soy Alex, tu co-founder AI</h2>
-              <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                Pregúntame sobre offers, leads, pricing, hiring, operations o cualquier estrategia de crecimiento.
-              </p>
-              <div className="flex flex-wrap gap-2 justify-center pt-4">
-                {[
-                  "¿Cómo mejoro mi offer?",
-                  "¿Cómo genero más leads?",
-                  "¿Cómo subo mis precios?",
-                  "¿Cómo escalo sin contratar?",
-                  "¿Cómo aumento mi K-factor?",
-                ].map((q) => (
-                  <button
-                    key={q}
-                    onClick={() => send(q)}
-                    className="text-xs border border-border rounded-full px-4 py-2 hover:bg-muted transition-colors text-foreground"
-                  >
-                    {q}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-          {messages.map((msg, i) => (
-            <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm ${
-                  msg.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-foreground"
-                }`}
-              >
-                {msg.role === "assistant" ? (
-                  <div className="prose prose-sm dark:prose-invert max-w-none break-words overflow-hidden [&_p]:my-1 [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0.5 [&_strong]:font-bold [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_pre]:overflow-x-auto [&_pre]:text-xs [&_code]:text-xs [&_code]:break-all">
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
-                  </div>
-                ) : (
-                  <span className="whitespace-pre-wrap">{msg.content}</span>
-                )}
-              </div>
-            </div>
+              <entry.icon className="w-4 h-4 shrink-0" />
+              {sidebarOpen && <span className="truncate">{entry.label}</span>}
+            </button>
           ))}
-          {loading && messages[messages.length - 1]?.role !== "assistant" && (
-            <div className="flex justify-start">
-              <div className="bg-muted rounded-xl px-3 py-2 flex items-center gap-2">
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span className="text-xs text-muted-foreground">Alex está pensando...</span>
-              </div>
-            </div>
-          )}
-        </div>
-      </ScrollArea>
+        </nav>
+      </aside>
 
-      {/* Input */}
-      <div className="border-t border-border bg-card">
-        <div className="max-w-3xl mx-auto flex items-end gap-3 p-4">
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Pregúntale a Alex..."
-            rows={1}
-            className="flex-1 min-h-[44px] text-sm resize-none"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                send(input);
-              }
-            }}
-            disabled={loading}
-          />
-          <Button
-            size="icon"
-            className="h-10 w-10 flex-shrink-0"
-            onClick={() => send(input)}
-            disabled={!input.trim() || loading}
-          >
-            <Send className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
+      {/* Main content */}
+      <main className="flex-1 overflow-auto">
+        <TabContent tab={activeTab} />
+      </main>
+
+      {/* Floating Alex Chat */}
+      <AlexChat />
     </div>
   );
 }
