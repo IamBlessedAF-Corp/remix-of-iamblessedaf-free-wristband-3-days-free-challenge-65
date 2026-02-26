@@ -51,6 +51,7 @@ const DiamondAmbassador = lazy(() => import("./pages/DiamondAmbassador"));
 const UnsubscribeDigest = lazy(() => import("./pages/UnsubscribeDigest"));
 const CongratsNeuroHacker = lazy(() => import("./pages/CongratsNeuroHacker"));
 const BlockPreview = lazy(() => import("./pages/BlockPreview"));
+const CoFounder = lazy(() => import("./pages/CoFounder"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -98,6 +99,9 @@ const App = () => (
             <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
             <Route path="/board" element={<Navigate to="/admin" replace />} />
             <Route path="/roadmap" element={<Navigate to="/admin" replace />} />
+
+            {/* ═══ Co-Founder EOS Hub ═══ */}
+            <Route path="/co-founder" element={<CoFounder />} />
 
             <Route path="/portal" element={<Portal />} />
             <Route path="/impact" element={<Impact />} />
