@@ -44,10 +44,14 @@ const Offer22 = () => {
     }
   }, [searchParams]);
 
-  // Authenticated users: write referral attribution + redirect if funnel completed
+  // Authenticated users: write referral attribution + redirect with safe fallback
   useEffect(() => {
-    if (!authLoading && user) {
-      const checkFunnelStatus = async () => {
+    if (authLoading || !user) return;
+
+    let cancelled = false;
+
+    const checkFunnelStatus = async () => {
+      try {
         const { data } = await supabase
           .from("creator_profiles")
           .select("congrats_completed, referred_by_code")
@@ -77,15 +81,29 @@ const Offer22 = () => {
           localStorage.removeItem("referral_code");
         }
 
+        if (cancelled) return;
+
         // Authenticated user → completed funnel goes to affiliate, everyone else to portal
         if (data?.congrats_completed) {
           navigate("/affiliate-portal", { replace: true });
         } else {
           navigate("/portal", { replace: true });
         }
-      };
-      checkFunnelStatus();
-    }
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.error("Offer22 auth redirect failed:", error);
+        }
+        if (!cancelled) {
+          navigate("/portal", { replace: true });
+        }
+      }
+    };
+
+    checkFunnelStatus();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user, authLoading, navigate]);
 
   usePageMeta({
