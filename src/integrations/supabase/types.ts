@@ -773,6 +773,45 @@ export type Database = {
         }
         Relationships: []
       }
+      challenge_friends: {
+        Row: {
+          created_at: string
+          friend_email: string | null
+          friend_name: string | null
+          friend_phone: string | null
+          friend_user_id: string | null
+          id: string
+          invite_code: string
+          inviter_id: string
+          joined_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          friend_email?: string | null
+          friend_name?: string | null
+          friend_phone?: string | null
+          friend_user_id?: string | null
+          id?: string
+          invite_code: string
+          inviter_id: string
+          joined_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          friend_email?: string | null
+          friend_name?: string | null
+          friend_phone?: string | null
+          friend_user_id?: string | null
+          id?: string
+          invite_code?: string
+          inviter_id?: string
+          joined_at?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       challenge_participants: {
         Row: {
           challenge_start_date: string | null
@@ -1371,6 +1410,96 @@ export type Database = {
           sort_order?: number
           updated_at?: string
           used_in?: string[]
+        }
+        Relationships: []
+      }
+      joy_invites: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          inviter_id: string
+          is_used: boolean
+          method: string
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          inviter_id: string
+          is_used?: boolean
+          method?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          inviter_id?: string
+          is_used?: boolean
+          method?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
+      keys_status: {
+        Row: {
+          created_at: string
+          id: string
+          key0_at: string | null
+          key1_at: string | null
+          key1_referrer_id: string | null
+          key2_at: string | null
+          key2_proof_type: string | null
+          key2_proof_url: string | null
+          key3_at: string | null
+          key3_friends_accepted: number
+          key3_friends_invited: number
+          master_key_at: string | null
+          shipping_credit_applied: boolean
+          timer_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key0_at?: string | null
+          key1_at?: string | null
+          key1_referrer_id?: string | null
+          key2_at?: string | null
+          key2_proof_type?: string | null
+          key2_proof_url?: string | null
+          key3_at?: string | null
+          key3_friends_accepted?: number
+          key3_friends_invited?: number
+          master_key_at?: string | null
+          shipping_credit_applied?: boolean
+          timer_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key0_at?: string | null
+          key1_at?: string | null
+          key1_referrer_id?: string | null
+          key2_at?: string | null
+          key2_proof_type?: string | null
+          key2_proof_url?: string | null
+          key3_at?: string | null
+          key3_friends_accepted?: number
+          key3_friends_invited?: number
+          master_key_at?: string | null
+          shipping_credit_applied?: boolean
+          timer_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -2220,6 +2349,36 @@ export type Database = {
         Returns: boolean
       }
       increment_click_count: { Args: { p_link_id: string }; Returns: undefined }
+      joy_accept_invite: {
+        Args: { p_friend_user_id: string; p_invite_code: string }
+        Returns: undefined
+      }
+      joy_activate_key0: { Args: { p_user_id: string }; Returns: undefined }
+      joy_check_master_key: { Args: { p_user_id: string }; Returns: Json }
+      joy_send_invite: {
+        Args: {
+          p_friend_email?: string
+          p_friend_name: string
+          p_friend_phone?: string
+          p_inviter_id: string
+          p_method?: string
+        }
+        Returns: Json
+      }
+      joy_unlock_key1: {
+        Args: {
+          p_clip_id?: string
+          p_platform?: string
+          p_referrer_id?: string
+          p_source?: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      joy_unlock_key2: {
+        Args: { p_proof_type: string; p_proof_url: string; p_user_id: string }
+        Returns: undefined
+      }
       log_portal_activity: {
         Args: {
           p_display_text: string
