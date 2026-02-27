@@ -15,6 +15,34 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
+    // Parse body early for unauthenticated actions
+    const body = await req.json();
+    const { action, user_id, new_password, email } = body;
+
+    // send_reset_email does NOT require admin auth
+    if (action === "send_reset_email") {
+      if (!email) {
+        return new Response(JSON.stringify({ error: "Missing email" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const resetRes = await fetch(`${supabaseUrl}/auth/v1/recover`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "apikey": anonKey },
+        body: JSON.stringify({ email }),
+      });
+      if (!resetRes.ok) {
+        const errData = await resetRes.json();
+        return new Response(JSON.stringify({ error: errData?.msg || "Failed" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ success: true, message: "Recovery email sent" }), {
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // All other actions require admin auth
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -47,8 +75,6 @@ Deno.serve(async (req) => {
         status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    const { action, user_id, new_password } = await req.json();
 
     if (action === "reset_password") {
       if (!user_id || !new_password) {
