@@ -23,6 +23,12 @@ export default function ResetPassword() {
       }
     });
 
+    // Check URL hash for recovery type
+    const hash = window.location.hash;
+    if (hash && hash.includes("type=recovery")) {
+      setReady(true);
+    }
+
     // Also check if we already have a session (user clicked the link)
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) setReady(true);
@@ -92,7 +98,7 @@ export default function ResetPassword() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center space-y-4 max-w-sm">
-          <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto" />
+          <CheckCircle className="w-12 h-12 text-primary mx-auto" />
           <h1 className="text-xl font-bold text-foreground">¡Contraseña actualizada!</h1>
           <p className="text-sm text-muted-foreground">Redirigiendo a tu dashboard…</p>
         </div>
