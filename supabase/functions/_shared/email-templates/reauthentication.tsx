@@ -20,17 +20,17 @@ interface ReauthenticationEmailProps {
 const LOGO_URL = 'https://pgvrrndmiefghksdtena.supabase.co/storage/v1/object/public/email-assets/logo.png'
 
 export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
-  <Html lang="es" dir="ltr">
+  <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Tu código de verificación — IamBlessedAF</Preview>
+    <Preview>Your verification code — IamBlessedAF</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img src={LOGO_URL} alt="IamBlessedAF" width="140" height="auto" style={logo} />
-        <Heading style={h1}>Código de verificación</Heading>
-        <Text style={text}>Usa este código para confirmar tu identidad:</Text>
+        <Heading style={h1}>Verification code</Heading>
+        <Text style={text}>Use this code to confirm your identity:</Text>
         <Text style={codeStyle}>{token}</Text>
         <Text style={footer}>
-          Este código expira pronto. Si no lo solicitaste, puedes ignorar este correo.
+          This code expires soon. If you didn't request it, you can safely ignore this email.
         </Text>
       </Container>
     </Body>
