@@ -26,10 +26,14 @@ Deno.serve(async (req) => {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+      // Determine the redirect URL based on origin
+      const origin = req.headers.get("origin") || "https://conversion-architects-hub.lovable.app";
+      const redirectTo = `${origin}/reset-password`;
+
       const resetRes = await fetch(`${supabaseUrl}/auth/v1/recover`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "apikey": anonKey },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, gotrue_meta_security: {}, code_challenge_method: "", redirect_to: redirectTo }),
       });
       if (!resetRes.ok) {
         const errData = await resetRes.json();

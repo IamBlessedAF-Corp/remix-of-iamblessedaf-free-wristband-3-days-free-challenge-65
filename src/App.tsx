@@ -38,6 +38,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const SmartWristband = lazy(() => import("./pages/SmartWristband"));
 const ReserveSmartWristband = lazy(() => import("./pages/ReserveSmartWristband"));
 const FreeNeuroHackerWristband = lazy(() => import("./pages/FreeNeuroHackerWristband"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const CreditExpert = lazy(() => import("./pages/CreditExpert"));
 const CreditNMarketer = lazy(() => import("./pages/CreditNMarketer"));
@@ -82,6 +83,7 @@ const App = () => (
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Offer22 />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/challenge" element={<Challenge />} />
             <Route path="/challenge/thanks" element={<ChallengeThanks />} />
             <Route path="/challenge/invite" element={<ChallengeInvite />} />
