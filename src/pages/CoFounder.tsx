@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Eye, BarChart3, Layers, AlertCircle,
   CheckSquare, Calendar, Users, UserCheck, FileText,
-  LogOut, RefreshCw, Menu, ChevronLeft, Shield,
+  LogOut, RefreshCw, Menu, ChevronLeft, Shield, Zap,
 } from "lucide-react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import BoardLoginForm from "@/components/board/BoardLoginForm";
@@ -20,11 +20,12 @@ import L10Tab from "@/components/co-founder/tabs/L10Tab";
 import AccountabilityTab from "@/components/co-founder/tabs/AccountabilityTab";
 import PeopleTab from "@/components/co-founder/tabs/PeopleTab";
 import ProcessesTab from "@/components/co-founder/tabs/ProcessesTab";
+import KFactorTab from "@/components/co-founder/tabs/KFactorTab";
 
 // ─── Tab IDs ───
 const EOS_TAB_IDS = [
   "eos-dashboard", "vto", "scorecard", "rocks", "issues",
-  "todos", "l10", "accountability", "people", "processes",
+  "todos", "l10", "accountability", "people", "processes", "k-factor",
 ] as const;
 
 type EosTabId = typeof EOS_TAB_IDS[number];
@@ -41,6 +42,7 @@ const SIDEBAR_MENU: { id: EosTabId; label: string; icon: any; section?: string }
   { id: "accountability", label: "Accountability Chart", icon: Users, section: "People" },
   { id: "people", label: "People Analyzer", icon: UserCheck, section: "People" },
   { id: "processes", label: "Core Processes", icon: FileText, section: "People" },
+  { id: "k-factor", label: "K-Factor", icon: Zap, section: "Growth" },
 ];
 
 // ─── Tab Router ───
@@ -56,6 +58,7 @@ function TabContent({ tab }: { tab: EosTabId }) {
     case "accountability": return <AccountabilityTab />;
     case "people": return <PeopleTab />;
     case "processes": return <ProcessesTab />;
+    case "k-factor": return <KFactorTab />;
     default: return null;
   }
 }
