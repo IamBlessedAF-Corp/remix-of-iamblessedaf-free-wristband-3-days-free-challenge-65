@@ -467,7 +467,7 @@ const Keys = () => {
   }
 
   // Referral code from status
-  const referralCode = status?.referral_code || null;
+  const referralCode = (status as any)?.referral_code || null;
 
   // Overall progress percentage
   const progressPercent = (keysUnlocked / 5) * 100;
