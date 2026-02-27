@@ -110,7 +110,6 @@ const App = () => (
 
             {/* ═══ Co-Founder EOS Hub ═══ */}
             <Route path="/co-founder" element={<CoFounder />} />
-            <Route path="/alex" element={<Alex />} />
 
             <Route path="/portal" element={<Portal />} />
             <Route path="/impact" element={<Impact />} />

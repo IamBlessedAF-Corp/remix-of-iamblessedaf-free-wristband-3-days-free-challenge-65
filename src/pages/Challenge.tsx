@@ -462,7 +462,7 @@ function KeyDashboard({ keyStatus, masterKey, analytics, senderName, referralCod
   const handleKey1Action = useCallback(async () => {
     setKey1Loading(true);
     // Mark key1 as shared (user copied/shared their link)
-    const ok = await unlockKey1();
+    const ok = await unlockKey1(null, "share_link", "web");
     if (ok) analytics.track("key1_unlocked", { method: "share_link" });
     setKey1Loading(false);
   }, [unlockKey1, analytics]);
@@ -683,7 +683,7 @@ const Challenge = () => {
 
   // Track page view
   useEffect(() => {
-    analytics.trackPageView({ referral_code: referralCode ?? undefined, is_referred: isReferred });
+    analytics.trackPageView("challenge", { referral_code: referralCode ?? undefined, is_referred: isReferred });
   }, [analytics, referralCode, isReferred]);
 
   // Auto-activate key0 when user is authenticated but has no key0 yet
