@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 // ── Types ──────────────────────────────────────────────────────
@@ -37,6 +37,7 @@ function getSessionId(): string {
 export function useAnalytics() {
   const [kFactor, setKFactor] = useState<KFactorData | null>(null);
   const [kLoading, setKLoading] = useState(false);
+  const trackingDisabledRef = useRef(false);
 
   /**
    * Track any joy-keys related event.
@@ -54,12 +55,14 @@ export function useAnalytics() {
       eventType: string,
       metadata: Record<string, any> = {}
     ): Promise<void> => {
+      if (trackingDisabledRef.current) return;
+
       try {
         const { data: userData } = await supabase.auth.getUser();
         const userId = userData.user?.id ?? null;
         const sessionId = getSessionId();
 
-        await from("joy_analytics_events").insert({
+        const { error } = await from("joy_analytics_events").insert({
           user_id: userId,
           event_type: eventType,
           metadata: {
@@ -71,6 +74,15 @@ export function useAnalytics() {
           },
           session_id: sessionId,
         } as any);
+
+        if (error) {
+          if ((error as { code?: string }).code === "PGRST205") {
+            trackingDisabledRef.current = true;
+            console.warn("analytics disabled: joy_analytics_events table not available yet");
+            return;
+          }
+          throw error;
+        }
       } catch (err) {
         // Analytics should never break UX — silently fail
         console.warn("analytics.track failed:", err);
