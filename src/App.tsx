@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { RefreshCw } from "lucide-react";
+import { AuthRedirectListener } from "@/components/AuthRedirectListener";
 
 // ─── Lazy-loaded pages ───
 const Offer22 = lazy(() => import("./pages/Offer22"));
@@ -80,6 +81,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AuthRedirectListener />
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Offer22 />} />
