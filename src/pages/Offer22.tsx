@@ -77,11 +77,10 @@ const Offer22 = () => {
           localStorage.removeItem("referral_code");
         }
 
-        // Authenticated user → redirect to appropriate page
+        // Authenticated user → completed funnel goes to affiliate, everyone else to portal
         if (data?.congrats_completed) {
           navigate("/affiliate-portal", { replace: true });
-        } else if (data) {
-          // User has a profile but hasn't completed funnel → send to portal
+        } else {
           navigate("/portal", { replace: true });
         }
       };
