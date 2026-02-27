@@ -758,30 +758,52 @@ const Challenge = () => {
 
         <GamificationHeader />
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           {!isAuthenticated ? (
             /* STATE 1: Signup */
-            <SignupState
+            <motion.div
               key="signup"
-              referralCode={referralCode}
-              isReferred={isReferred}
-              senderName={senderName}
-              onGoogleSignup={handleGoogleSignup}
-              googleLoading={googleLoading}
-            />
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+            >
+              <SignupState
+                referralCode={referralCode}
+                isReferred={isReferred}
+                senderName={senderName}
+                onGoogleSignup={handleGoogleSignup}
+                googleLoading={googleLoading}
+              />
+            </motion.div>
           ) : hasKey0 ? (
             /* STATE 3: Key Dashboard */
-            <KeyDashboard
+            <motion.div
               key="dashboard"
-              keyStatus={keyStatus}
-              masterKey={masterKeyHook}
-              analytics={analytics}
-              senderName={senderName}
-              referralCode={referralCode}
-            />
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+            >
+              <KeyDashboard
+                keyStatus={keyStatus}
+                masterKey={masterKeyHook}
+                analytics={analytics}
+                senderName={senderName}
+                referralCode={referralCode}
+              />
+            </motion.div>
           ) : (
             /* STATE 2: Should auto-activate — fallback UI */
-            <ActivatingState key="activating" />
+            <motion.div
+              key="activating"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ActivatingState />
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
