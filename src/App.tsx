@@ -10,6 +10,9 @@ import { RefreshCw } from "lucide-react";
 const Offer22 = lazy(() => import("./pages/Offer22"));
 const Challenge = lazy(() => import("./pages/Challenge"));
 const ChallengeThanks = lazy(() => import("./pages/ChallengeThanks"));
+const ChallengeInvite = lazy(() => import("./pages/ChallengeInvite"));
+const ChallengeStory = lazy(() => import("./pages/ChallengeStory"));
+const Keys = lazy(() => import("./pages/Keys"));
 const ReferralRedirect = lazy(() => import("./pages/ReferralRedirect"));
 const GoRedirect = lazy(() => import("./pages/GoRedirect"));
 const Confirm = lazy(() => import("./pages/Confirm"));
@@ -52,6 +55,7 @@ const UnsubscribeDigest = lazy(() => import("./pages/UnsubscribeDigest"));
 const CongratsNeuroHacker = lazy(() => import("./pages/CongratsNeuroHacker"));
 const BlockPreview = lazy(() => import("./pages/BlockPreview"));
 const CoFounder = lazy(() => import("./pages/CoFounder"));
+const OfferWristband = lazy(() => import("./pages/OfferWristband"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -80,6 +84,9 @@ const App = () => (
             <Route path="/" element={<Offer22 />} />
             <Route path="/challenge" element={<Challenge />} />
             <Route path="/challenge/thanks" element={<ChallengeThanks />} />
+            <Route path="/challenge/invite" element={<ChallengeInvite />} />
+            <Route path="/challenge/story" element={<ChallengeStory />} />
+            <Route path="/keys" element={<Keys />} />
             <Route path="/r/:code" element={<ReferralRedirect />} />
             <Route path="/go/:code" element={<GoRedirect />} />
             <Route path="/confirm/:token" element={<Confirm />} />
@@ -91,6 +98,7 @@ const App = () => (
             <Route path="/offer/1111" element={<Offer1111 />} />
             <Route path="/offer/4444" element={<Offer4444 />} />
             <Route path="/offer/success" element={<OfferSuccess />} />
+            <Route path="/offer/wristband" element={<OfferWristband />} />
             <Route path="/make-2500-with-1-ai-clip" element={<AIVideoContest />} />
             <Route path="/2us-Clippers-Campaign" element={<AIVideoContest />} />
 

@@ -78,6 +78,62 @@ const TEMPLATE_REGISTRY: Record<string, SmsTemplate> = {
     complianceFlags: ["engagement", "milestone"],
   },
 
+  // ── JOY KEYS ENGINE ──
+  "joy-key0-activated": {
+    lane: "transactional",
+    body: "🔑 Key 0 UNLOCKED! {{name}}, you just activated your Joy Keys journey.\n\n+50 Blessed Coins earned.\n\nNext unlock: Share your clip or referral link → Key 1 (100 BC)\n\nhttps://iamblessedaf.com/keys\n\n— I am Blessed AF",
+    requiresStopLanguage: false,
+    complianceFlags: ["engagement", "joy-keys", "onboarding"],
+  },
+  "joy-key1-reminder": {
+    lane: "transactional",
+    body: "🔑 Hey {{name}}! Key 1 is waiting for you.\n\nShare your clip or referral link to unlock it → +100 Blessed Coins.\n\nYou're {{percentage}}% there to FREE shipping.\n\nhttps://iamblessedaf.com/keys\n\n— I am Blessed AF",
+    requiresStopLanguage: false,
+    complianceFlags: ["engagement", "joy-keys", "nudge"],
+  },
+  "joy-key1-unlocked": {
+    lane: "transactional",
+    body: "🔑🔑 Key 1 UNLOCKED! {{name}}, your clip/referral is spreading gratitude.\n\n+100 Blessed Coins earned. Total: {{totalCoins}} BC.\n\nNext: Share your story → Key 2 (150 BC)\n\nhttps://iamblessedaf.com/challenge/story\n\n— I am Blessed AF",
+    requiresStopLanguage: false,
+    complianceFlags: ["engagement", "joy-keys", "milestone"],
+  },
+  "joy-key2-story-nudge": {
+    lane: "transactional",
+    body: "🔑 {{name}}, Key 2 is calling! Share your gratitude story to unlock it.\n\nTakes 30 seconds — screenshot your story and share on WhatsApp/IG.\n\n+150 Blessed Coins waiting for you.\n\nhttps://iamblessedaf.com/challenge/story\n\n— I am Blessed AF",
+    requiresStopLanguage: false,
+    complianceFlags: ["engagement", "joy-keys", "nudge"],
+  },
+  "joy-key2-unlocked": {
+    lane: "transactional",
+    body: "🔑🔑🔑 Key 2 UNLOCKED! {{name}}, your story is inspiring others.\n\n+150 Blessed Coins earned. Total: {{totalCoins}} BC.\n\nFinal key: Invite 3 friends → Key 3 (200 BC each!)\n\nhttps://iamblessedaf.com/challenge/invite\n\n— I am Blessed AF",
+    requiresStopLanguage: false,
+    complianceFlags: ["engagement", "joy-keys", "milestone"],
+  },
+  "joy-key3-invite-reminder": {
+    lane: "transactional",
+    body: "🔑 {{name}}, you need {{friendsNeeded}} more friend(s) to unlock Key 3!\n\nEach friend who joins = +200 BC for you + 50 BC for them.\n\nShare your invite link:\n{{inviteLink}}\n\n— I am Blessed AF",
+    requiresStopLanguage: false,
+    complianceFlags: ["engagement", "joy-keys", "nudge"],
+  },
+  "joy-key3-unlocked": {
+    lane: "transactional",
+    body: "🔑🔑🔑🔑 Key 3 UNLOCKED! {{name}}, 3 friends joined thanks to you!\n\n+600 Blessed Coins earned from referrals.\n\n🏆 ALL 4 KEYS COMPLETE → Master Key checking...\n\nhttps://iamblessedaf.com/keys\n\n— I am Blessed AF",
+    requiresStopLanguage: false,
+    complianceFlags: ["engagement", "joy-keys", "milestone"],
+  },
+  "joy-master-key-unlocked": {
+    lane: "transactional",
+    body: "🏆✨ MASTER KEY UNLOCKED! {{name}}, you did it!\n\nYou've earned FREE shipping on your Neuro-Hacker wristband + 500 bonus Blessed Coins.\n\nTotal: {{totalCoins}} BC.\n\nClaim your reward now:\nhttps://iamblessedaf.com/offer/wristband\n\n— I am Blessed AF",
+    requiresStopLanguage: false,
+    complianceFlags: ["engagement", "joy-keys", "master-key", "milestone"],
+  },
+  "joy-stalled-24h": {
+    lane: "transactional",
+    body: "🔑 {{name}}, your Joy Keys are {{percentage}}% complete!\n\nYou're stuck on Key {{currentKey}}. Here's what to do next:\n\n{{nextAction}}\n\nDon't let your Blessed Coins expire. Keep going!\n\nhttps://iamblessedaf.com/keys\n\n— I am Blessed AF",
+    requiresStopLanguage: false,
+    complianceFlags: ["engagement", "joy-keys", "re-engagement"],
+  },
+
   // ── MARKETING (DROP-ONLY) ──
   "drop-live": {
     lane: "marketing",
