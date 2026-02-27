@@ -1,4 +1,16 @@
-import { supabase } from "@/integrations/supabase/client";
+// Lazy import to prevent blank screen if supabase chunk fails to load
+let _supabase: any = null;
+async function getSupabase() {
+  if (!_supabase) {
+    try {
+      const mod = await import("@/integrations/supabase/client");
+      _supabase = mod.supabase;
+    } catch {
+      return null;
+    }
+  }
+  return _supabase;
+}
 
 /** Session ID for grouping errors from the same browser session */
 const SESSION_ID = `ses_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
@@ -79,8 +91,8 @@ export async function captureError(
     };
 
     // Fire-and-forget
-    supabase.functions.invoke("ingest-error", { body: payload }).catch(() => {
-      // Silently fail — we can't report errors about error reporting
+    getSupabase().then(sb => {
+      if (sb) sb.functions.invoke("ingest-error", { body: payload }).catch(() => {});
     });
   } catch {
     // Never throw from the error capture system
