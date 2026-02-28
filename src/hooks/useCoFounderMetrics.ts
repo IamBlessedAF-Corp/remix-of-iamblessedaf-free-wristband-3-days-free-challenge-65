@@ -11,12 +11,12 @@ export function useOrderMetrics() {
         .eq("status", "completed");
 
       const total = orders?.length ?? 0;
-      const revenue = (orders ?? []).reduce((s, o) => s + o.amount_cents, 0);
+      const revenue = (orders ?? []).reduce((s, o) => s + (o.amount_cents ?? 0), 0);
       const tierBreakdown: Record<string, { count: number; revenue: number }> = {};
       for (const o of orders ?? []) {
         if (!tierBreakdown[o.tier]) tierBreakdown[o.tier] = { count: 0, revenue: 0 };
         tierBreakdown[o.tier].count++;
-        tierBreakdown[o.tier].revenue += o.amount_cents;
+        tierBreakdown[o.tier].revenue += o.amount_cents ?? 0;
       }
       return { total, revenue, tierBreakdown };
     },
@@ -55,7 +55,7 @@ export function useClipperMetrics() {
         supabase.from("clipper_payouts").select("id, total_cents, status"),
       ]);
       const totalClips = clips.data?.length ?? 0;
-      const totalViews = (clips.data ?? []).reduce((s, c) => s + c.view_count, 0);
+      const totalViews = (clips.data ?? []).reduce((s, c) => s + (c.view_count ?? 0), 0);
       const verifiedClips = (clips.data ?? []).filter(c => c.status === "verified").length;
       const totalPayouts = (payouts.data ?? []).reduce((s, p) => s + (p.total_cents ?? 0), 0);
       return { totalClips, totalViews, verifiedClips, totalPayouts };

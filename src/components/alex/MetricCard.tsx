@@ -20,7 +20,7 @@ export default function MetricCard({
     <div className={cn("bg-card border border-border/50 rounded-xl p-4 space-y-3", className)}>
       <div className="flex items-start justify-between">
         <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
-          <Icon className="w-4.5 h-4.5 text-primary" />
+          <Icon className="w-5 h-5 text-primary" />
         </div>
         {trend && (
           <span className={cn(
