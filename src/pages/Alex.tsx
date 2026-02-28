@@ -5,7 +5,8 @@ import {
   LayoutDashboard, DollarSign, Users, Megaphone,
   ChevronLeft, Menu, Zap, Lightbulb, Settings,
   TrendingUp, ShoppingCart, Film, Target, Award,
-  AlertTriangle, Kanban, Map, Loader2, RefreshCw,
+  AlertTriangle, Kanban, Map, Loader2,
+  type LucideIcon,
 } from "lucide-react";
 import AlexChat from "@/components/alex/AlexChat";
 import MetricCard from "@/components/alex/MetricCard";
@@ -18,7 +19,7 @@ import {
 const ALL_TABS = ["dashboard", "offers", "leads", "pricing", "hiring", "operations", "scaling"] as const;
 type TabId = typeof ALL_TABS[number];
 
-const SIDEBAR_MENU: { id: TabId; label: string; icon: any }[] = [
+const SIDEBAR_MENU: { id: TabId; label: string; icon: LucideIcon }[] = [
   { id: "dashboard", label: "Command Center", icon: LayoutDashboard },
   { id: "offers", label: "Offers & Value", icon: Lightbulb },
   { id: "leads", label: "Lead Generation", icon: Megaphone },
